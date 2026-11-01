@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>Пещера (SF2 Битвы)</title>
+  <style>
+    body { background:#1e1e24; margin:0; padding:8px 0; display:flex; flex-direction:column; align-items:center; min-height:100vh; font-family:sans-serif; color:#fff; touch-action:manipulation; }
+    #start-screen { position:fixed; inset:0; background:radial-gradient(circle,#2b2b3b,#15151d); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; box-sizing:border-box; }
+    #start-screen h1 { margin:0; font-size:30px; text-transform:uppercase; letter-spacing:4px; text-shadow:0 0 20px rgba(255,255,255,0.5); }
+    .big-instruction { margin:0; font-size:18px; text-align:center; color:#fbbf24; font-weight:bold; }
+    .mode-btn { width:300px; padding:14px; font-size:18px; font-weight:bold; color:#fff; border:3px solid #fff; border-radius:12px; cursor:pointer; background:linear-gradient(135deg,#10b981,#059669); }
+    #hud { background:rgba(0,0,0,0.3); padding:8px; border-radius:8px; width:326px; box-sizing:border-box; border:2px solid #4b5563; display:flex; justify-content:space-between; font-size:12px; font-weight:bold; }
+    .hud-hero { display:flex; gap:6px; }
+    .hero-fig { font-size:30px; display:flex; align-items:center; }
+    canvas { background-color:#241f1d; border:3px solid #10b981; width:320px; height:320px; display:block; margin-top:5px; }
+  </style>
+</head>
+<body>
+
+  <div id="start-screen">
+    <h1>ПЕЩЕРА (SF2 БИТВЫ)</h1>
+    <p class="big-instruction">Исследуй опасные локации!</p>
+    <button class="mode-btn" id="start-btn">🏃 Войти в пещеру</button>
+  </div>
+
+  <div id="hud">
+    <div class="hud-hero">
+      <div class="hero-fig" id="hero-fig">🦸</div>
+      <div>
+        <div>❤️ HP: <span id="hp">100</span></div>
+        <div>💪 Сила: <span id="bonus">1</span></div>
+      </div>
+    </div>
+    <div class="hud-center" style="text-align:center;">
+      <div>🏰 Глубина: <span id="floor-hud">1</span></div>
+      <div>💰 Золото: <span id="score">0</span></div>
+    </div>
+    <div class="hud-enemies">
+      <div>👹 Монстры: <span id="e-count">0</span></div>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas" width="320" height="320"></canvas>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>
