@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 МЕГА-СБОРНИК РОГАЛИКОВ</title>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f16 100%);
+      color: #e8e4d8;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #fbbf24;
+      text-shadow: 0 0 20px rgba(251,191,36,0.4);
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+    .card {
+      background: #1e1e2e;
+      border: 2px solid #4b5563;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    .card:hover {
+      border-color: #fbbf24;
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(251,191,36,0.2);
+    }
+    .icon {
+      font-size: 50px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fbbf24;
+      margin-bottom: 8px;
+    }
+    .desc {
+      font-size: 14px;
+      color: #9ca3af;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 МЕГА-СБОРНИК РОГАЛИКОВ</h1>
+
+  <div class="grid">
+    <!-- Блок 1: MM6 Тестовое Подземелье (Тот самый первый файл со слизнем) -->
+    <a href="games/mm6_test/index.html" class="card">
+      <span class="icon">👁️</span>
+      <div class="title">MM6 — ПОДЗЕМЕЛЬЕ (ТЕСТ)</div>
+      <div class="desc">Тестовый вариант в стиле Might & Magic 6. Кликами наноси комбо-удары по Слизню!</div>
+    </a>
+
+    <!-- Блок 2: Пещера (С врезками SF2) -->
+    <a href="games/cave/index.html" class="card">
+      <span class="icon">🕯️</span>
+      <div class="title">ПЕЩЕРА (SF2 БИТВЫ)</div>
+      <div class="desc">Пошаговый 2D-рогалик. Каждая атака переносит в тактическую анимированную врезку!</div>
+    </a>
+
+    <!-- Блок 3: Лабиринт Судьбы -->
+    <a href="games/labyrinth/index.html" class="card">
+      <span class="icon">🌀</span>
+      <div class="title">ЛАБИРИНТ СУДЬБЫ</div>
+      <div class="desc">Сбор самоцветов на время или выживание. Прокачка магии и тонкие настройки ИИ.</div>
+    </a>
+
+    <!-- Блок 4: Подземелье v28 -->
+    <a href="games/dungeon28/index.html" class="card">
+      <span class="icon">🏰</span>
+      <div class="title">ПОДЗЕМЕЛЬЕ v28</div>
+      <div class="desc">Полноценная игра на 5 этажей. Лавка предметов, магия Молнии и Стана, выбор героев.</div>
+    </a>
+  </div>
+
+</body>
+</html>
