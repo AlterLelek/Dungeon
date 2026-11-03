@@ -11,7 +11,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase
 
 // Твои ключи
 const firebaseConfig = {
-  apiKey: "AIzaSyAJ1H7-xc2bTKsdFGJKhGZYXmAb-syoGLI",
+  apiKey: "AIzaSyAjJH7-xc2bTKsdFGJKhGZYXmAb-syoGlI",
   authDomain: "dungeon-28.firebaseapp.com",
   projectId: "dungeon-28",
   storageBucket: "dungeon-28.firebasestorage.app",
