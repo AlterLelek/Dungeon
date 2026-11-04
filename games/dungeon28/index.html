@@ -7,7 +7,9 @@
     <title>Подземелье 28</title>
     <style>
         body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; color: #fff; overflow: hidden; }
-        #login-screen { display: flex; flex-direction: column; align-items: center; gap: 20px; background: #2b2b3b; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #4f46e5; width: 300px; }
+        
+        /* Экран входа */
+        #login-screen { display: flex; flex-direction: column; align-items: center; gap: 20px; background: #2b2b3b; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #4f46e5; width: 300px; z-index: 100; }
         h1 { margin: 0; font-size: 32px; text-transform: uppercase; letter-spacing: 4px; color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); text-align: center; }
         .input-group { display: flex; flex-direction: column; width: 100%; gap: 10px; }
         input[type="text"] { padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #4b5563; background: #374151; color: #fff; outline: none; text-align: center; }
@@ -21,7 +23,40 @@
         .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid #4b5563; margin: 0 10px; }
         #error-msg { color: #ef4444; font-size: 14px; text-align: center; height: 20px; }
 
-        #game-screen { display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%; height: 100%; justify-content: center; }
+        /* Игровой экран */
+        #game-screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; }
+
+        /* ОГРОМНЫЙ HUD */
+        #hud { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; color: #fff; font-size: 12px; margin-bottom: 5px; font-weight: bold; width: 326px; box-sizing: border-box; border: 2px solid #4b5563; display: flex; justify-content: space-between; align-items: stretch; gap: 6px; height: 116px; }
+        .hud-hero { display: flex; gap: 6px; width: 118px; box-sizing: border-box; align-items: stretch; }
+        .hero-fig { font-size: 30px; display: flex; align-items: center; }
+        .hero-stats { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+        .hero-stats .hs-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #hero-weapon { font-size: 10px; color: #e5e7eb; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; line-height: 1.3; }
+        .hud-center { display: flex; flex-direction: column; gap: 3px; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 6px; box-sizing: border-box; }
+        .hud-enemies { display: flex; flex-direction: column; gap: 3px; flex: 1; box-sizing: border-box; min-width: 0; }
+        .hud-enemies .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; }
+        #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 10px; height: 84px; overflow: hidden; text-align: right; }
+
+        /* Кнопки под HUD */
+        #btn-row { display: flex; gap: 4px; width: 326px; box-sizing: border-box; margin-bottom: 5px; }
+        #shop-btn { background-color: #10b981; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
+        #records-btn { background-color: #f59e0b; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
+        #settings-btn { background-color: #6b7280; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
+
+        canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; box-sizing: content-box; display: block; }
+
+        /* Модальные окна */
+        .panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #151520; padding: 18px; border: 2px solid #fbbf24; border-radius: 12px; width: 300px; max-height: 86vh; overflow-y: auto; box-sizing: border-box; z-index: 2000; box-shadow: 0 0 25px rgba(0,0,0,0.8); }
+        .panel h3 { margin: 0 0 12px 0; color: #fbbf24; text-align: center; }
+        .panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 6px; font-size: 13px; color: #fff; }
+        .panel-label { flex: 1; }
+        .panel-price { color: #10b981; font-weight: bold; white-space: nowrap; }
+        .buy-btn { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap; }
+        .buy-btn:disabled { background: #374151; color: #6b7280; cursor: default; }
+        .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #fff; font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 4px; }
+        .stat-val { color: #fbbf24; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -37,10 +72,74 @@
         <div id="error-msg"></div>
     </div>
 
-    <!-- Сюда скрипт сам вставит HUD и Canvas -->
-    <div id="game-screen"></div>
+    <div id="game-screen">
+        <div id="hud">
+            <div class="hud-hero" style="color:#60a5fa;">
+                <div class="hero-fig" id="hero-fig">🦸</div>
+                <div class="hero-stats">
+                    <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
+                    <div>❤️ <span id="hp" style="color:#ef4444">100</span></div>
+                    <div>🛡️ <span id="shd-hud">0</span></div>
+                    <div>💪 <span id="bonus">1</span></div>
+                    <div id="hero-weapon">⚔️ Кулаки</div>
+                </div>
+            </div>
+            <div class="hud-center">
+                <div>🏰 <span id="floor-hud">1</span></div>
+                <div>👣 <span id="turns">0</span></div>
+                <div style="color:#f59e0b;">🏆 <span id="high-score">0</span></div>
+                <div><span class="coin-ico"></span> <span id="score">0</span></div>
+                <div>⚡ <span id="energy">0</span></div>
+            </div>
+            <div class="hud-enemies" style="color:#a855f7;">
+                <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
+                <div id="e-list"></div>
+            </div>
+        </div>
 
-    <!-- ?v=3 сбрасывает кэш браузера -->
-    <script type="module" src="main.js?v=3"></script>
+        <div id="btn-row">
+            <button id="shop-btn">🛒 Лавка [M]</button>
+            <button id="records-btn">🏆 Рекорды</button>
+            <button id="settings-btn">⚙️ Настройки</button>
+        </div>
+
+        <!-- Сюда вставится canvas -->
+        
+        <!-- Модалка Магазина -->
+        <div id="shop-panel" class="panel">
+            <h3>🛒 Лавка</h3>
+            <div id="shop-gold" style="color:#fbbf24; text-align:center; margin-bottom:10px; font-weight:bold;"></div>
+            <div class="panel-row">
+                <span class="panel-label" id="shop-wpn-label"></span>
+                <span class="panel-price" id="shop-wpn-cost"></span>
+                <button class="buy-btn" id="shop-wpn-btn">Купить</button>
+            </div>
+            <div class="panel-row">
+                <span class="panel-label">🛡️ Броня +1</span>
+                <span class="panel-price" id="shop-shd-cost">1 зл</span>
+                <button class="buy-btn" id="shop-shd-btn">Купить</button>
+            </div>
+            <button class="close-panel" id="close-shop">Закрыть [Esc]</button>
+        </div>
+
+        <!-- Модалка Рекордов -->
+        <div id="records-panel" class="panel">
+            <h3>🏆 Статистика</h3>
+            <div class="stat-row"><span>Лучший результат (ходов):</span><span class="stat-val" id="rec-highscore">0</span></div>
+            <div class="stat-row"><span>Убито монстров:</span><span class="stat-val" id="rec-kills">0</span></div>
+            <div class="stat-row"><span>Собрано золота:</span><span class="stat-val" id="rec-gold">0</span></div>
+            <button class="close-panel" id="close-records">Закрыть [Esc]</button>
+        </div>
+
+        <!-- Модалка Настроек -->
+        <div id="settings-panel" class="panel">
+            <h3>⚙️ Настройки</h3>
+            <div class="panel-row"><span class="panel-label">🔊 Громкость</span><input type="range" id="set-vol" min="0" max="100" value="100"></div>
+            <div class="panel-row"><span class="panel-label">🎵 Музыка</span><input type="checkbox" id="set-music" checked></div>
+            <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
+        </div>
+    </div>
+
+    <script type="module" src="main.js?v=4"></script>
 </body>
 </html>

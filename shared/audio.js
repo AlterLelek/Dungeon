@@ -1,15 +1,55 @@
 // shared/audio.js
 let audioCtx = null;
-let settings = { sfx: 100 }; 
+let isMusicPlaying = false;
+let settings = { sfx: 100, music: true };
+let melodyTimer = null;
+
+const MELODY = [220,0,261.6,329.6,440,0,329.6,261.6,349.2,0,440,493.9,523.3,0,440,392,329.6,0,261.6,220,0,0,196,0,220,0,261.6,329.6,440,0,0,0];
+const BASS = [110,0,110,0,130.8,0,130.8,0,146.8,0,146.8,0,164.8,0,164.8,0,110,0,110,0,130.8,0,130.8,0,98,0,98,0,110,0,110,0];
+const HARMONY = [329.6,0,392,0,440,0,392,0,440,0,523.3,0,493.9,0,440,0,329.6,0,392,0,440,0,392,0,293.7,0,349.2,0,329.6,0,392,0];
 
 export function getAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
+}
+
+function playTone(freq, wave, vol, dur) {
+  if (!settings.music || freq === 0) return;
+  try {
+    const ac = getAudio(); 
+    const osc = ac.createOscillator(); 
+    const gain = ac.createGain();
+    osc.type = wave || 'triangle';
+    osc.frequency.value = freq; 
+    osc.connect(gain); 
+    gain.connect(ac.destination);
+    const now = ac.currentTime;
+    gain.gain.setValueAtTime(vol, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    osc.start(now); osc.stop(now + dur + 0.02);
+  } catch (e) {}
+}
+
+export function startMusic() {
+  if (melodyTimer || !settings.music) return;
+  let idx = 0;
+  melodyTimer = setInterval(() => {
+    playTone(MELODY[idx], 'triangle', 0.045, 0.5);
+    playTone(BASS[idx], 'sine', 0.03, 0.5);
+    playTone(HARMONY[idx], 'sine', 0.02, 0.5);
+    idx = (idx + 1) % MELODY.length;
+  }, 600);
+}
+
+export function stopMusic() {
+  if (melodyTimer) { clearInterval(melodyTimer); melodyTimer = null; }
+}
+
+export function setVolume(vol) { settings.sfx = vol; }
+export function toggleMusic(on) { 
+  settings.music = on; 
+  if (on) startMusic(); else stopMusic();
 }
 
 export function playSound(type) {

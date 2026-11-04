@@ -2,10 +2,11 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer } from './game.js';
-import { WARRIOR_WEAPONS } from './config.js';
-import { playSound, getAudio } from '../../shared/audio.js';
+import { movePlayer, fight } from './game.js';
+import { HEROES, WARRIOR_WEAPONS } from './config.js';
+import { playSound, getAudio, startMusic, stopMusic, setVolume, toggleMusic } from '../../shared/audio.js';
 
+// DOM Элементы
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
@@ -13,39 +14,45 @@ const guestNameInput = document.getElementById('guest-name');
 const errorMsg = document.getElementById('error-msg');
 
 const canvas = document.createElement('canvas');
-canvas.width = 320; 
-canvas.height = 320;
-canvas.style.border = "3px solid #4f46e5";
+canvas.width = 320; canvas.height = 320;
 const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// Переменные для HUD
-let hudHp, hudGold, hudFloor;
+// HUD Элементы
+const hudHp = document.getElementById('hp');
+const hudShd = document.getElementById('shd-hud');
+const hudBonus = document.getElementById('bonus');
+const hudFloor = document.getElementById('floor-hud');
+const hudTurns = document.getElementById('turns');
+const hudScore = document.getElementById('score');
+const hudEnergy = document.getElementById('energy');
+const hudECount = document.getElementById('e-count');
+const hudEList = document.getElementById('e-list');
+const hudWeapon = document.getElementById('hero-weapon');
 
-// Создание HUD на лету
-function createHUD() {
-  const hud = document.createElement('div');
-  hud.style.cssText = "display: flex; justify-content: space-between; width: 326px; color: #fff; font-weight: bold; font-size: 16px; padding: 10px; box-sizing: border-box; background: rgba(0,0,0,0.3); border-radius: 8px; border: 2px solid #4b5563; margin-bottom: 5px;";
-  hud.innerHTML = `
-    <div>❤️ <span id="hud-hp" style="color:#fbbf24">100</span></div>
-    <div>🪙 <span id="hud-gold" style="color:#fbbf24">0</span></div>
-    <div>⚔️ <span id="hud-floor" style="color:#fbbf24">1</span></div>
-  `;
-  gameScreen.appendChild(hud);
-  hudHp = document.getElementById('hud-hp');
-  hudGold = document.getElementById('hud-gold');
-  hudFloor = document.getElementById('hud-floor');
-}
-
-// Обновление циферок в HUD
 function updateHUD() {
-  if (hudHp) hudHp.innerText = state.playerHp;
-  if (hudGold) hudGold.innerText = state.goldCount;
-  if (hudFloor) hudFloor.innerText = state.currentFloor;
+  hudHp.innerText = state.playerHp;
+  hudShd.innerText = state.permanentShield + state.tempDef;
+  hudBonus.innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
+  hudFloor.innerText = state.currentFloor;
+  hudTurns.innerText = state.totalTurns;
+  hudScore.innerText = state.goldCount;
+  hudEnergy.innerText = state.energy;
+  
+  const w = state.weapons[state.weaponLevel];
+  hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
+
+  hudECount.innerText = state.monsters.length;
+  let eHtml = "";
+  state.monsters.slice(0, 6).forEach(m => {
+    const icon = m.behavior === 'flee' ? '🏃' : '🎯';
+    eHtml += `<div>${m.type}${icon} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`;
+  });
+  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… ещё ${state.monsters.length - 6}</div>`;
+  hudEList.innerHTML = eHtml;
 }
 
-// Игровой цикл
 function gameLoop() {
   if (state.gameActive) {
     const speed = 0.25;
@@ -64,14 +71,13 @@ function gameLoop() {
 }
 
 function startGame(name) {
-    getAudio(); // Включаем звук (разблокировка)
+    getAudio(); startMusic();
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
-    gameScreen.innerHTML = ''; // Очищаем экран
     
-    createHUD(); // Создаем панель здоровья
-    gameScreen.appendChild(canvas); // Добавляем холст
+    const btnRow = document.getElementById('btn-row');
+    gameScreen.insertBefore(canvas, btnRow.nextSibling);
     
     localStorage.setItem('pz_heroName', name);
     
@@ -82,6 +88,7 @@ function startGame(name) {
     state.currentFloor = 1;
     state.gameActive = true;
     state.goldCount = 0;
+    state.totalTurns = 0;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -92,16 +99,24 @@ function startGame(name) {
     }
 
     document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('shop-panel').style.display = 'none';
+        document.getElementById('settings-panel').style.display = 'none';
+        document.getElementById('records-panel').style.display = 'none';
+        return;
+      }
       if (!state.gameActive) return;
       const key = e.key.toLowerCase();
       if (key === 'arrowup' || key === 'w' || key === 'ц') movePlayer(0, -32);
       else if (key === 'arrowdown' || key === 's' || key === 'ы') movePlayer(0, 32);
       else if (key === 'arrowleft' || key === 'a' || key === 'ф') movePlayer(-32, 0);
       else if (key === 'arrowright' || key === 'd' || key === 'в') movePlayer(32, 0);
+      else if (key === 'm' || key === 'ь') document.getElementById('shop-panel').style.display = 'block';
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(e.key.toLowerCase())) e.preventDefault();
     });
 }
 
+// Обработчики кнопок
 btnGuest.addEventListener('click', () => {
     const name = guestNameInput.value.trim();
     if (name === "") { errorMsg.innerText = "Введите имя!"; return; }
@@ -110,6 +125,15 @@ btnGuest.addEventListener('click', () => {
     startGame(name);
 });
 
-document.getElementById('btn-google').addEventListener('click', () => {
-    errorMsg.innerText = "Google пока отключен.";
-});
+document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
+document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; });
+document.getElementById('records-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('records-panel').style.display = 'block'; });
+document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
+
+document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');
+document.getElementById('close-records').addEventListener('click', () => document.getElementById('records-panel').style.display = 'none');
+document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
+
+// Настройки
+document.getElementById('set-vol').addEventListener('input', (e) => setVolume(e.target.value));
+document.getElementById('set-music').addEventListener('change', (e) => toggleMusic(e.target.checked));
