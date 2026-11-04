@@ -1,80 +1,78 @@
 // games/dungeon28/main.js
-import { loginWithGoogle, onUserChange, handleRedirectResult } from '../../shared/auth.js';
+import { state } from './state.js';
+import { initFloor } from './map.js';
+import { draw } from './ui.js';
+import { GRID, CELL, HEROES, WARRIOR_WEAPONS } from './config.js';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
-const btnGoogle = document.getElementById('btn-google');
 const guestNameInput = document.getElementById('guest-name');
 const errorMsg = document.getElementById('error-msg');
 
-let gameStarted = false;
+// Создаем холст для игры
+const canvas = document.createElement('canvas');
+canvas.width = 320; canvas.height = 320;
+canvas.style.border = "3px solid #4f46e5";
+canvas.style.backgroundColor = "#241f1d";
+const ctx = canvas.getContext('2d');
+gameScreen.appendChild(canvas);
 
-// Функция для старта игры
-function startGame(name, user = null) {
-    if (gameStarted) return; // Защита от двойного запуска
-    gameStarted = true;
+let bgCanvas = null;
 
-    // Скрываем экран входа, показываем игру
+// Игровой цикл (плавное движение)
+function gameLoop() {
+  if (state.gameActive) {
+    const speed = 0.25;
+    if (Math.abs(state.player.px - state.player.x) > 0.5) state.player.px += (state.player.x - state.player.px) * speed; else state.player.px = state.player.x;
+    if (Math.abs(state.player.py - state.player.y) > 0.5) state.player.py += (state.player.y - state.player.py) * speed; else state.player.py = state.player.y;
+    
+    // Анимация цифр
+    for (let i = state.floaters.length - 1; i >= 0; i--) {
+      const f = state.floaters[i]; f.y += f.vy; f.life -= 0.02;
+      if (f.life <= 0) state.floaters.splice(i, 1);
+    }
+
+    draw(ctx, bgCanvas);
+  }
+  requestAnimationFrame(gameLoop);
+}
+
+// Запуск игры
+function startGame(name) {
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
+    gameScreen.innerHTML = ''; // Очищаем экран
+    gameScreen.appendChild(canvas);
     
     localStorage.setItem('pz_heroName', name);
-    console.log(`Игра началась! Игрок: ${name}, Гость: ${!user}, UID: ${user ? user.uid : 'нет'}`);
     
-    // Временная заглушка (сюда потом вставим вызов игры)
-    gameScreen.innerHTML = `<h2>Привет, ${name}!</h2><p>Здесь скоро будет игра...</p>`;
+    // Инициализация состояния
+    state.playerHp = 100;
+    state.heroIdx = 0; 
+    state.weapons = WARRIOR_WEAPONS;
+    state.gameMode = 'chase';
+    state.currentFloor = 1;
+    state.gameActive = true;
+
+    // Запуск первого этажа
+    initFloor();
+    draw(ctx, bgCanvas); // Первый кадр
+    requestAnimationFrame(gameLoop);
 }
 
-// 1. Проверка возврата с Google
-async function checkRedirectResult() {
-    errorMsg.innerText = "Проверка авторизации...";
-    const user = await handleRedirectResult();
-    
-    if (user) {
-        startGame(user.displayName || "Герой", user);
-    } else {
-        errorMsg.innerText = "";
-        setupEventListeners();
+// Обработчик кнопки "Играть без аккаунта"
+btnGuest.addEventListener('click', () => {
+    const name = guestNameInput.value.trim();
+    if (name === "") {
+        errorMsg.innerText = "Пожалуйста, введите имя!";
+        return;
     }
-}
+    errorMsg.innerText = "";
+    startGame(name);
+});
 
-// 2. Настройка кнопок
-function setupEventListeners() {
-    // Кнопка "Играть без аккаунта"
-    btnGuest.addEventListener('click', () => {
-        const name = guestNameInput.value.trim();
-        if (name === "") {
-            errorMsg.innerText = "Пожалуйста, введите имя!";
-            return;
-        }
-        errorMsg.innerText = "";
-        startGame(name);
-    });
-
-    // Кнопка "Войти через Google"
-    btnGoogle.addEventListener('click', async () => {
-        errorMsg.innerText = "Перенаправление на Google...";
-        btnGoogle.innerText = "Загрузка...";
-        btnGoogle.disabled = true;
-        
-        try {
-            await loginWithGoogle(); 
-        } catch (error) {
-            console.error("ОШИБКА ВХОДА:", error); // ТЕПЕРЬ ОШИБКА БУДЕТ В КОНСОЛИ
-            errorMsg.innerText = "Ошибка при перенаправлении. Попробуйте еще раз.";
-            btnGoogle.innerText = "Войти через Google";
-            btnGoogle.disabled = false;
-        }
-    });
-
-    // Слушатель для тех, у кого уже есть активная сессия
-    onUserChange((user) => {
-        if (user && !gameStarted) {
-            startGame(user.displayName || "Герой", user);
-        }
-    });
-}
-
-// Запускаем проверку при загрузке страницы
-checkRedirectResult();
+// Временно отключаем кнопку Google
+document.getElementById('btn-google').addEventListener('click', () => {
+    errorMsg.innerText = "Вход через Google временно отключен.";
+});
