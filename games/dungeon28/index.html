@@ -22,8 +22,6 @@
         #error-msg { color: #ef4444; font-size: 14px; text-align: center; height: 20px; }
 
         #game-screen { display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%; height: 100%; justify-content: center; }
-        #hud { display: flex; justify-content: space-between; width: 326px; color: #fff; font-weight: bold; font-size: 16px; padding: 5px 10px; box-sizing: border-box; background: rgba(0,0,0,0.3); border-radius: 8px; border: 2px solid #4b5563; }
-        #hud span { color: #fbbf24; }
     </style>
 </head>
 <body>
@@ -39,15 +37,10 @@
         <div id="error-msg"></div>
     </div>
 
-    <div id="game-screen">
-        <div id="hud">
-            <div>❤️ <span id="hud-hp">100</span></div>
-            <div>🪙 <span id="hud-gold">0</span></div>
-            <div>⚔️ <span id="hud-floor">1</span></div>
-        </div>
-        <!-- Сюда скрипт вставит canvas -->
-    </div>
+    <!-- Сюда скрипт сам вставит HUD и Canvas -->
+    <div id="game-screen"></div>
 
-    <script type="module" src="main.js"></script>
+    <!-- ?v=3 сбрасывает кэш браузера -->
+    <script type="module" src="main.js?v=3"></script>
 </body>
 </html>

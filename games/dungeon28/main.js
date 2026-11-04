@@ -4,17 +4,13 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
-import { playSound, getAudio } from '../../shared/audio.js'; // Импорт звука
+import { playSound, getAudio } from '../../shared/audio.js';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
 const guestNameInput = document.getElementById('guest-name');
 const errorMsg = document.getElementById('error-msg');
-
-const hudHp = document.getElementById('hud-hp');
-const hudGold = document.getElementById('hud-gold');
-const hudFloor = document.getElementById('hud-floor');
 
 const canvas = document.createElement('canvas');
 canvas.width = 320; 
@@ -24,14 +20,32 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// Обновление интерфейса (здоровье, золото, этаж)
-function updateHUD() {
-  hudHp.innerText = state.playerHp;
-  hudGold.innerText = state.goldCount;
-  hudFloor.innerText = state.currentFloor;
+// Переменные для HUD
+let hudHp, hudGold, hudFloor;
+
+// Создание HUD на лету
+function createHUD() {
+  const hud = document.createElement('div');
+  hud.style.cssText = "display: flex; justify-content: space-between; width: 326px; color: #fff; font-weight: bold; font-size: 16px; padding: 10px; box-sizing: border-box; background: rgba(0,0,0,0.3); border-radius: 8px; border: 2px solid #4b5563; margin-bottom: 5px;";
+  hud.innerHTML = `
+    <div>❤️ <span id="hud-hp" style="color:#fbbf24">100</span></div>
+    <div>🪙 <span id="hud-gold" style="color:#fbbf24">0</span></div>
+    <div>⚔️ <span id="hud-floor" style="color:#fbbf24">1</span></div>
+  `;
+  gameScreen.appendChild(hud);
+  hudHp = document.getElementById('hud-hp');
+  hudGold = document.getElementById('hud-gold');
+  hudFloor = document.getElementById('hud-floor');
 }
 
-// Главный игровой цикл
+// Обновление циферок в HUD
+function updateHUD() {
+  if (hudHp) hudHp.innerText = state.playerHp;
+  if (hudGold) hudGold.innerText = state.goldCount;
+  if (hudFloor) hudFloor.innerText = state.currentFloor;
+}
+
+// Игровой цикл
 function gameLoop() {
   if (state.gameActive) {
     const speed = 0.25;
@@ -44,16 +58,20 @@ function gameLoop() {
     }
     
     draw(ctx, bgCanvas);
-    updateHUD(); // Обновляем циферки на экране
+    updateHUD();
   }
   requestAnimationFrame(gameLoop);
 }
 
 function startGame(name) {
-    getAudio(); // Разблокируем аудио (браузеры требуют клика для звука)
+    getAudio(); // Включаем звук (разблокировка)
+    
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
-    gameScreen.appendChild(canvas); // Добавляем холст под HUD
+    gameScreen.innerHTML = ''; // Очищаем экран
+    
+    createHUD(); // Создаем панель здоровья
+    gameScreen.appendChild(canvas); // Добавляем холст
     
     localStorage.setItem('pz_heroName', name);
     
