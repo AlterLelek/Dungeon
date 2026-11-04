@@ -2,6 +2,7 @@
 import { CELL } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt } from './state.js';
 import { initFloor, findFreeCell } from './map.js';
+import { playSound } from '../../shared/audio.js';
 
 // Добавление всплывающей цифры (урон, лечение, бафф)
 export function addFloater(x, y, text, color) { 
