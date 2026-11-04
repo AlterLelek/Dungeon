@@ -60,7 +60,15 @@ export function placeMonster(type, hp, dmg, behavior) {
   if (!ok) return;
   state.monsters.push({ x: mx, y: my, hp: hp, maxHp: hp, atk: dmg, def: ENEMY_BASE[type].def || 0, isStunned: false, stunTimer: 0, type: type, behavior: behavior });
 }
-
+export function findFreeCell() {
+  let x, y, tries = 0;
+  do { 
+    x = Math.floor(Math.random()*GRID)*CELL; 
+    y = Math.floor(Math.random()*GRID)*CELL; 
+    tries++; 
+  } while ((state.monsters.some(m => m.x===x && m.y===y) || state.items.some(i => i.x===x && i.y===y) || (state.player.x===x && state.player.y===y) || (state.stairs.x===x && state.stairs.y===y)) && tries < 200);
+  return {x, y};
+}
 // Инициализация нового этажа
 export function initFloor() {
   buildCaveBackground(); 
