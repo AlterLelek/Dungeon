@@ -53,6 +53,9 @@
         .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #fff; font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 4px; }
         .stat-val { color: #fbbf24; font-weight: bold; }
+        
+        /* Стили для ползунков */
+        input[type=range] { flex: 1.5; accent-color: #fbbf24; }
     </style>
 </head>
 <body>
@@ -102,7 +105,6 @@
             <button id="settings-btn">⚙️ Настройки</button>
         </div>
 
-        <!-- Модалка Магазина -->
         <div id="shop-panel" class="panel">
             <h3>🛒 Лавка</h3>
             <div id="shop-gold" style="color:#fbbf24; text-align:center; margin-bottom:10px; font-weight:bold;"></div>
@@ -119,7 +121,6 @@
             <button class="close-panel" id="close-shop">Закрыть [Esc]</button>
         </div>
 
-        <!-- Модалка Рекордов -->
         <div id="records-panel" class="panel">
             <h3>🏆 Статистика</h3>
             <div class="stat-row"><span>Лучший результат:</span><span class="stat-val" id="rec-highscore">0</span></div>
@@ -128,15 +129,29 @@
             <button class="close-panel" id="close-records">Закрыть [Esc]</button>
         </div>
 
-        <!-- Модалка Настроек -->
+        <!-- ОБНОВЛЕННЫЕ НАСТРОЙКИ -->
         <div id="settings-panel" class="panel">
             <h3>⚙️ Настройки</h3>
-            <div class="panel-row"><span class="panel-label">🔊 Громкость (SFX+Гул)</span><input type="range" id="set-vol" min="0" max="100" value="80"></div>
-            <div class="panel-row"><span class="panel-label">🎵 Музыка</span><input type="checkbox" id="set-music" checked></div>
+            <div class="panel-row">
+                <span class="panel-label">🔊 Общая громкость</span>
+                <input type="range" id="set-vol-master" min="0" max="100" value="100">
+            </div>
+            <div class="panel-row">
+                <span class="panel-label">🎵 Музыка</span>
+                <input type="range" id="set-vol-music" min="0" max="100" value="50">
+            </div>
+            <div class="panel-row">
+                <span class="panel-label">🌫 Фоновый шум</span>
+                <input type="range" id="set-vol-ambient" min="0" max="100" value="30">
+            </div>
+            <div class="panel-row">
+                <span class="panel-label">🎯 Эффекты (Удары)</span>
+                <input type="range" id="set-vol-sfx" min="0" max="100" value="80">
+            </div>
             <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
         </div>
     </div>
 
-    <script type="module" src="main.js?v=7"></script>
+    <script type="module" src="main.js?v=8"></script>
 </body>
 </html>

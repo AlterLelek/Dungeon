@@ -5,8 +5,7 @@ import { draw } from './ui.js';
 import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
 import { 
-  playSound, getAudio, startMusic, stopMusic, 
-  startAmbient, stopAmbient, updateAudioSettings 
+  playSound, initAudio, startMusic, startAmbient, setVolume 
 } from '../../shared/audio.js';
 
 const loginScreen = document.getElementById('login-screen');
@@ -68,7 +67,6 @@ function updateHUD() {
 
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";
-  
   const nextW = state.weapons[state.weaponLevel + 1];
   const wLabel = document.getElementById('shop-wpn-label');
   const wCost = document.getElementById('shop-wpn-cost');
@@ -80,8 +78,7 @@ function updateShop() {
     wCost.innerText = price + " зл";
     wBtn.disabled = state.goldCount < price;
   } else {
-    wLabel.innerText = "⚔️ Оружие максимального уровня";
-    wCost.innerText = "—"; wBtn.disabled = true;
+    wLabel.innerText = "⚔️ Оружие максимального уровня"; wCost.innerText = "—"; wBtn.disabled = true;
   }
   
   const sp = state.permanentShield + 1;
@@ -123,13 +120,9 @@ function gameLoop() {
 }
 
 function startGame(name) {
-    // Принудительно запускаем аудио
-    getAudio(); 
+    initAudio(); 
     startAmbient(); 
     startMusic();   
-    
-    // Громкий тестовый звук, чтобы ты точно услышал
-    playSound('collect');
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
@@ -177,8 +170,8 @@ function startGame(name) {
     });
 }
 
+// Слушатели кнопок
 btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
-
 btnGuest.addEventListener('click', () => {
     const name = guestNameInput.value.trim();
     if (name === "") { errorMsg.innerText = "Введите имя!"; return; }
@@ -186,7 +179,6 @@ btnGuest.addEventListener('click', () => {
     playSound('menu');
     startGame(name);
 });
-
 document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
 
 document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
@@ -206,8 +198,10 @@ document.getElementById('close-records').addEventListener('click', () => documen
 document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
 
-// Привязка ползунков к аудио
-document.getElementById('set-vol').addEventListener('input', (e) => updateAudioSettings('sfx', e.target.value));
-document.getElementById('set-music').addEventListener('change', (e) => updateAudioSettings('music', e.target.checked));
+// Слушатели громкости (привязка к audio.js)
+document.getElementById('set-vol-master').addEventListener('input', (e) => setVolume('master', e.target.value));
+document.getElementById('set-vol-music').addEventListener('input', (e) => setVolume('music', e.target.value));
+document.getElementById('set-vol-ambient').addEventListener('input', (e) => setVolume('ambient', e.target.value));
+document.getElementById('set-vol-sfx').addEventListener('input', (e) => setVolume('sfx', e.target.value));
 
 generateRandomName();
