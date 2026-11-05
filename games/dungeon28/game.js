@@ -8,7 +8,6 @@ export function addFloater(x, y, text, color) {
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
 }
 
-// Игрок бьет монстра
 export function fight(m, index) {
   playSound('hit'); 
   let pDmg = getTotalAtk() - m.def; 
@@ -24,7 +23,6 @@ export function fight(m, index) {
     return true; 
   }
   
-  // Монстр бьет в ответ
   if (!m.isStunned) {
     const mDmg = Math.max(0, m.atk - getTotalDef());
     if (mDmg > 0) {
@@ -58,9 +56,9 @@ function moveMonsters() {
       return;
     }
 
-    // 1. КУБИК НА ТЕЛЕПОРТАЦИЮ
-    if (Math.random() < 0.25) {
-        const dist = randomInt(1, 3); 
+    // 1. КУБИК НА ТЕЛЕПОРТАЦИЮ (Шанс 50%, чтобы они разбегались)
+    if (Math.random() < 0.5) {
+        const dist = randomInt(1, 4); 
         const dirs = [[1,0], [-1,0], [0,1], [0,-1]]; 
         const dir = dirs[Math.floor(Math.random() * 4)]; 
         let nx = m.x + dir[0] * dist * CELL;
@@ -78,7 +76,7 @@ function moveMonsters() {
         }
     }
 
-    // 2. КУБИК НА ШАГИ
+    // 2. КУБИК НА ШАГИ К ГЕРОЮ (1-3 шага)
     let steps = randomInt(1, 3);
     
     for (let s = 0; s < steps; s++) {
@@ -128,14 +126,13 @@ export function movePlayer(dx, dy) {
     const killed = fight(m, victimIdx);
     if (state.playerHp <= 0) { endGame(); return; }
     
-    // ПРОХОД СКВОЗЬ МОНСТРА: Если убили - просто идем. Если нет - меняемся местами.
+    // МЕНЯЕМСЯ МЕСТАМИ (Прорыв сквозь строй)
     if (!killed) {
         m.x = state.player.x;
         m.y = state.player.y;
     }
   }
   
-  // Двигаем игрока на новую клетку
   state.player.x = nx; 
   state.player.y = ny;
   playSound('step'); 
