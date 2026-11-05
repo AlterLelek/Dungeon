@@ -9,15 +9,14 @@ let melodyTimer = null;
 let currentMelodyIdx = 0;
 
 // Дефолтные громкости (0.0 - 1.0)
-const volumes = { master: 1.0, music: 0.5, ambient: 0.3, sfx: 0.8 };
+// ambient уменьшен с 0.3 до 0.075 (в 4 раза)
+const volumes = { master: 1.0, music: 0.5, ambient: 0.075, sfx: 0.8 };
 
-// ВОТ ОНА - ФУНКЦИЯ, КОТОРУЮ ОН ИЩЕТ
 export function initAudio() {
   if (isInit) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
 
-  // Создаем шины (каналы) для громкости
   masterGain = audioCtx.createGain();
   masterGain.connect(audioCtx.destination);
 
@@ -51,7 +50,6 @@ export function setVolume(type, val) {
   applyVolumes();
 }
 
-// --- ФОНОВЫЙ ГУЛ ---
 export function startAmbient() {
   try {
     initAudio();
@@ -76,7 +74,7 @@ export function startAmbient() {
     const lfo = audioCtx.createOscillator();
     lfo.frequency.value = 0.1;
     const lfoDepth = audioCtx.createGain();
-    lfoDepth.gain.value = 0.2;
+    lfoDepth.gain.value = 0.05; // Тоже уменьшили амплитуду волн
     
     lfo.connect(lfoDepth); lfoDepth.connect(ambientGain.gain); lfo.start();
     src.connect(filter); filter.connect(ambientGain);
@@ -95,7 +93,7 @@ function drip() {
         o.type = 'sine';
         o.frequency.setValueAtTime(800 + Math.random()*300, audioCtx.currentTime);
         o.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.12);
-        g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.02, audioCtx.currentTime); // Капли стали тише
         g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
         o.connect(g); g.connect(ambientGain);
         o.start(); o.stop(audioCtx.currentTime + 0.16);
@@ -105,7 +103,6 @@ function drip() {
   }, 9000 + Math.random() * 21000);
 }
 
-// --- МУЗЫКА ---
 const MELODIES = {
   cave: { 
     melody: [220,0,261.6,329.6,440,0,329.6,261.6,349.2,0,440,493.9,523.3,0,440,392,329.6,0,261.6,220,0,0,196,0,220,0,261.6,329.6,440,0,0,0],
@@ -143,7 +140,6 @@ function playTone(freq, wave, vol, dur) {
   } catch (e) {}
 }
 
-// --- ЗВУКИ ---
 export function playSound(type) {
   if (!isInit || volumes.sfx === 0) return;
   try {
