@@ -11,12 +11,13 @@ let currentMelodyIdx = 0;
 // Дефолтные громкости (0.0 - 1.0)
 const volumes = { master: 1.0, music: 0.5, ambient: 0.3, sfx: 0.8 };
 
+// ВОТ ОНА - ФУНКЦИЯ, КОТОРУЮ ОН ИЩЕТ
 export function initAudio() {
   if (isInit) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
 
-  // Создаем шины
+  // Создаем шины (каналы) для громкости
   masterGain = audioCtx.createGain();
   masterGain.connect(audioCtx.destination);
 

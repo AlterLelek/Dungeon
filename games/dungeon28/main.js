@@ -4,9 +4,10 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
+// ДОБАВЛЕН ?v=9 ЧТОБЫ СБРОСИТЬ КЭШ АУДИО
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js';
+} from '../../shared/audio.js?v=9';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -170,7 +171,6 @@ function startGame(name) {
     });
 }
 
-// Слушатели кнопок
 btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
 btnGuest.addEventListener('click', () => {
     const name = guestNameInput.value.trim();
@@ -198,7 +198,6 @@ document.getElementById('close-records').addEventListener('click', () => documen
 document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
 
-// Слушатели громкости (привязка к audio.js)
 document.getElementById('set-vol-master').addEventListener('input', (e) => setVolume('master', e.target.value));
 document.getElementById('set-vol-music').addEventListener('input', (e) => setVolume('music', e.target.value));
 document.getElementById('set-vol-ambient').addEventListener('input', (e) => setVolume('ambient', e.target.value));
