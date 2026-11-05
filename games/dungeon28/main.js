@@ -4,7 +4,10 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, fight } from './game.js';
 import { HEROES, WARRIOR_WEAPONS } from './config.js';
-import { playSound, getAudio, startMusic, stopMusic, setVolume, toggleMusic } from '../../shared/audio.js';
+import { 
+  playSound, getAudio, startMusic, stopMusic, 
+  startAmbient, stopAmbient, updateAudioSettings 
+} from '../../shared/audio.js';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -19,7 +22,6 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// --- ГЕНЕРАТОР ИМЕН ---
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
 
@@ -29,7 +31,6 @@ function generateRandomName() {
     guestNameInput.value = `${adj} ${noun}`;
 }
 
-// --- HUD ЭЛЕМЕНТЫ ---
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -65,28 +66,24 @@ function updateHUD() {
   hudEList.innerHTML = eHtml;
 }
 
-// --- ЛОГИКА МАГАЗИНА ---
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";
   
-  // Оружие
   const nextW = state.weapons[state.weaponLevel + 1];
   const wLabel = document.getElementById('shop-wpn-label');
   const wCost = document.getElementById('shop-wpn-cost');
   const wBtn = document.getElementById('shop-wpn-btn');
   
   if (nextW) {
-    const price = state.weaponLevel + 1; // Цена = текущий уровень + 1
+    const price = state.weaponLevel + 1; 
     wLabel.innerHTML = `⚔️ <span class="${nextW.css}">${nextW.name}</span> (урон ${nextW.dmg})`;
     wCost.innerText = price + " зл";
     wBtn.disabled = state.goldCount < price;
   } else {
     wLabel.innerText = "⚔️ Оружие максимального уровня";
-    wCost.innerText = "—"; 
-    wBtn.disabled = true;
+    wCost.innerText = "—"; wBtn.disabled = true;
   }
   
-  // Броня
   const sp = state.permanentShield + 1;
   document.getElementById('shop-shd-cost').innerText = sp + " зл";
   document.getElementById('shop-shd-btn').disabled = state.goldCount < sp;
@@ -97,23 +94,17 @@ function buyOption(kind) {
     const nextW = state.weapons[state.weaponLevel + 1];
     const price = state.weaponLevel + 1;
     if (nextW && state.goldCount >= price) { 
-      state.goldCount -= price; 
-      state.weaponLevel++; 
-      playSound('collect'); 
+      state.goldCount -= price; state.weaponLevel++; playSound('collect'); 
     }
   } else if (kind === 'shield') {
     const sp = state.permanentShield + 1;
     if (state.goldCount >= sp) { 
-      state.goldCount -= sp; 
-      state.permanentShield++; 
-      playSound('collect'); 
+      state.goldCount -= sp; state.permanentShield++; playSound('collect'); 
     }
   }
-  updateShop(); 
-  updateHUD();
+  updateShop(); updateHUD();
 }
 
-// --- ИГРОВОЙ ЦИКЛ ---
 function gameLoop() {
   if (state.gameActive) {
     const speed = 0.25;
@@ -132,7 +123,10 @@ function gameLoop() {
 }
 
 function startGame(name) {
-    getAudio(); startMusic();
+    getAudio(); 
+    startAmbient(); // Включаем гул пещеры и капли
+    startMusic();   // Включаем мелодию
+    
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     
@@ -179,7 +173,6 @@ function startGame(name) {
     });
 }
 
-// --- ОБРАБОТЧИКИ КНОПОК ---
 btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
 
 btnGuest.addEventListener('click', () => {
@@ -192,13 +185,11 @@ btnGuest.addEventListener('click', () => {
 
 document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
 
-// Магазин
 document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
 document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');
 document.getElementById('shop-wpn-btn').addEventListener('click', () => buyOption('weapon'));
 document.getElementById('shop-shd-btn').addEventListener('click', () => buyOption('shield'));
 
-// Рекорды
 document.getElementById('records-btn').addEventListener('click', () => { 
   playSound('menu'); 
   document.getElementById('records-panel').style.display = 'block'; 
@@ -208,11 +199,11 @@ document.getElementById('records-btn').addEventListener('click', () => {
 });
 document.getElementById('close-records').addEventListener('click', () => document.getElementById('records-panel').style.display = 'none');
 
-// Настройки
 document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
-document.getElementById('set-vol').addEventListener('input', (e) => setVolume(e.target.value));
-document.getElementById('set-music').addEventListener('change', (e) => toggleMusic(e.target.checked));
 
-// Генерируем имя при загрузке
+// Привязка ползунков к аудио
+document.getElementById('set-vol').addEventListener('input', (e) => updateAudioSettings('sfx', e.target.value));
+document.getElementById('set-music').addEventListener('change', (e) => updateAudioSettings('music', e.target.checked));
+
 generateRandomName();

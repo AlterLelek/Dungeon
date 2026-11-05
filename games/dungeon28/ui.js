@@ -57,7 +57,6 @@ function drawItem(ctx, x, y, type) {
 }
 
 export function draw(ctx, bgCanvas) {
-  // СБРОС ПРОЗРАЧНОСТИ И ОЧИСТКА ЭКРАНА
   ctx.globalAlpha = 1.0; 
   ctx.clearRect(0, 0, 320, 320);
 
@@ -90,7 +89,7 @@ export function draw(ctx, bgCanvas) {
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, HEROES[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
   state.floaters.forEach(f => {
-    ctx.globalAlpha = f.life / f.maxLife; // Прозрачность только для текста
+    ctx.globalAlpha = f.life / f.maxLife; 
     ctx.fillStyle = f.color; 
     ctx.font = "bold 16px sans-serif";
     ctx.textAlign = "center"; 
@@ -100,5 +99,5 @@ export function draw(ctx, bgCanvas) {
     ctx.strokeText(f.text, f.x, f.y); 
     ctx.fillText(f.text, f.x, f.y);
   });
-  ctx.globalAlpha = 1.0; // Сброс после текста
+  ctx.globalAlpha = 1.0; 
 }
