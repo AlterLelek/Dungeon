@@ -8,6 +8,7 @@ export function addFloater(x, y, text, color) {
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
 }
 
+// Атака ИГРОКА по монстру
 export function fight(m, index) {
   playSound('hit'); 
   let pDmg = getTotalAtk() - m.def; 
@@ -20,9 +21,10 @@ export function fight(m, index) {
     state.monsters.splice(index, 1); 
     state.goldCount += 2; 
     state.energy += 1;
-    return true; 
+    return true; // Монстр убит, можно проходить
   }
   
+  // Ответный удар монстра
   if (!m.isStunned) {
     const mDmg = Math.max(0, m.atk - getTotalDef());
     if (mDmg > 0) {
@@ -32,7 +34,21 @@ export function fight(m, index) {
       addFloater(state.player.px, state.player.py, "0", "#9ca3af");
     }
   }
-  return false;
+  return false; // Монстр выжил, игрок остается на месте
+}
+
+// Атака МОНСТРА по игроку (во время хода монстров)
+function monsterAttack(m) {
+  if (!m.isStunned) {
+    playSound('hit');
+    const mDmg = Math.max(0, m.atk - getTotalDef());
+    if (mDmg > 0) {
+      state.playerHp -= mDmg; 
+      addFloater(state.player.px, state.player.py, "-" + mDmg, "#ef4444");
+    } else {
+      addFloater(state.player.px, state.player.py, "0", "#9ca3af");
+    }
+  }
 }
 
 function moveMonsters() {
@@ -45,20 +61,19 @@ function moveMonsters() {
 
     // 1. КУБИК НА ТЕЛЕПОРТАЦИЮ (25% шанс)
     if (Math.random() < 0.25) {
-        const dist = randomInt(1, 3); // Кубик на дистанцию
-        const dirs = [[1,0], [-1,0], [0,1], [0,-1]]; // 4 направления
-        const dir = dirs[Math.floor(Math.random() * 4)]; // Кубик на направление
+        const dist = randomInt(1, 3); 
+        const dirs = [[1,0], [-1,0], [0,1], [0,-1]]; 
+        const dir = dirs[Math.floor(Math.random() * 4)]; 
         let nx = m.x + dir[0] * dist * CELL;
         let ny = m.y + dir[1] * dist * CELL;
 
-        // Проверка, чтобы не вылететь за карту
         if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320) {
             let blocked = state.monsters.some(o => o !== m && o.x === nx && o.y === ny);
             let playerBlocked = (nx === state.player.x && ny === state.player.y); 
             if (!blocked && !playerBlocked) {
                 m.x = nx;
                 m.y = ny;
-                addFloater(m.x, m.y, "Teleport", "#a78bfa"); // Визуальный эффект
+                addFloater(m.x, m.y, "Teleport", "#a78bfa"); 
                 return; // Телепортировался и закончил ход
             }
         }
@@ -71,9 +86,9 @@ function moveMonsters() {
         const dx = state.player.x - m.x;
         const dy = state.player.y - m.y;
 
-        // Если монстр стоит рядом с игроком — он атакует и останавливается
+        // Если монстр стоит на одной клетке с игроком или рядом — он атакует
         if (Math.abs(dx) <= CELL && Math.abs(dy) <= CELL && (dx === 0 || dy === 0)) {
-            fight(m, idx); 
+            monsterAttack(m); 
             break; 
         }
 
@@ -91,7 +106,6 @@ function moveMonsters() {
             let blocked = state.monsters.some(o => o !== m && o.x === nx && o.y === ny);
             let playerBlocked = (nx === state.player.x && ny === state.player.y);
             
-            // Если путь свободен — двигаемся
             if (!blocked && !playerBlocked) {
                 m.x = nx;
                 m.y = ny;
@@ -117,7 +131,7 @@ export function movePlayer(dx, dy) {
     const killed = fight(state.monsters[victimIdx], victimIdx);
     if (state.playerHp <= 0) { endGame(); return; }
     
-    // Если убили монстра — проходим на его место (решает проблему застревания)
+    // Если убили — идем на его место. Если нет — стоим и бьем.
     if (killed) canMove = true; 
   } else {
     canMove = true; 
@@ -154,7 +168,7 @@ export function movePlayer(dx, dy) {
     }
   }
   
-  // Монстры ходят после игрока (даже если игрок остался на месте из-за боя)
+  // Монстры ходят после игрока
   moveMonsters();
   
   if (state.playerHp <= 0) endGame();
