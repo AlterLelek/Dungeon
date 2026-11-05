@@ -6,12 +6,12 @@ import { movePlayer, fight } from './game.js';
 import { HEROES, WARRIOR_WEAPONS } from './config.js';
 import { playSound, getAudio, startMusic, stopMusic, setVolume, toggleMusic } from '../../shared/audio.js';
 
-// DOM Элементы
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
 const guestNameInput = document.getElementById('guest-name');
 const errorMsg = document.getElementById('error-msg');
+const btnRandomName = document.getElementById('btn-random-name');
 
 const canvas = document.createElement('canvas');
 canvas.width = 320; canvas.height = 320;
@@ -19,7 +19,27 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// HUD Элементы
+// --- ГЕНЕРАТОР ИМЕН ---
+const ADJECTIVES = [
+    "Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", 
+    "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", 
+    "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", 
+    "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"
+];
+const NOUNS = [
+    "Огурец", "Помидор", "Кот", "Пес", "Гном", 
+    "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", 
+    "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", 
+    "Носок", "Чайник", "Бублик", "Сыр", "Гриб"
+];
+
+function generateRandomName() {
+    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    guestNameInput.value = `${adj} ${noun}`;
+}
+
+// --- HUD и ИГРА ---
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -30,6 +50,7 @@ const hudEnergy = document.getElementById('energy');
 const hudECount = document.getElementById('e-count');
 const hudEList = document.getElementById('e-list');
 const hudWeapon = document.getElementById('hero-weapon');
+const hudName = document.getElementById('hero-name-label');
 
 function updateHUD() {
   hudHp.innerText = state.playerHp;
@@ -39,6 +60,7 @@ function updateHUD() {
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
   hudEnergy.innerText = state.energy;
+  hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
   
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
@@ -117,6 +139,11 @@ function startGame(name) {
 }
 
 // Обработчики кнопок
+btnRandomName.addEventListener('click', () => {
+    playSound('menu');
+    generateRandomName();
+});
+
 btnGuest.addEventListener('click', () => {
     const name = guestNameInput.value.trim();
     if (name === "") { errorMsg.innerText = "Введите имя!"; return; }
@@ -137,3 +164,6 @@ document.getElementById('close-settings').addEventListener('click', () => docume
 // Настройки
 document.getElementById('set-vol').addEventListener('input', (e) => setVolume(e.target.value));
 document.getElementById('set-music').addEventListener('change', (e) => toggleMusic(e.target.checked));
+
+// Генерируем имя при загрузке страницы
+generateRandomName();
