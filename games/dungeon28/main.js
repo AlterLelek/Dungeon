@@ -2,8 +2,8 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer, fight } from './game.js';
-import { HEROES, WARRIOR_WEAPONS } from './config.js';
+import { movePlayer } from './game.js';
+import { WARRIOR_WEAPONS } from './config.js';
 import { 
   playSound, getAudio, startMusic, stopMusic, 
   startAmbient, stopAmbient, updateAudioSettings 
@@ -123,9 +123,13 @@ function gameLoop() {
 }
 
 function startGame(name) {
+    // Принудительно запускаем аудио
     getAudio(); 
-    startAmbient(); // Включаем гул пещеры и капли
-    startMusic();   // Включаем мелодию
+    startAmbient(); 
+    startMusic();   
+    
+    // Громкий тестовый звук, чтобы ты точно услышал
+    playSound('collect');
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';

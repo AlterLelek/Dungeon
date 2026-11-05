@@ -8,7 +8,6 @@
     <style>
         body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; color: #fff; overflow: hidden; }
         
-        /* Экран входа */
         #login-screen { display: flex; flex-direction: column; align-items: center; gap: 20px; background: #2b2b3b; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #4f46e5; width: 300px; z-index: 100; }
         h1 { margin: 0; font-size: 32px; text-transform: uppercase; letter-spacing: 4px; color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); text-align: center; }
         .input-group { display: flex; flex-direction: row; width: 100%; gap: 10px; }
@@ -24,10 +23,8 @@
         .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid #4b5563; margin: 0 10px; }
         #error-msg { color: #ef4444; font-size: 14px; text-align: center; height: 20px; }
 
-        /* Игровой экран */
         #game-screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; height: 100%; }
 
-        /* ОГРОМНЫЙ HUD */
         #hud { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; color: #fff; font-size: 12px; margin-bottom: 5px; font-weight: bold; width: 326px; box-sizing: border-box; border: 2px solid #4b5563; display: flex; justify-content: space-between; align-items: stretch; gap: 6px; height: 116px; }
         .hud-hero { display: flex; gap: 6px; width: 118px; box-sizing: border-box; align-items: stretch; }
         .hero-fig { font-size: 30px; display: flex; align-items: center; }
@@ -39,7 +36,6 @@
         .hud-enemies .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; }
         #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 10px; height: 84px; overflow: hidden; text-align: right; }
 
-        /* Кнопки под HUD */
         #btn-row { display: flex; gap: 4px; width: 326px; box-sizing: border-box; margin-bottom: 5px; }
         #shop-btn { background-color: #10b981; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
         #records-btn { background-color: #f59e0b; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
@@ -47,7 +43,6 @@
 
         canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; box-sizing: content-box; display: block; }
 
-        /* Модальные окна */
         .panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #151520; padding: 18px; border: 2px solid #fbbf24; border-radius: 12px; width: 300px; max-height: 86vh; overflow-y: auto; box-sizing: border-box; z-index: 2000; box-shadow: 0 0 25px rgba(0,0,0,0.8); }
         .panel h3 { margin: 0 0 12px 0; color: #fbbf24; text-align: center; }
         .panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 6px; font-size: 13px; color: #fff; }
@@ -107,8 +102,6 @@
             <button id="settings-btn">⚙️ Настройки</button>
         </div>
 
-        <!-- Сюда вставится canvas -->
-        
         <!-- Модалка Магазина -->
         <div id="shop-panel" class="panel">
             <h3>🛒 Лавка</h3>
@@ -129,7 +122,7 @@
         <!-- Модалка Рекордов -->
         <div id="records-panel" class="panel">
             <h3>🏆 Статистика</h3>
-            <div class="stat-row"><span>Лучший результат (ходов):</span><span class="stat-val" id="rec-highscore">0</span></div>
+            <div class="stat-row"><span>Лучший результат:</span><span class="stat-val" id="rec-highscore">0</span></div>
             <div class="stat-row"><span>Убито монстров:</span><span class="stat-val" id="rec-kills">0</span></div>
             <div class="stat-row"><span>Собрано золота:</span><span class="stat-val" id="rec-gold">0</span></div>
             <button class="close-panel" id="close-records">Закрыть [Esc]</button>
@@ -138,12 +131,12 @@
         <!-- Модалка Настроек -->
         <div id="settings-panel" class="panel">
             <h3>⚙️ Настройки</h3>
-            <div class="panel-row"><span class="panel-label">🔊 Громкость</span><input type="range" id="set-vol" min="0" max="100" value="100"></div>
+            <div class="panel-row"><span class="panel-label">🔊 Громкость (SFX+Гул)</span><input type="range" id="set-vol" min="0" max="100" value="80"></div>
             <div class="panel-row"><span class="panel-label">🎵 Музыка</span><input type="checkbox" id="set-music" checked></div>
             <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
         </div>
     </div>
 
-    <script type="module" src="main.js?v=6"></script>
+    <script type="module" src="main.js?v=7"></script>
 </body>
 </html>
