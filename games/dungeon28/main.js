@@ -39,7 +39,6 @@ function generateRandomName() {
     guestNameInput.value = `${adj} ${noun}`;
 }
 
-// --- HUD и ИГРА ---
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -138,7 +137,6 @@ function startGame(name) {
     });
 }
 
-// Обработчики кнопок
 btnRandomName.addEventListener('click', () => {
     playSound('menu');
     generateRandomName();
@@ -161,9 +159,7 @@ document.getElementById('close-shop').addEventListener('click', () => document.g
 document.getElementById('close-records').addEventListener('click', () => document.getElementById('records-panel').style.display = 'none');
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
 
-// Настройки
 document.getElementById('set-vol').addEventListener('input', (e) => setVolume(e.target.value));
 document.getElementById('set-music').addEventListener('change', (e) => toggleMusic(e.target.checked));
 
-// Генерируем имя при загрузке страницы
 generateRandomName();

@@ -2,57 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <link rel="icon" href="data:,"> <!-- Убирает ошибку 404 с иконкой -->
-    <title>Подземелье 28</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровой хаб</title>
     <style>
-        /* Базовые стили для экрана входа */
-        body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; color: #fff; overflow: hidden; }
-        #login-screen { display: flex; flex-direction: column; align-items: center; gap: 20px; background: #2b2b3b; padding: 40px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #4f46e5; width: 300px; }
-        h1 { margin: 0; font-size: 32px; text-transform: uppercase; letter-spacing: 4px; color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); }
-        .input-group { display: flex; flex-direction: column; width: 100%; gap: 10px; }
-        input[type="text"] { padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #4b5563; background: #374151; color: #fff; outline: none; text-align: center; }
-        input[type="text"]:focus { border-color: #fbbf24; }
-        button { padding: 12px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; width: 100%; font-family: inherit; }
-        .btn-google { background: #4285f4; color: white; }
-        .btn-google:hover { background: #3367d6; }
-        .btn-guest { background: #10b981; color: white; }
-        .btn-guest:hover { background: #059669; }
-        .divider { display: flex; align-items: center; width: 100%; color: #6b7280; font-size: 14px; }
-        .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid #4b5563; margin: 0 10px; }
-        #error-msg { color: #ef4444; font-size: 14px; text-align: center; height: 20px; }
-        
-        /* Игровой экран (скрыт по умолчанию) */
-        #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
+        body { background-color: #1e1e24; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        h1 { color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); letter-spacing: 2px; font-size: 32px; margin-bottom: 30px; }
+        .game-card { 
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px 40px; 
+            margin: 10px; 
+            background: linear-gradient(135deg, #2b2b3b, #1a1a24); 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 15px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            transition: 0.3s;
+            border: 2px solid #4f46e5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .game-card:hover { transform: translateY(-5px) scale(1.05); border-color: #fbbf24; box-shadow: 0 15px 30px rgba(251,191,36,0.3); }
+        .game-card span { font-size: 40px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-
-    <!-- Экран входа -->
-    <div id="login-screen">
-        <h1>Подземелье 28</h1>
-        
-        <div class="input-group">
-            <input type="text" id="guest-name" placeholder="Введите имя героя" maxlength="16">
-            <button class="btn-guest" id="btn-guest">Играть без аккаунта</button>
-        </div>
-
-        <div class="divider">ИЛИ</div>
-
-        <button class="btn-google" id="btn-google">
-            Войти через Google
-        </button>
-        
-        <div id="error-msg"></div>
-    </div>
-
-    <!-- Контейнер для самой игры -->
-    <div id="game-screen">
-        <!-- Сюда мы потом загрузим нашу игру -->
-        <h2>Загрузка игры...</h2>
-    </div>
-
-    <!-- Подключаем наш модуль авторизации -->
-    <script type="module" src="main.js"></script>
+    <h1>🎮 Игровой хаб</h1>
+    <a href="games/dungeon28/index.html" class="game-card">
+        <span>🏰</span>
+        Подземелье 28
+    </a>
 </body>
 </html>
