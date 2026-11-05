@@ -4,10 +4,9 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
-// ДОБАВЛЕН ?v=9 ЧТОБЫ СБРОСИТЬ КЭШ АУДИО
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=9';
+} from '../../shared/audio.js?v=10'; // Обновлен кэш
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -141,6 +140,7 @@ function startGame(name) {
     state.gameActive = true;
     state.goldCount = 0;
     state.totalTurns = 0;
+    state.stats = { kills: 0, gold: 0, floors: 0 };
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -198,9 +198,15 @@ document.getElementById('close-records').addEventListener('click', () => documen
 document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
 
+// ПРИВЯЗКА ВСЕХ НАСТРОЕК
 document.getElementById('set-vol-master').addEventListener('input', (e) => setVolume('master', e.target.value));
 document.getElementById('set-vol-music').addEventListener('input', (e) => setVolume('music', e.target.value));
 document.getElementById('set-vol-ambient').addEventListener('input', (e) => setVolume('ambient', e.target.value));
 document.getElementById('set-vol-sfx').addEventListener('input', (e) => setVolume('sfx', e.target.value));
+
+document.getElementById('set-difficulty').addEventListener('change', (e) => { state.settings.difficulty = e.target.value; });
+document.getElementById('set-monster-add').addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); });
+document.getElementById('set-item-rate').addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); });
+document.getElementById('set-taste').addEventListener('change', (e) => { state.settings.taste = e.target.value; });
 
 generateRandomName();

@@ -8,9 +8,8 @@ let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
 
-// Дефолтные громкости (0.0 - 1.0)
-// ambient уменьшен с 0.3 до 0.075 (в 4 раза)
-const volumes = { master: 1.0, music: 0.5, ambient: 0.075, sfx: 0.8 };
+// ОЧЕНЬ ТИХИЕ ДЕФОЛТЫ (чтобы не оглушало)
+const volumes = { master: 0.2, music: 0.1, ambient: 0.01, sfx: 0.2 };
 
 export function initAudio() {
   if (isInit) return;
@@ -74,7 +73,7 @@ export function startAmbient() {
     const lfo = audioCtx.createOscillator();
     lfo.frequency.value = 0.1;
     const lfoDepth = audioCtx.createGain();
-    lfoDepth.gain.value = 0.05; // Тоже уменьшили амплитуду волн
+    lfoDepth.gain.value = 0.05; 
     
     lfo.connect(lfoDepth); lfoDepth.connect(ambientGain.gain); lfo.start();
     src.connect(filter); filter.connect(ambientGain);
@@ -93,7 +92,7 @@ function drip() {
         o.type = 'sine';
         o.frequency.setValueAtTime(800 + Math.random()*300, audioCtx.currentTime);
         o.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.12);
-        g.gain.setValueAtTime(0.02, audioCtx.currentTime); // Капли стали тише
+        g.gain.setValueAtTime(0.01, audioCtx.currentTime); 
         g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
         o.connect(g); g.connect(ambientGain);
         o.start(); o.stop(audioCtx.currentTime + 0.16);
@@ -119,9 +118,9 @@ export function startMusic() {
   melodyTimer = setInterval(() => {
     if (volumes.music === 0) return;
     const mel = MELODIES.cave;
-    playTone(mel.melody[currentMelodyIdx], 'triangle', 0.08, 0.5);
-    playTone(mel.bass[currentMelodyIdx], 'sine', 0.06, 0.5);
-    playTone(mel.harmony[currentMelodyIdx], 'sine', 0.04, 0.5);
+    playTone(mel.melody[currentMelodyIdx], 'triangle', 0.05, 0.5);
+    playTone(mel.bass[currentMelodyIdx], 'sine', 0.04, 0.5);
+    playTone(mel.harmony[currentMelodyIdx], 'sine', 0.03, 0.5);
     currentMelodyIdx = (currentMelodyIdx + 1) % mel.melody.length;
   }, 600);
 }
@@ -154,24 +153,24 @@ export function playSound(type) {
     if (type === 'hit') {
       const noise = createNoise(0.05); const noiseGain = audioCtx.createGain();
       noise.connect(noiseGain); noiseGain.connect(sfxGain);
-      noiseGain.gain.setValueAtTime(0.3, now); noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      noiseGain.gain.setValueAtTime(0.2, now); noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
       const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
       osc.type = 'sine'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
       osc.connect(oscGain); oscGain.connect(sfxGain);
-      oscGain.gain.setValueAtTime(0.4, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      oscGain.gain.setValueAtTime(0.2, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
       noise.start(now); osc.start(now); noise.stop(now + 0.05); osc.stop(now + 0.1);
     } else if (type === 'step') {
       const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
       osc.type = 'sine'; osc.frequency.setValueAtTime(60, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.03);
       osc.connect(oscGain); oscGain.connect(sfxGain);
-      oscGain.gain.setValueAtTime(0.15, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+      oscGain.gain.setValueAtTime(0.1, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
       osc.start(now); osc.stop(now + 0.04);
     } else if (type === 'collect') {
       [880, 1320].forEach((freq, i) => {
         const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
         osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i*0.06);
         osc.connect(oscGain); oscGain.connect(sfxGain);
-        oscGain.gain.setValueAtTime(0.15, now + i*0.06); oscGain.gain.exponentialRampToValueAtTime(0.01, now + i*0.06 + 0.1);
+        oscGain.gain.setValueAtTime(0.1, now + i*0.06); oscGain.gain.exponentialRampToValueAtTime(0.01, now + i*0.06 + 0.1);
         osc.start(now + i*0.06); osc.stop(now + i*0.06 + 0.1);
       });
     }

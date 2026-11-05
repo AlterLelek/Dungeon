@@ -2,7 +2,7 @@
 import { CELL } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt } from './state.js';
 import { initFloor, findFreeCell } from './map.js';
-import { playSound } from '../../shared/audio.js?v=9'; 
+import { playSound } from '../../shared/audio.js?v=10'; 
 
 export function addFloater(x, y, text, color) { 
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
@@ -20,6 +20,7 @@ export function fight(m, index) {
     state.monsters.splice(index, 1); 
     state.goldCount += 2; 
     state.energy += 1;
+    state.stats.kills++;
     return true; 
   }
   
@@ -50,14 +51,61 @@ function monsterAttack(m) {
 
 function moveMonsters() {
   state.monsters.forEach((m, idx) => {
+    // Если монстр в стане
     if (m.isStunned) {
       m.stunTimer--;
       if (m.stunTimer <= 0) m.isStunned = false;
       return;
     }
 
-    // 1. КУБИК НА ТЕЛЕПОРТАЦИЮ (Шанс 50%, чтобы они разбегались)
-    if (Math.random() < 0.5) {
+    // Если монстр отдыхает
+    if (m.actionState === 2) {
+        if (m.restTimer > 0) {
+            m.restTimer--;
+            addFloater(m.x, m.y, "zzZ", "#9ca3af"); // Визуальный эффект сна
+            return;
+        } else {
+            m.actionState = 0; // Проснулся и готов идти
+        }
+    }
+
+    // ДЕЙСТВИЕ 1: Идет к игроку (1-3 шага)
+    if (m.actionState === 0) {
+        let steps = randomInt(1, 3);
+        for (let s = 0; s < steps; s++) {
+            const dx = state.player.x - m.x;
+            const dy = state.player.y - m.y;
+
+            if (Math.abs(dx) <= CELL && Math.abs(dy) <= CELL && (dx === 0 || dy === 0)) {
+                monsterAttack(m); 
+                break; 
+            }
+
+            let nx = m.x;
+            let ny = m.y;
+
+            if (Math.abs(dx) >= Math.abs(dy)) {
+                nx += Math.sign(dx) * CELL;
+            } else {
+                ny += Math.sign(dy) * CELL;
+            }
+
+            if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320) {
+                let blocked = state.monsters.some(o => o !== m && o.x === nx && o.y === ny);
+                let playerBlocked = (nx === state.player.x && ny === state.player.y);
+                
+                if (!blocked && !playerBlocked) {
+                    m.x = nx;
+                    m.y = ny;
+                } else {
+                    break; 
+                }
+            }
+        }
+        m.actionState = 1; // Следующий ход - телепорт
+    } 
+    // ДЕЙСТВИЕ 2: Телепортируется (1-4 шага)
+    else if (m.actionState === 1) {
         const dist = randomInt(1, 4); 
         const dirs = [[1,0], [-1,0], [0,1], [0,-1]]; 
         const dir = dirs[Math.floor(Math.random() * 4)]; 
@@ -71,43 +119,11 @@ function moveMonsters() {
                 m.x = nx;
                 m.y = ny;
                 addFloater(m.x, m.y, "Teleport", "#a78bfa"); 
-                return; 
             }
         }
-    }
-
-    // 2. КУБИК НА ШАГИ К ГЕРОЮ (1-3 шага)
-    let steps = randomInt(1, 3);
-    
-    for (let s = 0; s < steps; s++) {
-        const dx = state.player.x - m.x;
-        const dy = state.player.y - m.y;
-
-        if (Math.abs(dx) <= CELL && Math.abs(dy) <= CELL && (dx === 0 || dy === 0)) {
-            monsterAttack(m); 
-            break; 
-        }
-
-        let nx = m.x;
-        let ny = m.y;
-
-        if (Math.abs(dx) >= Math.abs(dy)) {
-            nx += Math.sign(dx) * CELL;
-        } else {
-            ny += Math.sign(dy) * CELL;
-        }
-
-        if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320) {
-            let blocked = state.monsters.some(o => o !== m && o.x === nx && o.y === ny);
-            let playerBlocked = (nx === state.player.x && ny === state.player.y);
-            
-            if (!blocked && !playerBlocked) {
-                m.x = nx;
-                m.y = ny;
-            } else {
-                break; 
-            }
-        }
+        
+        m.actionState = 2; // После телепорта - отдыхать
+        m.restTimer = randomInt(1, 3); // Отдых 1-3 хода
     }
   });
 }
@@ -126,10 +142,10 @@ export function movePlayer(dx, dy) {
     const killed = fight(m, victimIdx);
     if (state.playerHp <= 0) { endGame(); return; }
     
-    // МЕНЯЕМСЯ МЕСТАМИ (Прорыв сквозь строй)
+    // Проход сквозь монстра
     if (!killed) {
-        m.x = state.player.x;
-        m.y = state.player.y;
+      m.x = state.player.x;
+      m.y = state.player.y;
     }
   }
   
@@ -148,7 +164,7 @@ export function movePlayer(dx, dy) {
     const item = state.items[pickupIdx];
     playSound('collect'); 
     
-    if (item.type === 'coin') { state.goldCount += 2; addFloater(nx, ny, "+2g", "#fbbf24"); }
+    if (item.type === 'coin') { state.goldCount += 2; state.stats.gold+=2; addFloater(nx, ny, "+2g", "#fbbf24"); }
     if (item.type === 'star') { let add = randomInt(1,3); state.tempAtk += add; addFloater(nx, ny, "+" + add, "#a78bfa"); }
     if (item.type === 'shield') { let add = randomInt(1,3); state.tempDef += add; addFloater(nx, ny, "+" + add, "#3b82f6"); }
     if (item.type === 'heart') { state.playerHp += 20; addFloater(nx, ny, "+20", "#22c55e"); }
@@ -157,7 +173,7 @@ export function movePlayer(dx, dy) {
   }
   
   state.totalTurns++;
-  if (state.totalTurns % 3 === 0 && !state.stairs.active) {
+  if (state.totalTurns % state.settings.itemRate === 0 && !state.stairs.active) {
     const cell = findFreeCell();
     state.items.push({x:cell.x, y:cell.y, type: ['coin', 'star', 'shield', 'heart'][Math.floor(Math.random()*4)]});
   }

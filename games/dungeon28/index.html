@@ -54,8 +54,9 @@
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #fff; font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 4px; }
         .stat-val { color: #fbbf24; font-weight: bold; }
         
-        /* Стили для ползунков */
         input[type=range] { flex: 1.5; accent-color: #fbbf24; }
+        select { background: #222; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px; font-size: 12px; outline: none; }
+        h4 { margin: 10px 0 5px 0; color: #9ca3af; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #4b5563; padding-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -129,29 +130,42 @@
             <button class="close-panel" id="close-records">Закрыть [Esc]</button>
         </div>
 
-        <!-- ОБНОВЛЕННЫЕ НАСТРОЙКИ -->
+        <!-- ПОЛНОЦЕННЫЕ НАСТРОЙКИ -->
         <div id="settings-panel" class="panel">
             <h3>⚙️ Настройки</h3>
+            
+            <h4>🔊 Звук</h4>
+            <div class="panel-row"><span class="panel-label">Общая громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="30"></div>
+            <div class="panel-row"><span class="panel-label">Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="20"></div>
+            <div class="panel-row"><span class="panel-label">Фоновый гул</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
+            <div class="panel-row"><span class="panel-label">Удары</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
+
+            <h4>🎮 Геймплей</h4>
             <div class="panel-row">
-                <span class="panel-label">🔊 Общая громкость</span>
-                <input type="range" id="set-vol-master" min="0" max="100" value="100">
+                <span class="panel-label">Сложность</span>
+                <select id="set-difficulty">
+                    <option value="simple">Простой</option>
+                    <option value="extreme">Экстрим (Умные)</option>
+                    <option value="horror">Ужас (Сильные)</option>
+                </select>
             </div>
+            <div class="panel-row"><span class="panel-label">Монстров + (0-10)</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
+            <div class="panel-row"><span class="panel-label">Спавн лута (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" value="3"></div>
             <div class="panel-row">
-                <span class="panel-label">🎵 Музыка</span>
-                <input type="range" id="set-vol-music" min="0" max="100" value="50">
+                <span class="panel-label">Интерес монстров</span>
+                <select id="set-taste">
+                    <option value="hero">Герой</option>
+                    <option value="coin">Монеты</option>
+                    <option value="star">Звезды</option>
+                    <option value="shield">Щиты</option>
+                    <option value="heart">Сердца</option>
+                </select>
             </div>
-            <div class="panel-row">
-                <span class="panel-label">🌫 Фоновый шум</span>
-                <input type="range" id="set-vol-ambient" min="0" max="100" value="30">
-            </div>
-            <div class="panel-row">
-                <span class="panel-label">🎯 Эффекты (Удары)</span>
-                <input type="range" id="set-vol-sfx" min="0" max="100" value="80">
-            </div>
+
             <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
         </div>
     </div>
 
-    <script type="module" src="main.js?v=8"></script>
+    <script type="module" src="main.js?v=10"></script>
 </body>
 </html>
