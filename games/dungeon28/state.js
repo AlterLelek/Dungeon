@@ -14,11 +14,17 @@ export const state = {
   totalTurns: 0,
   currentFloor: 1,
   
-  highScore: { turns: 0, name: "Никто" }, // Теперь объект
+  highScore: { turns: 0, name: "Никто" },
   
   items: [],
   monsters: [],
   floaters: [],
+  
+  // ЗАКЛИНАНИЯ (ИНВЕНТАРЬ)
+  spellLightning: 1,
+  spellHeal: 1,
+  spellStun: 1,
+  spellHurricane: 1,
   
   player: { 
       x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0 
@@ -42,19 +48,7 @@ export const state = {
   }
 };
 
-export function getTotalAtk() {
-  return state.weapons[state.weaponLevel].dmg + state.tempAtk;
-}
-
-export function getTotalDef() {
-  return state.permanentShield + state.tempDef;
-}
-
-export function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function clearBonuses() {
-    state.tempAtk = 0;
-    state.tempDef = 0;
-}
+export function getTotalAtk() { return state.weapons[state.weaponLevel].dmg + state.tempAtk; }
+export function getTotalDef() { return state.permanentShield + state.tempDef; }
+export function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+export function clearBonuses() { state.tempAtk = 0; state.tempDef = 0; }

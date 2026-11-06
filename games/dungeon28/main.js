@@ -2,12 +2,11 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer, castLightning, castHeal, castStun } from './game.js';
+import { movePlayer, castLightning, castHeal, castStun, castHurricane } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
-import { 
-  playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=16'; 
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=17'; 
 
+// Инициализация элементов
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
@@ -24,14 +23,14 @@ let gameLoopStarted = false;
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
-// --- ЗАГРУЗКА РЕКОРДОВ ---
+// Загрузка рекордов
 try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
 document.getElementById('best-score-hud').innerText = `🏆 ${state.highScore.turns} (${state.highScore.name})`;
 
-// --- ГЕНЕРАЦИЯ UI РАЗРАБОТЧИКА ---
+// Настройка UI разработчика
 const devHeroesContainer = document.getElementById('dev-heroes');
 HEROES.forEach((h, i) => {
     const details = document.createElement('details');
@@ -42,7 +41,6 @@ HEROES.forEach((h, i) => {
     mpLabel.innerHTML = `<span>MP:</span> <input type="number" id="dev-hero-${i}-mp" value="${h.maxMp}">`;
     details.appendChild(hpLabel); details.appendChild(mpLabel);
     devHeroesContainer.appendChild(details);
-    
     hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxHp = parseInt(e.target.value); });
     mpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxMp = parseInt(e.target.value); });
 });
@@ -53,14 +51,13 @@ ENEMY_TYPES.forEach(type => {
     const details = document.createElement('details');
     details.innerHTML = `<summary>${type} Монстр</summary>`;
     const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
-    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-mon-${type}-hp" value="${base.hp}">`;
+    hpLabel.innerHTML = `<span>HP:</span> <input type="number" value="${base.hp}">`;
     const atkLabel = document.createElement('div'); atkLabel.className = 'dev-stat';
-    atkLabel.innerHTML = `<span>ATK:</span> <input type="number" id="dev-mon-${type}-atk" value="${base.atk}">`;
+    atkLabel.innerHTML = `<span>ATK:</span> <input type="number" value="${base.atk}">`;
     const defLabel = document.createElement('div'); defLabel.className = 'dev-stat';
-    defLabel.innerHTML = `<span>DEF:</span> <input type="number" id="dev-mon-${type}-def" value="${base.def}">`;
+    defLabel.innerHTML = `<span>DEF:</span> <input type="number" value="${base.def}">`;
     details.appendChild(hpLabel); details.appendChild(atkLabel); details.appendChild(defLabel);
     devMonstersContainer.appendChild(details);
-
     hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].hp = parseInt(e.target.value); });
     atkLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].atk = parseInt(e.target.value); });
     defLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].def = parseInt(e.target.value); });
@@ -70,7 +67,7 @@ document.getElementById('set-dev-mode').addEventListener('change', (e) => {
     document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
 });
 
-// --- ВЫБОР ГЕРОЯ ---
+// Генерация героев
 const heroSelect = document.getElementById('hero-select');
 HEROES.forEach((h, i) => {
     const btn = document.createElement('button');
@@ -91,7 +88,7 @@ function generateRandomName() {
     guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
 }
 
-// --- HUD ---
+// HUD
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -108,6 +105,7 @@ const hudFig = document.getElementById('hero-fig');
 const btnLight = document.getElementById('btn-light');
 const btnHeal = document.getElementById('btn-heal');
 const btnStun = document.getElementById('btn-stun');
+const btnHurricane = document.getElementById('btn-hurricane');
 
 function updateHUD() {
   hudHp.innerText = state.playerHp;
@@ -124,15 +122,18 @@ function updateHUD() {
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
-  // ОБНОВЛЕНИЕ КНОПОК МАГИИ
-  btnLight.disabled = state.playerMp < 3;
-  btnLight.innerHTML = `Молния (3) [1]<br><span id="light-count">${state.playerMp}/3</span>`;
+  // ОБНОВЛЕНИЕ КНОПОК МАГИИ (Стоимость | Мана | Кол-во)
+  btnLight.disabled = state.playerMp < 3 || state.spellLightning <= 0;
+  btnLight.innerHTML = `⚡ Молния<br><span>3 MP | ${state.playerMp}/${state.maxMp} | x${state.spellLightning}</span>`;
   
-  btnHeal.disabled = state.playerMp < 3;
-  btnHeal.innerHTML = `Лечение (3) [2]<br><span id="heal-count">${state.playerMp}/3</span>`;
+  btnHeal.disabled = state.playerMp < 3 || state.spellHeal <= 0;
+  btnHeal.innerHTML = `💚 Лечение<br><span>3 MP | ${state.playerMp}/${state.maxMp} | x${state.spellHeal}</span>`;
 
-  btnStun.disabled = state.playerMp < 2;
-  btnStun.innerHTML = `Стан (2) [3]<br><span id="stun-count">${state.playerMp}/2</span>`;
+  btnStun.disabled = state.playerMp < 2 || state.spellStun <= 0;
+  btnStun.innerHTML = `❄️ Стан<br><span>2 MP | ${state.playerMp}/${state.maxMp} | x${state.spellStun}</span>`;
+
+  btnHurricane.disabled = state.playerMp < 4 || state.spellHurricane <= 0;
+  btnHurricane.innerHTML = `🌪️ Ураган<br><span>4 MP | ${state.playerMp}/${state.maxMp} | x${state.spellHurricane}</span>`;
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
@@ -251,6 +252,12 @@ function startGame(name) {
     state.totalTurns = 0;
     state.stats = { kills: 0, gold: 0, floors: 0 };
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
+    
+    // Даем стартовый инвентарь
+    state.spellLightning = 1;
+    state.spellHeal = 1;
+    state.spellStun = 1;
+    state.spellHurricane = 1;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -278,6 +285,7 @@ function startGame(name) {
       else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
       else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
       else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
+      else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
       
       else if (key === 'm' || key === 'ь') {
         document.getElementById('shop-panel').style.display = 'block';
@@ -287,7 +295,7 @@ function startGame(name) {
     });
 }
 
-// ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML
+// Глобальные функции
 window.movePlayer = movePlayer;
 window.skipTurn = () => {
     if (!state.gameActive) return;
@@ -310,6 +318,7 @@ document.getElementById('btn-google').addEventListener('click', () => { errorMsg
 document.getElementById('btn-light').addEventListener('click', () => { castLightning(); updateHUD(); });
 document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
 document.getElementById('btn-stun').addEventListener('click', () => { castStun(); updateHUD(); });
+document.getElementById('btn-hurricane').addEventListener('click', () => { castHurricane(); updateHUD(); });
 
 document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
 document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');

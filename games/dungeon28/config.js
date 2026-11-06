@@ -1,5 +1,5 @@
 // games/dungeon28/config.js
-export const VERSION = "4.2";
+export const VERSION = "4.3";
 export const GRID = 10;          
 export const CELL = 32;          
 
@@ -59,4 +59,4 @@ export const ENEMY_BASE = {
   "👼": {hp:120, atk:7, def:3}, "🧙‍♂️": {hp:90, atk:5, def:2}
 };
 
-export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'scroll', 'lightning', 'stun'];
+export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'scroll', 'lightning', 'stun', 'hurricane'];

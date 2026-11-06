@@ -1,8 +1,8 @@
 // games/dungeon28/game.js
-import { CELL, ITEM_TYPES } from './config.js';
+import { CELL, ITEM_TYPES, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
-import { playSound } from '../../shared/audio.js?v=16'; 
+import { playSound } from '../../shared/audio.js?v=17'; 
 
 let fadeTimer = null;
 let floorClearTimer = null;
@@ -23,7 +23,6 @@ export function startFadeOut() {
   }, 100);
 }
 
-// АВТОПЕРЕХОД НА СЛЕДУЮЩИЙ ЭТАЖ
 function autoNextFloor() {
     if (floorClearTimer) clearTimeout(floorClearTimer);
     floorClearTimer = setTimeout(() => {
@@ -53,7 +52,7 @@ export function fight(m, index) {
     if (state.monsters.length === 0) {
         state.stairs.active = true;
         startFadeOut();
-        autoNextFloor(); // Запускаем таймер
+        autoNextFloor();
     }
     return true; 
   }
@@ -68,9 +67,10 @@ export function fight(m, index) {
   return false;
 }
 
+// МАГИЯ
 export function castLightning() {
-    if (state.playerMp < 3) return;
-    state.playerMp -= 3;
+    if (state.playerMp < 3 || state.spellLightning <= 0) return;
+    state.playerMp -= 3; state.spellLightning--;
     playSound('magic');
     state.monsters.forEach((m, idx) => {
         const dx = Math.abs(m.x - state.player.x);
@@ -93,8 +93,8 @@ export function castLightning() {
 }
 
 export function castHeal() {
-    if (state.playerMp < 3) return;
-    state.playerMp -= 3;
+    if (state.playerMp < 3 || state.spellHeal <= 0) return;
+    state.playerMp -= 3; state.spellHeal--;
     playSound('magic');
     state.playerHp += 30;
     if (state.playerHp > HEROES[state.heroIdx].maxHp) state.playerHp = HEROES[state.heroIdx].maxHp;
@@ -102,13 +102,37 @@ export function castHeal() {
 }
 
 export function castStun() {
-    if (state.playerMp < 2) return;
-    state.playerMp -= 2;
+    if (state.playerMp < 2 || state.spellStun <= 0) return;
+    state.playerMp -= 2; state.spellStun--;
     playSound('magic');
     state.monsters.forEach(m => {
         m.isStunned = true;
         m.stunTimer = 2;
         addFloater(m.x, m.y, "❄️", "#38bdf8");
+    });
+}
+
+export function castHurricane() {
+    if (state.playerMp < 4 || state.spellHurricane <= 0) return;
+    state.playerMp -= 4; state.spellHurricane--;
+    playSound('magic');
+    
+    state.monsters.forEach(m => {
+        const dx = m.x - state.player.x;
+        const dy = m.y - state.player.y;
+        if (Math.abs(dx) <= 64 && Math.abs(dy) <= 64) { // Если монстр близко
+            let nx = m.x + Math.sign(dx) * CELL * 3;
+            let ny = m.y + Math.sign(dy) * CELL * 3;
+            // Не вылетаем за границы
+            if (nx < 0) nx = 0;
+            if (nx >= 320) nx = 288;
+            if (ny < 0) ny = 0;
+            if (ny >= 320) ny = 288;
+            m.x = nx; m.y = ny;
+            m.startPx = m.px; m.startPy = m.py;
+            m.moveStartTime = performance.now(); m.isMoving = true;
+            addFloater(m.x, m.y, "🌪️", "#a855f7");
+        }
     });
 }
 
@@ -218,7 +242,7 @@ function moveMonsters() {
 }
 
 export function movePlayer(dx, dy) {
-  if (!state.gameActive || state.playerHp <= 0 || floorClearTimer) return; // Блокируем ход, если идет переход
+  if (!state.gameActive || state.playerHp <= 0 || floorClearTimer) return;
   
   let nx = state.player.x + dx;
   let ny = state.player.y + dy;
@@ -259,10 +283,11 @@ export function movePlayer(dx, dy) {
     if (item.type === 'coin') { let add = randomInt(1, 3); state.goldCount += add; state.stats.gold += add; addFloater(nx, ny, "+" + add + "g", "#fbbf24"); }
     if (item.type === 'star') { let add = randomInt(1, 3); state.tempAtk += add; addFloater(nx, ny, "+" + add + "а", "#a78bfa"); }
     if (item.type === 'shield') { let add = randomInt(1, 3); state.tempDef += add; addFloater(nx, ny, "+" + add + "з", "#3b82f6"); }
-    if (item.type === 'scroll') { let add = randomInt(1, 3); state.playerMp += add; if(state.playerMp>state.maxMp)state.playerMp=state.maxMp; addFloater(nx, ny, "+" + add + "м", "#eab308"); }
+    if (item.type === 'scroll') { let add = randomInt(1, 3); state.playerMp += add; if(state.playerMp>state.maxMp)state.playerMp=state.maxMp; state.spellHeal++; addFloater(nx, ny, "+1л", "#22c55e"); }
     if (item.type === 'heart') { state.playerHp += 20; addFloater(nx, ny, "+20hp", "#22c55e"); }
-    if (item.type === 'lightning') { state.playerMp += 1; if(state.playerMp>state.maxMp)state.playerMp=state.maxMp; addFloater(nx, ny, "+1⚡", "#fbbf24"); }
-    if (item.type === 'stun') { state.playerMp += 1; if(state.playerMp>state.maxMp)state.playerMp=state.maxMp; addFloater(nx, ny, "+1❄️", "#38bdf8"); }
+    if (item.type === 'lightning') { state.spellLightning++; addFloater(nx, ny, "+1⚡", "#fbbf24"); }
+    if (item.type === 'stun') { state.spellStun++; addFloater(nx, ny, "+1❄️", "#38bdf8"); }
+    if (item.type === 'hurricane') { state.spellHurricane++; addFloater(nx, ny, "+1🌪️", "#a855f7"); }
     
     state.items.splice(pickupIdx, 1);
   }
