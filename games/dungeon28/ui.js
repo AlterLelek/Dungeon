@@ -1,10 +1,11 @@
-// games/dungeon28/ui.js
 import { CELL, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef } from './state.js';
 
-function drawCell(ctx, x, y, emoji, size) { 
+function drawCell(ctx, x, y, emoji, size, alpha = 1.0) { 
+  ctx.globalAlpha = alpha;
   ctx.font = (size || 20) + "px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; 
   ctx.fillText(emoji, x + CELL / 2, y + CELL / 2); 
+  ctx.globalAlpha = 1.0;
 }
 
 function drawBars(ctx, x, y, hp, maxHp, def, atk) {
@@ -40,16 +41,19 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
+  // Отрисовка трупов
+  state.corpses.forEach(c => {
+      drawCell(ctx, c.x, c.y, c.type, 22, 0.25); // 25% яркости (потеря 75%)
+  });
+
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
 
-  ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
     if (m.isStunned) { ctx.fillStyle = "rgba(147,51,234,0.5)"; ctx.fillRect(m.px+2, m.py+2, 28, 28); }
     drawCell(ctx, m.px, m.py, m.type, 22); 
     drawBars(ctx, m.px, m.py, m.hp, m.maxHp, m.def, m.atk);
   });
 
-  ctx.globalAlpha = 1.0;
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, HEROES[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 

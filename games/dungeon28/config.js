@@ -1,14 +1,13 @@
-// games/dungeon28/config.js
-export const VERSION = "4.5";
+export const VERSION = "5.0";
 export const GRID = 10;          
 export const CELL = 32;          
 
 export const HEROES = [
-  {name:"Воин",   emoji:"🦸", set:"warrior", maxHp:100, maxMp:3,  lightRange:64},
-  {name:"Маг",    emoji:"🧙", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96},
-  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80},
-  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96},
-  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  maxMp:7,  lightRange:96}
+  {name:"Воин",   emoji:"⚔️", set:"warrior", maxHp:100, lightRange:64},
+  {name:"Маг",    emoji:"🔮", set:"mage",    maxHp:80,  lightRange:96},
+  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  lightRange:80},
+  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  lightRange:96},
+  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  lightRange:96}
 ];
 
 export const WARRIOR_WEAPONS = [
@@ -51,7 +50,8 @@ export const MAGE_WEAPONS = [
   {name:"Книга · волшебная", css:"q-magic", dmg:17, cost:16}
 ];
 
-export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🏹","🐢","👼","🧙‍♂️"];
+// Убрали зомби из случайного спавна. Оставили некроманта.
+export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🏹","🐢","👼","🧙‍♂️"];
 
 export const ENEMY_NAMES = {
   "💀": "Скелет", "👻": "Призрак", "🐭": "Мышь", "🕷": "Паук",

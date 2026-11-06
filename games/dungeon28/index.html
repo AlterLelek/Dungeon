@@ -1,230 +1,131 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <link rel="icon" href="data:,">
-    <title>Подземелье 28</title>
-    <style>
-        body { background-color: #1e1e24; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-family: sans-serif; color: #fff; overflow-x: hidden; touch-action: manipulation; }
-        
-        #login-screen { display: flex; flex-direction: column; align-items: center; gap: 15px; background: #2b2b3b; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #4f46e5; width: 320px; z-index: 100; margin-top: 50px; }
-        h1 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 4px; color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); text-align: center; }
-        
-        .hero-row { display: flex; gap: 5px; justify-content: center; width: 100%; flex-wrap: wrap; }
-        .hero-btn { width: 55px; padding: 5px 2px; font-size: 20px; border-radius: 8px; border: 2px solid #4b5563; background: #374151; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
-        .hero-btn.selected { border-color: #fbbf24; background: #92400e; box-shadow: 0 0 10px rgba(251,191,36,0.5); }
-        .hero-btn span { font-size: 10px; color: #fff; margin-top: 2px; }
-
-        .input-group { display: flex; flex-direction: row; width: 100%; gap: 10px; }
-        input[type="text"] { padding: 10px; font-size: 16px; border-radius: 8px; border: 2px solid #4b5563; background: #374151; color: #fff; outline: none; text-align: center; flex: 1; }
-        .dice-btn { padding: 10px; font-size: 18px; border-radius: 8px; border: none; background: #4f46e5; color: white; cursor: pointer; width: 50px; }
-        .btn-guest { background: #10b981; color: white; padding: 10px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; width: 100%; }
-        .btn-google { background: #4285f4; color: white; padding: 10px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; width: 100%; }
-        #error-msg { color: #ef4444; font-size: 14px; text-align: center; height: 20px; }
-
-        #game-screen { display: none; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; padding-top: 10px; box-sizing: border-box; }
-
-        #hud { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px; color: #fff; font-size: 12px; margin-bottom: 5px; font-weight: bold; width: 326px; box-sizing: border-box; border: 2px solid #4b5563; display: flex; justify-content: space-between; align-items: stretch; gap: 6px; height: 116px; }
-        .hud-hero { display: flex; gap: 6px; width: 118px; box-sizing: border-box; align-items: stretch; }
-        .hero-fig { font-size: 30px; display: flex; align-items: center; }
-        .hero-stats { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-        .hero-stats .hs-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 10px; line-height: 1.1; word-wrap: break-word; padding-bottom: 2px; margin-bottom: 2px; }
-        #hero-weapon { font-size: 9px; color: #e5e7eb; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; line-height: 1.2; }
-        .hud-center { display: flex; flex-direction: column; gap: 2px; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 4px; box-sizing: border-box; width: 75px; font-size: 11px; }
-        .hud-enemies { display: flex; flex-direction: column; gap: 2px; flex: 1; box-sizing: border-box; min-width: 0; }
-        .hud-enemies .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; }
-        #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 9px; line-height: 1.1; height: 84px; overflow: hidden; text-align: right; white-space: nowrap; }
-
-        #btn-row { display: flex; gap: 4px; width: 326px; box-sizing: border-box; margin-bottom: 5px; }
-        #shop-btn { background-color: #10b981; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
-        #records-btn { background-color: #f59e0b; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
-        #settings-btn { background-color: #6b7280; color: white; border: none; border-radius: 8px; padding: 6px 4px; font-weight: bold; font-size: 11px; cursor: pointer; flex: 1; }
-
-        .magic-row { display: flex; gap: 5px; width: 326px; margin-bottom: 5px; }
-        .magic-btn { flex: 1; padding: 6px 2px; border: none; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; text-align: center; }
-        .magic-btn:disabled { background: #4b5563 !important; color: #9ca3af !important; opacity: 0.6; cursor: default; }
-        #btn-light { background: #eab308; }
-        #btn-heal { background: #22c55e; }
-        #btn-stun { background: #38bdf8; }
-        #btn-hurricane { background: #a855f7; }
-        
-        canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 320px; height: 320px; box-sizing: content-box; display: block; margin-bottom: 5px; }
-
-        .dpad { display: none; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: repeat(3, 45px); gap: 6px; width: 326px; box-sizing: border-box; margin-bottom: 5px; }
-        .dpad button { background-color: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: center; }
-        .dpad button:active { background-color: #3b82f6; }
-        .dpad .btn-stop { background-color: #e11d48; font-size: 16px; }
-        .dpad .wide-row { grid-column: span 3; }
-        
-        @media (pointer: coarse) {
-            .dpad { display: grid; }
-        }
-
-        .panel { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #151520; padding: 18px; border: 2px solid #fbbf24; border-radius: 12px; width: 320px; max-height: 86vh; overflow-y: auto; box-sizing: border-box; z-index: 2000; box-shadow: 0 0 25px rgba(0,0,0,0.8); }
-        .panel h3 { margin: 0 0 12px 0; color: #fbbf24; text-align: center; }
-        .panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 6px; font-size: 13px; color: #fff; }
-        .panel-label { flex: 1; }
-        .panel-price { color: #10b981; font-weight: bold; white-space: nowrap; }
-        .buy-btn { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap; }
-        .buy-btn:disabled { background: #374151; color: #6b7280; cursor: default; }
-        .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #fff; font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 4px; }
-        .stat-val { color: #fbbf24; font-weight: bold; }
-        
-        input[type=range] { flex: 1.5; accent-color: #fbbf24; }
-        h4 { margin: 10px 0 5px 0; color: #9ca3af; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #4b5563; padding-bottom: 3px; }
-        
-        #version-label { margin-top: 5px; color: #6b7280; font-size: 12px; margin-bottom: 20px; }
-        
-        /* Стили для аккордеонов */
-        details { margin-bottom: 5px; background: #1e1e2a; padding: 8px; border-radius: 6px; border: 1px solid #333; }
-        summary { cursor: pointer; font-weight: bold; color: #fbbf24; font-size: 13px; outline: none; }
-        .dev-stat { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 5px; }
-        .dev-stat input { width: 60px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 2px 5px; text-align: center; }
-        
-        .ctrl-info { font-size: 12px; color: #aaa; line-height: 1.5; margin-top: 5px; padding-left: 5px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>Подземелье</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+  <div id="app">
+    <!-- ЭКРАН ЛОГИНА -->
     <div id="login-screen">
-        <h1>Подземелье <span id="ver-login">4.5</span></h1>
-        <div class="hero-row" id="hero-select"></div>
-        <div class="input-group">
-            <input type="text" id="guest-name" placeholder="Имя героя" maxlength="20">
-            <button class="dice-btn" id="btn-random-name" title="Случайное имя">🎲</button>
-        </div>
-        <button class="btn-guest" id="btn-guest">Играть без аккаунта</button>
-        <button class="btn-google" id="btn-google">Войти через Google</button>
-        <div id="error-msg"></div>
+      <h1>ПОДЗЕМЕЛЬЕ <span id="ver-login"></span></h1>
+      <input type="text" id="guest-name" placeholder="Имя героя">
+      <button id="btn-random-name" class="btn-secondary">🎲 Случайное имя</button>
+      <button id="btn-guest" class="btn-primary">Играть гостем</button>
+      <button id="btn-google" class="btn-secondary" style="opacity:0.5; cursor:not-allowed;">Войти через Google</button>
+      <div id="error-msg" style="color: #ef4444; margin-top: 10px;"></div>
     </div>
 
-    <div id="game-screen">
-        <div id="hud">
-            <div class="hud-hero" style="color:#60a5fa;">
-                <div class="hero-fig" id="hero-fig">🦸</div>
-                <div class="hero-stats">
-                    <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
-                    <div>❤️ <span id="hp" style="color:#ef4444">100</span></div>
-                    <div>🛡️ <span id="shd-hud">0</span></div>
-                    <div>💪 <span id="bonus">1</span></div>
-                    <div id="hero-weapon">⚔️ Кулаки</div>
-                </div>
-            </div>
-            <div class="hud-center">
-                <div>🏰 <span id="floor-hud">1</span></div>
-                <div>👣 <span id="turns">0</span></div>
-                <div style="color:#f59e0b; font-size:10px; line-height:1.1;" id="best-score-hud">🏆 0</div>
-                <div>🪙 <span id="score">0</span></div>
-                <div>⚡ <span id="energy">0</span>/<span id="max-energy">0</span></div>
-            </div>
-            <div class="hud-enemies" style="color:#a855f7;">
-                <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
-                <div id="e-list"></div>
-            </div>
+    <!-- ЭКРАН ИГРЫ -->
+    <div id="game-screen" style="display: none;">
+      <div id="hud">
+        <div class="hud-hero">
+          <div class="hero-fig" id="hero-fig">⚔️</div>
+          <div class="hero-stats">
+            <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
+            <div>❤️ <span id="hp">100</span></div>
+            <div>🛡️ <span id="shd-hud">0</span></div>
+            <div>💪 <span id="bonus">1</span></div>
+            <div id="hero-weapon">⚔️ Кулаки</div>
+          </div>
         </div>
-
-        <div id="btn-row">
-            <button id="shop-btn">🛒 Лавка [M]</button>
-            <button id="records-btn">🏆 Рекорды</button>
-            <button id="settings-btn">⚙️ Настройки</button>
+        <div class="hud-center">
+          <div>🏰 <span id="floor-hud">1</span></div>
+          <div>👣 <span id="turns">0</span></div>
+          <div id="high-score-line"></div>
+          <div><span class="coin-ico"></span> <span id="score">0</span></div>
+          <div>⚡ <span id="energy">0</span></div>
         </div>
-
-        <div class="magic-row">
-            <button id="btn-light" class="magic-btn">⚡ Молния<br><span id="light-info">3 MP | 0/0 | x0</span></button>
-            <button id="btn-heal" class="magic-btn">💚 Лечение<br><span id="heal-info">3 MP | 0/0 | x0</span></button>
-            <button id="btn-stun" class="magic-btn">❄️ Стан<br><span id="stun-info">2 MP | 0/0 | x0</span></button>
-            <button id="btn-hurricane" class="magic-btn">🌪️ Ураган<br><span id="hurricane-info">4 MP | 0/0 | x0</span></button>
+        <div class="hud-enemies">
+          <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
+          <div id="e-list"></div>
         </div>
+      </div>
 
-        <!-- СЮДА ВСТАВЛЯЕТСЯ CANVAS -->
-        
-        <div class="dpad">
-            <button class="wide-row" onclick="movePlayer(0,-32)">▲</button>
-            <button onclick="movePlayer(-32,0)">◀</button>
-            <button class="btn-stop" onclick="skipTurn()">●</button>
-            <button onclick="movePlayer(32,0)">▶</button>
-            <button class="wide-row" onclick="movePlayer(0,32)">▼</button>
-        </div>
+      <div id="btn-row">
+        <button id="shop-btn" class="btn-primary">🛒 Лавка [M]</button>
+        <button id="records-btn" class="btn-primary">🏆 Рекорды</button>
+        <button id="settings-btn" class="btn-primary">⚙️ Настройки</button>
+      </div>
 
-        <div id="version-label">Версия: <span id="ver-game">4.5</span></div>
+      <div class="magic-row">
+        <button id="btn-light" class="m-btn" style="background-color:#eab308;">⚡ Молния<br><span>3 MP | x0</span></button>
+        <button id="btn-heal" class="m-btn" style="background-color:#22c55e;">💚 Лечение<br><span>3 MP | x0</span></button>
+        <button id="btn-stun" class="m-btn" style="background-color:#38bdf8;">❄️ Стан<br><span>2 MP | x0</span></button>
+        <button id="btn-hurricane" class="m-btn" style="background-color:#a855f7;">🌪️ Ураган<br><span>4 MP | x0</span></button>
+      </div>
 
-        <div id="shop-panel" class="panel">
-            <h3>🛒 Лавка</h3>
-            <div id="shop-gold" style="color:#fbbf24; text-align:center; margin-bottom:10px; font-weight:bold;"></div>
-            <div class="panel-row">
-                <span class="panel-label" id="shop-wpn-label"></span>
-                <span class="panel-price" id="shop-wpn-cost"></span>
-                <button class="buy-btn" id="shop-wpn-btn">Купить</button>
-            </div>
-            <div class="panel-row">
-                <span class="panel-label">🛡️ Броня +1</span>
-                <span class="panel-price" id="shop-shd-cost">1 зл</span>
-                <button class="buy-btn" id="shop-shd-btn">Купить</button>
-            </div>
-            <button class="close-panel" id="close-shop">Закрыть [Esc]</button>
-        </div>
-
-        <div id="records-panel" class="panel">
-            <h3>🏆 Статистика</h3>
-            <div class="stat-row"><span>Лучший результат:</span><span class="stat-val" id="rec-highscore">0</span></div>
-            <div class="stat-row"><span>Кто погиб:</span><span class="stat-val" id="rec-best-name">Нет</span></div>
-            <div class="stat-row"><span>Убито монстров:</span><span class="stat-val" id="rec-kills">0</span></div>
-            <div class="stat-row"><span>Собрано золота:</span><span class="stat-val" id="rec-gold">0</span></div>
-            <button class="close-panel" id="close-records">Закрыть [Esc]</button>
-        </div>
-
-        <div id="settings-panel" class="panel">
-            <h3>⚙️ Настройки</h3>
-            
-            <details>
-                <summary>🔊 Звук</summary>
-                <div class="panel-row"><span class="panel-label">Общая громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
-                <div class="panel-row"><span class="panel-label">Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="10"></div>
-                <div class="panel-row"><span class="panel-label">Фоновый гул</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
-                <div class="panel-row"><span class="panel-label">Удары</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
-            </details>
-            
-            <details>
-                <summary>🎮 Геймплей</summary>
-                <div class="panel-row"><span class="panel-label">Монстров + (0-10)</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
-                <div class="panel-row"><span class="panel-label">Спавн лута (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" value="3"></div>
-            </details>
-
-            <details>
-                <summary>⌨️ Управление</summary>
-                <div class="ctrl-info">
-                    <b>Движение:</b> Стрелки / WASD / ЦЫФВ / Кнопки на экране<br><br>
-                    <b>Магия:</b> 1 / Z / Я — Молния<br>
-                    <b>Магия:</b> 2 / X / Ч — Лечение<br>
-                    <b>Магия:</b> 3 / C / С — Стан<br>
-                    <b>Магия:</b> 4 / V / М — Ураган<br><br>
-                    <b>Действия:</b> Пробел — Пропуск/Удар<br>
-                    <b>Меню:</b> M — Лавка, Esc — Закрыть
-                </div>
-            </details>
-
-            <div style="margin-top:15px; display:flex; align-items:center; gap:5px; padding: 5px; background:#1e1e2a; border-radius:6px;">
-                <input type="checkbox" id="set-dev-mode">
-                <label for="set-dev-mode" style="color:#ef4444; font-weight:bold; font-size:13px;">Меню разработчика</label>
-            </div>
-
-            <div id="dev-panel" style="display: none; margin-top:10px; padding-top:10px; border-top: 2px dashed #4b5563;">
-                <details>
-                    <summary style="color:#ef4444;">🦸 Герои</summary>
-                    <div id="dev-heroes"></div>
-                </details>
-                <details>
-                    <summary style="color:#ef4444; margin-top:5px;">👹 Монстры</summary>
-                    <div id="dev-monsters"></div>
-                </details>
-            </div>
-
-            <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
-        </div>
+      <!-- Сюда main.js вставит canvas -->
+      
+      <div class="dpad" style="margin-top: 10px;">
+        <button class="btn wide-row" onclick="movePlayer(0,-32)">▲ W</button>
+        <button class="btn" onclick="movePlayer(-32,0)">◀ A</button>
+        <button class="btn" style="background-color:#e11d48;" onclick="skipTurn()">● Пропуск</button>
+        <button class="btn" onclick="movePlayer(32,0)">▶ D</button>
+        <button class="btn wide-row" onclick="movePlayer(0,32)">▼ S</button>
+      </div>
+      <div style="text-align:center; color:#9ca3af; font-size:12px; margin-top:10px;">Версия: <span id="ver-game"></span></div>
     </div>
+  </div>
 
-    <script type="module" src="main.js?v=19"></script>
+  <!-- ПАНЕЛИ -->
+  <div id="shop-panel" class="panel" style="display:none;">
+    <h3>🛒 Лавка</h3>
+    <div id="shop-gold">В кармане: 0 золота</div>
+    <div class="panel-row">
+      <span id="shop-wpn-label"></span>
+      <span id="shop-wpn-cost"></span>
+      <button id="shop-wpn-btn" class="buy-btn">Купить</button>
+    </div>
+    <div class="panel-row">
+      <span>🛡️ Броня +1</span>
+      <span id="shop-shd-cost"></span>
+      <button id="shop-shd-btn" class="buy-btn">Купить</button>
+    </div>
+    <button id="close-shop" class="close-panel">Закрыть</button>
+  </div>
+
+  <div id="records-panel" class="panel" style="display:none;">
+    <h3>🏆 Рекорды</h3>
+    <div>Лучший результат: <span id="rec-highscore">0</span> ходов</div>
+    <div>Имя: <span id="rec-best-name">Никто</span></div>
+    <div>Убито монстров: <span id="rec-kills">0</span></div>
+    <div>Собрано золота: <span id="rec-gold">0</span></div>
+    <button id="close-records" class="close-panel">Закрыть</button>
+  </div>
+
+  <div id="settings-panel" class="panel" style="display:none;">
+    <h3>⚙️ Настройки</h3>
+    <div class="panel-row">
+      <span>Звук</span>
+      <input type="range" id="set-vol-master" min="0" max="100" value="100">
+    </div>
+    <div class="panel-row">
+      <span>Музыка</span>
+      <input type="range" id="set-vol-music" min="0" max="100" value="50">
+    </div>
+    <div class="panel-row">
+      <span>Фон</span>
+      <input type="range" id="set-vol-ambient" min="0" max="100" value="50">
+    </div>
+    <div class="panel-row">
+      <span>Эффекты</span>
+      <input type="range" id="set-vol-sfx" min="0" max="100" value="100">
+    </div>
+    <div class="panel-row">
+      <span>Монстров +</span>
+      <input type="range" id="set-monster-add" min="0" max="5" value="0">
+    </div>
+    <div class="panel-row">
+      <span>Бонус раз в N</span>
+      <input type="range" id="set-item-rate" min="1" max="5" value="3">
+    </div>
+    <button id="close-settings" class="close-panel">Закрыть</button>
+  </div>
+
+  <!-- ПОДКЛЮЧЕНИЕ ВСЕХ СКРИПТОВ (ПЛОСКАЯ СТРУКТУРА) -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>

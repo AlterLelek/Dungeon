@@ -1,10 +1,9 @@
-// games/dungeon28/main.js
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer, castLightning, castHeal, castStun, castHurricane } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=19'; 
+import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -26,57 +25,12 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-document.getElementById('best-score-hud').innerText = `🏆 ${state.highScore.turns} (${state.highScore.name})`;
-
-const devHeroesContainer = document.getElementById('dev-heroes');
-HEROES.forEach((h, i) => {
-    const details = document.createElement('details');
-    details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
-    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
-    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-hero-${i}-hp" value="${h.maxHp}">`;
-    const mpLabel = document.createElement('div'); mpLabel.className = 'dev-stat';
-    mpLabel.innerHTML = `<span>MP:</span> <input type="number" id="dev-hero-${i}-mp" value="${h.maxMp}">`;
-    details.appendChild(hpLabel); details.appendChild(mpLabel);
-    devHeroesContainer.appendChild(details);
-    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxHp = parseInt(e.target.value); });
-    mpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxMp = parseInt(e.target.value); });
-});
-
-const devMonstersContainer = document.getElementById('dev-monsters');
-ENEMY_TYPES.forEach(type => {
-    const base = state.devSettings.monsters[type];
-    const details = document.createElement('details');
-    details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type]}</summary>`;
-    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
-    hpLabel.innerHTML = `<span>HP:</span> <input type="number" value="${base.hp}">`;
-    const atkLabel = document.createElement('div'); atkLabel.className = 'dev-stat';
-    atkLabel.innerHTML = `<span>ATK:</span> <input type="number" value="${base.atk}">`;
-    const defLabel = document.createElement('div'); defLabel.className = 'dev-stat';
-    defLabel.innerHTML = `<span>DEF:</span> <input type="number" value="${base.def}">`;
-    details.appendChild(hpLabel); details.appendChild(atkLabel); details.appendChild(defLabel);
-    devMonstersContainer.appendChild(details);
-    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].hp = parseInt(e.target.value); });
-    atkLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].atk = parseInt(e.target.value); });
-    defLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].def = parseInt(e.target.value); });
-});
-
-document.getElementById('set-dev-mode').addEventListener('change', (e) => {
-    document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
-});
-
-const heroSelect = document.getElementById('hero-select');
-HEROES.forEach((h, i) => {
-    const btn = document.createElement('button');
-    btn.className = `hero-btn ${i === 0 ? 'selected' : ''}`;
-    btn.innerHTML = `${h.emoji}<span>${h.name}</span>`;
-    btn.onclick = () => {
-        document.querySelectorAll('.hero-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        state.heroIdx = i;
-        playSound('menu');
-    };
-    heroSelect.appendChild(btn);
-});
+// Скрываем рекорд если 0
+if (state.highScore.turns > 0) {
+    document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
+} else {
+    document.getElementById('high-score-line').innerText = '';
+}
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
@@ -91,7 +45,6 @@ const hudFloor = document.getElementById('floor-hud');
 const hudTurns = document.getElementById('turns');
 const hudScore = document.getElementById('score');
 const hudEnergy = document.getElementById('energy');
-const hudMaxEnergy = document.getElementById('max-energy');
 const hudECount = document.getElementById('e-count');
 const hudEList = document.getElementById('e-list');
 const hudWeapon = document.getElementById('hero-weapon');
@@ -110,34 +63,32 @@ function updateHUD() {
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
   hudEnergy.innerText = state.playerMp;
-  hudMaxEnergy.innerText = state.maxMp;
   hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
   hudFig.innerText = HEROES[state.heroIdx].emoji;
   
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
+  // МАГИЯ БЕЗ ЛИМИТОВ
   btnLight.disabled = state.playerMp < 3 || state.spellLightning <= 0;
-  btnLight.innerHTML = `⚡ Молния<br><span>3 MP | ${state.playerMp}/${state.maxMp} | x${state.spellLightning}</span>`;
+  btnLight.innerHTML = `⚡ Молния<br><span>3 MP | x${state.spellLightning}</span>`;
   
   btnHeal.disabled = state.playerMp < 3 || state.spellHeal <= 0;
-  btnHeal.innerHTML = `💚 Лечение<br><span>3 MP | ${state.playerMp}/${state.maxMp} | x${state.spellHeal}</span>`;
+  btnHeal.innerHTML = `💚 Лечение<br><span>3 MP | x${state.spellHeal}</span>`;
 
   btnStun.disabled = state.playerMp < 2 || state.spellStun <= 0;
-  btnStun.innerHTML = `❄️ Стан<br><span>2 MP | ${state.playerMp}/${state.maxMp} | x${state.spellStun}</span>`;
+  btnStun.innerHTML = `❄️ Стан<br><span>2 MP | x${state.spellStun}</span>`;
 
   btnHurricane.disabled = state.playerMp < 4 || state.spellHurricane <= 0;
-  btnHurricane.innerHTML = `🌪️ Ураган<br><span>4 MP | ${state.playerMp}/${state.maxMp} | x${state.spellHurricane}</span>`;
+  btnHurricane.innerHTML = `🌪️ Ураган<br><span>4 MP | x${state.spellHurricane}</span>`;
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
+  // ТОЛЬКО ЭМОДЗИ (без текста)
   state.monsters.slice(0, 6).forEach(m => {
-    const icon = m.behavior === 'flee' ? '🏃' : '🎯';
-    // ИСПОЛЬЗУЕМ ИМЕНА МОНСТРОВ
-    const name = ENEMY_NAMES[m.type] || m.type;
-    eHtml += `<div>${icon} ${name} ❤️${m.hp} 💪${m.atk}</div>`;
+    eHtml += `<div>${m.type}</div>`;
   });
-  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… ещё ${state.monsters.length - 6}</div>`;
+  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
   hudEList.innerHTML = eHtml;
 }
 
@@ -235,8 +186,7 @@ function startGame(name) {
     
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
-    state.maxMp = hero.maxMp;
-    state.playerMp = Math.max(1, Math.floor(hero.maxMp / 2));
+    state.playerMp = 0; // Начинаем с 0 маны
     state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
     state.weaponLevel = 0;
     state.gameMode = 'chase';
@@ -289,13 +239,7 @@ function startGame(name) {
 }
 
 window.movePlayer = movePlayer;
-window.skipTurn = () => {
-    if (!state.gameActive) return;
-    const victimIdx = state.monsters.findIndex(m => m.x === state.player.x && m.y === state.player.y);
-    if (victimIdx !== -1) { fight(state.monsters[victimIdx], victimIdx); if (!state.gameActive) return; }
-    else playSound('skip');
-    afterTurn();
-};
+window.skipTurn = skipTurn;
 
 btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
 btnGuest.addEventListener('click', () => {
@@ -305,7 +249,6 @@ btnGuest.addEventListener('click', () => {
     playSound('menu');
     startGame(name);
 });
-document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
 
 document.getElementById('btn-light').addEventListener('click', () => { castLightning(); updateHUD(); });
 document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
