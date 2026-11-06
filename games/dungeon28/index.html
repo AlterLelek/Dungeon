@@ -12,6 +12,14 @@
     <div id="login-screen">
       <h1>ПОДЗЕМЕЛЬЕ <span id="ver-login"></span></h1>
       
+      <!-- НОВАЯ КАРУСЕЛЬ -->
+      <div class="carousel-container">
+        <button class="c-arrow" id="prev-hero">◀</button>
+        <div class="carousel" id="hero-carousel"></div>
+        <button class="c-arrow" id="next-hero">▶</button>
+      </div>
+      <div class="desc-text" id="hero-desc" style="text-align:center; font-size:12px; color:#9ca3af; min-height:36px; margin-bottom:10px;"></div>
+
       <div class="input-group">
         <label>Имя героя</label>
         <div style="display:flex; gap:8px;">
@@ -19,8 +27,6 @@
           <button id="btn-random-name" class="btn-secondary" title="Случайное имя">🎲</button>
         </div>
       </div>
-
-      <div class="hero-select" id="hero-select"></div>
 
       <button id="btn-guest" class="btn-primary" style="margin-top:15px;">Играть гостем</button>
       <button id="btn-google" class="btn-google">Войти через Google</button>
@@ -45,7 +51,7 @@
           <div>👣 <span id="turns">0</span></div>
           <div id="high-score-line"></div>
           <div><span class="coin-ico"></span> <span id="score">0</span></div>
-          <div>⚡ <span id="energy">0</span>/<span id="max-energy">0</span></div>
+          <div>⚡ <span id="energy">0</span></div>
         </div>
         <div class="hud-enemies">
           <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
@@ -66,6 +72,8 @@
         <button id="btn-hurricane" class="m-btn" style="background-color:#a855f7;">🌪️ Ураган<br><span>4 MP | x0</span></button>
       </div>
 
+      <!-- Сюда вставляется канвас -->
+      
       <div class="dpad" style="margin-top: 10px;">
         <button class="btn wide-row" onclick="movePlayer(0,-32)">▲ W</button>
         <button class="btn" onclick="movePlayer(-32,0)">◀ A</button>
@@ -77,7 +85,7 @@
     </div>
   </div>
 
-  <!-- ПАНЕЛИ -->
+  <!-- ПАНЕЛИ (без изменений) -->
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>
@@ -105,14 +113,14 @@
 
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
-    <div class="panel-row"><span>Громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
+    <div class="panel-row"><span>Общая громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
     <div class="panel-row"><span>Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="10"></div>
-    <div class="panel-row"><span>Фон</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
-    <div class="panel-row"><span>Эффекты</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
+    <div class="panel-row"><span>Фоновый гул</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
+    <div class="panel-row"><span>Удары</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
     
     <div class="set-sep"></div>
-    <div class="panel-row"><span>Монстров +</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
-    <div class="panel-row"><span>Бонус раз в N</span><input type="range" id="set-item-rate" min="1" max="10" value="3"></div>
+    <div class="panel-row"><span>Монстров + (0-10)</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
+    <div class="panel-row"><span>Спавн лута (раз в N)</span><input type="range" id="set-item-rate" min="1" max="10" value="3"></div>
     
     <div class="set-sep"></div>
     <div class="panel-row">
@@ -120,7 +128,7 @@
         <input type="checkbox" id="set-dev-mode"> Режим разработчика
       </label>
     </div>
-    <button id="close-settings" class="close-panel">Закрыть</button>
+    <button id="close-settings" class="close-panel">Закрыть [Esc]</button>
   </div>
 
   <!-- DEV ПАНЕЛЬ -->

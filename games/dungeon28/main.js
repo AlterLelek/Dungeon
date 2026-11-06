@@ -3,7 +3,7 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; // ПРАВКА: локальный импорт
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=20'; 
 
 // Элементы DOM
 const loginScreen = document.getElementById('login-screen');
@@ -28,14 +28,68 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-// ПРАВКА: Если рекорд 0 - не пишем
 if (state.highScore.turns > 0) {
     document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
 } else {
     document.getElementById('high-score-line').innerText = '';
 }
 
-// DEV ПАНЕЛЬ: Герои
+// ==========================================
+// КАРУСЕЛЬ ГЕРОЕВ
+// ==========================================
+function renderCarousel() {
+    const container = document.getElementById('hero-carousel');
+    container.innerHTML = '';
+    const total = HEROES.length;
+    
+    // Отрисовываем левого, центрального и правого
+    for (let offset = -1; offset <= 1; offset++) {
+        const idx = (state.heroIdx + offset + total) % total;
+        const h = HEROES[idx];
+        
+        const div = document.createElement('div');
+        div.className = `hero-card ${offset === 0 ? 'center' : 'side'}`;
+        div.innerHTML = `<div class="c-emoji">${h.emoji}</div><div class="c-name">${h.name}</div>`;
+        
+        // Клик по боковым карточкам центрирует их
+        if (offset !== 0) {
+            div.onclick = () => {
+                state.heroIdx = idx;
+                renderCarousel();
+                playSound('menu');
+            };
+        }
+        container.appendChild(div);
+    }
+    
+    updateHeroDesc();
+}
+
+function updateHeroDesc() {
+    const h = HEROES[state.heroIdx];
+    document.getElementById('hero-desc').innerHTML = `
+        <b>${h.name}</b><br>
+        ❤️ ${h.maxHp} HP &nbsp;|&nbsp; ⚡ ${h.maxMp} MP &nbsp;|&nbsp; 💪 Урон: ${h.lightRange}
+    `;
+}
+
+document.getElementById('prev-hero').onclick = () => {
+    state.heroIdx = (state.heroIdx - 1 + HEROES.length) % HEROES.length;
+    renderCarousel();
+    playSound('menu');
+};
+document.getElementById('next-hero').onclick = () => {
+    state.heroIdx = (state.heroIdx + 1) % HEROES.length;
+    renderCarousel();
+    playSound('menu');
+};
+
+// Инициализация карусели при загрузке
+renderCarousel();
+
+// ==========================================
+// DEV ПАНЕЛЬ
+// ==========================================
 const devHeroesContainer = document.getElementById('dev-heroes');
 HEROES.forEach((h, i) => {
     const details = document.createElement('details');
@@ -50,7 +104,6 @@ HEROES.forEach((h, i) => {
     mpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxMp = parseInt(e.target.value); });
 });
 
-// DEV ПАНЕЛЬ: Монстры
 const devMonstersContainer = document.getElementById('dev-monsters');
 ENEMY_TYPES.forEach(type => {
     const base = state.devSettings.monsters[type];
@@ -69,24 +122,8 @@ ENEMY_TYPES.forEach(type => {
     defLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].def = parseInt(e.target.value); });
 });
 
-// Включение dev-панели
 document.getElementById('set-dev-mode').addEventListener('change', (e) => {
     document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
-});
-
-// ВЫБОР ГЕРОЯ (на экране логина)
-const heroSelect = document.getElementById('hero-select');
-HEROES.forEach((h, i) => {
-    const btn = document.createElement('button');
-    btn.className = `hero-btn ${i === 0 ? 'selected' : ''}`;
-    btn.innerHTML = `${h.emoji}<span>${h.name}</span>`;
-    btn.onclick = () => {
-        document.querySelectorAll('.hero-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        state.heroIdx = i;
-        playSound('menu');
-    };
-    heroSelect.appendChild(btn);
 });
 
 // Случайное имя
@@ -96,7 +133,9 @@ function generateRandomName() {
     guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
 }
 
+// ==========================================
 // HUD
+// ==========================================
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -104,7 +143,6 @@ const hudFloor = document.getElementById('floor-hud');
 const hudTurns = document.getElementById('turns');
 const hudScore = document.getElementById('score');
 const hudEnergy = document.getElementById('energy');
-const hudMaxEnergy = document.getElementById('max-energy');
 const hudECount = document.getElementById('e-count');
 const hudEList = document.getElementById('e-list');
 const hudWeapon = document.getElementById('hero-weapon');
@@ -123,7 +161,6 @@ function updateHUD() {
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
   hudEnergy.innerText = state.playerMp;
-  hudMaxEnergy.innerText = ""; // ПРАВКА: Убрали лимит маны
   hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
   hudFig.innerText = HEROES[state.heroIdx].emoji;
   
@@ -144,14 +181,17 @@ function updateHUD() {
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
-  // ПРАВКА: Только эмодзи, без имен и статов
+  // Выводим врагов со статами, как на скрине (иконка, хп, урон, броня)
   state.monsters.slice(0, 6).forEach(m => {
-    eHtml += `<div>${m.type}</div>`;
+    eHtml += `<div>${m.type} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`;
   });
-  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… ещё ${state.monsters.length - 6}</div>`;
+  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
   hudEList.innerHTML = eHtml;
 }
 
+// ==========================================
+// ОСТАЛЬНАЯ ЛОГИКА (без изменений)
+// ==========================================
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";
   const nextW = state.weapons[state.weaponLevel + 1];
@@ -246,7 +286,7 @@ function startGame(name) {
     
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
-    state.playerMp = 0; // Начинаем с 0 маны (копим)
+    state.playerMp = 0; // Копим с нуля
     state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
     state.weaponLevel = 0;
     state.gameMode = 'chase';
