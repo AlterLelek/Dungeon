@@ -6,7 +6,7 @@ import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=10'; // Обновлен кэш
+} from '../../shared/audio.js?v=11'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -102,11 +102,45 @@ function buyOption(kind) {
   updateShop(); updateHUD();
 }
 
+// МАТЕМАТИКА ПЛАВНОСТИ (Ease In Out)
+function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
 function gameLoop() {
   if (state.gameActive) {
-    const speed = 0.25;
-    if (Math.abs(state.player.px - state.player.x) > 0.5) state.player.px += (state.player.x - state.player.px) * speed; else state.player.px = state.player.x;
-    if (Math.abs(state.player.py - state.player.y) > 0.5) state.player.py += (state.player.y - state.player.py) * speed; else state.player.py = state.player.y;
+    const now = performance.now();
+    const DURATION = 500; // 0.5 секунды (пол секунды)
+    const MON_DURATION = 300; // Монстры чуть быстрее, чтобы не тормозили игру
+    
+    // ПЛАВНОСТЬ ДЛЯ ГЕРОЯ
+    if (state.player.isMoving) {
+        let t = (now - state.player.moveStartTime) / DURATION;
+        if (t >= 1) t = 1;
+        
+        let ease = easeInOutQuad(t);
+        state.player.px = state.player.startPx + (state.player.x - state.player.startPx) * ease;
+        state.player.py = state.player.startPy + (state.player.y - state.player.startPy) * ease;
+        
+        if (t >= 1) state.player.isMoving = false;
+    }
+
+    // ПЛАВНОСТЬ ДЛЯ МОНСТРОВ
+    state.monsters.forEach(m => {
+        if (m.isMoving) {
+            let t = (now - m.moveStartTime) / MON_DURATION;
+            if (t >= 1) t = 1;
+            
+            let ease = easeInOutQuad(t);
+            m.px = m.startPx + (m.x - m.startPx) * ease;
+            m.py = m.startPy + (m.y - m.startPy) * ease;
+            
+            if (t >= 1) m.isMoving = false;
+        } else {
+            m.px = m.x;
+            m.py = m.y;
+        }
+    });
     
     for (let i = state.floaters.length - 1; i >= 0; i--) {
       const f = state.floaters[i]; f.y += f.vy; f.life -= 0.02;
@@ -121,6 +155,11 @@ function gameLoop() {
 
 function startGame(name) {
     initAudio(); 
+    setVolume('master', document.getElementById('set-vol-master').value);
+    setVolume('music', document.getElementById('set-vol-music').value);
+    setVolume('ambient', document.getElementById('set-vol-ambient').value);
+    setVolume('sfx', document.getElementById('set-vol-sfx').value);
+    
     startAmbient(); 
     startMusic();   
     
@@ -198,7 +237,6 @@ document.getElementById('close-records').addEventListener('click', () => documen
 document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
 document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
 
-// ПРИВЯЗКА ВСЕХ НАСТРОЕК
 document.getElementById('set-vol-master').addEventListener('input', (e) => setVolume('master', e.target.value));
 document.getElementById('set-vol-music').addEventListener('input', (e) => setVolume('music', e.target.value));
 document.getElementById('set-vol-ambient').addEventListener('input', (e) => setVolume('ambient', e.target.value));

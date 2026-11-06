@@ -17,7 +17,13 @@ export const state = {
   monsters: [],
   floaters: [],
   
-  player: { x: 32, y: 160, px: 32, py: 160 },
+  // ДОБАВЛЕНЫ ТАЙМЕРЫ ДЛЯ ПЛАВНОСТИ
+  player: { 
+      x: 32, y: 160, 
+      px: 32, py: 160, 
+      startPx: 32, startPy: 160, 
+      isMoving: false, moveStartTime: 0 
+  },
   stairs: { x: 128, y: 128, active: false },
   
   heroIdx: 0,
@@ -26,7 +32,6 @@ export const state = {
   weapons: WARRIOR_WEAPONS,
   stats: { kills: 0, gold: 0, floors: 0 },
 
-  // НОВЫЕ НАСТРОЙКИ ИГРЫ
   settings: {
       difficulty: 'simple',
       monsterAdd: 0,

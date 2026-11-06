@@ -55,13 +55,15 @@ export function placeMonster(type, hp, dmg, behavior) {
   }
   if (!ok) return;
   
-  // Добавляем actionState и restTimer
+  // Добавляем визуальные px, py и таймеры
   state.monsters.push({ 
-      x: mx, y: my, hp: hp, maxHp: hp, atk: dmg, 
+      x: mx, y: my, 
+      px: mx, py: my, startPx: mx, startPy: my, isMoving: false, moveStartTime: 0,
+      hp: hp, maxHp: hp, atk: dmg, 
       def: ENEMY_BASE[type].def || 0, 
       isStunned: false, stunTimer: 0, 
       type: type, behavior: behavior,
-      actionState: 0, // 0 = идти, 1 = телепорт, 2 = отдых
+      actionState: 0, 
       restTimer: 0
   });
 }
@@ -87,6 +89,7 @@ export function initFloor() {
   state.player.y = 5 * CELL; 
   state.player.px = 5 * CELL; 
   state.player.py = 5 * CELL;
+  state.player.isMoving = false;
   
   const baseCount = state.currentFloor + 3;
   const count = Math.min(30, baseCount + state.settings.monsterAdd);

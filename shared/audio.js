@@ -8,8 +8,8 @@ let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
 
-// ОЧЕНЬ ТИХИЕ ДЕФОЛТЫ (чтобы не оглушало)
-const volumes = { master: 0.2, music: 0.1, ambient: 0.01, sfx: 0.2 };
+// Дефолтные громкости (синхронизированы с HTML)
+const volumes = { master: 0.2, music: 0.1, ambient: 0.05, sfx: 0.3 };
 
 export function initAudio() {
   if (isInit) return;
@@ -28,6 +28,7 @@ export function initAudio() {
   sfxGain = audioCtx.createGain();
   sfxGain.connect(masterGain);
 
+  // ЖЕСТКАЯ УСТАНОВКА ГРОМКОСТИ ПРИ СТАРТЕ
   applyVolumes();
   isInit = true;
 }

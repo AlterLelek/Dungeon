@@ -1,8 +1,8 @@
 // games/dungeon28/game.js
-import { CELL } from './config.js';
+import { CELL, ITEM_TYPES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt } from './state.js';
 import { initFloor, findFreeCell } from './map.js';
-import { playSound } from '../../shared/audio.js?v=10'; 
+import { playSound } from '../../shared/audio.js?v=11'; 
 
 export function addFloater(x, y, text, color) { 
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
@@ -51,25 +51,12 @@ function monsterAttack(m) {
 
 function moveMonsters() {
   state.monsters.forEach((m, idx) => {
-    // Если монстр в стане
     if (m.isStunned) {
       m.stunTimer--;
       if (m.stunTimer <= 0) m.isStunned = false;
       return;
     }
 
-    // Если монстр отдыхает
-    if (m.actionState === 2) {
-        if (m.restTimer > 0) {
-            m.restTimer--;
-            addFloater(m.x, m.y, "zzZ", "#9ca3af"); // Визуальный эффект сна
-            return;
-        } else {
-            m.actionState = 0; // Проснулся и готов идти
-        }
-    }
-
-    // ДЕЙСТВИЕ 1: Идет к игроку (1-3 шага)
     if (m.actionState === 0) {
         let steps = randomInt(1, 3);
         for (let s = 0; s < steps; s++) {
@@ -97,14 +84,18 @@ function moveMonsters() {
                 if (!blocked && !playerBlocked) {
                     m.x = nx;
                     m.y = ny;
+                    // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ МОНСТРА
+                    m.startPx = m.px;
+                    m.startPy = m.py;
+                    m.moveStartTime = performance.now();
+                    m.isMoving = true;
                 } else {
                     break; 
                 }
             }
         }
-        m.actionState = 1; // Следующий ход - телепорт
+        m.actionState = 1; 
     } 
-    // ДЕЙСТВИЕ 2: Телепортируется (1-4 шага)
     else if (m.actionState === 1) {
         const dist = randomInt(1, 4); 
         const dirs = [[1,0], [-1,0], [0,1], [0,-1]]; 
@@ -118,12 +109,26 @@ function moveMonsters() {
             if (!blocked && !playerBlocked) {
                 m.x = nx;
                 m.y = ny;
+                // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ ТЕЛЕПОРТА
+                m.startPx = m.px;
+                m.startPy = m.py;
+                m.moveStartTime = performance.now();
+                m.isMoving = true;
                 addFloater(m.x, m.y, "Teleport", "#a78bfa"); 
             }
         }
         
-        m.actionState = 2; // После телепорта - отдыхать
-        m.restTimer = randomInt(1, 3); // Отдых 1-3 хода
+        m.actionState = 2; 
+        m.restTimer = randomInt(1, 3); 
+    }
+    else if (m.actionState === 2) {
+        if (m.restTimer > 0) {
+            m.restTimer--;
+            addFloater(m.x, m.y, "zzZ", "#9ca3af"); 
+            return;
+        } else {
+            m.actionState = 0; 
+        }
     }
   });
 }
@@ -142,15 +147,26 @@ export function movePlayer(dx, dy) {
     const killed = fight(m, victimIdx);
     if (state.playerHp <= 0) { endGame(); return; }
     
-    // Проход сквозь монстра
     if (!killed) {
       m.x = state.player.x;
       m.y = state.player.y;
+      // ПЛАВНОСТЬ ДЛЯ ОТБРОШЕННОГО МОНСТРА
+      m.startPx = m.px;
+      m.startPy = m.py;
+      m.moveStartTime = performance.now();
+      m.isMoving = true;
     }
   }
   
   state.player.x = nx; 
   state.player.y = ny;
+  
+  // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ ГЕРОЯ
+  state.player.startPx = state.player.px;
+  state.player.startPy = state.player.py;
+  state.player.moveStartTime = performance.now();
+  state.player.isMoving = true;
+  
   playSound('step'); 
   
   if (state.stairs.active && nx === state.stairs.x && ny === state.stairs.y) {
@@ -164,18 +180,32 @@ export function movePlayer(dx, dy) {
     const item = state.items[pickupIdx];
     playSound('collect'); 
     
-    if (item.type === 'coin') { state.goldCount += 2; state.stats.gold+=2; addFloater(nx, ny, "+2g", "#fbbf24"); }
-    if (item.type === 'star') { let add = randomInt(1,3); state.tempAtk += add; addFloater(nx, ny, "+" + add, "#a78bfa"); }
-    if (item.type === 'shield') { let add = randomInt(1,3); state.tempDef += add; addFloater(nx, ny, "+" + add, "#3b82f6"); }
-    if (item.type === 'heart') { state.playerHp += 20; addFloater(nx, ny, "+20", "#22c55e"); }
-    if (item.type === 'scroll') { state.energy += 2; addFloater(nx, ny, "+2⚡", "#eab308"); }
+    if (item.type === 'coin') { 
+        let add = randomInt(1, 3); state.goldCount += add; state.stats.gold += add; addFloater(nx, ny, "+" + add + "g", "#fbbf24"); 
+    }
+    if (item.type === 'star') { 
+        let add = randomInt(1, 3); state.tempAtk += add; addFloater(nx, ny, "+" + add + "а", "#a78bfa"); 
+    }
+    if (item.type === 'shield') { 
+        let add = randomInt(1, 3); state.tempDef += add; addFloater(nx, ny, "+" + add + "з", "#3b82f6"); 
+    }
+    if (item.type === 'scroll') { 
+        let add = randomInt(1, 3); state.energy += add; addFloater(nx, ny, "+" + add + "м", "#eab308"); 
+    }
+    
+    if (item.type === 'heart') { state.playerHp += 20; addFloater(nx, ny, "+20hp", "#22c55e"); }
+    if (item.type === 'lightning') { state.energy += 1; addFloater(nx, ny, "+1⚡", "#fbbf24"); }
+    if (item.type === 'stun') { state.energy += 1; addFloater(nx, ny, "+1❄️", "#38bdf8"); }
+    
     state.items.splice(pickupIdx, 1);
   }
   
   state.totalTurns++;
+  
   if (state.totalTurns % state.settings.itemRate === 0 && !state.stairs.active) {
     const cell = findFreeCell();
-    state.items.push({x:cell.x, y:cell.y, type: ['coin', 'star', 'shield', 'heart'][Math.floor(Math.random()*4)]});
+    const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+    state.items.push({x:cell.x, y:cell.y, type: type});
   }
   
   moveMonsters();
