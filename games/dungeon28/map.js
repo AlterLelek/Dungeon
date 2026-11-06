@@ -1,6 +1,6 @@
 // games/dungeon28/map.js
 import { GRID, CELL, ENEMY_TYPES, ENEMY_BASE } from './config.js';
-import { state } from './state.js';
+import { state, randomInt } from './state.js';
 
 let bgCanvas = null;
 
@@ -55,7 +55,11 @@ export function placeMonster(type, hp, dmg, behavior) {
   }
   if (!ok) return;
   
-  // Добавляем визуальные px, py и таймеры
+  // КУБИК ИНИЦИАТИВЫ (0 - идти, 1 - телепорт, 2 - отдых)
+  let initState = randomInt(0, 2);
+  let initRest = 0;
+  if (initState === 2) initRest = randomInt(1, 3);
+
   state.monsters.push({ 
       x: mx, y: my, 
       px: mx, py: my, startPx: mx, startPy: my, isMoving: false, moveStartTime: 0,
@@ -63,8 +67,8 @@ export function placeMonster(type, hp, dmg, behavior) {
       def: ENEMY_BASE[type].def || 0, 
       isStunned: false, stunTimer: 0, 
       type: type, behavior: behavior,
-      actionState: 0, 
-      restTimer: 0
+      actionState: initState, 
+      restTimer: initRest
   });
 }
 

@@ -17,14 +17,13 @@ export const state = {
   monsters: [],
   floaters: [],
   
-  // ДОБАВЛЕНЫ ТАЙМЕРЫ ДЛЯ ПЛАВНОСТИ
   player: { 
       x: 32, y: 160, 
       px: 32, py: 160, 
       startPx: 32, startPy: 160, 
       isMoving: false, moveStartTime: 0 
   },
-  stairs: { x: 128, y: 128, active: false },
+  stairs: { x: 288, y: 288, active: false },
   
   heroIdx: 0,
   gameMode: 'chase',
@@ -50,4 +49,11 @@ export function getTotalDef() {
 
 export function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// РАБОЧИЙ СБРОС БОНУСОВ
+export function clearBonuses() {
+    state.tempAtk = 0;
+    state.tempDef = 0;
+    state.energy = 0;
 }

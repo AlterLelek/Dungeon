@@ -57,7 +57,7 @@ function drawItem(ctx, x, y, type) {
 }
 
 export function draw(ctx, bgCanvas) {
-  ctx.globalAlpha = 1.0; // ЖЕСТКИЙ СБРОС ПРОЗРАЧНОСТИ
+  ctx.globalAlpha = 1.0; 
   ctx.clearRect(0, 0, 320, 320);
 
   if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); 
@@ -69,30 +69,32 @@ export function draw(ctx, bgCanvas) {
     ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(320, i); ctx.stroke(); 
   }
 
-  if (state.stairs.active) { 
+  // ЛЕСТНИЦА ВСЕГДА ВИДНА
+  if (state.stairs.active) {
     ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); 
     ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); 
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); 
+    ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24);
+    ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); 
   }
 
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
 
-  // Рисуем монстров (с принудительной непрозрачностью)
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
     if (m.isStunned) { 
       ctx.fillStyle = "rgba(147,51,234,0.5)"; 
-      ctx.fillRect(m.x+2, m.y+2, 28, 28); 
+      ctx.fillRect(m.px+2, m.py+2, 28, 28); 
     }
-    drawCell(ctx, m.x, m.y, m.type, 22); 
-    drawBars(ctx, m.x, m.y, m.hp, m.maxHp, m.def, m.atk);
+    drawCell(ctx, m.px, m.py, m.type, 22); 
+    drawBars(ctx, m.px, m.py, m.hp, m.maxHp, m.def, m.atk);
   });
 
-  // Рисуем игрока
   ctx.globalAlpha = 1.0;
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, HEROES[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
-  // Рисуем всплывающий текст
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; 
     ctx.fillStyle = f.color; 

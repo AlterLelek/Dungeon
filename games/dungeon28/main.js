@@ -6,7 +6,7 @@ import { movePlayer } from './game.js';
 import { WARRIOR_WEAPONS } from './config.js';
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=11'; 
+} from '../../shared/audio.js?v=13'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -102,7 +102,6 @@ function buyOption(kind) {
   updateShop(); updateHUD();
 }
 
-// МАТЕМАТИКА ПЛАВНОСТИ (Ease In Out)
 function easeInOutQuad(t) {
     return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
@@ -110,31 +109,25 @@ function easeInOutQuad(t) {
 function gameLoop() {
   if (state.gameActive) {
     const now = performance.now();
-    const DURATION = 500; // 0.5 секунды (пол секунды)
-    const MON_DURATION = 300; // Монстры чуть быстрее, чтобы не тормозили игру
+    const DURATION = 500; 
+    const MON_DURATION = 300; 
     
-    // ПЛАВНОСТЬ ДЛЯ ГЕРОЯ
     if (state.player.isMoving) {
         let t = (now - state.player.moveStartTime) / DURATION;
         if (t >= 1) t = 1;
-        
         let ease = easeInOutQuad(t);
         state.player.px = state.player.startPx + (state.player.x - state.player.startPx) * ease;
         state.player.py = state.player.startPy + (state.player.y - state.player.startPy) * ease;
-        
         if (t >= 1) state.player.isMoving = false;
     }
 
-    // ПЛАВНОСТЬ ДЛЯ МОНСТРОВ
     state.monsters.forEach(m => {
         if (m.isMoving) {
             let t = (now - m.moveStartTime) / MON_DURATION;
             if (t >= 1) t = 1;
-            
             let ease = easeInOutQuad(t);
             m.px = m.startPx + (m.x - m.startPx) * ease;
             m.py = m.startPy + (m.y - m.startPy) * ease;
-            
             if (t >= 1) m.isMoving = false;
         } else {
             m.px = m.x;

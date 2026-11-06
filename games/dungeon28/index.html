@@ -63,12 +63,10 @@
 
     <div id="login-screen">
         <h1>Подземелье 28</h1>
-        
         <div class="input-group">
             <input type="text" id="guest-name" placeholder="Имя героя" maxlength="20">
             <button class="dice-btn" id="btn-random-name" title="Случайное имя">🎲</button>
         </div>
-        
         <button class="btn-guest" id="btn-guest">Играть без аккаунта</button>
         <div class="divider">ИЛИ</div>
         <button class="btn-google" id="btn-google">Войти через Google</button>
@@ -91,7 +89,7 @@
                 <div>🏰 <span id="floor-hud">1</span></div>
                 <div>👣 <span id="turns">0</span></div>
                 <div style="color:#f59e0b;">🏆 <span id="high-score">0</span></div>
-                <div><span class="coin-ico"></span> <span id="score">0</span></div>
+                <div>🪙 <span id="score">0</span></div>
                 <div>⚡ <span id="energy">0</span></div>
             </div>
             <div class="hud-enemies" style="color:#a855f7;">
@@ -132,13 +130,11 @@
 
         <div id="settings-panel" class="panel">
             <h3>⚙️ Настройки</h3>
-            
             <h4>🔊 Звук</h4>
             <div class="panel-row"><span class="panel-label">Общая громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
             <div class="panel-row"><span class="panel-label">Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="10"></div>
             <div class="panel-row"><span class="panel-label">Фоновый гул</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
             <div class="panel-row"><span class="panel-label">Удары</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
-
             <h4>🎮 Геймплей</h4>
             <div class="panel-row">
                 <span class="panel-label">Сложность</span>
@@ -160,11 +156,10 @@
                     <option value="heart">Сердца</option>
                 </select>
             </div>
-
             <button class="close-panel" id="close-settings">Закрыть [Esc]</button>
         </div>
     </div>
 
-    <script type="module" src="main.js?v=11"></script>
+    <script type="module" src="main.js?v=13"></script>
 </body>
 </html>

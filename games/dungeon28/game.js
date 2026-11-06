@@ -1,11 +1,27 @@
 // games/dungeon28/game.js
 import { CELL, ITEM_TYPES } from './config.js';
-import { state, getTotalAtk, getTotalDef, randomInt } from './state.js';
+import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell } from './map.js';
-import { playSound } from '../../shared/audio.js?v=11'; 
+import { playSound } from '../../shared/audio.js?v=13'; 
+
+let fadeTimer = null;
 
 export function addFloater(x, y, text, color) { 
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
+}
+
+export function startFadeOut() {
+  if (fadeTimer) return;
+  fadeTimer = setInterval(() => {
+    if (state.items.length === 0) {
+      clearInterval(fadeTimer); 
+      fadeTimer = null; 
+      return;
+    }
+    const removeCount = Math.max(1, Math.ceil(state.items.length / 40));
+    state.items.splice(0, removeCount);
+    playSound('collect');
+  }, 100);
 }
 
 export function fight(m, index) {
@@ -21,6 +37,11 @@ export function fight(m, index) {
     state.goldCount += 2; 
     state.energy += 1;
     state.stats.kills++;
+    
+    if (state.monsters.length === 0) {
+        state.stairs.active = true;
+        startFadeOut();
+    }
     return true; 
   }
   
@@ -84,7 +105,6 @@ function moveMonsters() {
                 if (!blocked && !playerBlocked) {
                     m.x = nx;
                     m.y = ny;
-                    // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ МОНСТРА
                     m.startPx = m.px;
                     m.startPy = m.py;
                     m.moveStartTime = performance.now();
@@ -109,7 +129,6 @@ function moveMonsters() {
             if (!blocked && !playerBlocked) {
                 m.x = nx;
                 m.y = ny;
-                // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ ТЕЛЕПОРТА
                 m.startPx = m.px;
                 m.startPy = m.py;
                 m.moveStartTime = performance.now();
@@ -150,7 +169,6 @@ export function movePlayer(dx, dy) {
     if (!killed) {
       m.x = state.player.x;
       m.y = state.player.y;
-      // ПЛАВНОСТЬ ДЛЯ ОТБРОШЕННОГО МОНСТРА
       m.startPx = m.px;
       m.startPy = m.py;
       m.moveStartTime = performance.now();
@@ -161,7 +179,6 @@ export function movePlayer(dx, dy) {
   state.player.x = nx; 
   state.player.y = ny;
   
-  // ЗАПУСКАЕМ ПЛАВНОСТЬ ДЛЯ ГЕРОЯ
   state.player.startPx = state.player.px;
   state.player.startPy = state.player.py;
   state.player.moveStartTime = performance.now();
@@ -171,6 +188,7 @@ export function movePlayer(dx, dy) {
   
   if (state.stairs.active && nx === state.stairs.x && ny === state.stairs.y) {
     state.currentFloor++;
+    clearBonuses(); // СБРОС ВРЕМЕННЫХ БОНУСОВ ПРИ ПЕРЕХОДЕ
     initFloor();
     return;
   }
