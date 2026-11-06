@@ -1,5 +1,5 @@
 // games/dungeon28/state.js
-import { WARRIOR_WEAPONS } from './config.js';
+import { HEROES, ENEMY_BASE, ENEMY_TYPES, WARRIOR_WEAPONS } from './config.js';
 
 export const state = {
   goldCount: 0,
@@ -20,10 +20,7 @@ export const state = {
   floaters: [],
   
   player: { 
-      x: 32, y: 160, 
-      px: 32, py: 160, 
-      startPx: 32, startPy: 160, 
-      isMoving: false, moveStartTime: 0 
+      x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0 
   },
   stairs: { x: 288, y: 288, active: false },
   
@@ -36,6 +33,12 @@ export const state = {
   settings: {
       monsterAdd: 0,
       itemRate: 3
+  },
+  
+  // ДЛЯ МЕНЮ РАЗРАБОТЧИКА
+  devSettings: {
+      heroes: JSON.parse(JSON.stringify(HEROES)), // Клонируем
+      monsters: JSON.parse(JSON.stringify(ENEMY_BASE))
   }
 };
 

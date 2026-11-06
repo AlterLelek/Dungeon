@@ -1,8 +1,7 @@
 // games/dungeon28/config.js
-export const VERSION = "4.1";
+export const VERSION = "4.2";
 export const GRID = 10;          
 export const CELL = 32;          
-export const MAX_ITEMS = 40;     
 
 export const HEROES = [
   {name:"Воин",   emoji:"🦸", set:"warrior", maxHp:100, maxMp:3,  lightRange:64},
@@ -54,8 +53,8 @@ export const MAGE_WEAPONS = [
 
 export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🏹","🐢","👼","🧙‍♂️"];
 export const ENEMY_BASE = {
-  "💀": {hp:100, atk:5}, "👻": {hp:75, atk:4}, "🐭": {hp:50, atk:3},
-  "🕷": {hp:60, atk:4}, "👺": {hp:130, atk:6}, "🧟": {hp:150, atk:6, def:1},
+  "💀": {hp:100, atk:5, def:0}, "👻": {hp:75, atk:4, def:0}, "🐭": {hp:50, atk:3, def:0},
+  "🕷": {hp:60, atk:4, def:0}, "👺": {hp:130, atk:6, def:1}, "🧟": {hp:150, atk:6, def:1},
   "🏹": {hp:70, atk:8, def:1}, "🐢": {hp:200, atk:3, def:8},
   "👼": {hp:120, atk:7, def:3}, "🧙‍♂️": {hp:90, atk:5, def:2}
 };

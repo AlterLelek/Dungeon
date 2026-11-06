@@ -3,10 +3,10 @@ import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, castLightning, castHeal, castStun } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION } from './config.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=14'; 
+} from '../../shared/audio.js?v=15'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -21,11 +21,49 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// Устанавливаем версии
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
-// Генерация выбора героев
+// --- ГЕНЕРАЦИЯ UI РАЗРАБОТЧИКА ---
+const devHeroesContainer = document.getElementById('dev-heroes');
+HEROES.forEach((h, i) => {
+    const details = document.createElement('details');
+    details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
+    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
+    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-hero-${i}-hp" value="${h.maxHp}">`;
+    const mpLabel = document.createElement('div'); mpLabel.className = 'dev-stat';
+    mpLabel.innerHTML = `<span>MP:</span> <input type="number" id="dev-hero-${i}-mp" value="${h.maxMp}">`;
+    details.appendChild(hpLabel); details.appendChild(mpLabel);
+    devHeroesContainer.appendChild(details);
+    
+    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxHp = parseInt(e.target.value); });
+    mpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxMp = parseInt(e.target.value); });
+});
+
+const devMonstersContainer = document.getElementById('dev-monsters');
+ENEMY_TYPES.forEach(type => {
+    const base = state.devSettings.monsters[type];
+    const details = document.createElement('details');
+    details.innerHTML = `<summary>${type} Монстр</summary>`;
+    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
+    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-mon-${type}-hp" value="${base.hp}">`;
+    const atkLabel = document.createElement('div'); atkLabel.className = 'dev-stat';
+    atkLabel.innerHTML = `<span>ATK:</span> <input type="number" id="dev-mon-${type}-atk" value="${base.atk}">`;
+    const defLabel = document.createElement('div'); defLabel.className = 'dev-stat';
+    defLabel.innerHTML = `<span>DEF:</span> <input type="number" id="dev-mon-${type}-def" value="${base.def}">`;
+    details.appendChild(hpLabel); details.appendChild(atkLabel); details.appendChild(defLabel);
+    devMonstersContainer.appendChild(details);
+
+    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].hp = parseInt(e.target.value); });
+    atkLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].atk = parseInt(e.target.value); });
+    defLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].def = parseInt(e.target.value); });
+});
+
+document.getElementById('set-dev-mode').addEventListener('change', (e) => {
+    document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
+});
+
+// --- ВЫБОР ГЕРОЯ ---
 const heroSelect = document.getElementById('hero-select');
 HEROES.forEach((h, i) => {
     const btn = document.createElement('button');
@@ -42,13 +80,11 @@ HEROES.forEach((h, i) => {
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
-
 function generateRandomName() {
-    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-    guestNameInput.value = `${adj} ${noun}`;
+    guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
 }
 
+// --- HUD ---
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -159,10 +195,7 @@ function gameLoop() {
             m.px = m.startPx + (m.x - m.startPx) * ease;
             m.py = m.startPy + (m.y - m.startPy) * ease;
             if (t >= 1) m.isMoving = false;
-        } else {
-            m.px = m.x;
-            m.py = m.y;
-        }
+        } else { m.px = m.x; m.py = m.y; }
     });
     
     for (let i = state.floaters.length - 1; i >= 0; i--) {
@@ -182,19 +215,17 @@ function startGame(name) {
     setVolume('music', document.getElementById('set-vol-music').value);
     setVolume('ambient', document.getElementById('set-vol-ambient').value);
     setVolume('sfx', document.getElementById('set-vol-sfx').value);
-    
-    startAmbient(); 
-    startMusic();   
+    startAmbient(); startMusic();   
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     
-    const magicRow = document.querySelector('.magic-row');
-    gameScreen.insertBefore(canvas, magicRow);
+    const btnRow = document.getElementById('btn-row');
+    gameScreen.insertBefore(canvas, btnRow.nextSibling);
     
     localStorage.setItem('pz_heroName', name);
     
-    const hero = HEROES[state.heroIdx];
+    const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
     state.maxMp = hero.maxMp;
     state.playerMp = Math.floor(hero.maxMp / 2);
@@ -206,9 +237,7 @@ function startGame(name) {
     state.goldCount = 0;
     state.totalTurns = 0;
     state.stats = { kills: 0, gold: 0, floors: 0 };
-    state.tempAtk = 0;
-    state.tempDef = 0;
-    state.permanentShield = 0;
+    state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -245,6 +274,15 @@ function startGame(name) {
     });
 }
 
+window.movePlayer = movePlayer;
+window.skipTurn = () => {
+    if (!state.gameActive) return;
+    const victimIdx = state.monsters.findIndex(m => m.x === state.player.x && m.y === state.player.y);
+    if (victimIdx !== -1) { fight(state.monsters[victimIdx], victimIdx); if (!state.gameActive) return; }
+    else playSound('skip');
+    afterTurn();
+};
+
 btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
 btnGuest.addEventListener('click', () => {
     const name = guestNameInput.value.trim();
@@ -265,8 +303,7 @@ document.getElementById('shop-wpn-btn').addEventListener('click', () => buyOptio
 document.getElementById('shop-shd-btn').addEventListener('click', () => buyOption('shield'));
 
 document.getElementById('records-btn').addEventListener('click', () => { 
-  playSound('menu'); 
-  document.getElementById('records-panel').style.display = 'block'; 
+  playSound('menu'); document.getElementById('records-panel').style.display = 'block'; 
   document.getElementById('rec-highscore').innerText = state.highScore;
   document.getElementById('rec-kills').innerText = state.stats.kills;
   document.getElementById('rec-gold').innerText = state.stats.gold;

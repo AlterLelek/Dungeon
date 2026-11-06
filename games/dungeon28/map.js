@@ -1,5 +1,5 @@
 // games/dungeon28/map.js
-import { GRID, CELL, ENEMY_TYPES, ENEMY_BASE } from './config.js';
+import { GRID, CELL, ENEMY_TYPES } from './config.js';
 import { state, randomInt } from './state.js';
 
 let bgCanvas = null;
@@ -60,14 +60,11 @@ export function placeMonster(type, hp, dmg, behavior) {
   if (initState === 2) initRest = randomInt(1, 3);
 
   state.monsters.push({ 
-      x: mx, y: my, 
-      px: mx, py: my, startPx: mx, startPy: my, isMoving: false, moveStartTime: 0,
-      hp: hp, maxHp: hp, atk: dmg, 
-      def: ENEMY_BASE[type].def || 0, 
+      x: mx, y: my, px: mx, py: my, startPx: mx, startPy: my, isMoving: false, moveStartTime: 0,
+      hp: hp, maxHp: hp, atk: dmg, def: state.devSettings.monsters[type].def || 0, 
       isStunned: false, stunTimer: 0, 
       type: type, behavior: behavior,
-      actionState: initState, 
-      restTimer: initRest
+      actionState: initState, restTimer: initRest
   });
 }
 
@@ -88,10 +85,8 @@ export function initFloor() {
   state.floaters = []; 
   state.stairs.active = false;
   
-  state.player.x = 5 * CELL; 
-  state.player.y = 5 * CELL; 
-  state.player.px = 5 * CELL; 
-  state.player.py = 5 * CELL;
+  state.player.x = 5 * CELL; state.player.y = 5 * CELL; 
+  state.player.px = 5 * CELL; state.player.py = 5 * CELL;
   state.player.isMoving = false;
   
   const baseCount = state.currentFloor + 3;
@@ -99,7 +94,8 @@ export function initFloor() {
   
   for (let i = 0; i < count; i++) {
     const type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
-    const base = ENEMY_BASE[type];
+    // БЕРЕМ СТАТЫ ИЗ DEV SETTINGS
+    const base = state.devSettings.monsters[type]; 
     let hp = base.hp + 10*(state.currentFloor-1); 
     let dmg = base.atk + (state.currentFloor-1);
     
