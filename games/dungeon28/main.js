@@ -3,7 +3,8 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=20'; 
+// ВАЖНО: Теперь аудио лежит в этой же папке, поэтому импорт локальный
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
 
 // Элементы DOM
 const loginScreen = document.getElementById('login-screen');
@@ -67,9 +68,10 @@ function renderCarousel() {
 
 function updateHeroDesc() {
     const h = HEROES[state.heroIdx];
+    const w = h.set === 'mage' ? MAGE_WEAPONS[0] : WARRIOR_WEAPONS[0];
     document.getElementById('hero-desc').innerHTML = `
         <b>${h.name}</b><br>
-        ❤️ ${h.maxHp} HP &nbsp;|&nbsp; ⚡ ${h.maxMp} MP &nbsp;|&nbsp; 💪 Урон: ${h.lightRange}
+        ❤️ ${h.maxHp} HP &nbsp;|&nbsp; ⚡ ${h.maxMp} MP &nbsp;|&nbsp; ⚔️ Урон: ${w.dmg}
     `;
 }
 
@@ -181,7 +183,8 @@ function updateHUD() {
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
-  // Выводим врагов со статами, как на скрине (иконка, хп, урон, броня)
+  
+  // Выводим врагов со статами, как на скрине
   state.monsters.slice(0, 6).forEach(m => {
     eHtml += `<div>${m.type} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`;
   });
@@ -190,7 +193,7 @@ function updateHUD() {
 }
 
 // ==========================================
-// ОСТАЛЬНАЯ ЛОГИКА (без изменений)
+// ОСТАЛЬНАЯ ЛОГИКА
 // ==========================================
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";

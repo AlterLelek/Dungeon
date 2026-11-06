@@ -9,17 +9,17 @@ body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display:
 input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #4b5563; background: #2b2b3b; color: white; font-size: 16px; outline: none; }
 
 /* КАРУСЕЛЬ ГЕРОЕВ */
-.carousel-container { display: flex; align-items: center; justify-content: center; width: 100%; gap: 10px; margin: 5px 0; }
-.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+.carousel-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px; margin: 10px 0; }
+.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
 .c-arrow:hover { background: rgba(255,255,255,0.3); }
-.carousel { display: flex; align-items: center; justify-content: center; gap: 10px; width: 200px; overflow: hidden; height: 100px; }
-.hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; width: 70px; text-align: center; }
-.hero-card.center { transform: scale(1.2); z-index: 2; opacity: 1; }
+.carousel { display: flex; align-items: center; justify-content: center; gap: 5px; width: 220px; overflow: hidden; height: 100px; }
+.hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; width: 70px; flex-shrink: 0; text-align: center; }
+.hero-card.center { transform: scale(1.15); z-index: 2; opacity: 1; }
 .hero-card.side { transform: scale(0.8); opacity: 0.5; }
-.hero-card .c-emoji { font-size: 32px; }
-.hero-card.center .c-emoji { font-size: 42px; text-shadow: 0 0 10px rgba(251,191,36,0.5); }
-.hero-card .c-name { font-size: 11px; margin-top: 5px; color: #fff; font-weight: bold; }
-.hero-card.center .c-name { color: #fbbf24; }
+.hero-card .c-emoji { font-size: 30px; }
+.hero-card.center .c-emoji { font-size: 42px; text-shadow: 0 0 15px rgba(251,191,36,0.4); }
+.hero-card .c-name { font-size: 11px; margin-top: 5px; color: #9ca3af; font-weight: bold; }
+.hero-card.center .c-name { color: #fbbf24; font-size: 13px; }
 
 .btn-primary { padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
 .btn-secondary { padding: 8px 12px; background: #374151; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
