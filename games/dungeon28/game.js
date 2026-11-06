@@ -1,7 +1,7 @@
-import { CELL, ITEM_TYPES, HEROES, ENEMY_TYPES } from './config.js';
+import { CELL, ITEM_TYPES, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
-import { playSound } from './audio.js'; 
+import { playSound } from '../../shared/audio.js?v=20'; 
 
 let fadeTimer = null;
 let floorClearTimer = null;
@@ -18,6 +18,7 @@ export function startFadeOut() {
     }
     const removeCount = Math.max(1, Math.ceil(state.items.length / 40));
     state.items.splice(0, removeCount);
+    playSound('collect');
   }, 100);
 }
 
@@ -43,12 +44,12 @@ export function fight(m, index) {
     playSound('kill'); 
     state.monsters.splice(index, 1); 
     state.goldCount += 2; 
-    state.playerMp += 1; // Мана не лимитирована
+    state.playerMp += 1; 
+    state.stats.kills++;
     
-    // ДОБАВЛЯЕМ ТРУП
+    // Добавляем труп
     state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     
-    state.stats.kills++;
     if (state.monsters.length === 0) {
         state.stairs.active = true;
         startFadeOut();
@@ -67,7 +68,7 @@ export function fight(m, index) {
   return false;
 }
 
-// МАГИЯ
+// МАГИЯ (БЕЗ ЛИМИТОВ)
 export function castLightning() {
     if (state.playerMp < 3 || state.spellLightning <= 0) return;
     state.playerMp -= 3; state.spellLightning--;
@@ -82,7 +83,7 @@ export function castLightning() {
                 state.monsters.splice(idx, 1);
                 state.goldCount += 2;
                 state.stats.kills++;
-                state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 }); // И тут труп
+                state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
             }
         }
     });
@@ -154,19 +155,16 @@ function moveMonsters() {
 
     // НЕКРОМАНТ ПОДНИМАЕТ ТРУП
     if (m.type === "🧙‍♂️" && Math.random() < 0.3) {
-        // Ищем труп в радиусе 2 клеток
         const corpseIdx = state.corpses.findIndex(c => 
             Math.abs(c.x - m.x) <= CELL * 2 && Math.abs(c.y - m.y) <= CELL * 2
         );
         if (corpseIdx !== -1) {
             const corpse = state.corpses[corpseIdx];
             state.corpses.splice(corpseIdx, 1);
-            
-            // Спавним зомби на месте трупа
             placeMonster("🧟", 150, 6, m.behavior, corpse.x, corpse.y);
             addFloater(corpse.x, corpse.y, "☠️ Восстал!", "#a78bfa");
             playSound('magic');
-            return; // Некромант потратил ход
+            return; 
         }
     }
 
@@ -223,6 +221,7 @@ function moveMonsters() {
                 m.x = nx; m.y = ny;
                 m.startPx = m.px; m.startPy = m.py;
                 m.moveStartTime = performance.now(); m.isMoving = true;
+                addFloater(m.x, m.y, "Teleport", "#a78bfa"); 
             }
         }
         m.actionState = 2; 
@@ -231,6 +230,7 @@ function moveMonsters() {
     else if (m.actionState === 2) {
         if (m.restTimer > 0) {
             m.restTimer--;
+            addFloater(m.x, m.y, "zzZ", "#9ca3af"); 
             return;
         } else {
             m.actionState = 0; 
@@ -308,7 +308,7 @@ export function skipTurn() {
     if (!state.gameActive) return;
     const victimIdx = state.monsters.findIndex(m => m.x === state.player.x && m.y === state.player.y);
     if (victimIdx !== -1) { fight(state.monsters[victimIdx], victimIdx); if (!state.gameActive) return; }
-    else playSound('step'); // типо шаг
+    else playSound('skip');
     state.totalTurns++;
     moveMonsters();
     if (state.playerHp <= 0) endGame();

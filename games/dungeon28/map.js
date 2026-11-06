@@ -13,10 +13,19 @@ export function buildCaveBackground() {
     c.fillStyle = Math.random() < 0.5 ? 'rgba(64,54,48,0.35)' : 'rgba(28,24,22,0.35)';
     c.beginPath(); c.ellipse(x, y, r, r*(0.5+Math.random()*0.7), Math.random()*Math.PI, 0, 2*Math.PI); c.fill();
   }
+  for (let i = 0; i < 14; i++) {
+    let x = Math.random()*320, y = Math.random()*320;
+    c.strokeStyle = 'rgba(12,10,9,0.5)'; c.lineWidth = 1 + Math.random()*1.5; c.beginPath(); c.moveTo(x, y);
+    for (let k = 0; k < 5; k++) { x += (Math.random()-0.5)*40; y += (Math.random()-0.5)*40; c.lineTo(x, y); } c.stroke();
+  }
   c.fillStyle = 'rgba(10,8,8,0.85)';
   for (let i = 0; i < 8; i++) {
     const x = i*40 + Math.random()*20, w = 14 + Math.random()*18, h = 20 + Math.random()*36;
     c.beginPath(); c.moveTo(x-w/2, 0); c.lineTo(x+w/2, 0); c.lineTo(x, h); c.closePath(); c.fill();
+  }
+  for (let i = 0; i < 6; i++) {
+    const x = Math.random()*320, w = 16 + Math.random()*20, h = 14 + Math.random()*30;
+    c.beginPath(); c.moveTo(x-w/2, 320); c.lineTo(x+w/2, 320); c.lineTo(x, 320-h); c.closePath(); c.fill();
   }
   const g = c.createRadialGradient(160, 160, 80, 160, 160, 230);
   g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.55)'); c.fillStyle = g; c.fillRect(0, 0, 320, 320);
@@ -75,7 +84,7 @@ export function initFloor() {
   state.monsters = []; 
   state.items = []; 
   state.floaters = []; 
-  state.corpses = []; // Очищаем трупы при переходе
+  state.corpses = []; 
   state.stairs.active = false;
   
   state.player.x = 5 * CELL; state.player.y = 5 * CELL; 

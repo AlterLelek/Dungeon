@@ -4,6 +4,7 @@ export const state = {
   goldCount: 0,
   playerHp: 100,
   playerMp: 0,
+  maxMp: 0,
   
   tempAtk: 0,
   tempDef: 0,
@@ -16,7 +17,7 @@ export const state = {
   
   items: [],
   monsters: [],
-  corpses: [], // НОВОЕ: массив трупов
+  corpses: [], // НОВОЕ: для трупов
   floaters: [],
   
   spellLightning: 0,
@@ -35,7 +36,10 @@ export const state = {
   weapons: WARRIOR_WEAPONS,
   stats: { kills: 0, gold: 0, floors: 0 },
 
-  settings: { monsterAdd: 0, itemRate: 3 },
+  settings: {
+      monsterAdd: 0,
+      itemRate: 3
+  },
   
   devSettings: {
       heroes: JSON.parse(JSON.stringify(HEROES)),

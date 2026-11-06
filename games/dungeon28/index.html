@@ -11,11 +11,20 @@
     <!-- ЭКРАН ЛОГИНА -->
     <div id="login-screen">
       <h1>ПОДЗЕМЕЛЬЕ <span id="ver-login"></span></h1>
-      <input type="text" id="guest-name" placeholder="Имя героя">
-      <button id="btn-random-name" class="btn-secondary">🎲 Случайное имя</button>
-      <button id="btn-guest" class="btn-primary">Играть гостем</button>
-      <button id="btn-google" class="btn-secondary" style="opacity:0.5; cursor:not-allowed;">Войти через Google</button>
-      <div id="error-msg" style="color: #ef4444; margin-top: 10px;"></div>
+      
+      <div class="input-group">
+        <label>Имя героя</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="guest-name" placeholder="Введите имя">
+          <button id="btn-random-name" class="btn-secondary" title="Случайное имя">🎲</button>
+        </div>
+      </div>
+
+      <div class="hero-select" id="hero-select"></div>
+
+      <button id="btn-guest" class="btn-primary" style="margin-top:15px;">Играть гостем</button>
+      <button id="btn-google" class="btn-google">Войти через Google</button>
+      <div id="error-msg" style="color:#ef4444; margin-top:10px; font-size:14px;"></div>
     </div>
 
     <!-- ЭКРАН ИГРЫ -->
@@ -36,7 +45,7 @@
           <div>👣 <span id="turns">0</span></div>
           <div id="high-score-line"></div>
           <div><span class="coin-ico"></span> <span id="score">0</span></div>
-          <div>⚡ <span id="energy">0</span></div>
+          <div>⚡ <span id="energy">0</span>/<span id="max-energy">0</span></div>
         </div>
         <div class="hud-enemies">
           <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
@@ -98,34 +107,32 @@
 
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
+    <div class="panel-row"><span>Громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
+    <div class="panel-row"><span>Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="10"></div>
+    <div class="panel-row"><span>Фон</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
+    <div class="panel-row"><span>Эффекты</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
+    
+    <div class="set-sep"></div>
+    <div class="panel-row"><span>Монстров +</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
+    <div class="panel-row"><span>Бонус раз в N</span><input type="range" id="set-item-rate" min="1" max="10" value="3"></div>
+    
+    <div class="set-sep"></div>
     <div class="panel-row">
-      <span>Звук</span>
-      <input type="range" id="set-vol-master" min="0" max="100" value="100">
-    </div>
-    <div class="panel-row">
-      <span>Музыка</span>
-      <input type="range" id="set-vol-music" min="0" max="100" value="50">
-    </div>
-    <div class="panel-row">
-      <span>Фон</span>
-      <input type="range" id="set-vol-ambient" min="0" max="100" value="50">
-    </div>
-    <div class="panel-row">
-      <span>Эффекты</span>
-      <input type="range" id="set-vol-sfx" min="0" max="100" value="100">
-    </div>
-    <div class="panel-row">
-      <span>Монстров +</span>
-      <input type="range" id="set-monster-add" min="0" max="5" value="0">
-    </div>
-    <div class="panel-row">
-      <span>Бонус раз в N</span>
-      <input type="range" id="set-item-rate" min="1" max="5" value="3">
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="set-dev-mode"> Режим разработчика
+      </label>
     </div>
     <button id="close-settings" class="close-panel">Закрыть</button>
   </div>
 
-  <!-- ПОДКЛЮЧЕНИЕ ВСЕХ СКРИПТОВ (ПЛОСКАЯ СТРУКТУРА) -->
+  <!-- DEV ПАНЕЛЬ -->
+  <div id="dev-panel" class="panel" style="display:none; border-color:#ef4444;">
+    <h3>🛠 Dev Panel</h3>
+    <details><summary>Герои</summary><div id="dev-heroes"></div></details>
+    <details><summary>Монстры</summary><div id="dev-monsters"></div></details>
+    <button onclick="document.getElementById('dev-panel').style.display='none'" class="close-panel">Закрыть</button>
+  </div>
+
   <script type="module" src="main.js"></script>
 </body>
 </html>

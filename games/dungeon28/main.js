@@ -2,9 +2,10 @@ import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=20'; 
 
+// Элементы DOM
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
@@ -12,6 +13,7 @@ const guestNameInput = document.getElementById('guest-name');
 const errorMsg = document.getElementById('error-msg');
 const btnRandomName = document.getElementById('btn-random-name');
 
+// Канвас
 const canvas = document.createElement('canvas');
 canvas.width = 320; canvas.height = 320;
 const ctx = canvas.getContext('2d');
@@ -21,23 +23,79 @@ let gameLoopStarted = false;
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
+// Загрузка рекорда
 try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-// Скрываем рекорд если 0
 if (state.highScore.turns > 0) {
     document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
 } else {
     document.getElementById('high-score-line').innerText = '';
 }
 
+// DEV ПАНЕЛЬ: Герои
+const devHeroesContainer = document.getElementById('dev-heroes');
+HEROES.forEach((h, i) => {
+    const details = document.createElement('details');
+    details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
+    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
+    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-hero-${i}-hp" value="${h.maxHp}">`;
+    const mpLabel = document.createElement('div'); mpLabel.className = 'dev-stat';
+    mpLabel.innerHTML = `<span>MP:</span> <input type="number" id="dev-hero-${i}-mp" value="${h.maxMp}">`;
+    details.appendChild(hpLabel); details.appendChild(mpLabel);
+    devHeroesContainer.appendChild(details);
+    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxHp = parseInt(e.target.value); });
+    mpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxMp = parseInt(e.target.value); });
+});
+
+// DEV ПАНЕЛЬ: Монстры
+const devMonstersContainer = document.getElementById('dev-monsters');
+ENEMY_TYPES.forEach(type => {
+    const base = state.devSettings.monsters[type];
+    const details = document.createElement('details');
+    details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type]}</summary>`;
+    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
+    hpLabel.innerHTML = `<span>HP:</span> <input type="number" value="${base.hp}">`;
+    const atkLabel = document.createElement('div'); atkLabel.className = 'dev-stat';
+    atkLabel.innerHTML = `<span>ATK:</span> <input type="number" value="${base.atk}">`;
+    const defLabel = document.createElement('div'); defLabel.className = 'dev-stat';
+    defLabel.innerHTML = `<span>DEF:</span> <input type="number" value="${base.def}">`;
+    details.appendChild(hpLabel); details.appendChild(atkLabel); details.appendChild(defLabel);
+    devMonstersContainer.appendChild(details);
+    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].hp = parseInt(e.target.value); });
+    atkLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].atk = parseInt(e.target.value); });
+    defLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type].def = parseInt(e.target.value); });
+});
+
+// Включение dev-панели
+document.getElementById('set-dev-mode').addEventListener('change', (e) => {
+    document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
+});
+
+// ВЫБОР ГЕРОЯ (на экране логина)
+const heroSelect = document.getElementById('hero-select');
+HEROES.forEach((h, i) => {
+    const btn = document.createElement('button');
+    btn.className = `hero-btn ${i === 0 ? 'selected' : ''}`;
+    btn.innerHTML = `${h.emoji}<span>${h.name}</span>`;
+    btn.onclick = () => {
+        document.querySelectorAll('.hero-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.heroIdx = i;
+        playSound('menu');
+    };
+    heroSelect.appendChild(btn);
+});
+
+// Случайное имя
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
 function generateRandomName() {
     guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
 }
 
+// HUD
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -45,6 +103,7 @@ const hudFloor = document.getElementById('floor-hud');
 const hudTurns = document.getElementById('turns');
 const hudScore = document.getElementById('score');
 const hudEnergy = document.getElementById('energy');
+const hudMaxEnergy = document.getElementById('max-energy');
 const hudECount = document.getElementById('e-count');
 const hudEList = document.getElementById('e-list');
 const hudWeapon = document.getElementById('hero-weapon');
@@ -63,13 +122,13 @@ function updateHUD() {
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
   hudEnergy.innerText = state.playerMp;
+  hudMaxEnergy.innerText = "∞"; // Мана не лимитирована
   hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
   hudFig.innerText = HEROES[state.heroIdx].emoji;
   
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
-  // МАГИЯ БЕЗ ЛИМИТОВ
   btnLight.disabled = state.playerMp < 3 || state.spellLightning <= 0;
   btnLight.innerHTML = `⚡ Молния<br><span>3 MP | x${state.spellLightning}</span>`;
   
@@ -84,7 +143,7 @@ function updateHUD() {
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
-  // ТОЛЬКО ЭМОДЗИ (без текста)
+  // Только эмодзи
   state.monsters.slice(0, 6).forEach(m => {
     eHtml += `<div>${m.type}</div>`;
   });
@@ -186,7 +245,7 @@ function startGame(name) {
     
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
-    state.playerMp = 0; // Начинаем с 0 маны
+    state.playerMp = 0; // Начинаем с 0 маны (копим)
     state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
     state.weaponLevel = 0;
     state.gameMode = 'chase';
@@ -249,6 +308,7 @@ btnGuest.addEventListener('click', () => {
     playSound('menu');
     startGame(name);
 });
+document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
 
 document.getElementById('btn-light').addEventListener('click', () => { castLightning(); updateHUD(); });
 document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
