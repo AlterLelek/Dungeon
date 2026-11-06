@@ -1,5 +1,5 @@
 // games/dungeon28/config.js
-export const VERSION = "4.3";
+export const VERSION = "4.5";
 export const GRID = 10;          
 export const CELL = 32;          
 
@@ -52,6 +52,13 @@ export const MAGE_WEAPONS = [
 ];
 
 export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🏹","🐢","👼","🧙‍♂️"];
+
+export const ENEMY_NAMES = {
+  "💀": "Скелет", "👻": "Призрак", "🐭": "Мышь", "🕷": "Паук",
+  "👺": "Огр", "🧟": "Зомби", "🏹": "Лучник", "🐢": "Черепаха",
+  "👼": "Ангел", "🧙‍♂️": "Некромант"
+};
+
 export const ENEMY_BASE = {
   "💀": {hp:100, atk:5, def:0}, "👻": {hp:75, atk:4, def:0}, "🐭": {hp:50, atk:3, def:0},
   "🕷": {hp:60, atk:4, def:0}, "👺": {hp:130, atk:6, def:1}, "🧟": {hp:150, atk:6, def:1},

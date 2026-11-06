@@ -20,11 +20,11 @@ export const state = {
   monsters: [],
   floaters: [],
   
-  // ЗАКЛИНАНИЯ (ИНВЕНТАРЬ)
-  spellLightning: 1,
-  spellHeal: 1,
-  spellStun: 1,
-  spellHurricane: 1,
+  // СТАРТОВЫЕ ЗАКЛИНАНИЯ (0 ШТУК)
+  spellLightning: 0,
+  spellHeal: 0,
+  spellStun: 0,
+  spellHurricane: 0,
   
   player: { 
       x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0 

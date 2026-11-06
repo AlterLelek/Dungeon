@@ -3,10 +3,9 @@ import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, castLightning, castHeal, castStun, castHurricane } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=17'; 
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=19'; 
 
-// Инициализация элементов
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const btnGuest = document.getElementById('btn-guest');
@@ -23,14 +22,12 @@ let gameLoopStarted = false;
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
-// Загрузка рекордов
 try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
 document.getElementById('best-score-hud').innerText = `🏆 ${state.highScore.turns} (${state.highScore.name})`;
 
-// Настройка UI разработчика
 const devHeroesContainer = document.getElementById('dev-heroes');
 HEROES.forEach((h, i) => {
     const details = document.createElement('details');
@@ -49,7 +46,7 @@ const devMonstersContainer = document.getElementById('dev-monsters');
 ENEMY_TYPES.forEach(type => {
     const base = state.devSettings.monsters[type];
     const details = document.createElement('details');
-    details.innerHTML = `<summary>${type} Монстр</summary>`;
+    details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type]}</summary>`;
     const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
     hpLabel.innerHTML = `<span>HP:</span> <input type="number" value="${base.hp}">`;
     const atkLabel = document.createElement('div'); atkLabel.className = 'dev-stat';
@@ -67,7 +64,6 @@ document.getElementById('set-dev-mode').addEventListener('change', (e) => {
     document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none';
 });
 
-// Генерация героев
 const heroSelect = document.getElementById('hero-select');
 HEROES.forEach((h, i) => {
     const btn = document.createElement('button');
@@ -88,7 +84,6 @@ function generateRandomName() {
     guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;
 }
 
-// HUD
 const hudHp = document.getElementById('hp');
 const hudShd = document.getElementById('shd-hud');
 const hudBonus = document.getElementById('bonus');
@@ -122,7 +117,6 @@ function updateHUD() {
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
-  // ОБНОВЛЕНИЕ КНОПОК МАГИИ (Стоимость | Мана | Кол-во)
   btnLight.disabled = state.playerMp < 3 || state.spellLightning <= 0;
   btnLight.innerHTML = `⚡ Молния<br><span>3 MP | ${state.playerMp}/${state.maxMp} | x${state.spellLightning}</span>`;
   
@@ -139,7 +133,9 @@ function updateHUD() {
   let eHtml = "";
   state.monsters.slice(0, 6).forEach(m => {
     const icon = m.behavior === 'flee' ? '🏃' : '🎯';
-    eHtml += `<div>${m.type}${icon} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`;
+    // ИСПОЛЬЗУЕМ ИМЕНА МОНСТРОВ
+    const name = ENEMY_NAMES[m.type] || m.type;
+    eHtml += `<div>${icon} ${name} ❤️${m.hp} 💪${m.atk}</div>`;
   });
   if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… ещё ${state.monsters.length - 6}</div>`;
   hudEList.innerHTML = eHtml;
@@ -182,9 +178,7 @@ function buyOption(kind) {
   updateShop(); updateHUD();
 }
 
-function easeInOutQuad(t) {
-    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
+function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
 function gameLoop() {
   if (state.gameActive) {
@@ -242,7 +236,7 @@ function startGame(name) {
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
     state.maxMp = hero.maxMp;
-    state.playerMp = Math.floor(hero.maxMp / 2);
+    state.playerMp = Math.max(1, Math.floor(hero.maxMp / 2));
     state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
     state.weaponLevel = 0;
     state.gameMode = 'chase';
@@ -253,11 +247,10 @@ function startGame(name) {
     state.stats = { kills: 0, gold: 0, floors: 0 };
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
     
-    // Даем стартовый инвентарь
-    state.spellLightning = 1;
-    state.spellHeal = 1;
-    state.spellStun = 1;
-    state.spellHurricane = 1;
+    state.spellLightning = 0;
+    state.spellHeal = 0;
+    state.spellStun = 0;
+    state.spellHurricane = 0;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -295,7 +288,6 @@ function startGame(name) {
     });
 }
 
-// Глобальные функции
 window.movePlayer = movePlayer;
 window.skipTurn = () => {
     if (!state.gameActive) return;
