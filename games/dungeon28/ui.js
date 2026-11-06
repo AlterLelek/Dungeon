@@ -1,7 +1,6 @@
 import { CELL, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef } from './state.js';
 
-// ПРАВКА: добавлен параметр alpha для трупов
 function drawCell(ctx, x, y, emoji, size, alpha = 1.0) { 
   ctx.globalAlpha = alpha;
   ctx.font = (size || 20) + "px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; 
@@ -42,9 +41,9 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
-  // ПРАВКА: Отрисовка трупов (полупрозрачные)
+  // Отрисовка надгробий
   state.corpses.forEach(c => {
-      drawCell(ctx, c.x, c.y, c.type, 22, 0.25);
+      drawCell(ctx, c.x, c.y, "🪦", 22, 0.4);
   });
 
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));

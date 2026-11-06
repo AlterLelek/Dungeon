@@ -50,7 +50,6 @@ export const MAGE_WEAPONS = [
   {name:"Книга · волшебная", css:"q-magic", dmg:17, cost:16}
 ];
 
-// Убрали 🧟, чтобы они не спавнились сами
 export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🏹","🐢","👼","🧙‍♂️"];
 
 export const ENEMY_NAMES = {

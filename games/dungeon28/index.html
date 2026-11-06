@@ -12,7 +12,6 @@
     <div id="login-screen">
       <h1>ПОДЗЕМЕЛЬЕ <span id="ver-login"></span></h1>
       
-      <!-- НОВАЯ КАРУСЕЛЬ -->
       <div class="carousel-container">
         <button class="c-arrow" id="prev-hero">◀</button>
         <div class="carousel" id="hero-carousel"></div>
@@ -47,7 +46,7 @@
           </div>
         </div>
         <div class="hud-center">
-          <div>🏰 <span id="floor-hud">1</span></div>
+          <div>🏰 <span id="floor-hud">1</span>/<span id="floor-max">5</span></div>
           <div>👣 <span id="turns">0</span></div>
           <div id="high-score-line"></div>
           <div><span class="coin-ico"></span> <span id="score">0</span></div>
@@ -72,8 +71,6 @@
         <button id="btn-hurricane" class="m-btn" style="background-color:#a855f7;">🌪️ Ураган<br><span>4 MP | x0</span></button>
       </div>
 
-      <!-- Сюда вставляется канвас -->
-      
       <div class="dpad" style="margin-top: 10px;">
         <button class="btn wide-row" onclick="movePlayer(0,-32)">▲ W</button>
         <button class="btn" onclick="movePlayer(-32,0)">◀ A</button>
@@ -85,7 +82,7 @@
     </div>
   </div>
 
-  <!-- ПАНЕЛИ (без изменений) -->
+  <!-- ПАНЕЛИ -->
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>
@@ -111,23 +108,42 @@
     <button id="close-records" class="close-panel">Закрыть</button>
   </div>
 
+  <!-- ПОЛНАЯ ПАНЕЛЬ НАСТРОЕК -->
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
-    <div class="panel-row"><span>Общая громкость</span><input type="range" id="set-vol-master" min="0" max="100" value="20"></div>
-    <div class="panel-row"><span>Музыка</span><input type="range" id="set-vol-music" min="0" max="100" value="10"></div>
-    <div class="panel-row"><span>Фоновый гул</span><input type="range" id="set-vol-ambient" min="0" max="100" value="5"></div>
-    <div class="panel-row"><span>Удары</span><input type="range" id="set-vol-sfx" min="0" max="100" value="30"></div>
-    
-    <div class="set-sep"></div>
-    <div class="panel-row"><span>Монстров + (0-10)</span><input type="range" id="set-monster-add" min="0" max="10" value="0"></div>
-    <div class="panel-row"><span>Спавн лута (раз в N)</span><input type="range" id="set-item-rate" min="1" max="10" value="3"></div>
-    
-    <div class="set-sep"></div>
-    <div class="panel-row">
-      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-        <input type="checkbox" id="set-dev-mode"> Режим разработчика
-      </label>
+    <div class="set-row"><span class="set-label">🔊 Звук</span><input type="range" id="set-sfx" min="0" max="100" step="10" value="100"><span class="set-val" id="set-sfx-v">100%</span></div>
+    <div class="set-row"><span class="set-label">🌫 Фон</span><input type="range" id="set-amb" min="0" max="100" step="10" value="100"><span class="set-val" id="set-amb-v">100%</span></div>
+    <div class="set-row"><span class="set-label">🎵 Мелодия</span><input type="range" id="set-mel" min="0" max="100" step="10" value="50"><span class="set-val" id="set-mel-v">50%</span></div>
+    <div class="set-row"><span class="set-label">⏱ Темп мелодии</span><input type="range" id="set-tempo" min="300" max="1200" step="100" value="600"><span class="set-val" id="set-tempo-v">600</span></div>
+    <div class="set-row"><span class="set-label">🎵 Какая играет</span>
+      <button class="mel-btn active" id="mel-cave">Подземелье</button>
+      <button class="mel-btn" id="mel-elven">Эльфийская</button>
+      <button class="mel-btn" id="mel-dwarven">Гномий</button>
+      <button class="mel-btn" id="mel-dice">Кости 🎲</button>
     </div>
+    <div class="set-check"><input type="checkbox" id="set-auto-mel"><span>🔁 Менять мелодию каждые 3–5 мин</span></div>
+    
+    <div class="set-sep"></div>
+    <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="range" id="set-floors" min="1" max="10" step="1" value="5"><span class="set-val" id="set-floors-v">5</span></div>
+    <div class="set-row"><span class="set-label">👹 Монстров за этаж +</span><input type="range" id="set-monst-add" min="0" max="5" step="1" value="0"><span class="set-val" id="set-monst-add-v">0</span></div>
+    <div class="set-row"><span class="set-label">🧰 Спавн бонусов (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" step="1" value="2"><span class="set-val" id="set-item-rate-v">2</span></div>
+    <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="range" id="set-shield-val" min="1" max="5" step="1" value="3"><span class="set-val" id="set-shield-val-v">3</span></div>
+    <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="range" id="set-star-val" min="1" max="5" step="1" value="1"><span class="set-val" id="set-star-val-v">1</span></div>
+    
+    <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
+    <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (умные монстры)</span></div>
+    <div class="set-check"><input type="checkbox" id="diff-horror"><span>💀 Ужас (умные и сильные)</span></div>
+    <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ (Адаптация)</span></div>
+    <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сбрасывать бонусы на новом этаже</span></div>
+    
+    <div class="set-sep"></div>
+    <div class="set-check" id="vibro-row"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
+    <div class="set-row" id="vibro-power-row"><span class="set-label">Сила вибро</span><input type="range" id="set-vibro-power" min="0" max="100" step="10" value="100"><span class="set-val" id="set-vibro-power-v">100%</span></div>
+    
+    <div class="set-row"><span class="set-label">⌨️ Управление</span><select id="set-keys-mode"><option value="all" selected>WASD + стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
+    <div class="set-row"><span class="set-label">Раскладка букв</span><select id="set-keys-layout"><option value="both" selected>Обе</option><option value="lat">Латиница</option><option value="cyr">Кириллица</option></select></div>
+    
+    <button class="reset-btn" id="btn-reset-settings">↺ Сбросить настройки</button>
     <button id="close-settings" class="close-panel">Закрыть [Esc]</button>
   </div>
 

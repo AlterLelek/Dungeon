@@ -33,7 +33,6 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 .hud-hero { display: flex; gap: 6px; width: 118px; }
 .hero-fig { font-size: 30px; display: flex; align-items: center; }
 .hero-stats { flex: 1; display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: bold; min-width: 0; }
-/* Имя слева с переносом */
 .hs-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 11px; white-space: normal; word-break: break-word; line-height: 1.1; margin-bottom: 2px; }
 #hero-weapon { font-size: 10px; color: #e5e7eb; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; line-height: 1.3; }
 .hud-center { display: flex; flex-direction: column; gap: 3px; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 6px; font-size: 12px; font-weight: bold; }
@@ -63,8 +62,18 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
 input[type=range] { flex: 1.2; accent-color: #fbbf24; }
 canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
-.set-sep { border-top: 1px solid #4b5563; margin: 12px 0 10px 0; }
 .dev-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 12px; }
 .dev-stat input { width: 60px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; }
 details { margin-bottom: 10px; }
 summary { cursor: pointer; color: #fbbf24; font-weight: bold; margin-bottom: 5px; }
+
+/* НАСТРОЙКИ */
+.set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; color: #fff; }
+.set-label { flex: 1; white-space: nowrap; }
+.set-val { color: #fbbf24; font-weight: bold; width: 42px; text-align: right; }
+select { background: #222; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px; font-size: 12px; }
+.set-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px; color: #fff; }
+.set-sep { border-top: 1px solid #4b5563; margin: 12px 0 10px 0; }
+.mel-btn { background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 4px 5px; font-size: 11px; cursor: pointer; font-weight: bold; font-family: inherit; }
+.mel-btn.active { background: #b45309; color: #fff; border-color: #fbbf24; }
+.reset-btn { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; font-family: inherit; }

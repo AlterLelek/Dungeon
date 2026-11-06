@@ -1,7 +1,7 @@
 import { CELL, ITEM_TYPES, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
-import { playSound } from './audio.js'; // ПРАВКА: локальный импорт
+import { playSound } from './audio.js'; 
 
 let fadeTimer = null;
 let floorClearTimer = null;
@@ -44,10 +44,29 @@ export function fight(m, index) {
     playSound('kill'); 
     state.monsters.splice(index, 1); 
     state.goldCount += 2; 
-    state.playerMp += 1; // Мана без лимита
+    state.playerMp += 1; 
     state.stats.kills++;
     
-    // ПРАВКА: Добавляем труп
+    // Логика деления мыши
+    if (m.type === "🐭" && !m.hasSplit) {
+        const dirs = [[0,-1], [0,1], [-1,0], [1,0]];
+        let spawned = 0;
+        for (let d of dirs) {
+            if (spawned >= 2) break;
+            let nx = m.x + d[0] * CELL;
+            let ny = m.y + d[1] * CELL;
+            if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320) {
+                if (!state.monsters.some(o => o.x === nx && o.y === ny) && !(state.player.x === nx && state.player.y === ny)) {
+                    placeMonster("🐭", Math.max(1, Math.floor(m.maxHp/2)), Math.max(1, Math.floor(m.atk/2)), m.behavior, nx, ny);
+                    state.monsters[state.monsters.length - 1].hasSplit = true;
+                    spawned++;
+                }
+            }
+        }
+        if (spawned > 0) addFloater(m.x, m.y, "Размножение!", "#a855f7");
+    }
+    
+    // Все оставляют надгробие
     state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     
     if (state.monsters.length === 0) {
@@ -68,7 +87,7 @@ export function fight(m, index) {
   return false;
 }
 
-// МАГИЯ (БЕЗ ЛИМИТОВ)
+// МАГИЯ
 export function castLightning() {
     if (state.playerMp < 3 || state.spellLightning <= 0) return;
     state.playerMp -= 3; state.spellLightning--;
@@ -83,7 +102,6 @@ export function castLightning() {
                 state.monsters.splice(idx, 1);
                 state.goldCount += 2;
                 state.stats.kills++;
-                // ПРАВКА: И тут труп
                 state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
             }
         }
@@ -157,10 +175,10 @@ function moveMonsters() {
       return;
     }
 
-    // ПРАВКА: Некромант поднимает труп
+    // НЕКРОМАНТ ПОДНИМАЕТ ТРУП (только не зомби)
     if (m.type === "🧙‍♂️" && Math.random() < 0.3) {
         const corpseIdx = state.corpses.findIndex(c => 
-            Math.abs(c.x - m.x) <= CELL * 2 && Math.abs(c.y - m.y) <= CELL * 2
+            c.type !== "🧟" && Math.abs(c.x - m.x) <= CELL * 2 && Math.abs(c.y - m.y) <= CELL * 2
         );
         if (corpseIdx !== -1) {
             const corpse = state.corpses[corpseIdx];
@@ -301,7 +319,6 @@ export function movePlayer(dx, dy) {
   
   state.totalTurns++;
   
-  // ПРАВКА: Уменьшаем жизнь трупов
   state.corpses.forEach(c => c.decay--);
   state.corpses = state.corpses.filter(c => c.decay > 0);
   
@@ -322,7 +339,6 @@ export function skipTurn() {
     else playSound('skip');
     
     state.totalTurns++;
-    // ПРАВКА: Уменьшаем жизнь трупов при пропуске хода
     state.corpses.forEach(c => c.decay--);
     state.corpses = state.corpses.filter(c => c.decay > 0);
     

@@ -17,7 +17,7 @@ export const state = {
   
   items: [],
   monsters: [],
-  corpses: [], // НОВОЕ: массив для трупов
+  corpses: [], 
   floaters: [],
   
   spellLightning: 0,
@@ -33,12 +33,13 @@ export const state = {
   heroIdx: 0,
   gameMode: 'chase',
   gameActive: false,
-  weapons: WARRIOR_WEAPONS,
+  weapons: WARRIOR_WEAPONS, // <--- Вернули WARRIOR_WEAPONS
   stats: { kills: 0, gold: 0, floors: 0 },
 
   settings: {
-      monsterAdd: 0,
-      itemRate: 3
+      floors: 5, monsterAdd: 0, itemRate: 2, shieldVal: 3, starVal: 1,
+      difficulty: 'simple', bonusReset: false, autoMel: false, vibro: true,
+      vibroPower: 100, keysMode: 'all', keysLayout: 'both', criticalAI: false
   },
   
   devSettings: {
