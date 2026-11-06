@@ -1,26 +1,17 @@
 // games/dungeon28/config.js
-
+export const VERSION = "4.1";
 export const GRID = 10;          
 export const CELL = 32;          
 export const MAX_ITEMS = 40;     
 
-export const MODES = ['chase', 'clear', 'endless_chase', 'endless_clear'];
-export const MODE_TITLES = ['🏃 Погоня', '⚔️ Зачистка', '🏃‍♂️ Безлим. Погоня', '⚔️ Безлим. Зачистка'];
-export const MODE_DESCS = [
-  'Монстры убегают. 5 этажей.',
-  'Монстры охотятся. 5 этажей.',
-  'Монстры убегают. Бесконечность.',
-  'Монстры охотятся. Бесконечность.'
-];
-
 export const HEROES = [
-  {name:"Воин",       emoji:"🦸",   set:"warrior", maxHp:100, melMod:0,  lightRange:64},
-  {name:"Паладин",    emoji:"✝️",   set:"warrior", maxHp:95,  melMod:0,  lightRange:80},
-  {name:"Маг",        emoji:"🧙",   set:"mage",    maxHp:80,  melMod:-1, lightRange:96},
-  {name:"Черт",       emoji:"😈",   set:"mage",    maxHp:70,  melMod:-1, lightRange:96}
+  {name:"Воин",   emoji:"🦸", set:"warrior", maxHp:100, maxMp:3,  lightRange:64},
+  {name:"Маг",    emoji:"🧙", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96},
+  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80},
+  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96},
+  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  maxMp:7,  lightRange:96}
 ];
 
-// БАЛАНС КАК БЫЛ: Урон 1, 2, 3... Цена 1, 2, 3...
 export const WARRIOR_WEAPONS = [
   {name:"Кулаки", css:"q-normal", dmg:1, cost:0},
   {name:"Кинжал · ржавый", css:"q-rusty", dmg:2, cost:1},

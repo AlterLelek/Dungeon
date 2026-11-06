@@ -8,7 +8,6 @@ let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
 
-// Дефолтные громкости (синхронизированы с HTML)
 const volumes = { master: 0.2, music: 0.1, ambient: 0.05, sfx: 0.3 };
 
 export function initAudio() {
@@ -18,17 +17,13 @@ export function initAudio() {
 
   masterGain = audioCtx.createGain();
   masterGain.connect(audioCtx.destination);
-
   musicGain = audioCtx.createGain();
   musicGain.connect(masterGain);
-
   ambientGain = audioCtx.createGain();
   ambientGain.connect(masterGain);
-
   sfxGain = audioCtx.createGain();
   sfxGain.connect(masterGain);
 
-  // ЖЕСТКАЯ УСТАНОВКА ГРОМКОСТИ ПРИ СТАРТЕ
   applyVolumes();
   isInit = true;
 }
@@ -54,7 +49,6 @@ export function startAmbient() {
   try {
     initAudio();
     if (ambNodes) return;
-    
     const bufferSize = audioCtx.sampleRate * 2;
     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -64,22 +58,17 @@ export function startAmbient() {
       last = (last + 0.02*white) / 1.02;
       data[i] = last * 3.5;
     }
-    
     const src = audioCtx.createBufferSource();
     src.buffer = buffer; src.loop = true;
-    
     const filter = audioCtx.createBiquadFilter();
     filter.type = 'lowpass'; filter.frequency.value = 150;
-    
     const lfo = audioCtx.createOscillator();
     lfo.frequency.value = 0.1;
     const lfoDepth = audioCtx.createGain();
     lfoDepth.gain.value = 0.05; 
-    
     lfo.connect(lfoDepth); lfoDepth.connect(ambientGain.gain); lfo.start();
     src.connect(filter); filter.connect(ambientGain);
     src.start();
-    
     ambNodes = { src, lfo };
     drip();
   } catch (e) {}
@@ -115,7 +104,6 @@ export function startMusic() {
   if (melodyTimer) return;
   initAudio();
   currentMelodyIdx = 0;
-  
   melodyTimer = setInterval(() => {
     if (volumes.music === 0) return;
     const mel = MELODIES.cave;
@@ -130,8 +118,7 @@ function playTone(freq, wave, vol, dur) {
   if (freq === 0) return;
   try {
     const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-    osc.type = wave;
-    osc.frequency.value = freq; 
+    osc.type = wave; osc.frequency.value = freq; 
     osc.connect(gain); gain.connect(musicGain);
     const now = audioCtx.currentTime;
     gain.gain.setValueAtTime(vol, now);
@@ -144,13 +131,11 @@ export function playSound(type) {
   if (!isInit || volumes.sfx === 0) return;
   try {
     const now = audioCtx.currentTime;
-    
     function createNoise(duration) {
       const bufferSize = audioCtx.sampleRate * duration; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
       const noise = audioCtx.createBufferSource(); noise.buffer = buffer; return noise;
     }
-
     if (type === 'hit') {
       const noise = createNoise(0.05); const noiseGain = audioCtx.createGain();
       noise.connect(noiseGain); noiseGain.connect(sfxGain);
@@ -174,6 +159,13 @@ export function playSound(type) {
         oscGain.gain.setValueAtTime(0.1, now + i*0.06); oscGain.gain.exponentialRampToValueAtTime(0.01, now + i*0.06 + 0.1);
         osc.start(now + i*0.06); osc.stop(now + i*0.06 + 0.1);
       });
+    } else if (type === 'magic') {
+      const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now);
+      osc.frequency.linearRampToValueAtTime(600, now + 0.05); osc.frequency.linearRampToValueAtTime(300, now + 0.1); osc.frequency.linearRampToValueAtTime(800, now + 0.15);
+      osc.connect(oscGain); oscGain.connect(sfxGain);
+      oscGain.gain.setValueAtTime(0.1, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      osc.start(now); osc.stop(now + 0.2);
     }
   } catch (e) {}
 }

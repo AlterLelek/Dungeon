@@ -4,15 +4,13 @@ import { state, getTotalAtk, getTotalDef } from './state.js';
 
 function drawCell(ctx, x, y, emoji, size) { 
   ctx.font = (size || 20) + "px sans-serif"; 
-  ctx.textAlign = "center"; 
-  ctx.textBaseline = "middle"; 
+  ctx.textAlign = "center"; ctx.textBaseline = "middle"; 
   ctx.fillText(emoji, x + CELL / 2, y + CELL / 2); 
 }
 
 function drawBars(ctx, x, y, hp, maxHp, def, atk) {
   const frac = Math.max(0, Math.min(1, hp / maxHp));
-  ctx.fillStyle = "#4b5563"; 
-  ctx.fillRect(x + 4, y + 1, 24, 3);
+  ctx.fillStyle = "#4b5563"; ctx.fillRect(x + 4, y + 1, 24, 3);
   ctx.fillStyle = frac > 0.5 ? "#22c55e" : "#ef4444"; 
   ctx.fillRect(x + 4, y + 1, 24 * frac, 3);
   
@@ -57,9 +55,7 @@ function drawItem(ctx, x, y, type) {
 }
 
 export function draw(ctx, bgCanvas) {
-  ctx.globalAlpha = 1.0; 
-  ctx.clearRect(0, 0, 320, 320);
-
+  ctx.globalAlpha = 1.0; ctx.clearRect(0, 0, 320, 320);
   if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); 
   else { ctx.fillStyle = "#241f1d"; ctx.fillRect(0, 0, 320, 320); }
   
@@ -69,7 +65,6 @@ export function draw(ctx, bgCanvas) {
     ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(320, i); ctx.stroke(); 
   }
 
-  // ЛЕСТНИЦА ВСЕГДА ВИДНА
   if (state.stairs.active) {
     ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); 
     ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); 
@@ -83,10 +78,7 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
-    if (m.isStunned) { 
-      ctx.fillStyle = "rgba(147,51,234,0.5)"; 
-      ctx.fillRect(m.px+2, m.py+2, 28, 28); 
-    }
+    if (m.isStunned) { ctx.fillStyle = "rgba(147,51,234,0.5)"; ctx.fillRect(m.px+2, m.py+2, 28, 28); }
     drawCell(ctx, m.px, m.py, m.type, 22); 
     drawBars(ctx, m.px, m.py, m.hp, m.maxHp, m.def, m.atk);
   });
@@ -97,14 +89,10 @@ export function draw(ctx, bgCanvas) {
 
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; 
-    ctx.fillStyle = f.color; 
-    ctx.font = "bold 16px sans-serif";
-    ctx.textAlign = "center"; 
-    ctx.textBaseline = "middle"; 
-    ctx.strokeStyle = "#000"; 
-    ctx.lineWidth = 3;
-    ctx.strokeText(f.text, f.x, f.y); 
-    ctx.fillText(f.text, f.x, f.y);
+    ctx.fillStyle = f.color; ctx.font = "bold 16px sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; 
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
+    ctx.strokeText(f.text, f.x, f.y); ctx.fillText(f.text, f.x, f.y);
   });
   ctx.globalAlpha = 1.0; 
 }

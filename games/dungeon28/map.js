@@ -55,7 +55,6 @@ export function placeMonster(type, hp, dmg, behavior) {
   }
   if (!ok) return;
   
-  // КУБИК ИНИЦИАТИВЫ (0 - идти, 1 - телепорт, 2 - отдых)
   let initState = randomInt(0, 2);
   let initRest = 0;
   if (initState === 2) initRest = randomInt(1, 3);
@@ -103,11 +102,6 @@ export function initFloor() {
     const base = ENEMY_BASE[type];
     let hp = base.hp + 10*(state.currentFloor-1); 
     let dmg = base.atk + (state.currentFloor-1);
-    
-    if (state.settings.difficulty === 'horror') { 
-        hp = Math.round(hp * 1.5); 
-        dmg += 2; 
-    }
     
     let behavior = (state.gameMode === 'chase' || state.gameMode === 'endless_chase') ? 'flee' : 'hunt';
     placeMonster(type, hp, dmg, behavior);

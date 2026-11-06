@@ -1,13 +1,15 @@
 // games/dungeon28/state.js
-import { GRID, CELL, HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS } from './config.js';
+import { WARRIOR_WEAPONS } from './config.js';
 
 export const state = {
   goldCount: 0,
   playerHp: 100,
+  playerMp: 0,
+  maxMp: 0,
+  
   tempAtk: 0,
   tempDef: 0,
   permanentShield: 0,
-  energy: 0,
   weaponLevel: 0,
   totalTurns: 0,
   currentFloor: 1,
@@ -32,10 +34,8 @@ export const state = {
   stats: { kills: 0, gold: 0, floors: 0 },
 
   settings: {
-      difficulty: 'simple',
       monsterAdd: 0,
-      itemRate: 3,
-      taste: 'hero'
+      itemRate: 3
   }
 };
 
@@ -51,9 +51,7 @@ export function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// РАБОЧИЙ СБРОС БОНУСОВ
 export function clearBonuses() {
     state.tempAtk = 0;
     state.tempDef = 0;
-    state.energy = 0;
 }

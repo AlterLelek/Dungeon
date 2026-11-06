@@ -2,11 +2,11 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer } from './game.js';
-import { WARRIOR_WEAPONS } from './config.js';
+import { movePlayer, castLightning, castHeal, castStun } from './game.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION } from './config.js';
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=13'; 
+} from '../../shared/audio.js?v=14'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -20,6 +20,25 @@ canvas.width = 320; canvas.height = 320;
 const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
+
+// Устанавливаем версии
+document.getElementById('ver-login').innerText = VERSION;
+document.getElementById('ver-game').innerText = VERSION;
+
+// Генерация выбора героев
+const heroSelect = document.getElementById('hero-select');
+HEROES.forEach((h, i) => {
+    const btn = document.createElement('button');
+    btn.className = `hero-btn ${i === 0 ? 'selected' : ''}`;
+    btn.innerHTML = `${h.emoji}<span>${h.name}</span>`;
+    btn.onclick = () => {
+        document.querySelectorAll('.hero-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.heroIdx = i;
+        playSound('menu');
+    };
+    heroSelect.appendChild(btn);
+});
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
@@ -37,10 +56,15 @@ const hudFloor = document.getElementById('floor-hud');
 const hudTurns = document.getElementById('turns');
 const hudScore = document.getElementById('score');
 const hudEnergy = document.getElementById('energy');
+const hudMaxEnergy = document.getElementById('max-energy');
 const hudECount = document.getElementById('e-count');
 const hudEList = document.getElementById('e-list');
 const hudWeapon = document.getElementById('hero-weapon');
 const hudName = document.getElementById('hero-name-label');
+const hudFig = document.getElementById('hero-fig');
+const btnLight = document.getElementById('btn-light');
+const btnHeal = document.getElementById('btn-heal');
+const btnStun = document.getElementById('btn-stun');
 
 function updateHUD() {
   hudHp.innerText = state.playerHp;
@@ -49,11 +73,17 @@ function updateHUD() {
   hudFloor.innerText = state.currentFloor;
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
-  hudEnergy.innerText = state.energy;
+  hudEnergy.innerText = state.playerMp;
+  hudMaxEnergy.innerText = state.maxMp;
   hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
+  hudFig.innerText = HEROES[state.heroIdx].emoji;
   
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
+
+  btnLight.disabled = state.playerMp < 3;
+  btnHeal.disabled = state.playerMp < 3;
+  btnStun.disabled = state.playerMp < 2;
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
@@ -159,20 +189,26 @@ function startGame(name) {
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     
-    const btnRow = document.getElementById('btn-row');
-    gameScreen.insertBefore(canvas, btnRow.nextSibling);
+    const magicRow = document.querySelector('.magic-row');
+    gameScreen.insertBefore(canvas, magicRow);
     
     localStorage.setItem('pz_heroName', name);
     
-    state.playerHp = 100;
-    state.heroIdx = 0; 
-    state.weapons = WARRIOR_WEAPONS;
+    const hero = HEROES[state.heroIdx];
+    state.playerHp = hero.maxHp;
+    state.maxMp = hero.maxMp;
+    state.playerMp = Math.floor(hero.maxMp / 2);
+    state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
+    state.weaponLevel = 0;
     state.gameMode = 'chase';
     state.currentFloor = 1;
     state.gameActive = true;
     state.goldCount = 0;
     state.totalTurns = 0;
     state.stats = { kills: 0, gold: 0, floors: 0 };
+    state.tempAtk = 0;
+    state.tempDef = 0;
+    state.permanentShield = 0;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -191,10 +227,16 @@ function startGame(name) {
       }
       if (!state.gameActive) return;
       const key = e.key.toLowerCase();
+      
       if (key === 'arrowup' || key === 'w' || key === 'ц') movePlayer(0, -32);
       else if (key === 'arrowdown' || key === 's' || key === 'ы') movePlayer(0, 32);
       else if (key === 'arrowleft' || key === 'a' || key === 'ф') movePlayer(-32, 0);
       else if (key === 'arrowright' || key === 'd' || key === 'в') movePlayer(32, 0);
+      
+      else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
+      else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
+      else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
+      
       else if (key === 'm' || key === 'ь') {
         document.getElementById('shop-panel').style.display = 'block';
         updateShop();
@@ -212,6 +254,10 @@ btnGuest.addEventListener('click', () => {
     startGame(name);
 });
 document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
+
+document.getElementById('btn-light').addEventListener('click', () => { castLightning(); updateHUD(); });
+document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
+document.getElementById('btn-stun').addEventListener('click', () => { castStun(); updateHUD(); });
 
 document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
 document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');
@@ -235,9 +281,7 @@ document.getElementById('set-vol-music').addEventListener('input', (e) => setVol
 document.getElementById('set-vol-ambient').addEventListener('input', (e) => setVolume('ambient', e.target.value));
 document.getElementById('set-vol-sfx').addEventListener('input', (e) => setVolume('sfx', e.target.value));
 
-document.getElementById('set-difficulty').addEventListener('change', (e) => { state.settings.difficulty = e.target.value; });
 document.getElementById('set-monster-add').addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); });
 document.getElementById('set-item-rate').addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); });
-document.getElementById('set-taste').addEventListener('change', (e) => { state.settings.taste = e.target.value; });
 
 generateRandomName();
