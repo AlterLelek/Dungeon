@@ -1,7 +1,7 @@
 import { CELL, ITEM_TYPES, HEROES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
-import { playSound } from '../../shared/audio.js?v=20'; 
+import { playSound } from './audio.js'; // ПРАВКА: локальный импорт
 
 let fadeTimer = null;
 let floorClearTimer = null;
@@ -44,10 +44,10 @@ export function fight(m, index) {
     playSound('kill'); 
     state.monsters.splice(index, 1); 
     state.goldCount += 2; 
-    state.playerMp += 1; 
+    state.playerMp += 1; // Мана без лимита
     state.stats.kills++;
     
-    // Добавляем труп
+    // ПРАВКА: Добавляем труп
     state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     
     if (state.monsters.length === 0) {
@@ -83,6 +83,7 @@ export function castLightning() {
                 state.monsters.splice(idx, 1);
                 state.goldCount += 2;
                 state.stats.kills++;
+                // ПРАВКА: И тут труп
                 state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
             }
         }
@@ -118,14 +119,17 @@ export function castHurricane() {
     if (state.playerMp < 4 || state.spellHurricane <= 0) return;
     state.playerMp -= 4; state.spellHurricane--;
     playSound('magic');
+    
     state.monsters.forEach(m => {
         const dx = m.x - state.player.x;
         const dy = m.y - state.player.y;
         if (Math.abs(dx) <= 64 && Math.abs(dy) <= 64) {
             let nx = m.x + Math.sign(dx) * CELL * 3;
             let ny = m.y + Math.sign(dy) * CELL * 3;
-            if (nx < 0) nx = 0; if (nx >= 320) nx = 288;
-            if (ny < 0) ny = 0; if (ny >= 320) ny = 288;
+            if (nx < 0) nx = 0;
+            if (nx >= 320) nx = 288;
+            if (ny < 0) ny = 0;
+            if (ny >= 320) ny = 288;
             m.x = nx; m.y = ny;
             m.startPx = m.px; m.startPy = m.py;
             m.moveStartTime = performance.now(); m.isMoving = true;
@@ -153,7 +157,7 @@ function moveMonsters() {
       return;
     }
 
-    // НЕКРОМАНТ ПОДНИМАЕТ ТРУП
+    // ПРАВКА: Некромант поднимает труп
     if (m.type === "🧙‍♂️" && Math.random() < 0.3) {
         const corpseIdx = state.corpses.findIndex(c => 
             Math.abs(c.x - m.x) <= CELL * 2 && Math.abs(c.y - m.y) <= CELL * 2
@@ -187,17 +191,22 @@ function moveMonsters() {
         for (let s = 0; s < steps; s++) {
             const dx = state.player.x - m.x;
             const dy = state.player.y - m.y;
+
             if (Math.abs(dx) <= CELL && Math.abs(dy) <= CELL && (dx === 0 || dy === 0)) {
                 monsterAttack(m); 
                 break; 
             }
-            let nx = m.x; let ny = m.y;
+
+            let nx = m.x;
+            let ny = m.y;
+
             if (Math.abs(dx) >= Math.abs(dy)) nx += Math.sign(dx) * CELL;
             else ny += Math.sign(dy) * CELL;
 
             if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320) {
                 let blocked = state.monsters.some(o => o !== m && o.x === nx && o.y === ny);
                 let playerBlocked = (nx === state.player.x && ny === state.player.y);
+                
                 if (!blocked && !playerBlocked) {
                     m.x = nx; m.y = ny;
                     m.startPx = m.px; m.startPy = m.py;
@@ -247,10 +256,12 @@ export function movePlayer(dx, dy) {
   if (nx < 0 || nx >= 320 || ny < 0 || ny >= 320) return;
   
   let victimIdx = state.monsters.findIndex(m => m.x === nx && m.y === ny);
+  
   if (victimIdx !== -1) {
     const m = state.monsters[victimIdx];
     const killed = fight(m, victimIdx);
     if (state.playerHp <= 0) { endGame(); return; }
+    
     if (!killed) {
       m.x = state.player.x; m.y = state.player.y;
       m.startPx = m.px; m.startPy = m.py;
@@ -279,7 +290,7 @@ export function movePlayer(dx, dy) {
     if (item.type === 'coin') { let add = randomInt(1, 3); state.goldCount += add; state.stats.gold += add; addFloater(nx, ny, "+" + add + "g", "#fbbf24"); }
     if (item.type === 'star') { let add = randomInt(1, 3); state.tempAtk += add; addFloater(nx, ny, "+" + add + "а", "#a78bfa"); }
     if (item.type === 'shield') { let add = randomInt(1, 3); state.tempDef += add; addFloater(nx, ny, "+" + add + "з", "#3b82f6"); }
-    if (item.type === 'scroll') { let add = randomInt(1, 3); state.playerMp += add; state.spellHeal++; addFloater(nx, ny, "+" + add + "mp", "#22c55e"); }
+    if (item.type === 'scroll') { let add = randomInt(1, 3); state.playerMp += add; state.spellHeal++; addFloater(nx, ny, "+1л", "#22c55e"); }
     if (item.type === 'heart') { state.playerHp += 20; addFloater(nx, ny, "+20hp", "#22c55e"); }
     if (item.type === 'lightning') { state.spellLightning++; state.playerMp += 1; addFloater(nx, ny, "+1⚡", "#fbbf24"); }
     if (item.type === 'stun') { state.spellStun++; addFloater(nx, ny, "+1❄️", "#38bdf8"); }
@@ -290,7 +301,7 @@ export function movePlayer(dx, dy) {
   
   state.totalTurns++;
   
-  // Уменьшаем жизнь трупов
+  // ПРАВКА: Уменьшаем жизнь трупов
   state.corpses.forEach(c => c.decay--);
   state.corpses = state.corpses.filter(c => c.decay > 0);
   
@@ -309,7 +320,12 @@ export function skipTurn() {
     const victimIdx = state.monsters.findIndex(m => m.x === state.player.x && m.y === state.player.y);
     if (victimIdx !== -1) { fight(state.monsters[victimIdx], victimIdx); if (!state.gameActive) return; }
     else playSound('skip');
+    
     state.totalTurns++;
+    // ПРАВКА: Уменьшаем жизнь трупов при пропуске хода
+    state.corpses.forEach(c => c.decay--);
+    state.corpses = state.corpses.filter(c => c.decay > 0);
+    
     moveMonsters();
     if (state.playerHp <= 0) endGame();
 }

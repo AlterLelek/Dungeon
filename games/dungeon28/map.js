@@ -38,8 +38,10 @@ export function cellFree(mx, my, monstersArr) {
   return !monstersArr.some(o => o.x === mx && o.y === my);
 }
 
+// ПРАВКА: добавлены forceX, forceY для спавна зомби на месте трупа
 export function placeMonster(type, hp, dmg, behavior, forceX = null, forceY = null) {
   let mx, my, ok = false;
+  
   if (forceX !== null && forceY !== null) {
       mx = forceX; my = forceY; ok = true;
   } else {
@@ -84,7 +86,7 @@ export function initFloor() {
   state.monsters = []; 
   state.items = []; 
   state.floaters = []; 
-  state.corpses = []; 
+  state.corpses = []; // ПРАВКА: очищаем трупы на новом этаже
   state.stairs.active = false;
   
   state.player.x = 5 * CELL; state.player.y = 5 * CELL; 

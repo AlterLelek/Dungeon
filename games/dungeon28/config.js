@@ -1,4 +1,4 @@
-export const VERSION = "5.0";
+export const VERSION = "4.5";
 export const GRID = 10;          
 export const CELL = 32;          
 
@@ -50,7 +50,7 @@ export const MAGE_WEAPONS = [
   {name:"Книга · волшебная", css:"q-magic", dmg:17, cost:16}
 ];
 
-// Зомби убран из спавна! Некромант остался.
+// Убрали 🧟, чтобы они не спавнились сами
 export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🏹","🐢","👼","🧙‍♂️"];
 
 export const ENEMY_NAMES = {

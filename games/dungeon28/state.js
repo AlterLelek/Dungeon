@@ -17,7 +17,7 @@ export const state = {
   
   items: [],
   monsters: [],
-  corpses: [], // НОВОЕ: для трупов
+  corpses: [], // НОВОЕ: массив для трупов
   floaters: [],
   
   spellLightning: 0,

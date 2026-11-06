@@ -3,7 +3,7 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from '../../shared/audio.js?v=20'; 
+import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; // ПРАВКА: локальный импорт
 
 // Элементы DOM
 const loginScreen = document.getElementById('login-screen');
@@ -28,6 +28,7 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
+// ПРАВКА: Если рекорд 0 - не пишем
 if (state.highScore.turns > 0) {
     document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
 } else {
@@ -122,7 +123,7 @@ function updateHUD() {
   hudTurns.innerText = state.totalTurns;
   hudScore.innerText = state.goldCount;
   hudEnergy.innerText = state.playerMp;
-  hudMaxEnergy.innerText = "∞"; // Мана не лимитирована
+  hudMaxEnergy.innerText = ""; // ПРАВКА: Убрали лимит маны
   hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
   hudFig.innerText = HEROES[state.heroIdx].emoji;
   
@@ -143,11 +144,11 @@ function updateHUD() {
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
-  // Только эмодзи
+  // ПРАВКА: Только эмодзи, без имен и статов
   state.monsters.slice(0, 6).forEach(m => {
     eHtml += `<div>${m.type}</div>`;
   });
-  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
+  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… ещё ${state.monsters.length - 6}</div>`;
   hudEList.innerHTML = eHtml;
 }
 
