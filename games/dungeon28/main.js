@@ -6,7 +6,7 @@ import { movePlayer, castLightning, castHeal, castStun } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES } from './config.js';
 import { 
   playSound, initAudio, startMusic, startAmbient, setVolume 
-} from '../../shared/audio.js?v=15'; 
+} from '../../shared/audio.js?v=16'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -23,6 +23,13 @@ let gameLoopStarted = false;
 
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
+
+// --- ЗАГРУЗКА РЕКОРДОВ ---
+try {
+    const saved = JSON.parse(localStorage.getItem('pz_highscore'));
+    if (saved) state.highScore = saved;
+} catch (e) {}
+document.getElementById('best-score-hud').innerText = `🏆 ${state.highScore.turns} (${state.highScore.name})`;
 
 // --- ГЕНЕРАЦИЯ UI РАЗРАБОТЧИКА ---
 const devHeroesContainer = document.getElementById('dev-heroes');
@@ -117,9 +124,15 @@ function updateHUD() {
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
+  // ОБНОВЛЕНИЕ КНОПОК МАГИИ
   btnLight.disabled = state.playerMp < 3;
+  btnLight.innerHTML = `Молния (3) [1]<br><span id="light-count">${state.playerMp}/3</span>`;
+  
   btnHeal.disabled = state.playerMp < 3;
+  btnHeal.innerHTML = `Лечение (3) [2]<br><span id="heal-count">${state.playerMp}/3</span>`;
+
   btnStun.disabled = state.playerMp < 2;
+  btnStun.innerHTML = `Стан (2) [3]<br><span id="stun-count">${state.playerMp}/2</span>`;
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
@@ -220,8 +233,8 @@ function startGame(name) {
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     
-    const btnRow = document.getElementById('btn-row');
-    gameScreen.insertBefore(canvas, btnRow.nextSibling);
+    const magicRow = document.querySelector('.magic-row');
+    gameScreen.insertBefore(canvas, magicRow.nextSibling);
     
     localStorage.setItem('pz_heroName', name);
     
@@ -274,6 +287,7 @@ function startGame(name) {
     });
 }
 
+// ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML
 window.movePlayer = movePlayer;
 window.skipTurn = () => {
     if (!state.gameActive) return;
@@ -304,7 +318,8 @@ document.getElementById('shop-shd-btn').addEventListener('click', () => buyOptio
 
 document.getElementById('records-btn').addEventListener('click', () => { 
   playSound('menu'); document.getElementById('records-panel').style.display = 'block'; 
-  document.getElementById('rec-highscore').innerText = state.highScore;
+  document.getElementById('rec-highscore').innerText = state.highScore.turns;
+  document.getElementById('rec-best-name').innerText = state.highScore.name;
   document.getElementById('rec-kills').innerText = state.stats.kills;
   document.getElementById('rec-gold').innerText = state.stats.gold;
 });

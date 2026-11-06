@@ -1,5 +1,5 @@
 // games/dungeon28/state.js
-import { HEROES, ENEMY_BASE, ENEMY_TYPES, WARRIOR_WEAPONS } from './config.js';
+import { HEROES, ENEMY_BASE, WARRIOR_WEAPONS } from './config.js';
 
 export const state = {
   goldCount: 0,
@@ -13,7 +13,8 @@ export const state = {
   weaponLevel: 0,
   totalTurns: 0,
   currentFloor: 1,
-  highScore: 0,
+  
+  highScore: { turns: 0, name: "Никто" }, // Теперь объект
   
   items: [],
   monsters: [],
@@ -35,9 +36,8 @@ export const state = {
       itemRate: 3
   },
   
-  // ДЛЯ МЕНЮ РАЗРАБОТЧИКА
   devSettings: {
-      heroes: JSON.parse(JSON.stringify(HEROES)), // Клонируем
+      heroes: JSON.parse(JSON.stringify(HEROES)),
       monsters: JSON.parse(JSON.stringify(ENEMY_BASE))
   }
 };

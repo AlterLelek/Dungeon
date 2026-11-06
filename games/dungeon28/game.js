@@ -2,9 +2,10 @@
 import { CELL, ITEM_TYPES } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
-import { playSound } from '../../shared/audio.js?v=14'; 
+import { playSound } from '../../shared/audio.js?v=16'; 
 
 let fadeTimer = null;
+let floorClearTimer = null;
 
 export function addFloater(x, y, text, color) { 
   state.floaters.push({ x: x + CELL / 2, y: y + 10, text: text, color: color, life: 1.0, maxLife: 1.0, vy: -0.8 }); 
@@ -20,6 +21,19 @@ export function startFadeOut() {
     state.items.splice(0, removeCount);
     playSound('collect');
   }, 100);
+}
+
+// АВТОПЕРЕХОД НА СЛЕДУЮЩИЙ ЭТАЖ
+function autoNextFloor() {
+    if (floorClearTimer) clearTimeout(floorClearTimer);
+    floorClearTimer = setTimeout(() => {
+        if (state.gameActive && state.monsters.length === 0) {
+            state.currentFloor++;
+            clearBonuses();
+            initFloor();
+            floorClearTimer = null;
+        }
+    }, 1500);
 }
 
 export function fight(m, index) {
@@ -39,6 +53,7 @@ export function fight(m, index) {
     if (state.monsters.length === 0) {
         state.stairs.active = true;
         startFadeOut();
+        autoNextFloor(); // Запускаем таймер
     }
     return true; 
   }
@@ -73,6 +88,7 @@ export function castLightning() {
     if (state.monsters.length === 0) {
         state.stairs.active = true;
         startFadeOut();
+        autoNextFloor();
     }
 }
 
@@ -115,17 +131,16 @@ function moveMonsters() {
       return;
     }
 
-    // ПОВЕДЕНИЕ МОНСТРОВ
-    if (m.type === "🏹") { // Лучник
+    if (m.type === "🏹") {
         const dx = Math.abs(m.x - state.player.x);
         const dy = Math.abs(m.y - state.player.y);
         if (dx <= CELL * 3 && dy <= CELL * 3) {
             monsterAttack(m);
             addFloater(m.x, m.y, "🏹", "#f59e0b");
-            return; // Лучник не двигается, если стрелял
+            return; 
         }
     }
-    if (m.type === "🧙‍♂️" && Math.random() < 0.2) { // Некромант
+    if (m.type === "🧙‍♂️" && Math.random() < 0.2) {
         let zx = m.x + (Math.random() > 0.5 ? CELL : -CELL);
         let zy = m.y + (Math.random() > 0.5 ? CELL : -CELL);
         if (zx >= 0 && zx < 320 && zy >= 0 && zy < 320) {
@@ -135,14 +150,13 @@ function moveMonsters() {
             }
         }
     }
-    if (m.type === "👼" && m.hp < m.maxHp) { // Ангел
+    if (m.type === "👼" && m.hp < m.maxHp) {
         m.hp = Math.min(m.maxHp, m.hp + 10);
         addFloater(m.x, m.y, "+10", "#22c55e");
     }
 
-    // ЦИКЛ ДЕЙСТВИЙ: Шаг -> Телепорт -> Отдых
     if (m.actionState === 0) {
-        let steps = (m.type === "🕷") ? 2 : randomInt(1, 3); // Паук ходит на 2 шага
+        let steps = (m.type === "🕷") ? 2 : randomInt(1, 3); 
         for (let s = 0; s < steps; s++) {
             const dx = state.player.x - m.x;
             const dy = state.player.y - m.y;
@@ -204,7 +218,7 @@ function moveMonsters() {
 }
 
 export function movePlayer(dx, dy) {
-  if (!state.gameActive || state.playerHp <= 0) return;
+  if (!state.gameActive || state.playerHp <= 0 || floorClearTimer) return; // Блокируем ход, если идет переход
   
   let nx = state.player.x + dx;
   let ny = state.player.y + dy;
