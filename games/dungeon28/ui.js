@@ -42,10 +42,11 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
-  state.corpses.forEach(c => { drawCell(ctx, c.x, c.y, "🪦", 22, 0.4); });
+  // Отрисовка могил эмодзи
+  state.corpses.forEach(c => { drawCell(ctx, c.x, c.y, "🪦", 24, 0.7); });
+
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
 
-  // СОЮЗНИК ПАЛАДИНА
   if (state.skeletonAlly) {
       drawCell(ctx, state.skeletonAlly.x, state.skeletonAlly.y, "💀", 22);
       drawBars(ctx, state.skeletonAlly.x, state.skeletonAlly.y, state.skeletonAlly.hp, state.skeletonAlly.maxHp, 0, 0);
@@ -62,7 +63,6 @@ export function draw(ctx, bgCanvas) {
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
-  // ЭФФЕКТЫ ИГРОКА (яд, замедление)
   let yOffset = 18;
   if (state.poisonTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "☠️", 12); yOffset += 10; }
   if (state.playerSlowTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "🕸️", 12); }

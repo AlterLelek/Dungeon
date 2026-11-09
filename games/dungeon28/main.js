@@ -104,6 +104,22 @@ function loadSettings() {
 }
 loadSettings();
 
+// ЗВУК И МЕЛОДИИ
+document.getElementById('set-sfx').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-sfx-v').innerText = v + '%'; setVolume('sfx', v); });
+document.getElementById('set-amb').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-amb-v').innerText = v + '%'; setVolume('ambient', v); });
+document.getElementById('set-mel').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-mel-v').innerText = v + '%'; setVolume('music', v); });
+document.getElementById('set-tempo').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-tempo-v').innerText = v; setVolume('tempo', v); });
+
+function selectMelody(btnId, track) {
+    document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(btnId).classList.add('active');
+    startMusic(track);
+}
+document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'cave');
+document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', 'elven');
+document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
+document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'dice');
+
 document.getElementById('set-floors').addEventListener('input', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('set-floors-v').innerText = state.settings.floors; document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
 document.getElementById('set-monst-add').addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd; saveSettings(); });
 document.getElementById('set-item-rate').addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); document.getElementById('set-item-rate-v').innerText = state.settings.itemRate; saveSettings(); });
@@ -121,40 +137,48 @@ document.getElementById('diff-extreme').addEventListener('change', (e) => { if (
 document.getElementById('diff-horror').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить все настройки?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
+document.getElementById('set-dev-mode').addEventListener('change', (e) => { 
+    const dp = document.getElementById('dev-panel');
+    dp.style.display = e.target.checked ? 'block' : 'none';
+    if (e.target.checked) renderDevPanel();
+});
+
 // DEV ПАНЕЛЬ - ПОЛНАЯ
-const devHeroesContainer = document.getElementById('dev-heroes');
-HEROES.forEach((h, i) => {
-    const details = document.createElement('details');
-    details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
-    const fields = ['maxHp', 'maxMp', 'attackRange', 'lightRange'];
-    fields.forEach(f => {
-        const div = document.createElement('div'); div.className = 'dev-stat';
-        div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-hero-${i}-${f}" value="${h[f]}">`;
-        details.appendChild(div);
-        div.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i][f] = parseInt(e.target.value); });
-    });
-    devHeroesContainer.appendChild(details);
-});
-
-const devMonstersContainer = document.getElementById('dev-monsters');
-Object.keys(ENEMY_BASE).forEach((type, i) => {
-    const m = ENEMY_BASE[type];
-    const details = document.createElement('details');
-    details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
-    const fields = ['hp', 'atk', 'def', 'speed', 'interest1', 'interest2', 'special'];
-    fields.forEach(f => {
-        const div = document.createElement('div'); div.className = 'dev-stat';
-        div.innerHTML = `<span>${f}:</span> <input type="text" id="dev-mon-${i}-${f}" value="${m[f] || ''}">`;
-        details.appendChild(div);
-        div.querySelector('input').addEventListener('change', (e) => {
-            const val = isNaN(e.target.value) ? e.target.value : parseInt(e.target.value);
-            state.devSettings.monsters[type][f] = val;
+function renderDevPanel() {
+    const devHeroesContainer = document.getElementById('dev-heroes');
+    devHeroesContainer.innerHTML = '';
+    HEROES.forEach((h, i) => {
+        const details = document.createElement('details');
+        details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
+        const fields = ['maxHp', 'maxMp', 'attackRange', 'lightRange'];
+        fields.forEach(f => {
+            const div = document.createElement('div'); div.className = 'dev-stat';
+            div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-hero-${i}-${f}" value="${h[f] || 1}">`;
+            details.appendChild(div);
+            div.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i][f] = parseInt(e.target.value); });
         });
+        devHeroesContainer.appendChild(details);
     });
-    devMonstersContainer.appendChild(details);
-});
 
-document.getElementById('set-dev-mode')?.addEventListener('change', (e) => { document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none'; });
+    const devMonstersContainer = document.getElementById('dev-monsters');
+    devMonstersContainer.innerHTML = '';
+    Object.keys(ENEMY_BASE).forEach((type, i) => {
+        const m = ENEMY_BASE[type];
+        const details = document.createElement('details');
+        details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
+        const fields = ['hp', 'atk', 'def', 'speed', 'interest1', 'interest2', 'special'];
+        fields.forEach(f => {
+            const div = document.createElement('div'); div.className = 'dev-stat';
+            div.innerHTML = `<span>${f}:</span> <input type="text" id="dev-mon-${i}-${f}" value="${m[f] || ''}">`;
+            details.appendChild(div);
+            div.querySelector('input').addEventListener('change', (e) => {
+                const val = isNaN(e.target.value) || e.target.value.trim() === '' ? e.target.value : parseInt(e.target.value);
+                state.devSettings.monsters[type][f] = val;
+            });
+        });
+        devMonstersContainer.appendChild(details);
+    });
+}
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
@@ -292,7 +316,7 @@ function gameLoop() {
 
 function startGame(name) {
     initAudio(); 
-    startAmbient(); startMusic();   
+    startAmbient(); startMusic('cave');   
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';

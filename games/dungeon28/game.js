@@ -84,7 +84,12 @@ export function fight(m, index, ranged = false) {
                     const newHp = Math.max(1, Math.floor(m.maxHp / 3));
                     const newAtk = Math.max(1, Math.floor(m.atk / 3));
                     placeMonster("🐭", newHp, newAtk, m.behavior, nx, ny);
-                    state.monsters[state.monsters.length - 1].hasSplit = true;
+                    
+                    const newMouse = state.monsters.find(o => o.x === nx && o.y === ny);
+                    if (newMouse) {
+                        newMouse.hasSplit = true;
+                        newMouse.maxHp = newHp;
+                    }
                     spawned++;
                 }
             }
@@ -92,7 +97,10 @@ export function fight(m, index, ranged = false) {
         if (spawned > 0) addFloater(m.x, m.y, "Деление 1/3!", "#a855f7");
     }
     
-    state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
+    // МЫШИ И ПАУКИ НЕ ОСТАВЛЯЮТ МОГИЛ
+    if (m.type !== "🐭" && m.type !== "🕷") {
+        state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
+    }
     
     if (state.monsters.length === 0) {
         state.stairs.active = true;
@@ -127,7 +135,9 @@ export function castLightning() {
                 state.monsters.splice(idx, 1);
                 state.goldCount += 2;
                 state.stats.kills++;
-                state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
+                if (m.type !== "🐭" && m.type !== "🕷") {
+                    state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
+                }
             }
         }
     });
@@ -178,7 +188,6 @@ function monsterAttack(m) {
     playSound('hit');
     const mDmg = Math.max(0, m.atk - getTotalDef());
     
-    // СПЕЦ-АТАКИ
     if (m.type === "💀") { m.hp = Math.min(m.maxHp, m.hp + 3); addFloater(m.x, m.y, "+3 HP", "#22c55e"); }
     if (m.type === "👻") { state.playerMp = Math.max(0, state.playerMp - 2); addFloater(state.player.px, state.player.py, "-2 MP", "#3b82f6"); }
     if (m.type === "🕷") { 
