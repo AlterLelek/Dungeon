@@ -1,8 +1,8 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
-import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
+import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility } from './game.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
@@ -37,9 +37,6 @@ function getWeaponsBySet(set) {
     return WARRIOR_WEAPONS;
 }
 
-// ==========================================
-// КАРУСЕЛЬ ГЕРОЕВ
-// ==========================================
 function renderCarousel() {
     const container = document.getElementById('hero-carousel');
     container.innerHTML = '';
@@ -71,21 +68,10 @@ function renderCarousel() {
     `;
 }
 
-document.getElementById('prev-hero').onclick = () => {
-    state.heroIdx = (state.heroIdx - 1 + HEROES.length) % HEROES.length;
-    renderCarousel();
-    playSound('menu');
-};
-document.getElementById('next-hero').onclick = () => {
-    state.heroIdx = (state.heroIdx + 1) % HEROES.length;
-    renderCarousel();
-    playSound('menu');
-};
+document.getElementById('prev-hero').onclick = () => { state.heroIdx = (state.heroIdx - 1 + HEROES.length) % HEROES.length; renderCarousel(); playSound('menu'); };
+document.getElementById('next-hero').onclick = () => { state.heroIdx = (state.heroIdx + 1) % HEROES.length; renderCarousel(); playSound('menu'); };
 renderCarousel();
 
-// ==========================================
-// НАСТРОЙКИ
-// ==========================================
 function saveSettings() { localStorage.setItem('pz_settings', JSON.stringify(state.settings)); }
 function loadSettings() {
     try {
@@ -135,17 +121,39 @@ document.getElementById('diff-extreme').addEventListener('change', (e) => { if (
 document.getElementById('diff-horror').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить все настройки?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
-// DEV ПАНЕЛЬ
+// DEV ПАНЕЛЬ - ПОЛНАЯ
 const devHeroesContainer = document.getElementById('dev-heroes');
 HEROES.forEach((h, i) => {
     const details = document.createElement('details');
     details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
-    const hpLabel = document.createElement('div'); hpLabel.className = 'dev-stat';
-    hpLabel.innerHTML = `<span>HP:</span> <input type="number" id="dev-hero-${i}-hp" value="${h.maxHp}">`;
-    details.appendChild(hpLabel);
+    const fields = ['maxHp', 'maxMp', 'attackRange', 'lightRange'];
+    fields.forEach(f => {
+        const div = document.createElement('div'); div.className = 'dev-stat';
+        div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-hero-${i}-${f}" value="${h[f]}">`;
+        details.appendChild(div);
+        div.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i][f] = parseInt(e.target.value); });
+    });
     devHeroesContainer.appendChild(details);
-    hpLabel.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i].maxHp = parseInt(e.target.value); });
 });
+
+const devMonstersContainer = document.getElementById('dev-monsters');
+Object.keys(ENEMY_BASE).forEach((type, i) => {
+    const m = ENEMY_BASE[type];
+    const details = document.createElement('details');
+    details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
+    const fields = ['hp', 'atk', 'def', 'speed', 'interest1', 'interest2', 'special'];
+    fields.forEach(f => {
+        const div = document.createElement('div'); div.className = 'dev-stat';
+        div.innerHTML = `<span>${f}:</span> <input type="text" id="dev-mon-${i}-${f}" value="${m[f] || ''}">`;
+        details.appendChild(div);
+        div.querySelector('input').addEventListener('change', (e) => {
+            const val = isNaN(e.target.value) ? e.target.value : parseInt(e.target.value);
+            state.devSettings.monsters[type][f] = val;
+        });
+    });
+    devMonstersContainer.appendChild(details);
+});
+
 document.getElementById('set-dev-mode')?.addEventListener('change', (e) => { document.getElementById('dev-panel').style.display = e.target.checked ? 'block' : 'none'; });
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
@@ -169,6 +177,7 @@ const btnLight = document.getElementById('btn-light');
 const btnHeal = document.getElementById('btn-heal');
 const btnStun = document.getElementById('btn-stun');
 const btnHurricane = document.getElementById('btn-hurricane');
+const btnAbility = document.getElementById('ability-btn');
 
 function updateHUD() {
   hudHp.innerText = state.playerHp;
@@ -184,14 +193,30 @@ function updateHUD() {
   const w = state.weapons[state.weaponLevel];
   hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
-  btnLight.disabled = state.playerMp < 3 || state.spellLightning <= 0;
-  btnLight.innerHTML = `⚡ Молния<br><span>3 MP | x${state.spellLightning}</span>`;
-  btnHeal.disabled = state.playerMp < 3 || state.spellHeal <= 0;
-  btnHeal.innerHTML = `💚 Лечение<br><span>3 MP | x${state.spellHeal}</span>`;
-  btnStun.disabled = state.playerMp < 2 || state.spellStun <= 0;
-  btnStun.innerHTML = `❄️ Стан<br><span>2 MP | x${state.spellStun}</span>`;
-  btnHurricane.disabled = state.playerMp < 4 || state.spellHurricane <= 0;
-  btnHurricane.innerHTML = `🌪️ Ураган<br><span>4 MP | x${state.spellHurricane}</span>`;
+  const mpCostLight = Math.max(0, 3 - state.spellDiscount);
+  const mpCostHeal = Math.max(0, 3 - state.spellDiscount);
+  const mpCostStun = Math.max(0, 2 - state.spellDiscount);
+  const mpCostHurr = Math.max(0, 4 - state.spellDiscount);
+
+  btnLight.disabled = state.playerMp < mpCostLight || state.spellLightning <= 0;
+  btnLight.innerHTML = `⚡ Молния<br><span>${mpCostLight} MP | x${state.spellLightning}</span>`;
+  btnHeal.disabled = state.playerMp < mpCostHeal || state.spellHeal <= 0;
+  btnHeal.innerHTML = `💚 Лечение<br><span>${mpCostHeal} MP | x${state.spellHeal}</span>`;
+  btnStun.disabled = state.playerMp < mpCostStun || state.spellStun <= 0;
+  btnStun.innerHTML = `❄️ Стан<br><span>${mpCostStun} MP | x${state.spellStun}</span>`;
+  btnHurricane.disabled = state.playerMp < mpCostHurr || state.spellHurricane <= 0;
+  btnHurricane.innerHTML = `🌪️ Ураган<br><span>${mpCostHurr} MP | x${state.spellHurricane}</span>`;
+
+  if (state.abilityCooldown > 0) {
+    btnAbility.disabled = true;
+    btnAbility.innerText = `⏳ ${state.abilityCooldown}`;
+  } else if (state.abilityTurns > 0) {
+    btnAbility.disabled = true;
+    btnAbility.innerText = `✨ ${state.abilityTurns} ход.`;
+  } else {
+    btnAbility.disabled = false;
+    btnAbility.innerText = `✨ Умение`;
+  }
 
   hudECount.innerText = state.monsters.length;
   let eHtml = "";
@@ -200,7 +225,6 @@ function updateHUD() {
   hudEList.innerHTML = eHtml;
 }
 
-// ИГРА
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";
   const nextW = state.weapons[state.weaponLevel + 1];
@@ -292,6 +316,10 @@ function startGame(name) {
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
     
     state.spellLightning = 0; state.spellHeal = 0; state.spellStun = 0; state.spellHurricane = 0;
+    
+    state.abilityCooldown = 0; state.abilityTurns = 0; state.heroAttackRange = hero.attackRange;
+    state.spellDiscount = 0; state.poisonTurns = 0; state.poisonDmg = 0;
+    state.playerSlowTurns = 0; state.skeletonAlly = null;
 
     bgCanvas = initFloor(); 
     updateHUD();
@@ -346,6 +374,7 @@ document.getElementById('btn-light').addEventListener('click', () => { castLight
 document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
 document.getElementById('btn-stun').addEventListener('click', () => { castStun(); updateHUD(); });
 document.getElementById('btn-hurricane').addEventListener('click', () => { castHurricane(); updateHUD(); });
+document.getElementById('ability-btn').addEventListener('click', () => { activateAbility(); updateHUD(); });
 
 document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
 document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');

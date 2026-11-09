@@ -8,17 +8,14 @@
 </head>
 <body>
   <div id="app">
-    <!-- ЭКРАН ЛОГИНА -->
     <div id="login-screen">
       <h1>ПОДЗЕМЕЛЬЕ <span id="ver-login"></span></h1>
-      
       <div class="carousel-container">
         <button class="c-arrow" id="prev-hero">◀</button>
         <div class="carousel" id="hero-carousel"></div>
         <button class="c-arrow" id="next-hero">▶</button>
       </div>
       <div class="desc-text" id="hero-desc" style="text-align:center; font-size:12px; color:#9ca3af; min-height:36px; margin-bottom:10px;"></div>
-
       <div class="input-group">
         <label>Имя героя</label>
         <div style="display:flex; gap:8px;">
@@ -26,13 +23,11 @@
           <button id="btn-random-name" class="btn-secondary" title="Случайное имя">🎲</button>
         </div>
       </div>
-
       <button id="btn-guest" class="btn-primary" style="margin-top:15px;">Играть гостем</button>
       <button id="btn-google" class="btn-google">Войти через Google</button>
       <div id="error-msg" style="color:#ef4444; margin-top:10px; font-size:14px;"></div>
     </div>
 
-    <!-- ЭКРАН ИГРЫ -->
     <div id="game-screen" style="display: none;">
       <div id="hud">
         <div class="hud-hero">
@@ -59,7 +54,8 @@
       </div>
 
       <div id="btn-row">
-        <button id="shop-btn" class="btn-primary">🛒 Лавка [M]</button>
+        <button id="ability-btn" class="btn-primary">✨ Умение</button>
+        <button id="shop-btn" class="btn-primary">🛒 Лавка</button>
         <button id="records-btn" class="btn-primary">🏆 Рекорды</button>
         <button id="settings-btn" class="btn-primary">⚙️ Настройки</button>
       </div>
@@ -108,7 +104,6 @@
     <button id="close-records" class="close-panel">Закрыть</button>
   </div>
 
-  <!-- ПОЛНАЯ ПАНЕЛЬ НАСТРОЕК -->
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
     <div class="set-row"><span class="set-label">🔊 Звук</span><input type="range" id="set-sfx" min="0" max="100" step="10" value="100"><span class="set-val" id="set-sfx-v">100%</span></div>

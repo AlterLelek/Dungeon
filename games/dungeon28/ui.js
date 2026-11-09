@@ -25,7 +25,8 @@ function drawItem(ctx, x, y, type) {
   else if (type === 'star') { ctx.fillStyle = "#fbbf24"; ctx.beginPath(); for (let k = 0; k < 5; k++) { const a1 = -Math.PI/2 + k*2*Math.PI/5, a2 = a1 + Math.PI/5; ctx.lineTo(cx + Math.cos(a1)*9, cy + Math.sin(a1)*9); ctx.lineTo(cx + Math.cos(a2)*4, cy + Math.sin(a2)*4); } ctx.closePath(); ctx.fill(); } 
   else if (type === 'shield') { ctx.fillStyle = "#3b82f6"; ctx.beginPath(); ctx.moveTo(cx-7, cy-8); ctx.lineTo(cx+7, cy-8); ctx.lineTo(cx+7, cy+2); ctx.quadraticCurveTo(cx, cy+10, cx, cy+10); ctx.quadraticCurveTo(cx-7, cy+2, cx-7, cy+2); ctx.closePath(); ctx.fill(); } 
   else if (type === 'heart') { ctx.fillStyle = "#ef4444"; ctx.beginPath(); ctx.moveTo(cx, cy+7); ctx.bezierCurveTo(cx-11, cy-2, cx-7, cy-10, cx, cy-4); ctx.bezierCurveTo(cx+7, cy-10, cx+11, cy-2, cx, cy+7); ctx.fill(); } 
-  else if (type === 'scroll') { ctx.fillStyle = "#e5d3a1"; ctx.fillRect(cx-7, cy-8, 14, 16); } 
+  else if (type === 'mana') { ctx.fillStyle = "#3b82f6"; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 2 * Math.PI); ctx.fill(); ctx.strokeStyle = "#93c5fd"; ctx.lineWidth = 2; ctx.stroke(); } 
+  else if (type === 'heal') { ctx.fillStyle = "#22c55e"; ctx.fillRect(cx-2, cy-7, 4, 14); ctx.fillRect(cx-7, cy-2, 14, 4); } 
   else if (type === 'lightning') { ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.moveTo(cx+2, cy-10); ctx.lineTo(cx-5, cy+2); ctx.lineTo(cx-1, cy+2); ctx.lineTo(cx-2, cy+10); ctx.lineTo(cx+6, cy-2); ctx.lineTo(cx+2, cy-2); ctx.closePath(); ctx.fill(); } 
   else if (type === 'stun') { ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 7, 0, 2 * Math.PI); ctx.stroke(); } 
   else if (type === 'hurricane') { ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 1.5*Math.PI); ctx.stroke(); ctx.beginPath(); ctx.arc(cx, cy, 4, Math.PI, 2.5*Math.PI); ctx.stroke(); }
@@ -41,12 +42,14 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
-  // Отрисовка надгробий
-  state.corpses.forEach(c => {
-      drawCell(ctx, c.x, c.y, "🪦", 22, 0.4);
-  });
-
+  state.corpses.forEach(c => { drawCell(ctx, c.x, c.y, "🪦", 22, 0.4); });
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
+
+  // СОЮЗНИК ПАЛАДИНА
+  if (state.skeletonAlly) {
+      drawCell(ctx, state.skeletonAlly.x, state.skeletonAlly.y, "💀", 22);
+      drawBars(ctx, state.skeletonAlly.x, state.skeletonAlly.y, state.skeletonAlly.hp, state.skeletonAlly.maxHp, 0, 0);
+  }
 
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
@@ -57,7 +60,12 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
-  drawBars(ctx, state.player.px, state.player.py, state.playerHp, HEROES[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
+  drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
+
+  // ЭФФЕКТЫ ИГРОКА (яд, замедление)
+  let yOffset = 18;
+  if (state.poisonTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "☠️", 12); yOffset += 10; }
+  if (state.playerSlowTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "🕸️", 12); }
 
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; ctx.fillStyle = f.color; ctx.font = "bold 16px sans-serif";

@@ -24,6 +24,16 @@ export const state = {
   spellHeal: 0,
   spellStun: 0,
   spellHurricane: 0,
+
+  // НОВЫЕ ЭФФЕКТЫ
+  abilityCooldown: 0,
+  abilityTurns: 0,
+  heroAttackRange: 1,
+  spellDiscount: 0,
+  poisonTurns: 0,
+  poisonDmg: 0,
+  playerSlowTurns: 0,
+  skeletonAlly: null, // {x, y, hp}
   
   player: { 
       x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0 
@@ -33,7 +43,7 @@ export const state = {
   heroIdx: 0,
   gameMode: 'chase',
   gameActive: false,
-  weapons: WARRIOR_WEAPONS, // <--- Вернули WARRIOR_WEAPONS
+  weapons: WARRIOR_WEAPONS,
   stats: { kills: 0, gold: 0, floors: 0 },
 
   settings: {

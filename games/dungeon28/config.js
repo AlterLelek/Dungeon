@@ -1,15 +1,13 @@
-export const VERSION = "5.101";
+export const VERSION = "5.104";
 export const GRID = 10;          
 export const CELL = 32;          
 
 export const HEROES = [
-  {name:"Воин",   emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3,  lightRange:64, attackRange:1},
-  {name:"Маг",    emoji:"🔮", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96, attackRange:1},
-  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80, attackRange:1},
-  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96, attackRange:1},
-  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  maxMp:7,  lightRange:96, attackRange:1},
-  {name:"Лучник", emoji:"🏹", set:"archer",  maxHp:90,  maxMp:3,  lightRange:80, attackRange:2},
-  {name:"Тёмный арбалетчик", emoji:"🎯", set:"archer", maxHp:85, maxMp:4, lightRange:80, attackRange:2}
+  {name:"Воин",   emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3,  lightRange:64, attackRange:1, abilityName:"Берсерк (+5 атк)"},
+  {name:"Маг",    emoji:"🔮", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96, attackRange:1, abilityName:"Чародейство (-1 MP)"},
+  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80, attackRange:1, abilityName:"Призыв скелета"},
+  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96, attackRange:1, abilityName:"Исцеление"},
+  {name:"Лучник", emoji:"🏹", set:"archer",  maxHp:90,  maxMp:3,  lightRange:80, attackRange:2, abilityName:"Дальний выстрел (+2)"}
 ];
 
 export const WARRIOR_WEAPONS = [
@@ -72,19 +70,25 @@ export const ARCHER_WEAPONS = [
   {name:"Тяжёлый арбалет · волшебный", css:"q-magic", dmg:17, cost:16}
 ];
 
-export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🏹","🐢","👼","🧙‍♂️"];
+export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🐢","😈","🧙‍♂️","🦹"];
 
 export const ENEMY_NAMES = {
   "💀": "Скелет", "👻": "Призрак", "🐭": "Мышь", "🕷": "Паук",
-  "👺": "Огр", "🧟": "Зомби", "🏹": "Лучник", "🐢": "Черепаха",
-  "👼": "Ангел", "🧙‍♂️": "Некромант"
+  "👺": "Огр", "🧟": "Зомби", "🐢": "Черепаха", "😈": "Черт", 
+  "🧙‍♂️": "Некромант", "🦹": "Тёмный арбалетчик"
 };
 
 export const ENEMY_BASE = {
-  "💀": {hp:100, atk:5, def:0}, "👻": {hp:75, atk:4, def:0}, "🐭": {hp:50, atk:3, def:0},
-  "🕷": {hp:60, atk:4, def:0}, "👺": {hp:130, atk:6, def:1}, "🧟": {hp:150, atk:6, def:1},
-  "🏹": {hp:70, atk:8, def:1}, "🐢": {hp:200, atk:3, def:8},
-  "👼": {hp:120, atk:7, def:3}, "🧙‍♂️": {hp:90, atk:5, def:2}
+  "💀": {hp:100, atk:5, def:0, speed:1, interest1:"Герой", interest2:"Атака", special:"Вампиризм"},
+  "👻": {hp:75, atk:4, def:0, speed:1, interest1:"Герои", interest2:"Мана", special:"Высасывание маны"},
+  "🐭": {hp:50, atk:3, def:0, speed:2, interest1:"Защита", interest2:"Герой", special:"Деление 1/3"},
+  "🕷": {hp:60, atk:4, def:0, speed:2, interest1:"Герой", interest2:"-", special:"Замедление"},
+  "👺": {hp:130, atk:6, def:1, speed:1, interest1:"Герой", interest2:"Бонусы", special:"Съедание бонусов"},
+  "🧟": {hp:150, atk:6, def:1, speed:1, interest1:"Герой", interest2:"-", special:"Яд"},
+  "🐢": {hp:200, atk:3, def:8, speed:1, interest1:"Замедление", interest2:"Сердца", special:"Толстая защита"},
+  "😈": {hp:85, atk:7, def:2, speed:1, interest1:"Герой", interest2:"-", special:"Регенерация"},
+  "🧙‍♂️": {hp:90, atk:5, def:2, speed:1, interest1:"Трупы", interest2:"-", special:"Поднятие"},
+  "🦹": {hp:85, atk:8, def:1, speed:1, interest1:"Герой", interest2:"-", special:"Стрельба 2 + Вампиризм"}
 };
 
-export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'scroll', 'lightning', 'stun', 'hurricane'];
+export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'mana', 'lightning', 'heal', 'stun', 'hurricane'];
