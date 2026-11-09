@@ -34,7 +34,7 @@ function autoNextFloor() {
     }, 1500);
 }
 
-export function fight(m, index) {
+export function fight(m, index, ranged = false) {
   playSound('hit'); 
   let pDmg = getTotalAtk() - m.def; if (pDmg < 1) pDmg = 1;
   m.hp -= pDmg; 
@@ -47,7 +47,6 @@ export function fight(m, index) {
     state.playerMp += 1; 
     state.stats.kills++;
     
-    // Логика деления мыши
     if (m.type === "🐭" && !m.hasSplit) {
         const dirs = [[0,-1], [0,1], [-1,0], [1,0]];
         let spawned = 0;
@@ -66,7 +65,6 @@ export function fight(m, index) {
         if (spawned > 0) addFloater(m.x, m.y, "Размножение!", "#a855f7");
     }
     
-    // Все оставляют надгробие
     state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     
     if (state.monsters.length === 0) {
@@ -77,7 +75,7 @@ export function fight(m, index) {
     return true; 
   }
   
-  if (!m.isStunned) {
+  if (!ranged && !m.isStunned) {
     const mDmg = Math.max(0, m.atk - getTotalDef());
     if (mDmg > 0) {
       state.playerHp -= mDmg; 
@@ -175,7 +173,6 @@ function moveMonsters() {
       return;
     }
 
-    // НЕКРОМАНТ ПОДНИМАЕТ ТРУП (только не зомби)
     if (m.type === "🧙‍♂️" && Math.random() < 0.3) {
         const corpseIdx = state.corpses.findIndex(c => 
             c.type !== "🧟" && Math.abs(c.x - m.x) <= CELL * 2 && Math.abs(c.y - m.y) <= CELL * 2
@@ -206,6 +203,7 @@ function moveMonsters() {
 
     if (m.actionState === 0) {
         let steps = (m.type === "🕷") ? 2 : randomInt(1, 3); 
+        if (m.slowTurns > 0) { steps = Math.max(1, Math.floor(steps / 2)); m.slowTurns--; }
         for (let s = 0; s < steps; s++) {
             const dx = state.player.x - m.x;
             const dy = state.player.y - m.y;
@@ -274,6 +272,48 @@ export function movePlayer(dx, dy) {
   if (nx < 0 || nx >= 320 || ny < 0 || ny >= 320) return;
   
   let victimIdx = state.monsters.findIndex(m => m.x === nx && m.y === ny);
+  
+  // СТРЕЛЬБА ЛУЧНИКА НА 2 КЛЕТКИ
+  if (victimIdx === -1) {
+    const hero = HEROES[state.heroIdx];
+    if (hero.set === 'archer' && hero.attackRange >= 2) {
+      const tx = nx + dx;
+      const ty = ny + dy;
+      if (tx >= 0 && tx < 320 && ty >= 0 && ty < 320) {
+        const rangedIdx = state.monsters.findIndex(m => m.x === tx && m.y === ty);
+        if (rangedIdx !== -1) {
+          const m = state.monsters[rangedIdx];
+          fight(m, rangedIdx, true);
+          
+          if (hero.name === 'Лучник') {
+            if (!m.slowedByArrow) {
+              m.slowTurns = 1;
+              m.slowedByArrow = true;
+              addFloater(m.x, m.y, "❄️", "#38bdf8");
+            } else {
+              m.slowedByArrow = false;
+            }
+          } else if (hero.name === 'Тёмный арбалетчик') {
+            const heal = Math.min(5, hero.maxHp - state.playerHp);
+            if (heal > 0) {
+              state.playerHp += heal;
+              addFloater(state.player.px, state.player.py, "+" + heal + "hp", "#22c55e");
+            }
+          }
+          
+          if (state.playerHp <= 0) { endGame(); return; }
+          
+          state.totalTurns++;
+          state.corpses.forEach(c => c.decay--);
+          state.corpses = state.corpses.filter(c => c.decay > 0);
+          
+          moveMonsters();
+          if (state.playerHp <= 0) endGame();
+          return;
+        }
+      }
+    }
+  }
   
   if (victimIdx !== -1) {
     const m = state.monsters[victimIdx];

@@ -1,13 +1,15 @@
-export const VERSION = "4.5";
+export const VERSION = "5.101";
 export const GRID = 10;          
 export const CELL = 32;          
 
 export const HEROES = [
-  {name:"Воин",   emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3,  lightRange:64},
-  {name:"Маг",    emoji:"🔮", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96},
-  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80},
-  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96},
-  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  maxMp:7,  lightRange:96}
+  {name:"Воин",   emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3,  lightRange:64, attackRange:1},
+  {name:"Маг",    emoji:"🔮", set:"mage",    maxHp:80,  maxMp:5,  lightRange:96, attackRange:1},
+  {name:"Паладин",emoji:"✝️", set:"warrior", maxHp:95,  maxMp:4,  lightRange:80, attackRange:1},
+  {name:"Ангел",  emoji:"👼", set:"mage",    maxHp:85,  maxMp:6,  lightRange:96, attackRange:1},
+  {name:"Черт",   emoji:"😈", set:"mage",    maxHp:70,  maxMp:7,  lightRange:96, attackRange:1},
+  {name:"Лучник", emoji:"🏹", set:"archer",  maxHp:90,  maxMp:3,  lightRange:80, attackRange:2},
+  {name:"Тёмный арбалетчик", emoji:"🎯", set:"archer", maxHp:85, maxMp:4, lightRange:80, attackRange:2}
 ];
 
 export const WARRIOR_WEAPONS = [
@@ -48,6 +50,26 @@ export const MAGE_WEAPONS = [
   {name:"Палочка · волшебная", css:"q-magic", dmg:15, cost:14},
   {name:"Амулет · волшебный", css:"q-magic", dmg:16, cost:15},
   {name:"Книга · волшебная", css:"q-magic", dmg:17, cost:16}
+];
+
+export const ARCHER_WEAPONS = [
+  {name:"Кулаки", css:"q-normal", dmg:1, cost:0},
+  {name:"Лук · ржавый", css:"q-rusty", dmg:2, cost:1},
+  {name:"Арбалет · ржавый", css:"q-rusty", dmg:3, cost:2},
+  {name:"Длинный лук · ржавый", css:"q-rusty", dmg:4, cost:3},
+  {name:"Тяжёлый арбалет · ржавый", css:"q-rusty", dmg:5, cost:4},
+  {name:"Лук · обычный", css:"q-normal", dmg:6, cost:5},
+  {name:"Арбалет · обычный", css:"q-normal", dmg:7, cost:6},
+  {name:"Длинный лук · обычный", css:"q-normal", dmg:8, cost:7},
+  {name:"Тяжёлый арбалет · обычный", css:"q-normal", dmg:9, cost:8},
+  {name:"Лук · золотой", css:"q-gold", dmg:10, cost:9},
+  {name:"Арбалет · золотой", css:"q-gold", dmg:11, cost:10},
+  {name:"Длинный лук · золотой", css:"q-gold", dmg:12, cost:11},
+  {name:"Тяжёлый арбалет · золотой", css:"q-gold", dmg:13, cost:12},
+  {name:"Лук · волшебный", css:"q-magic", dmg:14, cost:13},
+  {name:"Арбалет · волшебный", css:"q-magic", dmg:15, cost:14},
+  {name:"Длинный лук · волшебный", css:"q-magic", dmg:16, cost:15},
+  {name:"Тяжёлый арбалет · волшебный", css:"q-magic", dmg:17, cost:16}
 ];
 
 export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🏹","🐢","👼","🧙‍♂️"];

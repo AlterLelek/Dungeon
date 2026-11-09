@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
@@ -29,6 +29,12 @@ if (state.highScore.turns > 0) {
     document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
 } else {
     document.getElementById('high-score-line').innerText = '';
+}
+
+function getWeaponsBySet(set) {
+    if (set === 'mage') return MAGE_WEAPONS;
+    if (set === 'archer') return ARCHER_WEAPONS;
+    return WARRIOR_WEAPONS;
 }
 
 // ==========================================
@@ -58,7 +64,7 @@ function renderCarousel() {
     }
     
     const h = HEROES[state.heroIdx];
-    const w = h.set === 'mage' ? MAGE_WEAPONS[0] : WARRIOR_WEAPONS[0];
+    const w = getWeaponsBySet(h.set)[0];
     document.getElementById('hero-desc').innerHTML = `
         <b>${h.name}</b><br>
         ❤️ ${h.maxHp} HP &nbsp;|&nbsp; ⚡ ${h.maxMp} MP &nbsp;|&nbsp; ⚔️ Урон: ${w.dmg}
@@ -275,8 +281,7 @@ function startGame(name) {
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp;
     state.playerMp = 0; 
-    // ВЕРНУЛИ РАЗДЕЛЕНИЕ ОРУЖИЯ
-    state.weapons = (hero.set === 'mage') ? MAGE_WEAPONS : WARRIOR_WEAPONS;
+    state.weapons = getWeaponsBySet(hero.set);
     state.weaponLevel = 0;
     state.gameMode = 'chase';
     state.currentFloor = 1;
