@@ -63,17 +63,21 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 input[type=range] { flex: 1.2; accent-color: #fbbf24; }
 canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
 .dev-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 12px; }
-.dev-stat input { width: 60px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; }
+.dev-stat input, .dev-stat select { width: 70px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; }
 details { margin-bottom: 10px; }
 summary { cursor: pointer; color: #fbbf24; font-weight: bold; margin-bottom: 5px; }
 
 /* НАСТРОЙКИ */
+.set-accordion { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 6px; margin-bottom: 8px; }
+.set-accordion summary { outline: none; }
 .set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; color: #fff; }
 .set-label { flex: 1; white-space: nowrap; }
 .set-val { color: #fbbf24; font-weight: bold; width: 42px; text-align: right; }
 select { background: #222; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px; font-size: 12px; }
 .set-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px; color: #fff; }
-.set-sep { border-top: 1px solid #4b5563; margin: 12px 0 10px 0; }
-.mel-btn { background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 4px 5px; font-size: 11px; cursor: pointer; font-weight: bold; font-family: inherit; }
+
+/* КНОПКИ МЕЛОДИЙ */
+.mel-row { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; margin-top: 5px; }
+.mel-btn { flex: 1 1 30%; background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; }
 .mel-btn.active { background: #b45309; color: #fff; border-color: #fbbf24; }
 .reset-btn { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; font-family: inherit; }

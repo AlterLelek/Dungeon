@@ -1,4 +1,3 @@
-// shared/audio.js
 let audioCtx = null;
 let masterGain, musicGain, ambientGain, sfxGain;
 let isInit = false;
@@ -7,8 +6,10 @@ let ambNodes = null;
 let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
+let currentTrack = 'cave';
+let currentTempo = 600;
 
-const volumes = { master: 0.2, music: 0.1, ambient: 0.05, sfx: 0.3 };
+const volumes = { master: 0.2, music: 0.1, ambient: 0.05, sfx: 0.3, tempo: 600 };
 
 export function initAudio() {
   if (isInit) return;
@@ -37,7 +38,12 @@ function applyVolumes() {
 }
 
 export function setVolume(type, val) {
-  const normVal = val / 100;
+  if (type === 'tempo') {
+    currentTempo = val;
+    if (currentTrack) startMusic(currentTrack); // Перезапуск с новым темпом
+    return;
+  }
+  const normVal = val;
   if (type === 'master') volumes.master = normVal;
   if (type === 'music') volumes.music = normVal;
   if (type === 'ambient') volumes.ambient = normVal;
@@ -97,21 +103,52 @@ const MELODIES = {
     melody: [220,0,261.6,329.6,440,0,329.6,261.6,349.2,0,440,493.9,523.3,0,440,392,329.6,0,261.6,220,0,0,196,0,220,0,261.6,329.6,440,0,0,0],
     bass:   [110,0,110,0,130.8,0,130.8,0,146.8,0,146.8,0,164.8,0,164.8,0,110,0,110,0,130.8,0,130.8,0,98,0,98,0,110,0,110,0],
     harmony:[329.6,0,392,0,440,0,392,0,440,0,523.3,0,493.9,0,440,0,329.6,0,392,0,440,0,392,0,293.7,0,349.2,0,329.6,0,392,0]
+  },
+  elven: {
+    melody: [523.3, 0, 587.3, 659.3, 784, 0, 659.3, 587.3, 523.3, 0, 440, 523.3, 587.3, 0, 0, 0],
+    bass:   [261.6, 0, 261.6, 0, 329.6, 0, 329.6, 0, 261.6, 0, 220, 0, 293.7, 0, 0, 0],
+    harmony:[392, 0, 440, 0, 493.9, 0, 440, 0, 392, 0, 349.2, 0, 440, 0, 0, 0]
+  },
+  dwarven: {
+    melody: [130.8, 146.8, 164.8, 0, 130.8, 146.8, 164.8, 0, 174.6, 164.8, 146.8, 130.8, 0, 0, 0, 0],
+    bass:   [65.4, 0, 65.4, 0, 82.4, 0, 82.4, 0, 87.3, 0, 73.4, 0, 65.4, 0, 0, 0],
+    harmony:[196, 0, 196, 0, 246.9, 0, 246.9, 0, 261.6, 0, 220, 0, 196, 0, 0, 0]
+  },
+  dice: {
+    melody: [880, 1046.5, 880, 1046.5, 880, 0, 659.3, 784, 0, 0, 0, 0],
+    bass:   [220, 0, 220, 0, 220, 0, 164.8, 196, 0, 0, 0, 0],
+    harmony:[440, 0, 440, 0, 440, 0, 329.6, 392, 0, 0, 0, 0]
+  },
+  // Shining Force - эпичный марш
+  shining: {
+    melody: [392, 0, 440, 493.9, 523.3, 0, 493.9, 440, 392, 0, 349.2, 392, 440, 0, 0, 0, 523.3, 0, 587.3, 659.3, 698.5, 0, 659.3, 587.3, 523.3, 0, 493.9, 523.3, 587.3, 0, 0, 0],
+    bass:   [130.8, 0, 130.8, 0, 164.8, 0, 164.8, 0, 174.6, 0, 174.6, 0, 196, 0, 196, 0, 130.8, 0, 130.8, 0, 164.8, 0, 164.8, 0, 174.6, 0, 174.6, 0, 196, 0, 196, 0],
+    harmony:[261.6, 0, 293.7, 0, 329.6, 0, 293.7, 0, 261.6, 0, 233.1, 0, 261.6, 0, 293.7, 0, 349.2, 0, 392, 0, 440, 0, 392, 0, 349.2, 0, 329.6, 0, 392, 0, 440, 0]
+  },
+  // Might and Magic 3 - замковая тема
+  mm3: {
+    melody: [329.6, 0, 392, 440, 0, 523.3, 0, 493.9, 440, 0, 392, 329.6, 0, 293.7, 0, 0, 329.6, 0, 392, 440, 0, 523.3, 0, 587.3, 659.3, 0, 587.3, 523.3, 0, 440, 0, 0],
+    bass:   [110, 0, 110, 130.8, 0, 130.8, 0, 110, 146.8, 0, 146.8, 110, 0, 98, 0, 0, 110, 0, 110, 130.8, 0, 130.8, 0, 146.8, 164.8, 0, 146.8, 130.8, 0, 110, 0, 0],
+    harmony:[164.8, 0, 196, 220, 0, 261.6, 0, 246.9, 220, 0, 196, 164.8, 0, 146.8, 0, 0, 164.8, 0, 196, 220, 0, 261.6, 0, 293.7, 329.6, 0, 293.7, 261.6, 0, 220, 0, 0]
   }
 };
 
-export function startMusic() {
-  if (melodyTimer) return;
+export function startMusic(track = 'cave') {
   initAudio();
+  if (melodyTimer) clearInterval(melodyTimer);
+  currentTrack = track;
   currentMelodyIdx = 0;
+  
+  const mel = MELODIES[track] || MELODIES.cave;
+  const tempo = currentTempo;
+
   melodyTimer = setInterval(() => {
     if (volumes.music === 0) return;
-    const mel = MELODIES.cave;
     playTone(mel.melody[currentMelodyIdx], 'triangle', 0.05, 0.5);
-    playTone(mel.bass[currentMelodyIdx], 'sine', 0.04, 0.5);
-    playTone(mel.harmony[currentMelodyIdx], 'sine', 0.03, 0.5);
+    if (mel.bass) playTone(mel.bass[currentMelodyIdx], 'sine', 0.04, 0.5);
+    if (mel.harmony) playTone(mel.harmony[currentMelodyIdx], 'sine', 0.03, 0.5);
     currentMelodyIdx = (currentMelodyIdx + 1) % mel.melody.length;
-  }, 600);
+  }, tempo);
 }
 
 function playTone(freq, wave, vol, dur) {

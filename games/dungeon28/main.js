@@ -79,26 +79,42 @@ function loadSettings() {
         if (raw) Object.assign(state.settings, JSON.parse(raw));
     } catch(e) {}
 
-    document.getElementById('set-floors').value = state.settings.floors;
-    document.getElementById('set-floors-v').innerText = state.settings.floors;
-    document.getElementById('floor-max').innerText = state.settings.floors;
-    document.getElementById('set-monst-add').value = state.settings.monsterAdd;
-    document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd;
-    document.getElementById('set-item-rate').value = state.settings.itemRate;
-    document.getElementById('set-item-rate-v').innerText = state.settings.itemRate;
-    document.getElementById('set-shield-val').value = state.settings.shieldVal;
-    document.getElementById('set-shield-val-v').innerText = state.settings.shieldVal;
-    document.getElementById('set-star-val').value = state.settings.starVal;
-    document.getElementById('set-star-val-v').innerText = state.settings.starVal;
-    document.getElementById('set-vibro').checked = state.settings.vibro;
-    document.getElementById('set-vibro-power').value = state.settings.vibroPower;
-    document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%';
-    document.getElementById('set-auto-mel').checked = state.settings.autoMel;
-    document.getElementById('set-bonus-reset').checked = state.settings.bonusReset;
-    document.getElementById('diff-critical').checked = state.settings.criticalAI;
-    document.getElementById('diff-simple').checked = state.settings.difficulty === 'simple';
-    document.getElementById('diff-extreme').checked = state.settings.difficulty === 'extreme';
-    document.getElementById('diff-horror').checked = state.settings.difficulty === 'horror';
+    // Защита от null, так как некоторые элементы могли быть удалены из HTML
+    const elFloors = document.getElementById('set-floors');
+    if (elFloors) { elFloors.value = state.settings.floors; document.getElementById('set-floors-v').innerText = state.settings.floors; document.getElementById('floor-max').innerText = state.settings.floors; }
+    
+    const elMonst = document.getElementById('set-monst-add');
+    if (elMonst) { elMonst.value = state.settings.monsterAdd; document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd; }
+    
+    const elItem = document.getElementById('set-item-rate');
+    if (elItem) { elItem.value = state.settings.itemRate; document.getElementById('set-item-rate-v').innerText = state.settings.itemRate; }
+    
+    const elShield = document.getElementById('set-shield-val');
+    if (elShield) { elShield.value = state.settings.shieldVal; document.getElementById('set-shield-val-v').innerText = state.settings.shieldVal; }
+    
+    const elStar = document.getElementById('set-star-val');
+    if (elStar) { elStar.value = state.settings.starVal; document.getElementById('set-star-val-v').innerText = state.settings.starVal; }
+    
+    const elVibro = document.getElementById('set-vibro');
+    if (elVibro) { elVibro.checked = state.settings.vibro; }
+    
+    const elVibroPow = document.getElementById('set-vibro-power');
+    if (elVibroPow) { elVibroPow.value = state.settings.vibroPower; document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%'; }
+    
+    const elBonusRes = document.getElementById('set-bonus-reset');
+    if (elBonusRes) { elBonusRes.checked = state.settings.bonusReset; }
+    
+    const elCrit = document.getElementById('diff-critical');
+    if (elCrit) { elCrit.checked = state.settings.criticalAI; }
+    
+    const elSimple = document.getElementById('diff-simple');
+    if (elSimple) { elSimple.checked = state.settings.difficulty === 'simple'; }
+    
+    const elExtreme = document.getElementById('diff-extreme');
+    if (elExtreme) { elExtreme.checked = state.settings.difficulty === 'extreme'; }
+    
+    const elHorror = document.getElementById('diff-horror');
+    if (elHorror) { elHorror.checked = state.settings.difficulty === 'horror'; }
 }
 loadSettings();
 
@@ -117,20 +133,33 @@ document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'ca
 document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', 'elven');
 document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
 document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'dice');
+document.getElementById('mel-shining').onclick = () => selectMelody('mel-shining', 'shining');
+document.getElementById('mel-mm3').onclick = () => selectMelody('mel-mm3', 'mm3');
 
-document.getElementById('set-floors').addEventListener('input', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('set-floors-v').innerText = state.settings.floors; document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
-document.getElementById('set-monst-add').addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd; saveSettings(); });
-document.getElementById('set-item-rate').addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); document.getElementById('set-item-rate-v').innerText = state.settings.itemRate; saveSettings(); });
-document.getElementById('set-shield-val').addEventListener('input', (e) => { state.settings.shieldVal = parseInt(e.target.value); document.getElementById('set-shield-val-v').innerText = state.settings.shieldVal; saveSettings(); });
-document.getElementById('set-star-val').addEventListener('input', (e) => { state.settings.starVal = parseInt(e.target.value); document.getElementById('set-star-val-v').innerText = state.settings.starVal; saveSettings(); });
-document.getElementById('set-vibro').addEventListener('change', (e) => { state.settings.vibro = e.target.checked; saveSettings(); });
-document.getElementById('set-vibro-power').addEventListener('input', (e) => { state.settings.vibroPower = parseInt(e.target.value); document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%'; saveSettings(); });
-document.getElementById('set-auto-mel').addEventListener('change', (e) => { state.settings.autoMel = e.target.checked; saveSettings(); });
-document.getElementById('set-bonus-reset').addEventListener('change', (e) => { state.settings.bonusReset = e.target.checked; saveSettings(); });
-document.getElementById('diff-critical').addEventListener('change', (e) => { state.settings.criticalAI = e.target.checked; saveSettings(); });
-document.getElementById('diff-simple').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'simple'; saveSettings(); } else e.target.checked = true; });
-document.getElementById('diff-extreme').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'extreme'; saveSettings(); } else e.target.checked = true; });
-document.getElementById('diff-horror').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
+const elFloors = document.getElementById('set-floors');
+if (elFloors) elFloors.addEventListener('input', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('set-floors-v').innerText = state.settings.floors; document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
+const elMonst = document.getElementById('set-monst-add');
+if (elMonst) elMonst.addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd; saveSettings(); });
+const elItem = document.getElementById('set-item-rate');
+if (elItem) elItem.addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); document.getElementById('set-item-rate-v').innerText = state.settings.itemRate; saveSettings(); });
+const elShield = document.getElementById('set-shield-val');
+if (elShield) elShield.addEventListener('input', (e) => { state.settings.shieldVal = parseInt(e.target.value); document.getElementById('set-shield-val-v').innerText = state.settings.shieldVal; saveSettings(); });
+const elStar = document.getElementById('set-star-val');
+if (elStar) elStar.addEventListener('input', (e) => { state.settings.starVal = parseInt(e.target.value); document.getElementById('set-star-val-v').innerText = state.settings.starVal; saveSettings(); });
+const elVibro = document.getElementById('set-vibro');
+if (elVibro) elVibro.addEventListener('change', (e) => { state.settings.vibro = e.target.checked; saveSettings(); });
+const elVibroPow = document.getElementById('set-vibro-power');
+if (elVibroPow) elVibroPow.addEventListener('input', (e) => { state.settings.vibroPower = parseInt(e.target.value); document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%'; saveSettings(); });
+const elBonusRes = document.getElementById('set-bonus-reset');
+if (elBonusRes) elBonusRes.addEventListener('change', (e) => { state.settings.bonusReset = e.target.checked; saveSettings(); });
+const elCrit = document.getElementById('diff-critical');
+if (elCrit) elCrit.addEventListener('change', (e) => { state.settings.criticalAI = e.target.checked; saveSettings(); });
+const elSimple = document.getElementById('diff-simple');
+if (elSimple) elSimple.addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'simple'; saveSettings(); } else e.target.checked = true; });
+const elExtreme = document.getElementById('diff-extreme');
+if (elExtreme) elExtreme.addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'extreme'; saveSettings(); } else e.target.checked = true; });
+const elHorror = document.getElementById('diff-horror');
+if (elHorror) elHorror.addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить все настройки?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
 // DEV ПАНЕЛЬ В АККОРДЕОНАХ С ВЫПАДАЮЩИМИ СПИСКАМИ
@@ -160,7 +189,6 @@ function renderDevPanel() {
         const details = document.createElement('details');
         details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
         
-        // Числовые поля
         ['hp', 'atk', 'def', 'speed'].forEach(f => {
             const div = document.createElement('div'); div.className = 'dev-stat';
             div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-mon-${i}-${f}" value="${m[f] || 1}">`;
@@ -170,7 +198,6 @@ function renderDevPanel() {
             });
         });
         
-        // Выпадающие списки
         const createSelect = (field, optionsArray) => {
             const div = document.createElement('div'); div.className = 'dev-stat';
             const select = document.createElement('select');
@@ -332,7 +359,8 @@ function gameLoop() {
 
 function startGame(name) {
     initAudio(); 
-    startAmbient(); startMusic('cave');   
+    startAmbient(); 
+    startMusic('cave');   
     
     loginScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
@@ -389,7 +417,6 @@ function startGame(name) {
       else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
       else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
       
-      // ГОРЯЧАЯ КЛАВИША УМЕНИЯ
       else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
       
       else if (key === 'm' || key === 'ь') {
