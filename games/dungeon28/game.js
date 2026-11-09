@@ -126,27 +126,31 @@ export function fight(m, index, ranged = false) {
   return false;
 }
 
-// МАГИЯ: Если хватает маны - тратим ману, если нет - тратим заряд
+// МАГИЯ: Проверка целей ДО траты маны/зарядов
 export function castLightning() {
-    if (state.spellLightning <= 0) return; // Нет зарядов
+    if (state.spellLightning <= 0) return;
+    
+    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= 64 && Math.abs(m.y - state.player.y) <= 64);
+    if (targets.length === 0) {
+        addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af");
+        return;
+    }
+    
     const cost = Math.max(0, 3 - state.spellDiscount);
     if (state.playerMp >= cost) { state.playerMp -= cost; }
     state.spellLightning--;
     
     playSound('magic');
-    state.monsters.forEach((m, idx) => {
-        const dx = Math.abs(m.x - state.player.x);
-        const dy = Math.abs(m.y - state.player.y);
-        if (dx <= 64 && dy <= 64) {
-            m.hp -= 20;
-            addFloater(m.x, m.y, "-20", "#fbbf24");
-            if (m.hp <= 0) {
-                state.monsters.splice(idx, 1);
-                state.goldCount += 2;
-                state.stats.kills++;
-                if (m.type !== "🐭" && m.type !== "🕷") {
-                    state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
-                }
+    targets.forEach(m => {
+        m.hp -= 20;
+        addFloater(m.x, m.y, "-20", "#fbbf24");
+        if (m.hp <= 0) {
+            const idx = state.monsters.indexOf(m);
+            if (idx > -1) state.monsters.splice(idx, 1);
+            state.goldCount += 2;
+            state.stats.kills++;
+            if (m.type !== "🐭" && m.type !== "🕷") {
+                state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
             }
         }
     });
@@ -155,13 +159,20 @@ export function castLightning() {
 
 export function castHeal() {
     if (state.spellHeal <= 0) return;
+    
+    const maxHp = state.devSettings.heroes[state.heroIdx].maxHp;
+    if (state.playerHp >= maxHp) {
+        addFloater(state.player.px, state.player.py, "Полное HP", "#9ca3af");
+        return;
+    }
+    
     const cost = Math.max(0, 3 - state.spellDiscount);
     if (state.playerMp >= cost) { state.playerMp -= cost; }
     state.spellHeal--;
     
     playSound('magic');
     state.playerHp += 30;
-    if (state.playerHp > state.devSettings.heroes[state.heroIdx].maxHp) state.playerHp = state.devSettings.heroes[state.heroIdx].maxHp;
+    if (state.playerHp > maxHp) state.playerHp = maxHp;
     addFloater(state.player.px, state.player.py, "+30hp", "#22c55e");
 }
 
@@ -177,24 +188,29 @@ export function castStun() {
 
 export function castHurricane() {
     if (state.spellHurricane <= 0) return;
+    
+    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= 64 && Math.abs(m.y - state.player.y) <= 64);
+    if (targets.length === 0) {
+        addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af");
+        return;
+    }
+    
     const cost = Math.max(0, 4 - state.spellDiscount);
     if (state.playerMp >= cost) { state.playerMp -= cost; }
     state.spellHurricane--;
     
     playSound('magic');
-    state.monsters.forEach(m => {
+    targets.forEach(m => {
         const dx = m.x - state.player.x;
         const dy = m.y - state.player.y;
-        if (Math.abs(dx) <= 64 && Math.abs(dy) <= 64) {
-            let nx = m.x + Math.sign(dx) * CELL * 3;
-            let ny = m.y + Math.sign(dy) * CELL * 3;
-            if (nx < 0) nx = 0; if (nx >= 320) nx = 288;
-            if (ny < 0) ny = 0; if (ny >= 320) ny = 288;
-            m.x = nx; m.y = ny;
-            m.startPx = m.px; m.startPy = m.py;
-            m.moveStartTime = performance.now(); m.isMoving = true;
-            addFloater(m.x, m.y, "🌪️", "#a855f7");
-        }
+        let nx = m.x + Math.sign(dx) * CELL * 3;
+        let ny = m.y + Math.sign(dy) * CELL * 3;
+        if (nx < 0) nx = 0; if (nx >= 320) nx = 288;
+        if (ny < 0) ny = 0; if (ny >= 320) ny = 288;
+        m.x = nx; m.y = ny;
+        m.startPx = m.px; m.startPy = m.py;
+        m.moveStartTime = performance.now(); m.isMoving = true;
+        addFloater(m.x, m.y, "🌪️", "#a855f7");
     });
 }
 

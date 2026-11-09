@@ -42,8 +42,16 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
-  // Отрисовка могил эмодзи
-  state.corpses.forEach(c => { drawCell(ctx, c.x, c.y, "🪦", 24, 0.7); });
+  // Отрисовка могил с обводкой
+  state.corpses.forEach(c => {
+      ctx.font = "24px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.strokeStyle = "rgba(0,0,0,0.8)";
+      ctx.lineWidth = 3;
+      ctx.strokeText("🪦", c.x + CELL / 2, c.y + CELL / 2);
+      ctx.fillText("🪦", c.x + CELL / 2, c.y + CELL / 2);
+  });
 
   state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
 
