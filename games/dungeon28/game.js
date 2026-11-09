@@ -61,7 +61,14 @@ function autoNextFloor() {
 
 export function fight(m, index, ranged = false) {
   playSound('hit'); 
-  let pDmg = getTotalAtk() - m.def; if (pDmg < 1) pDmg = 1;
+  let pDmg = getTotalAtk() - m.def; 
+  
+  // ЛУЧНИК БЬЕТ В БЛИЖНЕМ БОЮ 80% СИЛЫ
+  if (HEROES[state.heroIdx].set === 'archer' && !ranged) {
+      pDmg = Math.floor(pDmg * 0.8);
+  }
+  
+  if (pDmg < 1) pDmg = 1;
   m.hp -= pDmg; 
   addFloater(m.x, m.y, "-" + pDmg, "#ef4444");
   
@@ -97,7 +104,6 @@ export function fight(m, index, ranged = false) {
         if (spawned > 0) addFloater(m.x, m.y, "Деление 1/3!", "#a855f7");
     }
     
-    // МЫШИ И ПАУКИ НЕ ОСТАВЛЯЮТ МОГИЛ
     if (m.type !== "🐭" && m.type !== "🕷") {
         state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     }
@@ -120,10 +126,13 @@ export function fight(m, index, ranged = false) {
   return false;
 }
 
+// МАГИЯ: Если хватает маны - тратим ману, если нет - тратим заряд
 export function castLightning() {
+    if (state.spellLightning <= 0) return; // Нет зарядов
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp < cost || state.spellLightning <= 0) return;
-    state.playerMp -= cost; state.spellLightning--;
+    if (state.playerMp >= cost) { state.playerMp -= cost; }
+    state.spellLightning--;
+    
     playSound('magic');
     state.monsters.forEach((m, idx) => {
         const dx = Math.abs(m.x - state.player.x);
@@ -145,9 +154,11 @@ export function castLightning() {
 }
 
 export function castHeal() {
+    if (state.spellHeal <= 0) return;
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp < cost || state.spellHeal <= 0) return;
-    state.playerMp -= cost; state.spellHeal--;
+    if (state.playerMp >= cost) { state.playerMp -= cost; }
+    state.spellHeal--;
+    
     playSound('magic');
     state.playerHp += 30;
     if (state.playerHp > state.devSettings.heroes[state.heroIdx].maxHp) state.playerHp = state.devSettings.heroes[state.heroIdx].maxHp;
@@ -155,17 +166,21 @@ export function castHeal() {
 }
 
 export function castStun() {
+    if (state.spellStun <= 0) return;
     const cost = Math.max(0, 2 - state.spellDiscount);
-    if (state.playerMp < cost || state.spellStun <= 0) return;
-    state.playerMp -= cost; state.spellStun--;
+    if (state.playerMp >= cost) { state.playerMp -= cost; }
+    state.spellStun--;
+    
     playSound('magic');
     state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
 }
 
 export function castHurricane() {
+    if (state.spellHurricane <= 0) return;
     const cost = Math.max(0, 4 - state.spellDiscount);
-    if (state.playerMp < cost || state.spellHurricane <= 0) return;
-    state.playerMp -= cost; state.spellHurricane--;
+    if (state.playerMp >= cost) { state.playerMp -= cost; }
+    state.spellHurricane--;
+    
     playSound('magic');
     state.monsters.forEach(m => {
         const dx = m.x - state.player.x;

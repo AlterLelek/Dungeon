@@ -104,53 +104,54 @@
     <button id="close-records" class="close-panel">Закрыть</button>
   </div>
 
+  <!-- НАСТРОЙКИ С АККОРДЕОНАМИ -->
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
-    <div class="set-row"><span class="set-label">🔊 Звук</span><input type="range" id="set-sfx" min="0" max="100" step="10" value="100"><span class="set-val" id="set-sfx-v">100%</span></div>
-    <div class="set-row"><span class="set-label">🌫 Фон</span><input type="range" id="set-amb" min="0" max="100" step="10" value="100"><span class="set-val" id="set-amb-v">100%</span></div>
-    <div class="set-row"><span class="set-label">🎵 Мелодия</span><input type="range" id="set-mel" min="0" max="100" step="10" value="50"><span class="set-val" id="set-mel-v">50%</span></div>
-    <div class="set-row"><span class="set-label">⏱ Темп мелодии</span><input type="range" id="set-tempo" min="300" max="1200" step="100" value="600"><span class="set-val" id="set-tempo-v">600</span></div>
-    <div class="set-row"><span class="set-label">🎵 Какая играет</span>
-      <button class="mel-btn active" id="mel-cave">Подземелье</button>
-      <button class="mel-btn" id="mel-elven">Эльфийская</button>
-      <button class="mel-btn" id="mel-dwarven">Гномий</button>
-      <button class="mel-btn" id="mel-dice">Кости 🎲</button>
-    </div>
-    <div class="set-check"><input type="checkbox" id="set-auto-mel"><span>🔁 Менять мелодию каждые 3–5 мин</span></div>
-    
-    <div class="set-sep"></div>
-    <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="range" id="set-floors" min="1" max="10" step="1" value="5"><span class="set-val" id="set-floors-v">5</span></div>
-    <div class="set-row"><span class="set-label">👹 Монстров за этаж +</span><input type="range" id="set-monst-add" min="0" max="5" step="1" value="0"><span class="set-val" id="set-monst-add-v">0</span></div>
-    <div class="set-row"><span class="set-label">🧰 Спавн бонусов (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" step="1" value="2"><span class="set-val" id="set-item-rate-v">2</span></div>
-    <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="range" id="set-shield-val" min="1" max="5" step="1" value="3"><span class="set-val" id="set-shield-val-v">3</span></div>
-    <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="range" id="set-star-val" min="1" max="5" step="1" value="1"><span class="set-val" id="set-star-val-v">1</span></div>
-    
-    <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
-    <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (умные монстры)</span></div>
-    <div class="set-check"><input type="checkbox" id="diff-horror"><span>💀 Ужас (умные и сильные)</span></div>
-    <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ (Адаптация)</span></div>
-    <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сбрасывать бонусы на новом этаже</span></div>
-    
-    <div class="set-sep"></div>
-    <div class="set-check" id="vibro-row"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
-    <div class="set-row" id="vibro-power-row"><span class="set-label">Сила вибро</span><input type="range" id="set-vibro-power" min="0" max="100" step="10" value="100"><span class="set-val" id="set-vibro-power-v">100%</span></div>
-    
-    <div class="set-row"><span class="set-label">⌨️ Управление</span><select id="set-keys-mode"><option value="all" selected>WASD + стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
-    <div class="set-row"><span class="set-label">Раскладка букв</span><select id="set-keys-layout"><option value="both" selected>Обе</option><option value="lat">Латиница</option><option value="cyr">Кириллица</option></select></div>
-    
-    <!-- ЧЕКБОКС ДЛЯ DEV ПАНЕЛИ -->
-    <div class="set-check"><input type="checkbox" id="set-dev-mode"><span>🛠 Dev-панель (все настройки)</span></div>
+
+    <details class="set-accordion" open>
+      <summary>🔊 Звук</summary>
+      <div class="set-row"><span class="set-label">Звук</span><input type="range" id="set-sfx" min="0" max="100" step="10" value="100"><span class="set-val" id="set-sfx-v">100%</span></div>
+      <div class="set-row"><span class="set-label">Фон</span><input type="range" id="set-amb" min="0" max="100" step="10" value="100"><span class="set-val" id="set-amb-v">100%</span></div>
+      <div class="set-row"><span class="set-label">Мелодия</span><input type="range" id="set-mel" min="0" max="100" step="10" value="50"><span class="set-val" id="set-mel-v">50%</span></div>
+      <div class="set-row"><span class="set-label">Темп мелодии</span><input type="range" id="set-tempo" min="300" max="1200" step="100" value="600"><span class="set-val" id="set-tempo-v">600</span></div>
+      <div class="set-row"><span class="set-label">Какая играет</span>
+        <button class="mel-btn active" id="mel-cave">Подземелье</button>
+        <button class="mel-btn" id="mel-elven">Эльфийская</button>
+        <button class="mel-btn" id="mel-dwarven">Гномий</button>
+        <button class="mel-btn" id="mel-dice">Кости 🎲</button>
+      </div>
+    </details>
+
+    <details class="set-accordion">
+      <summary>⚙️ Остальная игра</summary>
+      <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="range" id="set-floors" min="1" max="10" step="1" value="5"><span class="set-val" id="set-floors-v">5</span></div>
+      <div class="set-row"><span class="set-label">👹 Монстров за этаж +</span><input type="range" id="set-monst-add" min="0" max="5" step="1" value="0"><span class="set-val" id="set-monst-add-v">0</span></div>
+      <div class="set-row"><span class="set-label">🧰 Спавн бонусов (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" step="1" value="2"><span class="set-val" id="set-item-rate-v">2</span></div>
+      <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="range" id="set-shield-val" min="1" max="5" step="1" value="3"><span class="set-val" id="set-shield-val-v">3</span></div>
+      <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="range" id="set-star-val" min="1" max="5" step="1" value="1"><span class="set-val" id="set-star-val-v">1</span></div>
+      
+      <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
+      <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (умные монстры)</span></div>
+      <div class="set-check"><input type="checkbox" id="diff-horror"><span>💀 Ужас (умные и сильные)</span></div>
+      <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ (Адаптация)</span></div>
+      <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сбрасывать бонусы на новом этаже</span></div>
+      
+      <div class="set-check"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
+      <div class="set-row"><span class="set-label">Сила вибро</span><input type="range" id="set-vibro-power" min="0" max="100" step="10" value="100"><span class="set-val" id="set-vibro-power-v">100%</span></div>
+    </details>
+
+    <details class="set-accordion">
+      <summary>🦸 Герои</summary>
+      <div id="dev-heroes"></div>
+    </details>
+
+    <details class="set-accordion">
+      <summary>👹 Монстры</summary>
+      <div id="dev-monsters"></div>
+    </details>
 
     <button class="reset-btn" id="btn-reset-settings">↺ Сбросить настройки</button>
     <button id="close-settings" class="close-panel">Закрыть [Esc]</button>
-  </div>
-
-  <!-- DEV ПАНЕЛЬ -->
-  <div id="dev-panel" class="panel" style="display:none; border-color:#ef4444;">
-    <h3>🛠 Dev Panel</h3>
-    <details><summary>Герои</summary><div id="dev-heroes"></div></details>
-    <details><summary>Монстры</summary><div id="dev-monsters"></div></details>
-    <button onclick="document.getElementById('dev-panel').style.display='none'" class="close-panel">Закрыть</button>
   </div>
 
   <script type="module" src="main.js"></script>

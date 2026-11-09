@@ -93,8 +93,6 @@ function loadSettings() {
     document.getElementById('set-vibro').checked = state.settings.vibro;
     document.getElementById('set-vibro-power').value = state.settings.vibroPower;
     document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%';
-    document.getElementById('set-keys-mode').value = state.settings.keysMode;
-    document.getElementById('set-keys-layout').value = state.settings.keysLayout;
     document.getElementById('set-auto-mel').checked = state.settings.autoMel;
     document.getElementById('set-bonus-reset').checked = state.settings.bonusReset;
     document.getElementById('diff-critical').checked = state.settings.criticalAI;
@@ -104,10 +102,10 @@ function loadSettings() {
 }
 loadSettings();
 
-// ЗВУК И МЕЛОДИИ
-document.getElementById('set-sfx').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-sfx-v').innerText = v + '%'; setVolume('sfx', v); });
-document.getElementById('set-amb').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-amb-v').innerText = v + '%'; setVolume('ambient', v); });
-document.getElementById('set-mel').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-mel-v').innerText = v + '%'; setVolume('music', v); });
+// ИСПРАВЛЕНИЕ ЗВУКА (делим на 100)
+document.getElementById('set-sfx').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-sfx-v').innerText = v + '%'; setVolume('sfx', v / 100); });
+document.getElementById('set-amb').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-amb-v').innerText = v + '%'; setVolume('ambient', v / 100); });
+document.getElementById('set-mel').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-mel-v').innerText = v + '%'; setVolume('music', v / 100); });
 document.getElementById('set-tempo').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-tempo-v').innerText = v; setVolume('tempo', v); });
 
 function selectMelody(btnId, track) {
@@ -127,8 +125,6 @@ document.getElementById('set-shield-val').addEventListener('input', (e) => { sta
 document.getElementById('set-star-val').addEventListener('input', (e) => { state.settings.starVal = parseInt(e.target.value); document.getElementById('set-star-val-v').innerText = state.settings.starVal; saveSettings(); });
 document.getElementById('set-vibro').addEventListener('change', (e) => { state.settings.vibro = e.target.checked; saveSettings(); });
 document.getElementById('set-vibro-power').addEventListener('input', (e) => { state.settings.vibroPower = parseInt(e.target.value); document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%'; saveSettings(); });
-document.getElementById('set-keys-mode').addEventListener('change', (e) => { state.settings.keysMode = e.target.value; saveSettings(); });
-document.getElementById('set-keys-layout').addEventListener('change', (e) => { state.settings.keysLayout = e.target.value; saveSettings(); });
 document.getElementById('set-auto-mel').addEventListener('change', (e) => { state.settings.autoMel = e.target.checked; saveSettings(); });
 document.getElementById('set-bonus-reset').addEventListener('change', (e) => { state.settings.bonusReset = e.target.checked; saveSettings(); });
 document.getElementById('diff-critical').addEventListener('change', (e) => { state.settings.criticalAI = e.target.checked; saveSettings(); });
@@ -137,13 +133,10 @@ document.getElementById('diff-extreme').addEventListener('change', (e) => { if (
 document.getElementById('diff-horror').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить все настройки?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
-document.getElementById('set-dev-mode').addEventListener('change', (e) => { 
-    const dp = document.getElementById('dev-panel');
-    dp.style.display = e.target.checked ? 'block' : 'none';
-    if (e.target.checked) renderDevPanel();
-});
+// DEV ПАНЕЛЬ В АККОРДЕОНАХ С ВЫПАДАЮЩИМИ СПИСКАМИ
+const INTERESTS = ["-", "Герой", "Герои", "Атака", "Мана", "Защита", "Бонусы", "Трупы", "Сердца"];
+const SPECIALS = ["-", "Вампиризм", "Высасывание маны", "Деление 1/3", "Замедление", "Съедание бонусов", "Яд", "Толстая защита", "Регенерация", "Поднятие", "Стрельба 2 + Вампиризм"];
 
-// DEV ПАНЕЛЬ - ПОЛНАЯ
 function renderDevPanel() {
     const devHeroesContainer = document.getElementById('dev-heroes');
     devHeroesContainer.innerHTML = '';
@@ -166,19 +159,42 @@ function renderDevPanel() {
         const m = ENEMY_BASE[type];
         const details = document.createElement('details');
         details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
-        const fields = ['hp', 'atk', 'def', 'speed', 'interest1', 'interest2', 'special'];
-        fields.forEach(f => {
+        
+        // Числовые поля
+        ['hp', 'atk', 'def', 'speed'].forEach(f => {
             const div = document.createElement('div'); div.className = 'dev-stat';
-            div.innerHTML = `<span>${f}:</span> <input type="text" id="dev-mon-${i}-${f}" value="${m[f] || ''}">`;
+            div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-mon-${i}-${f}" value="${m[f] || 1}">`;
             details.appendChild(div);
             div.querySelector('input').addEventListener('change', (e) => {
-                const val = isNaN(e.target.value) || e.target.value.trim() === '' ? e.target.value : parseInt(e.target.value);
-                state.devSettings.monsters[type][f] = val;
+                state.devSettings.monsters[type][f] = parseInt(e.target.value);
             });
         });
+        
+        // Выпадающие списки
+        const createSelect = (field, optionsArray) => {
+            const div = document.createElement('div'); div.className = 'dev-stat';
+            const select = document.createElement('select');
+            optionsArray.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt; o.innerText = opt;
+                if (opt === m[field]) o.selected = true;
+                select.appendChild(o);
+            });
+            div.innerHTML = `<span>${field}:</span> `;
+            div.appendChild(select);
+            details.appendChild(div);
+            select.addEventListener('change', (e) => {
+                state.devSettings.monsters[type][field] = e.target.value;
+            });
+        };
+        createSelect('interest1', INTERESTS);
+        createSelect('interest2', INTERESTS);
+        createSelect('special', SPECIALS);
+        
         devMonstersContainer.appendChild(details);
     });
 }
+renderDevPanel();
 
 const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитрый", "Злой", "Добрый", "Голодный", "Веселый", "Ржавый", "Ледяной", "Огненный", "Пушистый", "Колючий", "Быстрый", "Космический", "Древний", "Грязный", "Смелый", "Трусливый", "Загадочный"];
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
@@ -222,13 +238,13 @@ function updateHUD() {
   const mpCostStun = Math.max(0, 2 - state.spellDiscount);
   const mpCostHurr = Math.max(0, 4 - state.spellDiscount);
 
-  btnLight.disabled = state.playerMp < mpCostLight || state.spellLightning <= 0;
+  btnLight.disabled = state.playerMp < mpCostLight && state.spellLightning <= 0;
   btnLight.innerHTML = `⚡ Молния<br><span>${mpCostLight} MP | x${state.spellLightning}</span>`;
-  btnHeal.disabled = state.playerMp < mpCostHeal || state.spellHeal <= 0;
+  btnHeal.disabled = state.playerMp < mpCostHeal && state.spellHeal <= 0;
   btnHeal.innerHTML = `💚 Лечение<br><span>${mpCostHeal} MP | x${state.spellHeal}</span>`;
-  btnStun.disabled = state.playerMp < mpCostStun || state.spellStun <= 0;
+  btnStun.disabled = state.playerMp < mpCostStun && state.spellStun <= 0;
   btnStun.innerHTML = `❄️ Стан<br><span>${mpCostStun} MP | x${state.spellStun}</span>`;
-  btnHurricane.disabled = state.playerMp < mpCostHurr || state.spellHurricane <= 0;
+  btnHurricane.disabled = state.playerMp < mpCostHurr && state.spellHurricane <= 0;
   btnHurricane.innerHTML = `🌪️ Ураган<br><span>${mpCostHurr} MP | x${state.spellHurricane}</span>`;
 
   if (state.abilityCooldown > 0) {
@@ -372,6 +388,9 @@ function startGame(name) {
       else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
       else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
       else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
+      
+      // ГОРЯЧАЯ КЛАВИША УМЕНИЯ
+      else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
       
       else if (key === 'm' || key === 'ь') {
         document.getElementById('shop-panel').style.display = 'block';
