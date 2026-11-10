@@ -38,7 +38,7 @@
 
     <div id="game-screen" style="display: none;">
       <div id="hud">
-        <!-- ЛЕВАЯ КОЛОНКА -->
+        <!-- ЛЕВАЯ КОЛОНКА (2/6) -->
         <div class="hud-hero">
           <div class="hero-stats">
             <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
@@ -54,16 +54,19 @@
           <div class="hero-fig" id="hero-fig">⚔️</div>
         </div>
         
-        <!-- ЦЕНТР -->
+        <!-- ЦЕНТР (1/6) -->
         <div class="hud-center">
-          <div class="stat-line">🏰 <span id="floor-hud">1</span>/<span id="floor-max">5</span></div>
+          <div class="floor-container">
+            <div class="floor-icon">🏰</div>
+            <div class="floor-num"><span id="floor-hud">1</span><span id="floor-max">/5</span></div>
+          </div>
           <div class="stat-line">👣 <span id="turns">0</span></div>
           <div class="stat-line">🏆 <span id="high-score-line">0</span></div>
           <div class="stat-line"><div class="coin-ico"></div> <span id="score">0</span></div>
           <div class="stat-line">⚡ <span id="energy">0</span></div>
         </div>
         
-        <!-- ПРАВАЯ КОЛОНКА -->
+        <!-- ПРАВАЯ КОЛОНКА (3/6) -->
         <div class="hud-enemies">
           <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
           <div id="e-list"></div>
@@ -99,7 +102,6 @@
     </div>
   </div>
 
-  <!-- ПАНЕЛИ -->
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>
@@ -128,7 +130,6 @@
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
     
-    <!-- НОВЫЙ АККОРДЕОН С ОБОЗНАЧЕНИЯМИ -->
     <details class="set-accordion">
       <summary>ℹ️ Обозначения монстров</summary>
       <div class="status-legend">

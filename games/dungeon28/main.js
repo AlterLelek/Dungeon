@@ -88,7 +88,7 @@ function loadSettings() {
     } catch(e) {}
 
     const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-    setVal('set-floors', state.settings.floors); document.getElementById('floor-max').innerText = state.settings.floors;
+    setVal('set-floors', state.settings.floors); document.getElementById('floor-max').innerText = '/' + state.settings.floors;
     setVal('set-monst-add', state.settings.monsterAdd);
     setVal('set-item-rate', state.settings.itemRate);
     setVal('set-shield-val', state.settings.shieldVal);
@@ -103,7 +103,6 @@ function loadSettings() {
     document.getElementById('set-keys-mode').value = state.settings.keysMode || 'all';
     document.getElementById('set-keys-layout').value = state.settings.keysLayout || 'both';
 
-    // СИНХРОНИЗАЦИЯ ПОЛЗУНКОВ ЗВУКА
     document.getElementById('set-master').value = getVolume('master');
     document.getElementById('set-sfx').value = getVolume('sfx');
     document.getElementById('set-amb').value = getVolume('ambient');
@@ -112,7 +111,6 @@ function loadSettings() {
 }
 loadSettings();
 
-// БЕЗОПАСНЫЕ ОБРАБОТЧИКИ ЗВУКА
 const handleVol = (id, type) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -146,7 +144,7 @@ document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', '
 document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
 document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'dice');
 
-document.getElementById('set-floors').addEventListener('change', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
+document.getElementById('set-floors').addEventListener('change', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('floor-max').innerText = '/' + state.settings.floors; saveSettings(); });
 document.getElementById('set-monst-add').addEventListener('change', (e) => { state.settings.monsterAdd = parseInt(e.target.value); saveSettings(); });
 document.getElementById('set-item-rate').addEventListener('change', (e) => { state.settings.itemRate = parseInt(e.target.value); saveSettings(); });
 document.getElementById('set-shield-val').addEventListener('change', (e) => { state.settings.shieldVal = parseInt(e.target.value); saveSettings(); });
@@ -237,6 +235,16 @@ function updateHUD() {
   document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
   document.getElementById('bonus').innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
   document.getElementById('floor-hud').innerText = state.currentFloor;
+  
+  // СКРЫВАЕМ МАКСИМАЛЬНЫЙ ЭТАЖ В БЕЗЛИМИТЕ
+  const floorMaxEl = document.getElementById('floor-max');
+  if (state.gameMode.includes('inf')) {
+      floorMaxEl.style.display = 'none';
+  } else {
+      floorMaxEl.style.display = 'inline';
+      floorMaxEl.innerText = '/' + state.settings.floors;
+  }
+
   document.getElementById('turns').innerText = state.totalTurns;
   document.getElementById('score').innerText = state.goldCount;
   document.getElementById('energy').innerText = state.playerMp;
