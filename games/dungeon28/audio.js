@@ -6,10 +6,10 @@ let ambNodes = null;
 let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
-let currentTrack = 'cave';
-let currentTempo = 600;
+let currentTrack = 'sf2';
+let currentTempo = 120; // BPM (примерно 500мс на долю)
 
-const volumes = { master: 0.2, music: 0.1, ambient: 0.05, sfx: 0.3, tempo: 600 };
+const volumes = { master: 0.2, music: 0.15, ambient: 0.05, sfx: 0.3, tempo: 120 };
 
 export function initAudio() {
   if (isInit) return;
@@ -40,7 +40,7 @@ function applyVolumes() {
 export function setVolume(type, val) {
   if (type === 'tempo') {
     currentTempo = val;
-    if (currentTrack) startMusic(currentTrack); // Перезапуск с новым темпом
+    if (currentTrack) startMusic(currentTrack);
     return;
   }
   const normVal = val;
@@ -98,70 +98,157 @@ function drip() {
   }, 9000 + Math.random() * 21000);
 }
 
-const MELODIES = {
-  cave: { 
-    melody: [220,0,261.6,329.6,440,0,329.6,261.6,349.2,0,440,493.9,523.3,0,440,392,329.6,0,261.6,220,0,0,196,0,220,0,261.6,329.6,440,0,0,0],
-    bass:   [110,0,110,0,130.8,0,130.8,0,146.8,0,146.8,0,164.8,0,164.8,0,110,0,110,0,130.8,0,130.8,0,98,0,98,0,110,0,110,0],
-    harmony:[329.6,0,392,0,440,0,392,0,440,0,523.3,0,493.9,0,440,0,329.6,0,392,0,440,0,392,0,293.7,0,349.2,0,329.6,0,392,0]
-  },
-  elven: {
-    melody: [523.3, 0, 587.3, 659.3, 784, 0, 659.3, 587.3, 523.3, 0, 440, 523.3, 587.3, 0, 0, 0],
-    bass:   [261.6, 0, 261.6, 0, 329.6, 0, 329.6, 0, 261.6, 0, 220, 0, 293.7, 0, 0, 0],
-    harmony:[392, 0, 440, 0, 493.9, 0, 440, 0, 392, 0, 349.2, 0, 440, 0, 0, 0]
-  },
-  dwarven: {
-    melody: [130.8, 146.8, 164.8, 0, 130.8, 146.8, 164.8, 0, 174.6, 164.8, 146.8, 130.8, 0, 0, 0, 0],
-    bass:   [65.4, 0, 65.4, 0, 82.4, 0, 82.4, 0, 87.3, 0, 73.4, 0, 65.4, 0, 0, 0],
-    harmony:[196, 0, 196, 0, 246.9, 0, 246.9, 0, 261.6, 0, 220, 0, 196, 0, 0, 0]
-  },
-  dice: {
-    melody: [880, 1046.5, 880, 1046.5, 880, 0, 659.3, 784, 0, 0, 0, 0],
-    bass:   [220, 0, 220, 0, 220, 0, 164.8, 196, 0, 0, 0, 0],
-    harmony:[440, 0, 440, 0, 440, 0, 329.6, 392, 0, 0, 0, 0]
-  },
-  // Shining Force - эпичный марш
-  shining: {
-    melody: [392, 0, 440, 493.9, 523.3, 0, 493.9, 440, 392, 0, 349.2, 392, 440, 0, 0, 0, 523.3, 0, 587.3, 659.3, 698.5, 0, 659.3, 587.3, 523.3, 0, 493.9, 523.3, 587.3, 0, 0, 0],
-    bass:   [130.8, 0, 130.8, 0, 164.8, 0, 164.8, 0, 174.6, 0, 174.6, 0, 196, 0, 196, 0, 130.8, 0, 130.8, 0, 164.8, 0, 164.8, 0, 174.6, 0, 174.6, 0, 196, 0, 196, 0],
-    harmony:[261.6, 0, 293.7, 0, 329.6, 0, 293.7, 0, 261.6, 0, 233.1, 0, 261.6, 0, 293.7, 0, 349.2, 0, 392, 0, 440, 0, 392, 0, 349.2, 0, 329.6, 0, 392, 0, 440, 0]
-  },
-  // Might and Magic 3 - замковая тема
-  mm3: {
-    melody: [329.6, 0, 392, 440, 0, 523.3, 0, 493.9, 440, 0, 392, 329.6, 0, 293.7, 0, 0, 329.6, 0, 392, 440, 0, 523.3, 0, 587.3, 659.3, 0, 587.3, 523.3, 0, 440, 0, 0],
-    bass:   [110, 0, 110, 130.8, 0, 130.8, 0, 110, 146.8, 0, 146.8, 110, 0, 98, 0, 0, 110, 0, 110, 130.8, 0, 130.8, 0, 146.8, 164.8, 0, 146.8, 130.8, 0, 110, 0, 0],
-    harmony:[164.8, 0, 196, 220, 0, 261.6, 0, 246.9, 220, 0, 196, 164.8, 0, 146.8, 0, 0, 164.8, 0, 196, 220, 0, 261.6, 0, 293.7, 329.6, 0, 293.7, 261.6, 0, 220, 0, 0]
-  }
+// ==========================================
+// 7-ГОЛОСНАЯ МЕЛОДИЯ (Shining Force II Style)
+// ==========================================
+
+// Базовые ноты (частоты)
+const N = {
+    C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+    C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+    C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, B5: 987.77,
+    C6: 1046.50
 };
 
-export function startMusic(track = 'cave') {
+// 64-тактная последовательность (около 30 сек при 120bpm)
+// 0 означает паузу
+const MELODY_SF2 = {
+    // 1. Lead Melody (Square) - Героическая тема
+    v1: [
+        N.G4, 0, N.C5, 0, N.E5, N.G5, N.C6, 0, N.B5, N.G5, N.E5, 0, N.D5, N.E5, N.F5, 0,
+        N.E5, 0, N.C5, 0, N.G4, 0, N.C5, N.E5, N.G5, 0, N.A5, N.G5, N.F5, N.E5, N.D5, 0,
+        N.C5, 0, N.E5, 0, N.G5, N.E5, N.C6, 0, N.B5, 0, N.A5, N.G5, N.F5, 0, N.E5, 0,
+        N.D5, 0, N.E5, N.F5, N.G5, 0, N.A5, N.B5, N.C6, 0, N.G5, 0, N.C5, 0, 0, 0
+    ],
+    // 2. Brass (Sawtooth) - Поддержка
+    v2: [
+        N.E4, 0, N.G4, 0, N.C5, N.E5, N.G5, 0, N.E5, 0, N.C5, 0, N.B4, 0, N.A4, 0,
+        N.G4, 0, N.E4, 0, N.C4, 0, N.E4, N.G4, N.C5, 0, N.E5, 0, N.D5, 0, N.B4, 0,
+        N.C5, 0, N.E5, 0, N.G5, 0, N.E5, 0, N.D5, 0, N.C5, 0, N.A4, 0, N.G4, 0,
+        N.F4, 0, N.G4, 0, N.A4, 0, N.B4, 0, N.C5, 0, N.G4, 0, N.C4, 0, 0, 0
+    ],
+    // 3. Strings (Triangle) - Арпеджио
+    v3: [
+        N.C5, N.E5, N.G5, N.C6, N.G5, N.E5, N.C5, N.E5, N.G4, N.B4, N.D5, N.G5, N.D5, N.B4, N.G4, N.B4,
+        N.A4, N.C5, N.E5, N.A5, N.E5, N.C5, N.A4, N.C5, N.F4, N.A4, N.C5, N.F5, N.C5, N.A4, N.F4, N.A4,
+        N.C5, N.E5, N.G5, N.C6, N.G5, N.E5, N.C5, N.E5, N.G4, N.B4, N.D5, N.G5, N.D5, N.B4, N.G4, N.B4,
+        N.F4, N.A4, N.C5, N.F5, N.G4, N.B4, N.D5, N.G5, N.C4, N.E4, N.G4, N.C5, N.G4, N.E4, N.C4, 0
+    ],
+    // 4. Bass (Sine) - Фундамент
+    v4: [
+        N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.A3, 0, N.A3, 0, N.F3, 0, N.F3, 0,
+        N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.F3, 0, N.F3, 0, N.G3, 0, N.G3, 0,
+        N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.A3, 0, N.A3, 0, N.F3, 0, N.F3, 0,
+        N.D3, 0, N.D3, 0, N.G3, 0, N.G3, 0, N.C3, 0, N.C3, 0, N.C3, 0, 0, 0
+    ],
+    // 5. Harmony (Triangle) - Аккорды
+    v5: [
+        N.E4, 0, N.C5, 0, N.G4, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0, N.C5, 0,
+        N.G4, 0, N.E4, 0, N.C4, 0, N.G4, 0, N.A4, 0, N.F4, 0, N.G4, 0, N.B4, 0,
+        N.E4, 0, N.C5, 0, N.G4, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0, N.C5, 0,
+        N.F4, 0, N.A4, 0, N.G4, 0, N.B4, 0, N.E4, 0, N.G4, 0, N.C4, 0, 0, 0
+    ],
+    // 6. Flute (Sine) - Контр-мелодия
+    v6: [
+        0, 0, N.E5, 0, N.G5, 0, N.C5, 0, N.E5, 0, N.G5, 0, N.A4, 0, N.C5, 0,
+        N.B4, 0, N.G4, 0, N.E4, 0, N.G4, 0, N.C5, 0, N.E5, 0, N.D5, 0, N.F5, 0,
+        N.E5, 0, N.G5, 0, N.C6, 0, N.G5, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0,
+        N.A4, 0, N.C5, 0, N.B4, 0, N.D5, 0, N.C5, 0, N.E5, 0, N.G4, 0, 0, 0
+    ],
+    // 7. Drums (Noise) - Ритм (1 - Kick, 2 - Snare, 3 - Hat)
+    v7: [
+        1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3,
+        1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3,
+        1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3,
+        1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3
+    ]
+};
+
+const MELODIES = {
+    sf2: MELODY_SF2,
+    cave: { v1: [N.C4, N.D4, N.E4, 0, N.G4, 0, N.E4, 0], v2: [], v3: [], v4: [N.C3,0,N.G3,0], v5: [], v6: [], v7: [] },
+    elven: { v1: [N.E5, N.G5, N.C6, N.B5, N.G5, 0], v2: [], v3: [], v4: [N.C3,0], v5: [], v6: [], v7: [] },
+    dwarven: { v1: [N.C3, N.E3, N.G3, N.C4, 0], v2: [], v3: [], v4: [N.C2,0], v5: [], v6: [], v7: [] },
+    dice: { v1: [N.C5, 0, N.C5, 0], v2: [], v3: [], v4: [], v5: [], v6: [], v7: [] }
+};
+
+export function startMusic(track = 'sf2') {
   initAudio();
   if (melodyTimer) clearInterval(melodyTimer);
   currentTrack = track;
   currentMelodyIdx = 0;
   
-  const mel = MELODIES[track] || MELODIES.cave;
-  const tempo = currentTempo;
+  const mel = MELODIES[track] || MELODIES.sf2;
+  const length = mel.v1.length;
+  const stepTime = (60000 / currentTempo) / 2; // 8-е ноты
 
   melodyTimer = setInterval(() => {
     if (volumes.music === 0) return;
-    playTone(mel.melody[currentMelodyIdx], 'triangle', 0.05, 0.5);
-    if (mel.bass) playTone(mel.bass[currentMelodyIdx], 'sine', 0.04, 0.5);
-    if (mel.harmony) playTone(mel.harmony[currentMelodyIdx], 'sine', 0.03, 0.5);
-    currentMelodyIdx = (currentMelodyIdx + 1) % mel.melody.length;
-  }, tempo);
+    
+    // Играем все 7 голосов параллельно
+    if (mel.v1 && mel.v1[currentMelodyIdx]) playTone(mel.v1[currentMelodyIdx], 'square', 0.05, stepTime / 1000);
+    if (mel.v2 && mel.v2[currentMelodyIdx]) playTone(mel.v2[currentMelodyIdx], 'sawtooth', 0.03, stepTime / 1000);
+    if (mel.v3 && mel.v3[currentMelodyIdx]) playTone(mel.v3[currentMelodyIdx], 'triangle', 0.02, stepTime / 1000);
+    if (mel.v4 && mel.v4[currentMelodyIdx]) playTone(mel.v4[currentMelodyIdx], 'sine', 0.08, stepTime / 1000);
+    if (mel.v5 && mel.v5[currentMelodyIdx]) playTone(mel.v5[currentMelodyIdx], 'triangle', 0.03, stepTime / 1000);
+    if (mel.v6 && mel.v6[currentMelodyIdx]) playTone(mel.v6[currentMelodyIdx], 'sine', 0.04, stepTime / 1000);
+    if (mel.v7 && mel.v7[currentMelodyIdx]) playDrum(mel.v7[currentMelodyIdx]);
+
+    currentMelodyIdx = (currentMelodyIdx + 1) % length;
+  }, stepTime);
 }
 
 function playTone(freq, wave, vol, dur) {
-  if (freq === 0) return;
+  if (freq === 0 || !audioCtx) return;
   try {
     const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
     osc.type = wave; osc.frequency.value = freq; 
     osc.connect(gain); gain.connect(musicGain);
     const now = audioCtx.currentTime;
-    gain.gain.setValueAtTime(vol, now);
+    
+    // Небольшая атака и затухание для "живого" звука
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(vol, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
-    osc.start(now); osc.stop(now + dur + 0.02);
+    
+    osc.start(now); osc.stop(now + dur + 0.05);
   } catch (e) {}
+}
+
+function playDrum(type) {
+  if (!audioCtx || volumes.music === 0) return;
+  const now = audioCtx.currentTime;
+  try {
+    if (type === 1) { // Kick (Bass Drum)
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+      osc.connect(gain); gain.connect(musicGain);
+      gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      osc.start(now); osc.stop(now + 0.15);
+    } else if (type === 2) { // Snare
+      const bufferSize = audioCtx.sampleRate * 0.1;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 1000;
+      const gain = audioCtx.createGain();
+      noise.connect(filter); filter.connect(gain); gain.connect(musicGain);
+      gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      noise.start(now); noise.stop(now + 0.1);
+    } else if (type === 3) { // Hi-hat
+      const bufferSize = audioCtx.sampleRate * 0.05;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 5000;
+      const gain = audioCtx.createGain();
+      noise.connect(filter); filter.connect(gain); gain.connect(musicGain);
+      gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      noise.start(now); noise.stop(now + 0.05);
+    }
+  } catch(e) {}
 }
 
 export function playSound(type) {

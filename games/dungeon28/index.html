@@ -38,24 +38,31 @@
     </div>
 
     <div id="game-screen" style="display: none;">
+      <!-- НОВЫЙ HUD -->
       <div id="hud">
         <div class="hud-hero">
-          <div class="hero-fig" id="hero-fig">⚔️</div>
           <div class="hero-stats">
             <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
-            <div>❤️ <span id="hp">100</span></div>
-            <div>🛡️ <span id="shd-hud">0</span></div>
-            <div>💪 <span id="bonus">1</span></div>
-            <div id="hero-weapon">⚔️ Кулаки</div>
+            <div class="stat-line">❤️ <span id="hp">100</span></div>
+            <div class="stat-line">🛡️ <span id="shd-hud">0</span></div>
+            <div class="stat-line">💪 <span id="bonus">1</span></div>
+            <div class="stat-line" id="hero-weapon">
+                <span class="w-icon">⚔️</span> 
+                <span id="w-dmg">1</span> 
+                <span id="w-name" class="w-name">Кулаки</span>
+            </div>
           </div>
+          <div class="hero-fig" id="hero-fig">⚔️</div>
         </div>
+        
         <div class="hud-center">
-          <div>🏰 <span id="floor-hud">1</span>/<span id="floor-max">5</span></div>
-          <div>👣 <span id="turns">0</span></div>
-          <div id="high-score-line" style="min-height: 14px;">🏆 0</div>
-          <div><span class="coin-ico"></span> <span id="score">0</span></div>
-          <div>⚡ <span id="energy">0</span></div>
+          <div class="stat-line">🏰 <span id="floor-hud">1</span>/<span id="floor-max">5</span></div>
+          <div class="stat-line">👣 <span id="turns">0</span></div>
+          <div class="stat-line">🏆 <span id="high-score-line">0</span></div>
+          <div class="stat-line">🪙 <span id="score">0</span></div>
+          <div class="stat-line">⚡ <span id="energy">0</span></div>
         </div>
+        
         <div class="hud-enemies">
           <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
           <div id="e-list"></div>
@@ -63,7 +70,7 @@
       </div>
 
       <div id="btn-row">
-        <button id="ability-btn" class="btn-primary">✨ Умение</button>
+        <button id="ability-btn" class="btn-primary" style="flex: 1.5;">✨ Умение</button>
         <button id="shop-btn" class="btn-primary">🛒 Лавка</button>
         <button id="records-btn" class="btn-primary">🏆 Рекорды</button>
         <button id="settings-btn" class="btn-primary">⚙️ Настройки</button>
@@ -87,7 +94,7 @@
     </div>
   </div>
 
-  <!-- ПАНЕЛИ (остались без изменений) -->
+  <!-- ПАНЕЛИ (без изменений) -->
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>

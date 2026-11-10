@@ -1,4 +1,4 @@
-export const VERSION = "5.110";
+export const VERSION = "5.113";
 export const GRID = 10;          
 export const CELL = 32;          
 

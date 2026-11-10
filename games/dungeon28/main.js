@@ -25,8 +25,6 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-// Всегда показываем кубок
-document.getElementById('high-score-line').innerHTML = `🏆 ${state.highScore.turns || 0}`;
 
 function getWeaponsBySet(set) {
     if (set === 'mage') return MAGE_WEAPONS;
@@ -209,7 +207,13 @@ function updateHUD() {
   document.getElementById('hero-fig').innerText = HEROES[state.heroIdx].emoji;
   
   const w = state.weapons[state.weaponLevel];
-  document.getElementById('hero-weapon').innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
+  document.getElementById('w-dmg').innerText = w.dmg;
+  document.getElementById('w-name').innerText = w.name;
+  document.getElementById('w-dmg').className = w.css; // Применяем цвет
+  document.getElementById('w-name').className = 'w-name ' + w.css;
+
+  // Обновляем кубок
+  document.getElementById('high-score-line').innerText = state.highScore.turns || 0;
 
   const mpCostLight = Math.max(0, 3 - state.spellDiscount);
   const mpCostHeal = Math.max(0, 3 - state.spellDiscount);
@@ -241,15 +245,15 @@ function updateHUD() {
   let eHtml = "";
   state.monsters.slice(0, 6).forEach(m => { 
       let status = m.status ? m.status : '&nbsp;&nbsp;';
-      eHtml += `<div>
-        <span class="status-ico">${status}</span> 
-        <span>${m.type}</span> 
-        <span class="stat-hp">❤️${m.hp}</span> 
-        <span class="stat-atk">💪${m.atk}</span> 
-        <span class="stat-def">🛡️${m.def}</span>
+      // НОВАЯ РАЗМЕТКА ДЛЯ МОНСТРОВ
+      eHtml += `<div class="enemy-row">
+        <span class="e-type">${m.type}</span>
+        <span class="e-stat" style="color:#ef4444;">❤️${m.hp}</span>
+        <span class="e-stat" style="color:#fbbf24;">💪${m.atk}</span>
+        <span class="e-stat" style="color:#3b82f6;">🛡️${m.def}</span>
       </div>`; 
   });
-  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
+  if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af; text-align:center;">… +${state.monsters.length - 6}</div>`;
   document.getElementById('e-list').innerHTML = eHtml;
 }
 
