@@ -16,7 +16,19 @@
         <button class="c-arrow" id="next-hero">▶</button>
       </div>
       <div class="desc-text" id="hero-desc" style="text-align:center; font-size:12px; color:#9ca3af; min-height:36px; margin-bottom:10px;"></div>
-      <div class="input-group">
+      
+      <!-- ВЫБОР РЕЖИМА -->
+      <div class="mode-select">
+        <select id="game-mode-select" style="width:100%; padding:8px; border-radius:8px; background:#2b2b3b; color:#fff; border:1px solid #4f46e5;">
+          <option value="chase_5">Погоня (1-5 уровней)</option>
+          <option value="def_5">Защита (1-5 уровней)</option>
+          <option value="def_inf">Защита (Безлимит)</option>
+          <option value="wave_5">Волны монстров (1-5)</option>
+          <option value="wave_inf">Волны монстров (Безлимит)</option>
+        </select>
+      </div>
+
+      <div class="input-group" style="margin-top:10px;">
         <label>Имя героя</label>
         <div style="display:flex; gap:8px;">
           <input type="text" id="guest-name" placeholder="Введите имя">
@@ -110,11 +122,11 @@
 
     <details class="set-accordion" open>
       <summary>🔊 Звук</summary>
-      <div class="set-row"><span class="set-label">Общая громкость</span><input type="range" id="set-master" min="0" max="100" step="10" value="100"><span class="set-val" id="set-master-v">100%</span></div>
-      <div class="set-row"><span class="set-label">Звуки</span><input type="range" id="set-sfx" min="0" max="100" step="10" value="100"><span class="set-val" id="set-sfx-v">100%</span></div>
-      <div class="set-row"><span class="set-label">Фон</span><input type="range" id="set-amb" min="0" max="100" step="10" value="100"><span class="set-val" id="set-amb-v">100%</span></div>
-      <div class="set-row"><span class="set-label">Мелодия</span><input type="range" id="set-mel" min="0" max="100" step="10" value="50"><span class="set-val" id="set-mel-v">50%</span></div>
-      <div class="set-row"><span class="set-label">Темп</span><input type="range" id="set-tempo" min="300" max="1200" step="100" value="600"><span class="set-val" id="set-tempo-v">600</span></div>
+      <div class="set-row"><span class="set-label">Общая громкость</span><input type="number" id="set-master" min="0" max="10" step="1" value="10" class="num-input"></div>
+      <div class="set-row"><span class="set-label">Звуки</span><input type="number" id="set-sfx" min="0" max="10" step="1" value="10" class="num-input"></div>
+      <div class="set-row"><span class="set-label">Фон</span><input type="number" id="set-amb" min="0" max="10" step="1" value="10" class="num-input"></div>
+      <div class="set-row"><span class="set-label">Мелодия</span><input type="number" id="set-mel" min="0" max="10" step="1" value="5" class="num-input"></div>
+      <div class="set-row"><span class="set-label">Темп (мс)</span><input type="number" id="set-tempo" min="300" max="1200" step="100" value="600" class="num-input"></div>
       
       <div class="mel-row">
         <button class="mel-btn active" id="mel-cave">Подземелье</button>
@@ -128,33 +140,31 @@
 
     <details class="set-accordion">
       <summary>⚙️ Остальная игра</summary>
-      <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="range" id="set-floors" min="1" max="10" step="1" value="5"><span class="set-val" id="set-floors-v">5</span></div>
-      <div class="set-row"><span class="set-label">👹 Монстров за этаж +</span><input type="range" id="set-monst-add" min="0" max="5" step="1" value="0"><span class="set-val" id="set-monst-add-v">0</span></div>
-      <div class="set-row"><span class="set-label">🧰 Спавн бонусов (раз в N)</span><input type="range" id="set-item-rate" min="1" max="5" step="1" value="2"><span class="set-val" id="set-item-rate-v">2</span></div>
-      <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="range" id="set-shield-val" min="1" max="5" step="1" value="3"><span class="set-val" id="set-shield-val-v">3</span></div>
-      <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="range" id="set-star-val" min="1" max="5" step="1" value="1"><span class="set-val" id="set-star-val-v">1</span></div>
+      <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="number" id="set-floors" min="1" max="20" step="1" value="5" class="num-input"></div>
+      <div class="set-row"><span class="set-label">👹 Монстров +</span><input type="number" id="set-monst-add" min="0" max="5" step="1" value="0" class="num-input"></div>
+      <div class="set-row"><span class="set-label">🧰 Спавн (раз в N)</span><input type="number" id="set-item-rate" min="1" max="5" step="1" value="2" class="num-input"></div>
+      <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="number" id="set-shield-val" min="1" max="10" step="1" value="3" class="num-input"></div>
+      <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="number" id="set-star-val" min="1" max="10" step="1" value="1" class="num-input"></div>
       
       <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
-      <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (умные монстры)</span></div>
-      <div class="set-check"><input type="checkbox" id="diff-horror"><span>💀 Ужас (умные и сильные)</span></div>
-      <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ (Адаптация)</span></div>
-      <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сбрасывать бонусы на новом этаже</span></div>
+      <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (вкусы)</span></div>
+      <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ</span></div>
+      <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сброс бонусов на этаже</span></div>
       
       <div class="set-check"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
-      <div class="set-row"><span class="set-label">Сила вибро</span><input type="range" id="set-vibro-power" min="0" max="100" step="10" value="100"><span class="set-val" id="set-vibro-power-v">100%</span></div>
     </details>
 
     <details class="set-accordion">
       <summary>🎮 Управление</summary>
       <div class="set-row"><span class="set-label">Клавиши</span>
-        <select id="set-keys-mode">
+        <select id="set-keys-mode" class="sel-input">
           <option value="all" selected>WASD + Стрелки</option>
           <option value="arrows">Только стрелки</option>
           <option value="wasd">Только WASD</option>
         </select>
       </div>
       <div class="set-row"><span class="set-label">Раскладка</span>
-        <select id="set-keys-layout">
+        <select id="set-keys-layout" class="sel-input">
           <option value="both" selected>Обе</option>
           <option value="lat">Латиница</option>
           <option value="cyr">Кириллица</option>

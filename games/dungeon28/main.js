@@ -25,11 +25,8 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-if (state.highScore.turns > 0) {
-    document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
-} else {
-    document.getElementById('high-score-line').innerText = '';
-}
+if (state.highScore.turns > 0) document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
+else document.getElementById('high-score-line').innerText = '';
 
 function getWeaponsBySet(set) {
     if (set === 'mage') return MAGE_WEAPONS;
@@ -51,11 +48,7 @@ function renderCarousel() {
         div.innerHTML = `<div class="c-emoji">${h.emoji}</div><div class="c-name">${h.name}</div>`;
         
         if (offset !== 0) {
-            div.onclick = () => {
-                state.heroIdx = idx;
-                renderCarousel();
-                playSound('menu');
-            };
+            div.onclick = () => { state.heroIdx = idx; renderCarousel(); playSound('menu'); };
         }
         container.appendChild(div);
     }
@@ -79,34 +72,30 @@ function loadSettings() {
         if (raw) Object.assign(state.settings, JSON.parse(raw));
     } catch(e) {}
 
-    const setValSafe = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-    const setTxtSafe = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
-
-    setValSafe('set-floors', state.settings.floors); setTxtSafe('set-floors-v', state.settings.floors); setTxtSafe('floor-max', state.settings.floors);
-    setValSafe('set-monst-add', state.settings.monsterAdd); setTxtSafe('set-monst-add-v', '+' + state.settings.monsterAdd);
-    setValSafe('set-item-rate', state.settings.itemRate); setTxtSafe('set-item-rate-v', state.settings.itemRate);
-    setValSafe('set-shield-val', state.settings.shieldVal); setTxtSafe('set-shield-val-v', state.settings.shieldVal);
-    setValSafe('set-star-val', state.settings.starVal); setTxtSafe('set-star-val-v', state.settings.starVal);
-    setValSafe('set-vibro-power', state.settings.vibroPower); setTxtSafe('set-vibro-power-v', state.settings.vibroPower + '%');
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setVal('set-floors', state.settings.floors); document.getElementById('floor-max').innerText = state.settings.floors;
+    setVal('set-monst-add', state.settings.monsterAdd);
+    setVal('set-item-rate', state.settings.itemRate);
+    setVal('set-shield-val', state.settings.shieldVal);
+    setVal('set-star-val', state.settings.starVal);
     
-    const elVibro = document.getElementById('set-vibro'); if (elVibro) elVibro.checked = state.settings.vibro;
-    const elBonusRes = document.getElementById('set-bonus-reset'); if (elBonusRes) elBonusRes.checked = state.settings.bonusReset;
-    const elCrit = document.getElementById('diff-critical'); if (elCrit) elCrit.checked = state.settings.criticalAI;
-    const elSimple = document.getElementById('diff-simple'); if (elSimple) elSimple.checked = state.settings.difficulty === 'simple';
-    const elExtreme = document.getElementById('diff-extreme'); if (elExtreme) elExtreme.checked = state.settings.difficulty === 'extreme';
-    const elHorror = document.getElementById('diff-horror'); if (elHorror) elHorror.checked = state.settings.difficulty === 'horror';
+    document.getElementById('set-vibro').checked = state.settings.vibro;
+    document.getElementById('set-bonus-reset').checked = state.settings.bonusReset;
+    document.getElementById('diff-critical').checked = state.settings.criticalAI;
+    document.getElementById('diff-simple').checked = state.settings.difficulty === 'simple';
+    document.getElementById('diff-extreme').checked = state.settings.difficulty === 'extreme';
     
-    const elKeysMode = document.getElementById('set-keys-mode'); if (elKeysMode) elKeysMode.value = state.settings.keysMode || 'all';
-    const elKeysLayout = document.getElementById('set-keys-layout'); if (elKeysLayout) elKeysLayout.value = state.settings.keysLayout || 'both';
+    document.getElementById('set-keys-mode').value = state.settings.keysMode || 'all';
+    document.getElementById('set-keys-layout').value = state.settings.keysLayout || 'both';
 }
 loadSettings();
 
-// ГРОМКОСТЬ (делим на 100)
-document.getElementById('set-master').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-master-v').innerText = v + '%'; setVolume('master', v / 100); });
-document.getElementById('set-sfx').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-sfx-v').innerText = v + '%'; setVolume('sfx', v / 100); });
-document.getElementById('set-amb').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-amb-v').innerText = v + '%'; setVolume('ambient', v / 100); });
-document.getElementById('set-mel').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-mel-v').innerText = v + '%'; setVolume('music', v / 100); });
-document.getElementById('set-tempo').addEventListener('input', (e) => { const v = parseInt(e.target.value); document.getElementById('set-tempo-v').innerText = v; setVolume('tempo', v); });
+// Громкость (шкала от 0 до 10)
+document.getElementById('set-master').addEventListener('input', (e) => { setVolume('master', parseInt(e.target.value) / 10); });
+document.getElementById('set-sfx').addEventListener('input', (e) => { setVolume('sfx', parseInt(e.target.value) / 10); });
+document.getElementById('set-amb').addEventListener('input', (e) => { setVolume('ambient', parseInt(e.target.value) / 10); });
+document.getElementById('set-mel').addEventListener('input', (e) => { setVolume('music', parseInt(e.target.value) / 10); });
+document.getElementById('set-tempo').addEventListener('input', (e) => { setVolume('tempo', parseInt(e.target.value)); });
 
 function selectMelody(btnId, track) {
     document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
@@ -120,80 +109,66 @@ document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'di
 document.getElementById('mel-shining').onclick = () => selectMelody('mel-shining', 'shining');
 document.getElementById('mel-mm3').onclick = () => selectMelody('mel-mm3', 'mm3');
 
-document.getElementById('set-floors').addEventListener('input', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('set-floors-v').innerText = state.settings.floors; document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
-document.getElementById('set-monst-add').addEventListener('input', (e) => { state.settings.monsterAdd = parseInt(e.target.value); document.getElementById('set-monst-add-v').innerText = '+' + state.settings.monsterAdd; saveSettings(); });
-document.getElementById('set-item-rate').addEventListener('input', (e) => { state.settings.itemRate = parseInt(e.target.value); document.getElementById('set-item-rate-v').innerText = state.settings.itemRate; saveSettings(); });
-document.getElementById('set-shield-val').addEventListener('input', (e) => { state.settings.shieldVal = parseInt(e.target.value); document.getElementById('set-shield-val-v').innerText = state.settings.shieldVal; saveSettings(); });
-document.getElementById('set-star-val').addEventListener('input', (e) => { state.settings.starVal = parseInt(e.target.value); document.getElementById('set-star-val-v').innerText = state.settings.starVal; saveSettings(); });
+document.getElementById('set-floors').addEventListener('change', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
+document.getElementById('set-monst-add').addEventListener('change', (e) => { state.settings.monsterAdd = parseInt(e.target.value); saveSettings(); });
+document.getElementById('set-item-rate').addEventListener('change', (e) => { state.settings.itemRate = parseInt(e.target.value); saveSettings(); });
+document.getElementById('set-shield-val').addEventListener('change', (e) => { state.settings.shieldVal = parseInt(e.target.value); saveSettings(); });
+document.getElementById('set-star-val').addEventListener('change', (e) => { state.settings.starVal = parseInt(e.target.value); saveSettings(); });
 document.getElementById('set-vibro').addEventListener('change', (e) => { state.settings.vibro = e.target.checked; saveSettings(); });
-document.getElementById('set-vibro-power').addEventListener('input', (e) => { state.settings.vibroPower = parseInt(e.target.value); document.getElementById('set-vibro-power-v').innerText = state.settings.vibroPower + '%'; saveSettings(); });
 document.getElementById('set-bonus-reset').addEventListener('change', (e) => { state.settings.bonusReset = e.target.checked; saveSettings(); });
 document.getElementById('diff-critical').addEventListener('change', (e) => { state.settings.criticalAI = e.target.checked; saveSettings(); });
 document.getElementById('diff-simple').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'simple'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('diff-extreme').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'extreme'; saveSettings(); } else e.target.checked = true; });
-document.getElementById('diff-horror').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'horror'; saveSettings(); } else e.target.checked = true; });
 
 document.getElementById('set-keys-mode').addEventListener('change', (e) => { state.settings.keysMode = e.target.value; saveSettings(); });
 document.getElementById('set-keys-layout').addEventListener('change', (e) => { state.settings.keysLayout = e.target.value; saveSettings(); });
-
-document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить все настройки?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
+document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
 // DEV ПАНЕЛЬ
-const INTERESTS = ["-", "Герой", "Герои", "Атака", "Мана", "Защита", "Бонусы", "Трупы", "Сердца"];
-const SPECIALS = ["-", "Вампиризм", "Высасывание маны", "Деление 1/3", "Замедление", "Съедание бонусов", "Яд", "Толстая защита", "Регенерация", "Поднятие", "Стрельба 2 + Вампиризм"];
+const INTERESTS = ["-", "Герой", "Атака", "Мана", "Защита", "Жизнь", "Бонусы", "Трупы"];
+const SPECIALS = ["-", "Вампиризм", "Сжигание маны", "Деление 1/3", "Замедление", "Съедание бонусов", "Яд", "Толстая защита", "Регенерация", "Поднятие", "Стрельба 2 + Вампиризм"];
 
 function renderDevPanel() {
-    const devHeroesContainer = document.getElementById('dev-heroes');
-    devHeroesContainer.innerHTML = '';
+    const devHeroesContainer = document.getElementById('dev-heroes'); devHeroesContainer.innerHTML = '';
     HEROES.forEach((h, i) => {
         const details = document.createElement('details');
         details.innerHTML = `<summary>${h.emoji} ${h.name}</summary>`;
-        const fields = ['maxHp', 'maxMp', 'attackRange', 'lightRange'];
-        fields.forEach(f => {
+        ['maxHp', 'maxMp', 'attackRange'].forEach(f => {
             const div = document.createElement('div'); div.className = 'dev-stat';
-            div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-hero-${i}-${f}" value="${h[f] || 1}">`;
+            div.innerHTML = `<span>${f}:</span> <input type="number" value="${h[f]}">`;
             details.appendChild(div);
             div.querySelector('input').addEventListener('change', (e) => { state.devSettings.heroes[i][f] = parseInt(e.target.value); });
         });
         devHeroesContainer.appendChild(details);
     });
 
-    const devMonstersContainer = document.getElementById('dev-monsters');
-    devMonstersContainer.innerHTML = '';
+    const devMonstersContainer = document.getElementById('dev-monsters'); devMonstersContainer.innerHTML = '';
     Object.keys(ENEMY_BASE).forEach((type, i) => {
         const m = ENEMY_BASE[type];
         const details = document.createElement('details');
         details.innerHTML = `<summary>${type} ${ENEMY_NAMES[type] || ''}</summary>`;
-        
         ['hp', 'atk', 'def', 'speed'].forEach(f => {
             const div = document.createElement('div'); div.className = 'dev-stat';
-            div.innerHTML = `<span>${f}:</span> <input type="number" id="dev-mon-${i}-${f}" value="${m[f] || 1}">`;
+            div.innerHTML = `<span>${f}:</span> <input type="number" value="${m[f]}">`;
             details.appendChild(div);
-            div.querySelector('input').addEventListener('change', (e) => {
-                state.devSettings.monsters[type][f] = parseInt(e.target.value);
-            });
+            div.querySelector('input').addEventListener('change', (e) => { state.devSettings.monsters[type][f] = parseInt(e.target.value); });
         });
         
         const createSelect = (field, optionsArray) => {
             const div = document.createElement('div'); div.className = 'dev-stat';
             const select = document.createElement('select');
             optionsArray.forEach(opt => {
-                const o = document.createElement('option');
-                o.value = opt; o.innerText = opt;
+                const o = document.createElement('option'); o.value = opt; o.innerText = opt;
                 if (opt === m[field]) o.selected = true;
                 select.appendChild(o);
             });
-            div.innerHTML = `<span>${field}:</span> `;
-            div.appendChild(select);
+            div.innerHTML = `<span>${field}:</span> `; div.appendChild(select);
             details.appendChild(div);
-            select.addEventListener('change', (e) => {
-                state.devSettings.monsters[type][field] = e.target.value;
-            });
+            select.addEventListener('change', (e) => { state.devSettings.monsters[type][field] = e.target.value; });
         };
         createSelect('interest1', INTERESTS);
         createSelect('interest2', INTERESTS);
         createSelect('special', SPECIALS);
-        
         devMonstersContainer.appendChild(details);
     });
 }
@@ -204,84 +179,61 @@ const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном",
 function generateRandomName() { guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`; }
 
 // HUD
-const hudHp = document.getElementById('hp');
-const hudShd = document.getElementById('shd-hud');
-const hudBonus = document.getElementById('bonus');
-const hudFloor = document.getElementById('floor-hud');
-const hudTurns = document.getElementById('turns');
-const hudScore = document.getElementById('score');
-const hudEnergy = document.getElementById('energy');
-const hudECount = document.getElementById('e-count');
-const hudEList = document.getElementById('e-list');
-const hudWeapon = document.getElementById('hero-weapon');
-const hudName = document.getElementById('hero-name-label');
-const hudFig = document.getElementById('hero-fig');
-const btnLight = document.getElementById('btn-light');
-const btnHeal = document.getElementById('btn-heal');
-const btnStun = document.getElementById('btn-stun');
-const btnHurricane = document.getElementById('btn-hurricane');
-const btnAbility = document.getElementById('ability-btn');
-
 function updateHUD() {
-  hudHp.innerText = state.playerHp;
-  hudShd.innerText = state.permanentShield + state.tempDef;
-  hudBonus.innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
-  hudFloor.innerText = state.currentFloor;
-  hudTurns.innerText = state.totalTurns;
-  hudScore.innerText = state.goldCount;
-  hudEnergy.innerText = state.playerMp;
-  hudName.innerText = localStorage.getItem('pz_heroName').toUpperCase();
-  hudFig.innerText = HEROES[state.heroIdx].emoji;
+  document.getElementById('hp').innerText = state.playerHp;
+  document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
+  document.getElementById('bonus').innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
+  document.getElementById('floor-hud').innerText = state.currentFloor;
+  document.getElementById('turns').innerText = state.totalTurns;
+  document.getElementById('score').innerText = state.goldCount;
+  document.getElementById('energy').innerText = state.playerMp;
+  document.getElementById('hero-name-label').innerText = localStorage.getItem('pz_heroName').toUpperCase();
+  document.getElementById('hero-fig').innerText = HEROES[state.heroIdx].emoji;
   
   const w = state.weapons[state.weaponLevel];
-  hudWeapon.innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
+  document.getElementById('hero-weapon').innerHTML = `⚔️ <span class="${w.css}">${w.name}</span> · ${w.dmg}`;
 
   const mpCostLight = Math.max(0, 3 - state.spellDiscount);
   const mpCostHeal = Math.max(0, 3 - state.spellDiscount);
   const mpCostStun = Math.max(0, 2 - state.spellDiscount);
   const mpCostHurr = Math.max(0, 4 - state.spellDiscount);
 
-  btnLight.disabled = state.playerMp < mpCostLight && state.spellLightning <= 0;
-  btnLight.innerHTML = `⚡ Молния<br><span>${mpCostLight} MP | x${state.spellLightning}</span>`;
-  btnHeal.disabled = state.playerMp < mpCostHeal && state.spellHeal <= 0;
-  btnHeal.innerHTML = `💚 Лечение<br><span>${mpCostHeal} MP | x${state.spellHeal}</span>`;
-  btnStun.disabled = state.playerMp < mpCostStun && state.spellStun <= 0;
-  btnStun.innerHTML = `❄️ Стан<br><span>${mpCostStun} MP | x${state.spellStun}</span>`;
-  btnHurricane.disabled = state.playerMp < mpCostHurr && state.spellHurricane <= 0;
-  btnHurricane.innerHTML = `🌪️ Ураган<br><span>${mpCostHurr} MP | x${state.spellHurricane}</span>`;
+  const bLight = document.getElementById('btn-light');
+  bLight.disabled = state.playerMp < mpCostLight && state.spellLightning <= 0;
+  bLight.innerHTML = `⚡<br><span>${mpCostLight}M|x${state.spellLightning}</span>`;
+  
+  const bHeal = document.getElementById('btn-heal');
+  bHeal.disabled = state.playerMp < mpCostHeal && state.spellHeal <= 0;
+  bHeal.innerHTML = `💚<br><span>${mpCostHeal}M|x${state.spellHeal}</span>`;
+  
+  const bStun = document.getElementById('btn-stun');
+  bStun.disabled = state.playerMp < mpCostStun && state.spellStun <= 0;
+  bStun.innerHTML = `❄️<br><span>${mpCostStun}M|x${state.spellStun}</span>`;
+  
+  const bHurr = document.getElementById('btn-hurricane');
+  bHurr.disabled = state.playerMp < mpCostHurr && state.spellHurricane <= 0;
+  bHurr.innerHTML = `🌪️<br><span>${mpCostHurr}M|x${state.spellHurricane}</span>`;
 
-  if (state.abilityCooldown > 0) {
-    btnAbility.disabled = true;
-    btnAbility.innerText = `⏳ ${state.abilityCooldown}`;
-  } else if (state.abilityTurns > 0) {
-    btnAbility.disabled = true;
-    btnAbility.innerText = `✨ ${state.abilityTurns} ход.`;
-  } else {
-    btnAbility.disabled = false;
-    btnAbility.innerText = `✨ Умение`;
-  }
+  const bAbility = document.getElementById('ability-btn');
+  if (state.abilityCooldown > 0) { bAbility.disabled = true; bAbility.innerText = `⏳${state.abilityCooldown}`; }
+  else if (state.abilityTurns > 0) { bAbility.disabled = true; bAbility.innerText = `✨${state.abilityTurns}`; }
+  else { bAbility.disabled = false; bAbility.innerText = `✨ Умение`; }
 
-  hudECount.innerText = state.monsters.length;
+  document.getElementById('e-count').innerText = state.monsters.length;
   let eHtml = "";
   state.monsters.slice(0, 6).forEach(m => { eHtml += `<div>${m.type} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`; });
   if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
-  hudEList.innerHTML = eHtml;
+  document.getElementById('e-list').innerHTML = eHtml;
 }
 
 function updateShop() {
   document.getElementById('shop-gold').innerText = "В кармане: " + state.goldCount + " золота";
   const nextW = state.weapons[state.weaponLevel + 1];
-  const wLabel = document.getElementById('shop-wpn-label');
-  const wCost = document.getElementById('shop-wpn-cost');
-  const wBtn = document.getElementById('shop-wpn-btn');
-  
+  const wLabel = document.getElementById('shop-wpn-label'), wCost = document.getElementById('shop-wpn-cost'), wBtn = document.getElementById('shop-wpn-btn');
   if (nextW) {
-    const price = state.weaponLevel + 1; 
-    wLabel.innerHTML = `⚔️ <span class="${nextW.css}">${nextW.name}</span> (урон ${nextW.dmg})`;
-    wCost.innerText = price + " зл";
-    wBtn.disabled = state.goldCount < price;
-  } else { wLabel.innerText = "⚔️ Оружие максимального уровня"; wCost.innerText = "—"; wBtn.disabled = true; }
-  
+    wLabel.innerHTML = `⚔️ <span class="${nextW.css}">${nextW.name}</span> (dmg ${nextW.dmg})`;
+    wCost.innerText = (state.weaponLevel + 1) + " зл"; wBtn.disabled = state.goldCount < (state.weaponLevel + 1);
+  } else { wLabel.innerText = "⚔️ Максимум"; wCost.innerText = "—"; wBtn.disabled = true; }
   const sp = state.permanentShield + 1;
   document.getElementById('shop-shd-cost').innerText = sp + " зл";
   document.getElementById('shop-shd-btn').disabled = state.goldCount < sp;
@@ -289,9 +241,8 @@ function updateShop() {
 
 function buyOption(kind) {
   if (kind === 'weapon') {
-    const nextW = state.weapons[state.weaponLevel + 1];
     const price = state.weaponLevel + 1;
-    if (nextW && state.goldCount >= price) { state.goldCount -= price; state.weaponLevel++; playSound('collect'); }
+    if (state.weapons[state.weaponLevel + 1] && state.goldCount >= price) { state.goldCount -= price; state.weaponLevel++; playSound('collect'); }
   } else if (kind === 'shield') {
     const sp = state.permanentShield + 1;
     if (state.goldCount >= sp) { state.goldCount -= sp; state.permanentShield++; playSound('collect'); }
@@ -304,9 +255,9 @@ function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2
 function gameLoop() {
   if (state.gameActive) {
     const now = performance.now();
-    const DURATION = 500; const MON_DURATION = 300; 
+    const PLAYER_DUR = 400; const MON_DUR = 250; 
     if (state.player.isMoving) {
-        let t = (now - state.player.moveStartTime) / DURATION;
+        let t = (now - state.player.moveStartTime) / PLAYER_DUR;
         if (t >= 1) t = 1;
         let ease = easeInOutQuad(t);
         state.player.px = state.player.startPx + (state.player.x - state.player.startPx) * ease;
@@ -315,7 +266,7 @@ function gameLoop() {
     }
     state.monsters.forEach(m => {
         if (m.isMoving) {
-            let t = (now - m.moveStartTime) / MON_DURATION;
+            let t = (now - m.moveStartTime) / MON_DUR;
             if (t >= 1) t = 1;
             let ease = easeInOutQuad(t);
             m.px = m.startPx + (m.x - m.startPx) * ease;
@@ -327,86 +278,54 @@ function gameLoop() {
       const f = state.floaters[i]; f.y += f.vy; f.life -= 0.02;
       if (f.life <= 0) state.floaters.splice(i, 1);
     }
-    draw(ctx, bgCanvas);
-    updateHUD();
+    draw(ctx, bgCanvas); updateHUD();
   }
   requestAnimationFrame(gameLoop);
 }
 
 function startGame(name) {
-    initAudio(); 
-    startAmbient(); 
-    startMusic('cave');   
-    
-    loginScreen.style.display = 'none';
-    gameScreen.style.display = 'flex';
-    
+    initAudio(); startAmbient(); startMusic('cave');   
+    loginScreen.style.display = 'none'; gameScreen.style.display = 'flex';
     const magicRow = document.querySelector('.magic-row');
     gameScreen.insertBefore(canvas, magicRow.nextSibling);
-    
     localStorage.setItem('pz_heroName', name);
     
     const hero = state.devSettings.heroes[state.heroIdx];
-    state.playerHp = hero.maxHp;
-    state.playerMp = 0; 
-    state.weapons = getWeaponsBySet(hero.set);
-    state.weaponLevel = 0;
-    state.gameMode = 'chase';
-    state.currentFloor = 1;
-    state.gameActive = true;
-    state.goldCount = 0;
-    state.totalTurns = 0;
-    state.stats = { kills: 0, gold: 0, floors: 0 };
+    state.playerHp = hero.maxHp; state.playerMp = 0; 
+    state.weapons = getWeaponsBySet(hero.set); state.weaponLevel = 0;
+    state.gameMode = document.getElementById('game-mode-select').value;
+    state.currentFloor = 1; state.gameActive = true;
+    state.goldCount = 0; state.totalTurns = 0; state.stats = { kills: 0, gold: 0, floors: 0 };
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
-    
     state.spellLightning = 0; state.spellHeal = 0; state.spellStun = 0; state.spellHurricane = 0;
-    
     state.abilityCooldown = 0; state.abilityTurns = 0; state.heroAttackRange = hero.attackRange;
     state.spellDiscount = 0; state.poisonTurns = 0; state.poisonDmg = 0;
     state.playerSlowTurns = 0; state.skeletonAlly = null;
+    state.angelCooldown = 0; state.isProcessingTurn = false;
 
-    bgCanvas = initFloor(); 
-    updateHUD();
-    
-    if (!gameLoopStarted) {
-        gameLoopStarted = true;
-        requestAnimationFrame(gameLoop);
-    }
+    bgCanvas = initFloor(); updateHUD();
+    if (!gameLoopStarted) { gameLoopStarted = true; requestAnimationFrame(gameLoop); }
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        document.getElementById('shop-panel').style.display = 'none';
-        document.getElementById('settings-panel').style.display = 'none';
-        document.getElementById('records-panel').style.display = 'none';
-        return;
+        document.getElementById('shop-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; return;
       }
-      if (!state.gameActive) return;
+      if (!state.gameActive || state.isProcessingTurn) return;
       const key = e.key.toLowerCase();
+      const mode = state.settings.keysMode || 'all', layout = state.settings.keysLayout || 'both';
       
-      const mode = state.settings.keysMode || 'all';
-      const layout = state.settings.keysLayout || 'both';
-      
-      const isUp = (mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp' || (mode === 'all' || mode === 'wasd') && (e.key === 'w' || e.key === 'W' || (layout !== 'lat' && (e.key === 'ц' || e.key === 'Ц')));
-      const isDown = (mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown' || (mode === 'all' || mode === 'wasd') && (e.key === 's' || e.key === 'S' || (layout !== 'lat' && (e.key === 'ы' || e.key === 'Ы')));
-      const isLeft = (mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft' || (mode === 'all' || mode === 'wasd') && (e.key === 'a' || e.key === 'A' || (layout !== 'lat' && (e.key === 'ф' || e.key === 'Ф')));
-      const isRight = (mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight' || (mode === 'all' || mode === 'wasd') && (e.key === 'd' || e.key === 'D' || (layout !== 'lat' && (e.key === 'в' || e.key === 'В')));
-
-      if (isUp) movePlayer(0, -32);
-      else if (isDown) movePlayer(0, 32);
-      else if (isLeft) movePlayer(-32, 0);
-      else if (isRight) movePlayer(32, 0);
+      if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp') || ((mode === 'all' || mode === 'wasd') && (key === 'w' || key === 'ц'))) movePlayer(0, -32);
+      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown') || ((mode === 'all' || mode === 'wasd') && (key === 's' || key === 'ы'))) movePlayer(0, 32);
+      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft') || ((mode === 'all' || mode === 'wasd') && (key === 'a' || key === 'ф'))) movePlayer(-32, 0);
+      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight') || ((mode === 'all' || mode === 'wasd') && (key === 'd' || key === 'в'))) movePlayer(32, 0);
       
       else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
       else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
       else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
       else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
-      
       else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
+      else if (key === 'm' || key === 'ь') { document.getElementById('shop-panel').style.display = 'block'; updateShop(); }
       
-      else if (key === 'm' || key === 'ь') {
-        document.getElementById('shop-panel').style.display = 'block';
-        updateShop();
-      }
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) e.preventDefault();
     });
 }
@@ -414,37 +333,32 @@ function startGame(name) {
 window.movePlayer = movePlayer;
 window.skipTurn = skipTurn;
 
-btnRandomName.addEventListener('click', () => { playSound('menu'); generateRandomName(); });
-btnGuest.addEventListener('click', () => {
+btnRandomName.onclick = () => { playSound('menu'); generateRandomName(); };
+btnGuest.onclick = () => {
     const name = guestNameInput.value.trim();
     if (name === "") { errorMsg.innerText = "Введите имя!"; return; }
-    errorMsg.innerText = "";
-    playSound('menu');
-    startGame(name);
-});
-document.getElementById('btn-google').addEventListener('click', () => { errorMsg.innerText = "Google отключен."; });
+    errorMsg.innerText = ""; playSound('menu'); startGame(name);
+};
+document.getElementById('btn-google').onclick = () => { errorMsg.innerText = "Google отключен."; };
+document.getElementById('btn-light').onclick = () => { castLightning(); updateHUD(); };
+document.getElementById('btn-heal').onclick = () => { castHeal(); updateHUD(); };
+document.getElementById('btn-stun').onclick = () => { castStun(); updateHUD(); };
+document.getElementById('btn-hurricane').onclick = () => { castHurricane(); updateHUD(); };
+document.getElementById('ability-btn').onclick = () => { activateAbility(); updateHUD(); };
 
-document.getElementById('btn-light').addEventListener('click', () => { castLightning(); updateHUD(); });
-document.getElementById('btn-heal').addEventListener('click', () => { castHeal(); updateHUD(); });
-document.getElementById('btn-stun').addEventListener('click', () => { castStun(); updateHUD(); });
-document.getElementById('btn-hurricane').addEventListener('click', () => { castHurricane(); updateHUD(); });
-document.getElementById('ability-btn').addEventListener('click', () => { activateAbility(); updateHUD(); });
-
-document.getElementById('shop-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); });
-document.getElementById('close-shop').addEventListener('click', () => document.getElementById('shop-panel').style.display = 'none');
-document.getElementById('shop-wpn-btn').addEventListener('click', () => buyOption('weapon'));
-document.getElementById('shop-shd-btn').addEventListener('click', () => buyOption('shield'));
-
-document.getElementById('records-btn').addEventListener('click', () => { 
+document.getElementById('shop-btn').onclick = () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); };
+document.getElementById('close-shop').onclick = () => document.getElementById('shop-panel').style.display = 'none';
+document.getElementById('shop-wpn-btn').onclick = () => buyOption('weapon');
+document.getElementById('shop-shd-btn').onclick = () => buyOption('shield');
+document.getElementById('records-btn').onclick = () => { 
   playSound('menu'); document.getElementById('records-panel').style.display = 'block'; 
   document.getElementById('rec-highscore').innerText = state.highScore.turns;
   document.getElementById('rec-best-name').innerText = state.highScore.name;
   document.getElementById('rec-kills').innerText = state.stats.kills;
   document.getElementById('rec-gold').innerText = state.stats.gold;
-});
-document.getElementById('close-records').addEventListener('click', () => document.getElementById('records-panel').style.display = 'none');
-
-document.getElementById('settings-btn').addEventListener('click', () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; });
-document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-panel').style.display = 'none');
+};
+document.getElementById('close-records').onclick = () => document.getElementById('records-panel').style.display = 'none';
+document.getElementById('settings-btn').onclick = () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; };
+document.getElementById('close-settings').onclick = () => document.getElementById('settings-panel').style.display = 'none';
 
 generateRandomName();

@@ -8,10 +8,9 @@ body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display:
 .input-group label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; display: block; }
 input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #4b5563; background: #2b2b3b; color: white; font-size: 16px; outline: none; }
 
-/* КАРУСЕЛЬ ГЕРОЕВ */
+/* КАРУСЕЛЬ */
 .carousel-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px; margin: 10px 0; }
-.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
-.c-arrow:hover { background: rgba(255,255,255,0.3); }
+.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
 .carousel { display: flex; align-items: center; justify-content: center; gap: 5px; width: 220px; overflow: hidden; height: 100px; }
 .hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; width: 70px; flex-shrink: 0; text-align: center; }
 .hero-card.center { transform: scale(1.15); z-index: 2; opacity: 1; }
@@ -23,12 +22,9 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 
 .btn-primary { padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
 .btn-secondary { padding: 8px 12px; background: #374151; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
-.btn-google { padding: 10px; background: #fff; color: #333; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
 /* ИГРА */
 #game-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
-
-/* HUD */
 #hud { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; width: 326px; display: flex; justify-content: space-between; gap: 6px; height: 120px; box-sizing: border-box; border: 2px solid #4b5563; }
 .hud-hero { display: flex; gap: 6px; width: 118px; }
 .hero-fig { font-size: 30px; display: flex; align-items: center; }
@@ -40,7 +36,6 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; }
 #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 11px; height: 84px; overflow: hidden; text-align: right; }
 #e-list div { line-height: 1.2; white-space: nowrap; }
-#high-score-line { color: #f59e0b; font-size: 11px; min-height: 12px; }
 .coin-ico { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: #fbbf24; border: 2px solid #92400e; vertical-align: -1px; }
 
 /* Кнопки */
@@ -60,24 +55,23 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 .panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 6px; font-size: 13px; }
 .buy-btn { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
-input[type=range] { flex: 1.2; accent-color: #fbbf24; }
 canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
-.dev-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 12px; }
-.dev-stat input, .dev-stat select { width: 70px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; }
-details { margin-bottom: 10px; }
-summary { cursor: pointer; color: #fbbf24; font-weight: bold; margin-bottom: 5px; }
 
-/* НАСТРОЙКИ */
+/* DEV ПАНЕЛЬ И НАСТРОЙКИ */
 .set-accordion { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 6px; margin-bottom: 8px; }
-.set-accordion summary { outline: none; }
-.set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px; color: #fff; }
-.set-label { flex: 1; white-space: nowrap; }
-.set-val { color: #fbbf24; font-weight: bold; width: 42px; text-align: right; }
-select { background: #222; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px; font-size: 12px; }
-.set-check { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px; color: #fff; }
+.set-accordion summary { outline: none; cursor: pointer; color: #fbbf24; font-weight: bold; }
+.set-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #fff; gap: 5px; }
+.set-label { flex: 1; }
+.set-check { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 13px; color: #fff; }
 
-/* КНОПКИ МЕЛОДИЙ */
+.num-input { width: 55px; background: #222; color: #fff; border: 1px solid #555; padding: 3px; border-radius: 4px; text-align: center; }
+.sel-input { max-width: 140px; background: #222; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px; font-size: 12px; }
+
+.dev-stat { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 12px; }
+.dev-stat input { width: 60px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; text-align: center; }
+.dev-stat select { max-width: 110px; background: #222; color: white; border: 1px solid #555; padding: 2px 4px; border-radius: 4px; font-size: 11px; }
+
 .mel-row { display: flex; flex-wrap: wrap; gap: 4px; width: 100%; margin-top: 5px; }
-.mel-btn { flex: 1 1 30%; background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: bold; font-family: inherit; text-align: center; }
+.mel-btn { flex: 1 1 30%; background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: bold; text-align: center; }
 .mel-btn.active { background: #b45309; color: #fff; border-color: #fbbf24; }
-.reset-btn { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; font-family: inherit; }
+.reset-btn { background: #7c3aed; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; }
