@@ -19,6 +19,55 @@ function drawBars(ctx, x, y, hp, maxHp, def, atk) {
   ctx.strokeStyle = "#7f1d1d"; ctx.stroke(); ctx.fillText(atk, x + 25, y + 26);
 }
 
+function drawTombstone(ctx, x, y) {
+    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.beginPath();
+    ctx.ellipse(x + 16, y + 28, 10, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#9ca3af"; 
+    ctx.beginPath();
+    ctx.moveTo(x + 8, y + 26);
+    ctx.lineTo(x + 8, y + 14);
+    ctx.arc(x + 16, y + 14, 8, Math.PI, 0);
+    ctx.lineTo(x + 24, y + 26);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.strokeStyle = "#111827";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(x + 14, y + 9, 4, 14);
+    ctx.fillRect(x + 9, y + 14, 14, 4); 
+}
+
+function drawStairs(ctx) {
+    if (state.stairs.active) {
+        ctx.fillStyle = "#f59e0b"; 
+        ctx.fillRect(state.stairs.x + 4, state.stairs.y + 4, 24, 24);
+        ctx.fillStyle = "#1e1e24";
+        ctx.beginPath();
+        ctx.moveTo(state.stairs.x + 16, state.stairs.y + 24);
+        ctx.lineTo(state.stairs.x + 8, state.stairs.y + 10);
+        ctx.lineTo(state.stairs.x + 24, state.stairs.y + 10);
+        ctx.closePath();
+        ctx.fill();
+    } else {
+        ctx.fillStyle = "#4b5563";
+        ctx.fillRect(state.stairs.x + 4, state.stairs.y + 4, 24, 24);
+        ctx.strokeStyle = "#111827"; ctx.lineWidth = 2;
+        ctx.strokeRect(state.stairs.x + 4, state.stairs.y + 4, 24, 24);
+        
+        ctx.fillStyle = "#9ca3af";
+        ctx.fillRect(state.stairs.x + 11, state.stairs.y + 14, 10, 8);
+        ctx.beginPath();
+        ctx.arc(state.stairs.x + 16, state.stairs.y + 14, 4, Math.PI, 0);
+        ctx.strokeStyle = "#9ca3af"; ctx.lineWidth = 2; ctx.stroke();
+    }
+}
+
 function drawItem(ctx, x, y, type) {
   const cx = x + CELL / 2, cy = y + CELL / 2;
   if (type === 'coin') { ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 2 * Math.PI); ctx.fill(); } 
@@ -39,17 +88,20 @@ export function draw(ctx, bgCanvas) {
   ctx.strokeStyle = "rgba(90,80,70,0.4)"; ctx.lineWidth = 1;
   for (let i = 0; i <= 320; i += CELL) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 320); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(320, i); ctx.stroke(); }
 
-  if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
-  else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
-
-  state.corpses.forEach(c => {
-      ctx.font = "24px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.strokeStyle = "rgba(0,0,0,0.8)"; ctx.lineWidth = 3;
-      ctx.strokeText("🪦", c.x + CELL / 2, c.y + CELL / 2);
-      ctx.fillText("🪦", c.x + CELL / 2, c.y + CELL / 2);
+  drawStairs(ctx);
+  state.corpses.forEach(c => { drawTombstone(ctx, c.x, c.y); });
+  
+  // Отрисовка предметов
+  state.items.forEach(i => {
+      // Если жизни осталось мало (<= 5), предмет начинает мигать (прозрачность)
+      let alpha = 1.0;
+      if (i.life !== undefined && i.life <= 5) {
+          alpha = (Math.floor(i.life) % 2 === 0) ? 0.4 : 1.0;
+      }
+      ctx.globalAlpha = alpha;
+      drawItem(ctx, i.x, i.y, i.type);
+      ctx.globalAlpha = 1.0;
   });
-
-  state.items.forEach(i => drawItem(ctx, i.x, i.y, i.type));
 
   if (state.skeletonAlly) {
       drawCell(ctx, state.skeletonAlly.x, state.skeletonAlly.y, "💀", 22);
@@ -58,13 +110,11 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
-    // ЛЕДЯНАЯ АУРА
     if (m.isStunned) { 
         ctx.fillStyle = "rgba(56,189,248,0.3)"; 
         ctx.beginPath(); ctx.arc(m.px + CELL/2, m.py + CELL/2, 14, 0, Math.PI*2); ctx.fill();
     }
     
-    // ВРАЩЕНИЕ ОТ УРАГАНА
     if (m.spinFx > 0) {
         ctx.save();
         ctx.translate(m.px + CELL/2, m.py + CELL/2);
@@ -72,12 +122,11 @@ export function draw(ctx, bgCanvas) {
         ctx.translate(-(m.px + CELL/2), -(m.py + CELL/2));
         drawCell(ctx, m.px, m.py, m.type, 22); 
         ctx.restore();
-        m.spinFx -= 0.05; // Плавно затухает
+        m.spinFx -= 0.05; 
     } else {
         drawCell(ctx, m.px, m.py, m.type, 22); 
     }
     
-    // МОЛНИЯ (Зигзаг)
     if (m.lightningFx > 0) {
         ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 3; ctx.beginPath();
         ctx.moveTo(m.px + 10, m.py - 10);
@@ -97,7 +146,6 @@ export function draw(ctx, bgCanvas) {
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
-  // ЭФФЕКТ ЛЕЧЕНИЯ (Зеленые круги)
   if (state.player.healFx > 0) {
       ctx.strokeStyle = "rgba(34,197,94," + state.player.healFx + ")"; 
       ctx.lineWidth = 2;

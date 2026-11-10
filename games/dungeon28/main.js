@@ -3,7 +3,7 @@ import { initFloor } from './map.js';
 import { draw } from './ui.js';
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume } from './audio.js'; 
+import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -63,7 +63,6 @@ document.getElementById('prev-hero').onclick = () => { state.heroIdx = (state.he
 document.getElementById('next-hero').onclick = () => { state.heroIdx = (state.heroIdx + 1) % HEROES.length; renderCarousel(); playSound('menu'); };
 renderCarousel();
 
-// КАРУСЕЛЬ РЕЖИМОВ
 const GAME_MODES = [
     { id: 'chase_5', name: 'Погоня (1-5)' },
     { id: 'def_5', name: 'Защита (1-5)' },
@@ -103,14 +102,39 @@ function loadSettings() {
     
     document.getElementById('set-keys-mode').value = state.settings.keysMode || 'all';
     document.getElementById('set-keys-layout').value = state.settings.keysLayout || 'both';
+
+    // СИНХРОНИЗАЦИЯ ПОЛЗУНКОВ ЗВУКА
+    document.getElementById('set-master').value = getVolume('master');
+    document.getElementById('set-sfx').value = getVolume('sfx');
+    document.getElementById('set-amb').value = getVolume('ambient');
+    document.getElementById('set-mel').value = getVolume('music');
+    document.getElementById('set-tempo').value = getVolume('tempo');
 }
 loadSettings();
 
-document.getElementById('set-master').addEventListener('input', (e) => { setVolume('master', parseInt(e.target.value) / 10); });
-document.getElementById('set-sfx').addEventListener('input', (e) => { setVolume('sfx', parseInt(e.target.value) / 10); });
-document.getElementById('set-amb').addEventListener('input', (e) => { setVolume('ambient', parseInt(e.target.value) / 10); });
-document.getElementById('set-mel').addEventListener('input', (e) => { setVolume('music', parseInt(e.target.value) / 10); });
-document.getElementById('set-tempo').addEventListener('input', (e) => { setVolume('tempo', parseInt(e.target.value)); });
+// БЕЗОПАСНЫЕ ОБРАБОТЧИКИ ЗВУКА
+const handleVol = (id, type) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', (e) => {
+        let v = parseFloat(e.target.value);
+        if (isNaN(v)) return; 
+        setVolume(type, v / 10);
+    });
+};
+handleVol('set-master', 'master');
+handleVol('set-sfx', 'sfx');
+handleVol('set-amb', 'ambient');
+handleVol('set-mel', 'music');
+
+const elTempo = document.getElementById('set-tempo');
+if (elTempo) {
+    elTempo.addEventListener('input', (e) => {
+        let v = parseInt(e.target.value);
+        if (isNaN(v)) return;
+        setVolume('tempo', v);
+    });
+}
 
 function selectMelody(btnId, track) {
     document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
@@ -137,7 +161,6 @@ document.getElementById('set-keys-mode').addEventListener('change', (e) => { sta
 document.getElementById('set-keys-layout').addEventListener('change', (e) => { state.settings.keysLayout = e.target.value; saveSettings(); });
 document.getElementById('btn-reset-settings').addEventListener('click', () => { if (confirm("Сбросить?")) { localStorage.removeItem('pz_settings'); location.reload(); } });
 
-// DEV ПАНЕЛЬ
 const INTERESTS = ["-", "Герой", "Атака", "Мана", "Защита", "Жизнь", "Бонусы", "Трупы"];
 const SPECIALS = ["-", "Вампиризм", "Сжигание маны", "Деление 1/3", "Замедление", "Съедание бонусов", "Яд", "Толстая защита", "Регенерация", "Поднятие", "Стрельба 2 + Вампиризм"];
 
@@ -191,6 +214,24 @@ const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитр�
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
 function generateRandomName() { guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`; }
 
+function getMonsterStatus(m) {
+    if (m.isStunned) return '❄️';
+    if (m.actionState === 1) return '🌀';
+    if (m.actionState === 2) return '💤';
+    if (m.slowTurns > 0) return '🕸️';
+    if (m.type === "😈" && m.hp < m.maxHp) return '💚';
+    if (m.type === "🏹" || m.type === "🦹") return '🏹';
+    if (m.type === "🧙‍♂️") return '🪄';
+    if (m.type === "👺") return '🍽️';
+    if (m.type === "🕷") return '🕸️';
+    if (m.type === "🧟") return '🤢';
+    if (m.type === "💀") return '🩸';
+    if (m.type === "👻") return '💧';
+    if (m.type === "🐭") return '🐁';
+    if (m.type === "🐢") return '🛡️';
+    return '🚶';
+}
+
 function updateHUD() {
   document.getElementById('hp').innerText = state.playerHp;
   document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
@@ -239,8 +280,9 @@ function updateHUD() {
   document.getElementById('e-count').innerText = state.monsters.length;
   let eHtml = "";
   state.monsters.slice(0, 6).forEach(m => { 
+      const status = getMonsterStatus(m);
       eHtml += `<div class="enemy-row">
-        <span class="e-type">${m.type}</span>
+        <span class="e-type">${status} ${m.type}</span>
         <span class="e-stat" style="color:#ef4444;">❤️${m.hp}</span>
         <span class="e-stat" style="color:#fbbf24;">💪${m.atk}</span>
         <span class="e-stat" style="color:#3b82f6;">🛡️${m.def}</span>

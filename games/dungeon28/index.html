@@ -38,6 +38,7 @@
 
     <div id="game-screen" style="display: none;">
       <div id="hud">
+        <!-- ЛЕВАЯ КОЛОНКА -->
         <div class="hud-hero">
           <div class="hero-stats">
             <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
@@ -53,14 +54,16 @@
           <div class="hero-fig" id="hero-fig">⚔️</div>
         </div>
         
+        <!-- ЦЕНТР -->
         <div class="hud-center">
           <div class="stat-line">🏰 <span id="floor-hud">1</span>/<span id="floor-max">5</span></div>
           <div class="stat-line">👣 <span id="turns">0</span></div>
           <div class="stat-line">🏆 <span id="high-score-line">0</span></div>
-          <div class="stat-line">🪙 <span id="score">0</span></div>
+          <div class="stat-line"><div class="coin-ico"></div> <span id="score">0</span></div>
           <div class="stat-line">⚡ <span id="energy">0</span></div>
         </div>
         
+        <!-- ПРАВАЯ КОЛОНКА -->
         <div class="hud-enemies">
           <div class="he-title">ВРАГИ (<span id="e-count">0</span>)</div>
           <div id="e-list"></div>
@@ -81,7 +84,6 @@
         <button id="btn-hurricane" class="m-btn" style="background-color:#a855f7;">🌪️ Ураган<br><span>4 MP | x0</span></button>
       </div>
 
-      <!-- ОБЕРТКА ДЛЯ КАНВАСА И ВСПЫШКИ -->
       <div id="canvas-wrapper">
         <div id="magic-flash"></div>
       </div>
@@ -97,7 +99,7 @@
     </div>
   </div>
 
-  <!-- ПАНЕЛИ (без изменений) -->
+  <!-- ПАНЕЛИ -->
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>
@@ -125,6 +127,28 @@
 
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
+    
+    <!-- НОВЫЙ АККОРДЕОН С ОБОЗНАЧЕНИЯМИ -->
+    <details class="set-accordion">
+      <summary>ℹ️ Обозначения монстров</summary>
+      <div class="status-legend">
+        <div class="legend-item"><span class="l-ico">❄️</span> Застанен (Оглушен)</div>
+        <div class="legend-item"><span class="l-ico">🌀</span> Телепортируется</div>
+        <div class="legend-item"><span class="l-ico">💤</span> Отдыхает (перезарядка)</div>
+        <div class="legend-item"><span class="l-ico">🕸️</span> Замедлен (паутина)</div>
+        <div class="legend-item"><span class="l-ico">💚</span> Регенерация (лечится)</div>
+        <div class="legend-item"><span class="l-ico">🏹</span> Готовится к выстрелу</div>
+        <div class="legend-item"><span class="l-ico">🪄</span> Некромантия (ищет труп)</div>
+        <div class="legend-item"><span class="l-ico">🍽️</span> Съедает бонусы (Огр)</div>
+        <div class="legend-item"><span class="l-ico">🤢</span> Отравление (Атака ядом)</div>
+        <div class="legend-item"><span class="l-ico">🩸</span> Вампиризм (Скелет)</div>
+        <div class="legend-item"><span class="l-ico">💧</span> Высасывает ману (Призрак)</div>
+        <div class="legend-item"><span class="l-ico">🐁</span> Готовится делиться (Мышь)</div>
+        <div class="legend-item"><span class="l-ico">🛡️</span> Толстая броня (Черепаха)</div>
+        <div class="legend-item"><span class="l-ico">🚶</span> Идет к цели (Обычное движение)</div>
+      </div>
+    </details>
+
     <details class="set-accordion" open>
       <summary>🔊 Звук</summary>
       <div class="set-row"><span class="set-label">Общая громкость</span><input type="number" id="set-master" min="0" max="10" step="1" value="10" class="num-input"></div>

@@ -24,7 +24,7 @@ export function activateAbility() {
         if (state.angelCooldown > 0) { addFloater(state.player.px, state.player.py, "КД!", "#ef4444"); return; }
         state.playerHp = Math.min(state.devSettings.heroes[state.heroIdx].maxHp, state.playerHp + 50);
         state.angelCooldown = 30;
-        state.player.healFx = 1.0; // Эффект
+        state.player.healFx = 1.0; 
         addFloater(state.player.px, state.player.py, "+50 HP", "#fbbf24");
     }
     playSound('magic');
@@ -60,7 +60,11 @@ function autoNextFloor() {
     if (floorClearTimer) clearTimeout(floorClearTimer);
     floorClearTimer = setTimeout(() => {
         if (state.gameActive && state.monsters.length === 0) {
-            state.currentFloor++; clearBonuses(); initFloor(); floorClearTimer = null;
+            state.currentFloor++; 
+            clearBonuses(); 
+            state.items = []; // Очистка старых предметов при переходе
+            initFloor(); 
+            floorClearTimer = null;
         }
     }, 1500);
 }
@@ -116,7 +120,7 @@ export function castLightning() {
     state.spellLightning--; playSound('magic');
     
     targets.forEach(m => {
-        m.hp -= 20; m.lightningFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ МОЛНИИ
+        m.hp -= 20; m.lightningFx = 1.0; 
         addFloater(m.x, m.y, "-20", "#fbbf24");
         if (m.hp <= 0) {
             const idx = state.monsters.indexOf(m); if (idx > -1) state.monsters.splice(idx, 1);
@@ -136,7 +140,7 @@ export function castHeal() {
     state.spellHeal--; playSound('magic');
     
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
-    state.player.healFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ ЛЕЧЕНИЯ
+    state.player.healFx = 1.0; 
     addFloater(state.player.px, state.player.py, "+30hp", "#22c55e");
 }
 
@@ -164,7 +168,7 @@ export function castHurricane() {
         nx = Math.max(0, Math.min(288, nx)); ny = Math.max(0, Math.min(288, ny));
         m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py;
         m.moveStartTime = performance.now(); m.isMoving = true;
-        m.spinFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ ВРАЩЕНИЯ
+        m.spinFx = 1.0; 
         addFloater(m.x, m.y, "🌪️", "#a855f7");
     });
 }
@@ -329,7 +333,7 @@ export function movePlayer(dx, dy) {
   playSound('step'); 
   
   if (state.stairs.active && nx === state.stairs.x && ny === state.stairs.y) {
-    state.currentFloor++; clearBonuses(); initFloor(); return;
+    state.currentFloor++; clearBonuses(); state.items = []; initFloor(); return;
   }
   
   let pickupIdx = state.items.findIndex(i => i.x === nx && i.y === ny);
@@ -348,14 +352,30 @@ export function movePlayer(dx, dy) {
   }
   
   if (state.totalTurns % state.settings.itemRate === 0 && !state.stairs.active) {
-    const cell = findFreeCell(); const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
-    state.items.push({x:cell.x, y:cell.y, type: type});
+    // ОГРАНИЧЕНИЕ 60% (60 ШТУК)
+    if (state.items.length < 60) {
+        let cell = findFreeCell();
+        let attempts = 0;
+        // Ищем свободную клетку, где нет других предметов
+        while (state.items.some(i => i.x === cell.x && i.y === cell.y) && attempts < 50) {
+            cell = findFreeCell();
+            attempts++;
+        }
+        if (attempts < 50) {
+            const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+            state.items.push({x:cell.x, y:cell.y, type: type, life: 20}); // ВРЕМЯ ЖИЗНИ 20 ХОДОВ
+        }
+    }
   }
   
   processTurnEnd();
 }
 
 function tickEffects() {
+    // УМЕНЬШАЕМ ЖИЗНЬ ПРЕДМЕТОВ
+    state.items.forEach(i => i.life--);
+    state.items = state.items.filter(i => i.life > 0);
+
     state.corpses.forEach(c => c.decay--); state.corpses = state.corpses.filter(c => c.decay > 0);
     if (state.poisonTurns > 0) {
         state.playerHp -= state.poisonDmg; state.poisonTurns--; addFloater(state.player.px, state.player.py, "-" + state.poisonDmg + " яд", "#22c55e");

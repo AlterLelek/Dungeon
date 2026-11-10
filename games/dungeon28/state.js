@@ -12,7 +12,6 @@ export const state = {
   
   isProcessingTurn: false, angelCooldown: 0,
   
-  // Эффект лечения героя
   player: { x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0, healFx: 0 },
   stairs: { x: 288, y: 288, active: false },
   

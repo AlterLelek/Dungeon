@@ -34,27 +34,40 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 #game-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
 #hud { background: rgba(0,0,0,0.4); padding: 6px; border-radius: 8px; width: 326px; display: flex; justify-content: space-between; gap: 4px; height: 120px; box-sizing: border-box; border: 2px solid #4b5563; }
 
-/* Левая колонка */
-.hud-hero { display: flex; justify-content: space-between; width: 118px; }
+/* ЛЕВАЯ КОЛОНКА */
+.hud-hero { display: flex; justify-content: flex-start; align-items: center; width: 125px; gap: 8px; }
 .hero-stats { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; font-size: 12px; font-weight: bold; gap: 2px; }
 .hs-title { font-size: 10px; line-height: 1.1; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px; margin-bottom: 2px; white-space: normal; word-break: break-word; text-align: left; }
-.stat-line { display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+.stat-line { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
 #hero-weapon { font-size: 11px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; }
 #hero-weapon .w-icon { font-size: 12px; }
 #hero-weapon #w-dmg { color: #fbbf24; }
 #hero-weapon .w-name { font-size: 10px; color: #d1d5db; overflow: hidden; text-overflow: ellipsis; }
-.hero-fig { font-size: 36px; display: flex; align-items: center; justify-content: center; width: 42px; }
+.hero-fig { font-size: 36px; display: flex; align-items: center; justify-content: center; width: 42px; flex-shrink: 0; }
 
-/* Центральная колонка */
-.hud-center { display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 4px; font-size: 11px; font-weight: bold; min-width: 76px; gap: 3px; }
+/* ЦЕНТРАЛЬНАЯ КОЛОНКА */
+.hud-center { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 6px; font-size: 11px; font-weight: bold; min-width: 72px; gap: 3px; }
 
-/* Правая колонка (Враги) - ЖЕСТКАЯ СЕТКА */
+/* ПРАВАЯ КОЛОНКА */
 .hud-enemies { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; margin-bottom: 2px; }
 #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 11px; height: 84px; overflow: hidden; width: 100%; }
-.enemy-row { display: grid; grid-template-columns: 24px 1fr 1fr 1fr; gap: 2px; align-items: center; width: 100%; line-height: 1.2; }
-.enemy-row .e-type { text-align: left; }
+.enemy-row { display: grid; grid-template-columns: 34px 1fr 1fr 1fr; gap: 2px; align-items: center; width: 100%; line-height: 1.2; }
+.enemy-row .e-type { text-align: left; white-space: nowrap; display: flex; align-items: center; gap: 1px; }
 .enemy-row .e-stat { text-align: right; white-space: nowrap; }
+
+/* МОНЕТА */
+.coin-ico { 
+    display: inline-block; 
+    width: 14px; 
+    height: 14px; 
+    border-radius: 50%; 
+    background: radial-gradient(circle at 30% 30%, #fde047, #fbbf24 60%, #b45309); 
+    border: 1px solid #78350f; 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    flex-shrink: 0; 
+    vertical-align: middle;
+}
 
 /* Кнопки */
 #btn-row { display: flex; gap: 4px; width: 326px; margin: 5px 0; }
@@ -65,14 +78,10 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 .m-btn:hover:not(:disabled) { filter: brightness(1.2); }
 .m-btn:disabled { background-color: #4b5563 !important; opacity: 0.5; }
 
-/* ОБЕРТКА И ВСПЫШКА МАГИИ */
+/* ОБЕРТКА КАНВАСА */
 #canvas-wrapper { position: relative; width: 326px; height: 326px; }
 canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
 #magic-flash { position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px; pointer-events: none; opacity: 0; transition: opacity 0.15s ease-out; z-index: 10; }
-.flash-yellow { background: radial-gradient(circle, transparent 30%, rgba(234,179,8,0.7) 100%); opacity: 1 !important; }
-.flash-blue { background: radial-gradient(circle, transparent 30%, rgba(56,189,248,0.7) 100%); opacity: 1 !important; }
-.flash-green { background: radial-gradient(circle, transparent 30%, rgba(34,197,94,0.7) 100%); opacity: 1 !important; }
-.flash-gray { background: radial-gradient(circle, transparent 30%, rgba(156,163,175,0.7) 100%); opacity: 1 !important; }
 
 .dpad { display: grid; grid-template-columns: 1fr 55px 1fr; grid-template-rows: repeat(3, 40px); gap: 6px; width: 326px; margin-top: 10px; }
 .btn { background-color: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: transform 0.1s, background 0.2s; }
@@ -100,3 +109,8 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 .mel-btn { flex: 1 1 30%; background: #374151; color: #d1d5db; border: 1px solid #6b7280; border-radius: 6px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: bold; text-align: center; }
 .mel-btn.active { background: #b45309; color: #fff; border-color: #fbbf24; }
 .reset-btn { background: #7c3aed; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; }
+
+/* СТИЛИ ДЛЯ ЛЕГЕНДЫ МОНСТРОВ */
+.status-legend { display: flex; flex-direction: column; gap: 6px; padding: 5px 0; }
+.legend-item { display: flex; align-items: center; font-size: 12px; color: #d1d5db; }
+.legend-item .l-ico { width: 24px; text-align: center; font-size: 14px; margin-right: 5px; }

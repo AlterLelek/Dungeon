@@ -7,9 +7,9 @@ let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
 let currentTrack = 'sf2';
-let currentTempo = 120; // BPM (примерно 500мс на долю)
+let currentTempo = 600; // Миллисекунды
 
-const volumes = { master: 0.2, music: 0.15, ambient: 0.05, sfx: 0.3, tempo: 120 };
+const volumes = { master: 0.4, music: 0.4, ambient: 0.05, sfx: 0.4 };
 
 export function initAudio() {
   if (isInit) return;
@@ -29,6 +29,11 @@ export function initAudio() {
   isInit = true;
 }
 
+export function getVolume(type) {
+    if (type === 'tempo') return currentTempo;
+    return Math.round(volumes[type] * 10);
+}
+
 function applyVolumes() {
   if (!isInit) return;
   masterGain.gain.value = volumes.master;
@@ -38,12 +43,14 @@ function applyVolumes() {
 }
 
 export function setVolume(type, val) {
+  if (isNaN(val) || val === undefined || val === null) return; // Защита от пустых значений
+  
   if (type === 'tempo') {
-    currentTempo = val;
-    if (currentTrack) startMusic(currentTrack);
+    currentTempo = Math.max(100, Math.min(2000, val)); 
+    if (currentTrack) startMusic(currentTrack); 
     return;
   }
-  const normVal = val;
+  const normVal = Math.max(0, Math.min(1, val));
   if (type === 'master') volumes.master = normVal;
   if (type === 'music') volumes.music = normVal;
   if (type === 'ambient') volumes.ambient = normVal;
@@ -98,11 +105,6 @@ function drip() {
   }, 9000 + Math.random() * 21000);
 }
 
-// ==========================================
-// 7-ГОЛОСНАЯ МЕЛОДИЯ (Shining Force II Style)
-// ==========================================
-
-// Базовые ноты (частоты)
 const N = {
     C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
     C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
@@ -110,52 +112,43 @@ const N = {
     C6: 1046.50
 };
 
-// 64-тактная последовательность (около 30 сек при 120bpm)
-// 0 означает паузу
 const MELODY_SF2 = {
-    // 1. Lead Melody (Square) - Героическая тема
     v1: [
         N.G4, 0, N.C5, 0, N.E5, N.G5, N.C6, 0, N.B5, N.G5, N.E5, 0, N.D5, N.E5, N.F5, 0,
         N.E5, 0, N.C5, 0, N.G4, 0, N.C5, N.E5, N.G5, 0, N.A5, N.G5, N.F5, N.E5, N.D5, 0,
         N.C5, 0, N.E5, 0, N.G5, N.E5, N.C6, 0, N.B5, 0, N.A5, N.G5, N.F5, 0, N.E5, 0,
         N.D5, 0, N.E5, N.F5, N.G5, 0, N.A5, N.B5, N.C6, 0, N.G5, 0, N.C5, 0, 0, 0
     ],
-    // 2. Brass (Sawtooth) - Поддержка
     v2: [
         N.E4, 0, N.G4, 0, N.C5, N.E5, N.G5, 0, N.E5, 0, N.C5, 0, N.B4, 0, N.A4, 0,
         N.G4, 0, N.E4, 0, N.C4, 0, N.E4, N.G4, N.C5, 0, N.E5, 0, N.D5, 0, N.B4, 0,
         N.C5, 0, N.E5, 0, N.G5, 0, N.E5, 0, N.D5, 0, N.C5, 0, N.A4, 0, N.G4, 0,
         N.F4, 0, N.G4, 0, N.A4, 0, N.B4, 0, N.C5, 0, N.G4, 0, N.C4, 0, 0, 0
     ],
-    // 3. Strings (Triangle) - Арпеджио
     v3: [
         N.C5, N.E5, N.G5, N.C6, N.G5, N.E5, N.C5, N.E5, N.G4, N.B4, N.D5, N.G5, N.D5, N.B4, N.G4, N.B4,
         N.A4, N.C5, N.E5, N.A5, N.E5, N.C5, N.A4, N.C5, N.F4, N.A4, N.C5, N.F5, N.C5, N.A4, N.F4, N.A4,
         N.C5, N.E5, N.G5, N.C6, N.G5, N.E5, N.C5, N.E5, N.G4, N.B4, N.D5, N.G5, N.D5, N.B4, N.G4, N.B4,
         N.F4, N.A4, N.C5, N.F5, N.G4, N.B4, N.D5, N.G5, N.C4, N.E4, N.G4, N.C5, N.G4, N.E4, N.C4, 0
     ],
-    // 4. Bass (Sine) - Фундамент
     v4: [
         N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.A3, 0, N.A3, 0, N.F3, 0, N.F3, 0,
         N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.F3, 0, N.F3, 0, N.G3, 0, N.G3, 0,
         N.C3, 0, N.C3, 0, N.G3, 0, N.G3, 0, N.A3, 0, N.A3, 0, N.F3, 0, N.F3, 0,
         N.D3, 0, N.D3, 0, N.G3, 0, N.G3, 0, N.C3, 0, N.C3, 0, N.C3, 0, 0, 0
     ],
-    // 5. Harmony (Triangle) - Аккорды
     v5: [
         N.E4, 0, N.C5, 0, N.G4, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0, N.C5, 0,
         N.G4, 0, N.E4, 0, N.C4, 0, N.G4, 0, N.A4, 0, N.F4, 0, N.G4, 0, N.B4, 0,
         N.E4, 0, N.C5, 0, N.G4, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0, N.C5, 0,
         N.F4, 0, N.A4, 0, N.G4, 0, N.B4, 0, N.E4, 0, N.G4, 0, N.C4, 0, 0, 0
     ],
-    // 6. Flute (Sine) - Контр-мелодия
     v6: [
         0, 0, N.E5, 0, N.G5, 0, N.C5, 0, N.E5, 0, N.G5, 0, N.A4, 0, N.C5, 0,
         N.B4, 0, N.G4, 0, N.E4, 0, N.G4, 0, N.C5, 0, N.E5, 0, N.D5, 0, N.F5, 0,
         N.E5, 0, N.G5, 0, N.C6, 0, N.G5, 0, N.E5, 0, N.C5, 0, N.A4, 0, N.F4, 0,
         N.A4, 0, N.C5, 0, N.B4, 0, N.D5, 0, N.C5, 0, N.E5, 0, N.G4, 0, 0, 0
     ],
-    // 7. Drums (Noise) - Ритм (1 - Kick, 2 - Snare, 3 - Hat)
     v7: [
         1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3,
         1, 3, 3, 3, 2, 3, 3, 3, 1, 3, 3, 3, 2, 3, 3, 3,
@@ -180,18 +173,17 @@ export function startMusic(track = 'sf2') {
   
   const mel = MELODIES[track] || MELODIES.sf2;
   const length = mel.v1.length;
-  const stepTime = (60000 / currentTempo) / 2; // 8-е ноты
+  const stepTime = currentTempo;
 
   melodyTimer = setInterval(() => {
-    if (volumes.music === 0) return;
+    if (volumes.music <= 0.01) return;
     
-    // Играем все 7 голосов параллельно
-    if (mel.v1 && mel.v1[currentMelodyIdx]) playTone(mel.v1[currentMelodyIdx], 'square', 0.05, stepTime / 1000);
-    if (mel.v2 && mel.v2[currentMelodyIdx]) playTone(mel.v2[currentMelodyIdx], 'sawtooth', 0.03, stepTime / 1000);
-    if (mel.v3 && mel.v3[currentMelodyIdx]) playTone(mel.v3[currentMelodyIdx], 'triangle', 0.02, stepTime / 1000);
-    if (mel.v4 && mel.v4[currentMelodyIdx]) playTone(mel.v4[currentMelodyIdx], 'sine', 0.08, stepTime / 1000);
-    if (mel.v5 && mel.v5[currentMelodyIdx]) playTone(mel.v5[currentMelodyIdx], 'triangle', 0.03, stepTime / 1000);
-    if (mel.v6 && mel.v6[currentMelodyIdx]) playTone(mel.v6[currentMelodyIdx], 'sine', 0.04, stepTime / 1000);
+    if (mel.v1 && mel.v1[currentMelodyIdx]) playTone(mel.v1[currentMelodyIdx], 'square', 0.15, stepTime / 1000);
+    if (mel.v2 && mel.v2[currentMelodyIdx]) playTone(mel.v2[currentMelodyIdx], 'sawtooth', 0.08, stepTime / 1000);
+    if (mel.v3 && mel.v3[currentMelodyIdx]) playTone(mel.v3[currentMelodyIdx], 'triangle', 0.08, stepTime / 1000);
+    if (mel.v4 && mel.v4[currentMelodyIdx]) playTone(mel.v4[currentMelodyIdx], 'sine', 0.15, stepTime / 1000);
+    if (mel.v5 && mel.v5[currentMelodyIdx]) playTone(mel.v5[currentMelodyIdx], 'triangle', 0.08, stepTime / 1000);
+    if (mel.v6 && mel.v6[currentMelodyIdx]) playTone(mel.v6[currentMelodyIdx], 'sine', 0.1, stepTime / 1000);
     if (mel.v7 && mel.v7[currentMelodyIdx]) playDrum(mel.v7[currentMelodyIdx]);
 
     currentMelodyIdx = (currentMelodyIdx + 1) % length;
@@ -206,7 +198,6 @@ function playTone(freq, wave, vol, dur) {
     osc.connect(gain); gain.connect(musicGain);
     const now = audioCtx.currentTime;
     
-    // Небольшая атака и затухание для "живого" звука
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(vol, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
@@ -216,16 +207,16 @@ function playTone(freq, wave, vol, dur) {
 }
 
 function playDrum(type) {
-  if (!audioCtx || volumes.music === 0) return;
+  if (!audioCtx || volumes.music <= 0.01) return;
   const now = audioCtx.currentTime;
   try {
-    if (type === 1) { // Kick (Bass Drum)
+    if (type === 1) {
       const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
       osc.type = 'sine'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
       osc.connect(gain); gain.connect(musicGain);
       gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
       osc.start(now); osc.stop(now + 0.15);
-    } else if (type === 2) { // Snare
+    } else if (type === 2) {
       const bufferSize = audioCtx.sampleRate * 0.1;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -236,7 +227,7 @@ function playDrum(type) {
       noise.connect(filter); filter.connect(gain); gain.connect(musicGain);
       gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
       noise.start(now); noise.stop(now + 0.1);
-    } else if (type === 3) { // Hi-hat
+    } else if (type === 3) {
       const bufferSize = audioCtx.sampleRate * 0.05;
       const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
@@ -252,7 +243,7 @@ function playDrum(type) {
 }
 
 export function playSound(type) {
-  if (!isInit || volumes.sfx === 0) return;
+  if (!isInit || volumes.sfx <= 0.01) return;
   try {
     const now = audioCtx.currentTime;
     function createNoise(duration) {
