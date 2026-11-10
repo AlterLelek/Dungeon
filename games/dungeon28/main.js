@@ -106,7 +106,6 @@ function loadSettings() {
 }
 loadSettings();
 
-// Громкость (шкала от 0 до 10)
 document.getElementById('set-master').addEventListener('input', (e) => { setVolume('master', parseInt(e.target.value) / 10); });
 document.getElementById('set-sfx').addEventListener('input', (e) => { setVolume('sfx', parseInt(e.target.value) / 10); });
 document.getElementById('set-amb').addEventListener('input', (e) => { setVolume('ambient', parseInt(e.target.value) / 10); });
@@ -118,12 +117,10 @@ function selectMelody(btnId, track) {
     document.getElementById(btnId).classList.add('active');
     startMusic(track);
 }
-document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'cave');
+document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'sf2');
 document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', 'elven');
 document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
 document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'dice');
-document.getElementById('mel-shining').onclick = () => selectMelody('mel-shining', 'shining');
-document.getElementById('mel-mm3').onclick = () => selectMelody('mel-mm3', 'mm3');
 
 document.getElementById('set-floors').addEventListener('change', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('floor-max').innerText = state.settings.floors; saveSettings(); });
 document.getElementById('set-monst-add').addEventListener('change', (e) => { state.settings.monsterAdd = parseInt(e.target.value); saveSettings(); });
@@ -194,7 +191,6 @@ const ADJECTIVES = ["Соленый", "Мокрый", "Сонный", "Хитр�
 const NOUNS = ["Огурец", "Помидор", "Кот", "Пес", "Гном", "Дракон", "Скелет", "Призрак", "Рыцарь", "Маг", "Йогурт", "Кактус", "Пельмень", "Тапок", "Ботинок", "Носок", "Чайник", "Бублик", "Сыр", "Гриб"];
 function generateRandomName() { guestNameInput.value = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`; }
 
-// HUD
 function updateHUD() {
   document.getElementById('hp').innerText = state.playerHp;
   document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
@@ -209,10 +205,9 @@ function updateHUD() {
   const w = state.weapons[state.weaponLevel];
   document.getElementById('w-dmg').innerText = w.dmg;
   document.getElementById('w-name').innerText = w.name;
-  document.getElementById('w-dmg').className = w.css; // Применяем цвет
+  document.getElementById('w-dmg').className = w.css; 
   document.getElementById('w-name').className = 'w-name ' + w.css;
 
-  // Обновляем кубок
   document.getElementById('high-score-line').innerText = state.highScore.turns || 0;
 
   const mpCostLight = Math.max(0, 3 - state.spellDiscount);
@@ -244,8 +239,6 @@ function updateHUD() {
   document.getElementById('e-count').innerText = state.monsters.length;
   let eHtml = "";
   state.monsters.slice(0, 6).forEach(m => { 
-      let status = m.status ? m.status : '&nbsp;&nbsp;';
-      // НОВАЯ РАЗМЕТКА ДЛЯ МОНСТРОВ
       eHtml += `<div class="enemy-row">
         <span class="e-type">${m.type}</span>
         <span class="e-stat" style="color:#ef4444;">❤️${m.hp}</span>
@@ -315,10 +308,10 @@ function gameLoop() {
 }
 
 function startGame(name) {
-    initAudio(); startAmbient(); startMusic('cave');   
+    initAudio(); startAmbient(); startMusic('sf2');   
     loginScreen.style.display = 'none'; gameScreen.style.display = 'flex';
-    const magicRow = document.querySelector('.magic-row');
-    gameScreen.insertBefore(canvas, magicRow.nextSibling);
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+    canvasWrapper.insertBefore(canvas, canvasWrapper.firstChild);
     localStorage.setItem('pz_heroName', name);
     
     const hero = state.devSettings.heroes[state.heroIdx];

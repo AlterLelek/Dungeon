@@ -18,7 +18,6 @@
       </div>
       <div class="desc-text" id="hero-desc" style="text-align:center; font-size:12px; color:#9ca3af; min-height:36px; margin-bottom:10px;"></div>
       
-      <!-- КАРУСЕЛЬ РЕЖИМОВ -->
       <div class="carousel-container" style="margin: 5px 0;">
         <button class="c-arrow" id="prev-mode">◀</button>
         <div class="mode-carousel" id="mode-display" style="color:#fbbf24; font-weight:bold; font-size:14px; text-align:center; flex:1;">Погоня (1-5)</div>
@@ -38,7 +37,6 @@
     </div>
 
     <div id="game-screen" style="display: none;">
-      <!-- НОВЫЙ HUD -->
       <div id="hud">
         <div class="hud-hero">
           <div class="hero-stats">
@@ -83,6 +81,11 @@
         <button id="btn-hurricane" class="m-btn" style="background-color:#a855f7;">🌪️ Ураган<br><span>4 MP | x0</span></button>
       </div>
 
+      <!-- ОБЕРТКА ДЛЯ КАНВАСА И ВСПЫШКИ -->
+      <div id="canvas-wrapper">
+        <div id="magic-flash"></div>
+      </div>
+
       <div class="dpad" style="margin-top: 10px;">
         <button class="btn wide-row" onclick="movePlayer(0,-32)">▲ W</button>
         <button class="btn" onclick="movePlayer(-32,0)">◀ A</button>
@@ -122,7 +125,6 @@
 
   <div id="settings-panel" class="panel" style="display:none;">
     <h3>⚙️ Настройки</h3>
-
     <details class="set-accordion" open>
       <summary>🔊 Звук</summary>
       <div class="set-row"><span class="set-label">Общая громкость</span><input type="number" id="set-master" min="0" max="10" step="1" value="10" class="num-input"></div>
@@ -130,17 +132,13 @@
       <div class="set-row"><span class="set-label">Фон</span><input type="number" id="set-amb" min="0" max="10" step="1" value="10" class="num-input"></div>
       <div class="set-row"><span class="set-label">Мелодия</span><input type="number" id="set-mel" min="0" max="10" step="1" value="5" class="num-input"></div>
       <div class="set-row"><span class="set-label">Темп (мс)</span><input type="number" id="set-tempo" min="300" max="1200" step="100" value="600" class="num-input"></div>
-      
       <div class="mel-row">
-        <button class="mel-btn active" id="mel-cave">Подземелье</button>
+        <button class="mel-btn active" id="mel-cave">SF2 Тема</button>
         <button class="mel-btn" id="mel-elven">Эльфийская</button>
         <button class="mel-btn" id="mel-dwarven">Гномий</button>
         <button class="mel-btn" id="mel-dice">Кости 🎲</button>
-        <button class="mel-btn" id="mel-shining">Shining Force</button>
-        <button class="mel-btn" id="mel-mm3">M&M 3</button>
       </div>
     </details>
-
     <details class="set-accordion">
       <summary>⚙️ Остальная игра</summary>
       <div class="set-row"><span class="set-label">🏰 Этажей всего</span><input type="number" id="set-floors" min="1" max="20" step="1" value="5" class="num-input"></div>
@@ -148,15 +146,12 @@
       <div class="set-row"><span class="set-label">🧰 Спавн (раз в N)</span><input type="number" id="set-item-rate" min="1" max="5" step="1" value="2" class="num-input"></div>
       <div class="set-row"><span class="set-label">🛡️ Сила щита</span><input type="number" id="set-shield-val" min="1" max="10" step="1" value="3" class="num-input"></div>
       <div class="set-row"><span class="set-label">⭐ Сила звезды</span><input type="number" id="set-star-val" min="1" max="10" step="1" value="1" class="num-input"></div>
-      
       <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
       <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (вкусы)</span></div>
       <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ</span></div>
       <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сброс бонусов на этаже</span></div>
-      
       <div class="set-check"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
     </details>
-
     <details class="set-accordion">
       <summary>🎮 Управление</summary>
       <div class="set-row"><span class="set-label">Клавиши</span>
@@ -174,17 +169,14 @@
         </select>
       </div>
     </details>
-
     <details class="set-accordion">
       <summary>🦸 Герои</summary>
       <div id="dev-heroes"></div>
     </details>
-
     <details class="set-accordion">
       <summary>👹 Монстры</summary>
       <div id="dev-monsters"></div>
     </details>
-
     <button class="reset-btn" id="btn-reset-settings">↺ Сбросить настройки</button>
     <button id="close-settings" class="close-panel">Закрыть [Esc]</button>
   </div>

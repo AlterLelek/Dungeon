@@ -24,6 +24,7 @@ export function activateAbility() {
         if (state.angelCooldown > 0) { addFloater(state.player.px, state.player.py, "КД!", "#ef4444"); return; }
         state.playerHp = Math.min(state.devSettings.heroes[state.heroIdx].maxHp, state.playerHp + 50);
         state.angelCooldown = 30;
+        state.player.healFx = 1.0; // Эффект
         addFloater(state.player.px, state.player.py, "+50 HP", "#fbbf24");
     }
     playSound('magic');
@@ -43,7 +44,7 @@ function processTurnEnd() {
             autoNextFloor();
         }
         state.isProcessingTurn = false;
-    }, 400); // Задержка, чтобы герой "доехал" до клетки
+    }, 400);
 }
 
 export function startFadeOut() {
@@ -69,8 +70,8 @@ export function fight(m, index, ranged = false) {
   let pDmg = getTotalAtk() - m.def; 
   
   if (HEROES[state.heroIdx].set === 'archer') {
-      if (ranged) pDmg = Math.floor(pDmg * 1.2); // Дальний 120%
-      else pDmg = Math.floor(pDmg * 0.8);        // Ближний 80%
+      if (ranged) pDmg = Math.floor(pDmg * 1.2); 
+      else pDmg = Math.floor(pDmg * 0.8);        
   }
   
   if (pDmg < 1) pDmg = 1;
@@ -94,7 +95,6 @@ export function fight(m, index, ranged = false) {
         }
         if (spawned > 0) addFloater(m.x, m.y, "Деление!", "#a855f7");
     }
-    
     if (m.type !== "🐭" && m.type !== "🕷") state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
     return true; 
   }
@@ -116,7 +116,8 @@ export function castLightning() {
     state.spellLightning--; playSound('magic');
     
     targets.forEach(m => {
-        m.hp -= 20; addFloater(m.x, m.y, "-20", "#fbbf24");
+        m.hp -= 20; m.lightningFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ МОЛНИИ
+        addFloater(m.x, m.y, "-20", "#fbbf24");
         if (m.hp <= 0) {
             const idx = state.monsters.indexOf(m); if (idx > -1) state.monsters.splice(idx, 1);
             state.goldCount += 2; state.stats.kills++;
@@ -135,6 +136,7 @@ export function castHeal() {
     state.spellHeal--; playSound('magic');
     
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
+    state.player.healFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ ЛЕЧЕНИЯ
     addFloater(state.player.px, state.player.py, "+30hp", "#22c55e");
 }
 
@@ -143,7 +145,8 @@ export function castStun() {
     const cost = Math.max(0, 2 - state.spellDiscount);
     if (state.playerMp >= cost) state.playerMp -= cost;
     state.spellStun--; playSound('magic');
-    state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
+    
+    state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; m.stunFx = 1.0; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
 }
 
 export function castHurricane() {
@@ -161,6 +164,7 @@ export function castHurricane() {
         nx = Math.max(0, Math.min(288, nx)); ny = Math.max(0, Math.min(288, ny));
         m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py;
         m.moveStartTime = performance.now(); m.isMoving = true;
+        m.spinFx = 1.0; // ВКЛЮЧАЕМ ЭФФЕКТ ВРАЩЕНИЯ
         addFloater(m.x, m.y, "🌪️", "#a855f7");
     });
 }
@@ -199,7 +203,6 @@ function getMoveTarget(m, diff) {
     let targetX = state.player.x, targetY = state.player.y;
     if (state.skeletonAlly) { targetX = state.skeletonAlly.x; targetY = state.skeletonAlly.y; }
 
-    // AI Logic for Extreme and Critical
     if (diff !== 'simple') {
         let i1 = ENEMY_BASE[m.type]?.interest1 || "-";
         let i2 = ENEMY_BASE[m.type]?.interest2 || "-";

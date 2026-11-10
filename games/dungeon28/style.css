@@ -10,23 +10,28 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 
 /* КАРУСЕЛЬ */
 .carousel-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px; }
-.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
+.c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0; transition: transform 0.1s, background 0.2s; }
+.c-arrow:hover { background: rgba(255,255,255,0.3); filter: drop-shadow(0 0 5px #fff); }
+.c-arrow:active { transform: scale(0.85); }
 .carousel { display: flex; align-items: center; justify-content: center; gap: 5px; width: 220px; overflow: hidden; height: 100px; }
-.hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; width: 70px; flex-shrink: 0; text-align: center; }
+.hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 70px; flex-shrink: 0; text-align: center; }
 .hero-card.center { transform: scale(1.15); z-index: 2; opacity: 1; }
 .hero-card.side { transform: scale(0.8); opacity: 0.5; }
+.hero-card:hover { filter: drop-shadow(0 0 10px #fbbf24); }
+.hero-card:active { transform: scale(0.95); }
 .hero-card .c-emoji { font-size: 30px; }
 .hero-card.center .c-emoji { font-size: 42px; text-shadow: 0 0 15px rgba(251,191,36,0.4); }
 .hero-card .c-name { font-size: 11px; margin-top: 5px; color: #9ca3af; font-weight: bold; }
 .hero-card.center .c-name { color: #fbbf24; font-size: 13px; }
 
-.btn-primary { padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+.btn-primary { padding: 10px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: background 0.2s, transform 0.1s; }
+.btn-primary:hover { background: #4338ca; }
+.btn-primary:active { transform: scale(0.95); }
 .btn-secondary { padding: 8px 12px; background: #374151; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+.btn-secondary:active { transform: scale(0.95); }
 
 /* ИГРА */
 #game-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
-
-/* HUD - ЖЕСТКАЯ СЕТКА */
 #hud { background: rgba(0,0,0,0.4); padding: 6px; border-radius: 8px; width: 326px; display: flex; justify-content: space-between; gap: 4px; height: 120px; box-sizing: border-box; border: 2px solid #4b5563; }
 
 /* Левая колонка */
@@ -43,33 +48,44 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 /* Центральная колонка */
 .hud-center { display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 4px; font-size: 11px; font-weight: bold; min-width: 76px; gap: 3px; }
 
-/* Правая колонка (Враги) */
+/* Правая колонка (Враги) - ЖЕСТКАЯ СЕТКА */
 .hud-enemies { display: flex; flex-direction: column; flex: 1; min-width: 0; }
 .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; margin-bottom: 2px; }
 #e-list { display: flex; flex-direction: column; gap: 2px; font-size: 11px; height: 84px; overflow: hidden; width: 100%; }
-.enemy-row { display: flex; justify-content: space-between; align-items: center; width: 100%; line-height: 1.2; }
-.enemy-row .e-type { width: 20px; text-align: left; flex-shrink: 0; }
-.enemy-row .e-stat { width: 32px; text-align: right; flex-shrink: 0; }
+.enemy-row { display: grid; grid-template-columns: 24px 1fr 1fr 1fr; gap: 2px; align-items: center; width: 100%; line-height: 1.2; }
+.enemy-row .e-type { text-align: left; }
+.enemy-row .e-stat { text-align: right; white-space: nowrap; }
 
 /* Кнопки */
 #btn-row { display: flex; gap: 4px; width: 326px; margin: 5px 0; }
 #btn-row button { padding: 6px 4px; font-size: 11px; border-radius: 8px; flex: 1; }
 .magic-row { display: flex; gap: 4px; width: 326px; margin-bottom: 5px; }
-.m-btn { flex: 1; padding: 4px; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 10px; cursor: pointer; line-height: 1.2; }
+.m-btn { flex: 1; padding: 4px; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 10px; cursor: pointer; line-height: 1.2; transition: transform 0.1s, filter 0.2s; }
+.m-btn:active { transform: scale(0.95); }
+.m-btn:hover:not(:disabled) { filter: brightness(1.2); }
 .m-btn:disabled { background-color: #4b5563 !important; opacity: 0.5; }
-.dpad { display: grid; grid-template-columns: 1fr 55px 1fr; grid-template-rows: repeat(3, 40px); gap: 6px; width: 326px; }
-.btn { background-color: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; }
-.btn:active { background-color: #3b82f6; }
+
+/* ОБЕРТКА И ВСПЫШКА МАГИИ */
+#canvas-wrapper { position: relative; width: 326px; height: 326px; }
+canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
+#magic-flash { position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px; pointer-events: none; opacity: 0; transition: opacity 0.15s ease-out; z-index: 10; }
+.flash-yellow { background: radial-gradient(circle, transparent 30%, rgba(234,179,8,0.7) 100%); opacity: 1 !important; }
+.flash-blue { background: radial-gradient(circle, transparent 30%, rgba(56,189,248,0.7) 100%); opacity: 1 !important; }
+.flash-green { background: radial-gradient(circle, transparent 30%, rgba(34,197,94,0.7) 100%); opacity: 1 !important; }
+.flash-gray { background: radial-gradient(circle, transparent 30%, rgba(156,163,175,0.7) 100%); opacity: 1 !important; }
+
+.dpad { display: grid; grid-template-columns: 1fr 55px 1fr; grid-template-rows: repeat(3, 40px); gap: 6px; width: 326px; margin-top: 10px; }
+.btn { background-color: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 20px; font-weight: bold; cursor: pointer; transition: transform 0.1s, background 0.2s; }
+.btn:hover { background-color: #4338ca; }
+.btn:active { transform: scale(0.92); background-color: #3b82f6; }
 .wide-row { grid-column: span 3; }
 
-/* Панели и Настройки (без изменений) */
+/* Панели и Настройки */
 .panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #151520; padding: 15px; border: 2px solid #fbbf24; border-radius: 12px; width: 90%; max-width: 340px; max-height: 85vh; overflow-y: auto; z-index: 2000; box-sizing: border-box; }
 .panel h3 { margin: 0 0 12px 0; color: #fbbf24; text-align: center; }
 .panel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 6px; font-size: 13px; }
 .buy-btn { background: #4f46e5; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .close-panel { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
-canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; display: block; }
-
 .set-accordion { background: rgba(0,0,0,0.2); border-radius: 6px; padding: 6px; margin-bottom: 8px; }
 .set-accordion summary { outline: none; cursor: pointer; color: #fbbf24; font-weight: bold; }
 .set-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #fff; gap: 5px; }

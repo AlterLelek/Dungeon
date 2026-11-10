@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игровой хаб</title>
     <style>
-        body { background-color: #1e1e24; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        h1 { color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.5); letter-spacing: 2px; font-size: 32px; margin-bottom: 30px; }
+        body { 
+            background-color: #1e1e24; 
+            color: #fff; 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden;
+            user-select: none;
+        }
+        h1 { 
+            color: #fbbf24; 
+            text-shadow: 0 0 15px rgba(251,191,36,0.5); 
+            letter-spacing: 2px; 
+            font-size: 32px; 
+            margin-bottom: 30px; 
+        }
         .game-card { 
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
             padding: 20px 40px; 
             margin: 10px; 
             background: linear-gradient(135deg, #2b2b3b, #1a1a24); 
@@ -17,12 +37,30 @@
             border-radius: 15px; 
             font-size: 24px; 
             font-weight: bold; 
-            transition: 0.3s;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.2s;
             border: 2px solid #4f46e5;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        .game-card:hover { transform: translateY(-5px) scale(1.05); border-color: #fbbf24; box-shadow: 0 15px 30px rgba(251,191,36,0.3); }
-        .game-card span { font-size: 40px; margin-bottom: 10px; }
+        .game-card:hover { 
+            transform: translateY(-5px) scale(1.05); 
+            border-color: #fbbf24; 
+            box-shadow: 0 15px 30px rgba(251,191,36,0.3), 0 0 20px rgba(251,191,36,0.2); 
+        }
+        .game-card:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            border-color: #fbbf24;
+        }
+        .game-card span { 
+            font-size: 40px; 
+            margin-bottom: 10px; 
+            transition: transform 0.2s;
+        }
+        .game-card:active span {
+            transform: scale(0.9);
+        }
     </style>
 </head>
 <body>

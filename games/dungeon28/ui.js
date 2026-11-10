@@ -42,13 +42,9 @@ export function draw(ctx, bgCanvas) {
   if (state.stairs.active) { ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "#1e1e24"; drawCell(ctx, state.stairs.x, state.stairs.y, "▼", 16); } 
   else { ctx.fillStyle = "rgba(255,255,255,0.1)"; ctx.fillRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.strokeRect(state.stairs.x+4, state.stairs.y+4, 24, 24); ctx.fillStyle = "rgba(255,255,255,0.4)"; drawCell(ctx, state.stairs.x, state.stairs.y, "🔒", 14); }
 
-  // Отрисовка могил с обводкой
   state.corpses.forEach(c => {
-      ctx.font = "24px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.strokeStyle = "rgba(0,0,0,0.8)";
-      ctx.lineWidth = 3;
+      ctx.font = "24px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.strokeStyle = "rgba(0,0,0,0.8)"; ctx.lineWidth = 3;
       ctx.strokeText("🪦", c.x + CELL / 2, c.y + CELL / 2);
       ctx.fillText("🪦", c.x + CELL / 2, c.y + CELL / 2);
   });
@@ -62,8 +58,38 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
-    if (m.isStunned) { ctx.fillStyle = "rgba(147,51,234,0.5)"; ctx.fillRect(m.px+2, m.py+2, 28, 28); }
-    drawCell(ctx, m.px, m.py, m.type, 22); 
+    // ЛЕДЯНАЯ АУРА
+    if (m.isStunned) { 
+        ctx.fillStyle = "rgba(56,189,248,0.3)"; 
+        ctx.beginPath(); ctx.arc(m.px + CELL/2, m.py + CELL/2, 14, 0, Math.PI*2); ctx.fill();
+    }
+    
+    // ВРАЩЕНИЕ ОТ УРАГАНА
+    if (m.spinFx > 0) {
+        ctx.save();
+        ctx.translate(m.px + CELL/2, m.py + CELL/2);
+        ctx.rotate(m.spinFx * Math.PI * 4); 
+        ctx.translate(-(m.px + CELL/2), -(m.py + CELL/2));
+        drawCell(ctx, m.px, m.py, m.type, 22); 
+        ctx.restore();
+        m.spinFx -= 0.05; // Плавно затухает
+    } else {
+        drawCell(ctx, m.px, m.py, m.type, 22); 
+    }
+    
+    // МОЛНИЯ (Зигзаг)
+    if (m.lightningFx > 0) {
+        ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 3; ctx.beginPath();
+        ctx.moveTo(m.px + 10, m.py - 10);
+        ctx.lineTo(m.px + 22, m.py + 8);
+        ctx.lineTo(m.px + 12, m.py + 16);
+        ctx.lineTo(m.px + 20, m.py + 32);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(251,191,36,0.4)";
+        ctx.fillRect(m.px, m.py, CELL, CELL);
+        m.lightningFx -= 0.05;
+    }
+
     drawBars(ctx, m.px, m.py, m.hp, m.maxHp, m.def, m.atk);
   });
 
@@ -71,9 +97,13 @@ export function draw(ctx, bgCanvas) {
   drawCell(ctx, state.player.px, state.player.py, HEROES[state.heroIdx].emoji, 22);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
-  let yOffset = 18;
-  if (state.poisonTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "☠️", 12); yOffset += 10; }
-  if (state.playerSlowTurns > 0) { drawCell(ctx, state.player.px, state.player.py + yOffset, "🕸️", 12); }
+  // ЭФФЕКТ ЛЕЧЕНИЯ (Зеленые круги)
+  if (state.player.healFx > 0) {
+      ctx.strokeStyle = "rgba(34,197,94," + state.player.healFx + ")"; 
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(state.player.px + CELL/2, state.player.py + CELL/2, (1.0 - state.player.healFx) * 30, 0, Math.PI*2); ctx.stroke();
+      state.player.healFx -= 0.03;
+  }
 
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; ctx.fillStyle = f.color; ctx.font = "bold 16px sans-serif";
