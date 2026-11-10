@@ -25,8 +25,8 @@ try {
     const saved = JSON.parse(localStorage.getItem('pz_highscore'));
     if (saved) state.highScore = saved;
 } catch (e) {}
-if (state.highScore.turns > 0) document.getElementById('high-score-line').innerText = `🏆 ${state.highScore.turns} х.`;
-else document.getElementById('high-score-line').innerText = '';
+// Всегда показываем кубок
+document.getElementById('high-score-line').innerHTML = `🏆 ${state.highScore.turns || 0}`;
 
 function getWeaponsBySet(set) {
     if (set === 'mage') return MAGE_WEAPONS;
@@ -64,6 +64,24 @@ function renderCarousel() {
 document.getElementById('prev-hero').onclick = () => { state.heroIdx = (state.heroIdx - 1 + HEROES.length) % HEROES.length; renderCarousel(); playSound('menu'); };
 document.getElementById('next-hero').onclick = () => { state.heroIdx = (state.heroIdx + 1) % HEROES.length; renderCarousel(); playSound('menu'); };
 renderCarousel();
+
+// КАРУСЕЛЬ РЕЖИМОВ
+const GAME_MODES = [
+    { id: 'chase_5', name: 'Погоня (1-5)' },
+    { id: 'def_5', name: 'Защита (1-5)' },
+    { id: 'def_inf', name: 'Защита (Безлимит)' },
+    { id: 'wave_5', name: 'Волны монстров (1-5)' },
+    { id: 'wave_inf', name: 'Волны монстров (Безлимит)' }
+];
+let currentModeIdx = 0;
+
+function renderMode() {
+    document.getElementById('mode-display').innerText = GAME_MODES[currentModeIdx].name;
+    state.gameMode = GAME_MODES[currentModeIdx].id;
+}
+document.getElementById('prev-mode').onclick = () => { currentModeIdx = (currentModeIdx - 1 + GAME_MODES.length) % GAME_MODES.length; renderMode(); playSound('menu'); };
+document.getElementById('next-mode').onclick = () => { currentModeIdx = (currentModeIdx + 1) % GAME_MODES.length; renderMode(); playSound('menu'); };
+renderMode();
 
 function saveSettings() { localStorage.setItem('pz_settings', JSON.stringify(state.settings)); }
 function loadSettings() {
@@ -221,7 +239,16 @@ function updateHUD() {
 
   document.getElementById('e-count').innerText = state.monsters.length;
   let eHtml = "";
-  state.monsters.slice(0, 6).forEach(m => { eHtml += `<div>${m.type} ❤️${m.hp} 💪${m.atk} 🛡️${m.def}</div>`; });
+  state.monsters.slice(0, 6).forEach(m => { 
+      let status = m.status ? m.status : '&nbsp;&nbsp;';
+      eHtml += `<div>
+        <span class="status-ico">${status}</span> 
+        <span>${m.type}</span> 
+        <span class="stat-hp">❤️${m.hp}</span> 
+        <span class="stat-atk">💪${m.atk}</span> 
+        <span class="stat-def">🛡️${m.def}</span>
+      </div>`; 
+  });
   if (state.monsters.length > 6) eHtml += `<div style="color:#9ca3af;">… +${state.monsters.length - 6}</div>`;
   document.getElementById('e-list').innerHTML = eHtml;
 }
@@ -293,7 +320,6 @@ function startGame(name) {
     const hero = state.devSettings.heroes[state.heroIdx];
     state.playerHp = hero.maxHp; state.playerMp = 0; 
     state.weapons = getWeaponsBySet(hero.set); state.weaponLevel = 0;
-    state.gameMode = document.getElementById('game-mode-select').value;
     state.currentFloor = 1; state.gameActive = true;
     state.goldCount = 0; state.totalTurns = 0; state.stats = { kills: 0, gold: 0, floors: 0 };
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;

@@ -9,7 +9,7 @@ body { background-color: #1e1e24; margin: 0; padding: 0; height: 100vh; display:
 input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #4b5563; background: #2b2b3b; color: white; font-size: 16px; outline: none; }
 
 /* КАРУСЕЛЬ */
-.carousel-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px; margin: 10px 0; }
+.carousel-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 5px; }
 .c-arrow { background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; padding: 10px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
 .carousel { display: flex; align-items: center; justify-content: center; gap: 5px; width: 220px; overflow: hidden; height: 100px; }
 .hero-card { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; width: 70px; flex-shrink: 0; text-align: center; }
@@ -26,16 +26,28 @@ input[type=text] { flex: 1; padding: 10px; border-radius: 8px; border: 2px solid
 /* ИГРА */
 #game-screen { display: flex; flex-direction: column; align-items: center; width: 100%; }
 #hud { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; width: 326px; display: flex; justify-content: space-between; gap: 6px; height: 120px; box-sizing: border-box; border: 2px solid #4b5563; }
-.hud-hero { display: flex; gap: 6px; width: 118px; }
-.hero-fig { font-size: 30px; display: flex; align-items: center; }
-.hero-stats { flex: 1; display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-weight: bold; min-width: 0; }
-.hs-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 11px; white-space: normal; word-break: break-word; line-height: 1.1; margin-bottom: 2px; }
-#hero-weapon { font-size: 10px; color: #e5e7eb; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; line-height: 1.3; }
-.hud-center { display: flex; flex-direction: column; gap: 3px; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 6px; font-size: 12px; font-weight: bold; }
+
+/* ЛЕВАЯ ЧАСТЬ HUD */
+.hud-hero { display: flex; gap: 6px; width: 120px; }
+.hero-fig { font-size: 30px; display: flex; align-items: flex-start; padding-top: 2px; }
+.hero-stats { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 12px; font-weight: bold; min-width: 0; align-items: flex-start; }
+.hs-title { border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 11px; line-height: 1.1; margin-bottom: 2px; text-align: left; width: 100%; word-wrap: break-word; overflow-wrap: break-word; }
+#hero-weapon { font-size: 10px; color: #e5e7eb; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 2px; margin-top: 2px; line-height: 1.3; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+
+/* ЦЕНТР HUD */
+.hud-center { display: flex; flex-direction: column; gap: 3px; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 6px; font-size: 12px; font-weight: bold; min-width: 80px; }
+
+/* ПРАВАЯ ЧАСТЬ (МОНСТРЫ) */
 .hud-enemies { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .he-title { border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; font-size: 11px; }
-#e-list { display: flex; flex-direction: column; gap: 2px; font-size: 11px; height: 84px; overflow: hidden; text-align: right; }
-#e-list div { line-height: 1.2; white-space: nowrap; }
+#e-list { display: flex; flex-direction: column; gap: 2px; font-size: 11px; height: 84px; overflow: hidden; width: 100%; }
+#e-list > div { display: flex; justify-content: flex-end; align-items: center; gap: 4px; line-height: 1.2; white-space: nowrap; }
+#e-list > div > span { display: inline-block; text-align: right; }
+.stat-hp { min-width: 32px; }
+.stat-atk { min-width: 26px; }
+.stat-def { min-width: 26px; }
+.status-ico { min-width: 14px; text-align: center; }
+
 .coin-ico { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: #fbbf24; border: 2px solid #92400e; vertical-align: -1px; }
 
 /* Кнопки */
