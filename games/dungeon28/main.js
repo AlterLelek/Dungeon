@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
-import { draw } from './ui.js';
+import { draw, preloadSprites } from './ui.js'; // ДОБАВЛЕН ИМПОРТ
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume } from './audio.js'; 
@@ -236,7 +236,6 @@ function updateHUD() {
   document.getElementById('bonus').innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
   document.getElementById('floor-hud').innerText = state.currentFloor;
   
-  // СКРЫВАЕМ МАКСИМАЛЬНЫЙ ЭТАЖ В БЕЗЛИМИТЕ
   const floorMaxEl = document.getElementById('floor-max');
   if (state.gameMode.includes('inf')) {
       floorMaxEl.style.display = 'none';
@@ -435,3 +434,4 @@ document.getElementById('settings-btn').onclick = () => { playSound('menu'); doc
 document.getElementById('close-settings').onclick = () => document.getElementById('settings-panel').style.display = 'none';
 
 generateRandomName();
+preloadSprites(); // ВЫЗОВ ПРЕДЗАГРУЗКИ СПРАЙТОВ
