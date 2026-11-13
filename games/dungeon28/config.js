@@ -1,13 +1,13 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.133";
+export const VERSION = "5.136";
 export const GRID = 10;          
 export const CELL = 32;          
 
 export { HEROES };
 
 export const WARRIOR_WEAPONS = [
-  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"assets/sprites/weapons/sword_0.png"}, // временно
+  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"assets/sprites/weapons/sword_0.png"},
   {name:"Кинжал", css:"q-rusty", dmg:2, cost:1, sprite:"assets/sprites/weapons/sword_1.png"},
   {name:"Меч", css:"q-rusty", dmg:3, cost:2, sprite:"assets/sprites/weapons/sword_2.png"},
   {name:"Топор", css:"q-rusty", dmg:4, cost:3, sprite:"assets/sprites/weapons/axe_0.png"},
@@ -65,7 +65,6 @@ export const ENEMY_BASE = {
   "🦹": {hp:85, atk:8, def:1, speed:1, interest1:"Герой", interest2:"-", special:"Стрельба 2 + Вампиризм"}
 };
 
-// БАЗА ДАННЫХ СКИНОВ ДЛЯ МОНСТРОВ
 export const MONSTER_SKINS = {
   "💀": ["skeleton_0","skeleton_1","skeleton_2","skeleton_3","skeleton_4","skeleton_5","skeleton_6","skeleton_7","skeleton_8","skeleton_9"].map(n => `assets/sprites/monsters/${n}.png`),
   "👻": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `assets/sprites/monsters/${n}.png`),

@@ -6,18 +6,22 @@ const spriteCache = {};
 export function preloadSprites() {
     const paths = [];
     
-    // Добавляем скины героев
     HEROES.forEach(h => {
         if (h.skins) h.skins.forEach(s => paths.push(s));
     });
     
-    // Добавляем скины монстров
     Object.values(MONSTER_SKINS).forEach(skinsArray => {
         skinsArray.forEach(s => paths.push(s));
     });
 
-    // Добавляем предметы
-    paths.push("assets/sprites/ui/coin.png", "assets/sprites/ui/castle.png", "assets/sprites/items/star.png", "assets/sprites/items/shield.png", "assets/sprites/items/lightning.png");
+    // ПРАВИЛЬНЫЕ ПУТИ: UI отдельно, Предметы (items) отдельно
+    paths.push(
+        "assets/sprites/ui/coin.png", 
+        "assets/sprites/ui/castle.png",
+        "assets/sprites/items/star.png", 
+        "assets/sprites/items/shield.png", 
+        "assets/sprites/items/lightning.png"
+    );
 
     paths.forEach(path => {
         if (path && !spriteCache[path]) {
@@ -79,7 +83,9 @@ function drawStairs(ctx) {
 function drawItem(ctx, x, y, type) {
   const cx = x + CELL / 2, cy = y + CELL / 2;
   let spritePath = null;
-  if (type === 'coin') spritePath = "assets/sprites/ui/coin.png";
+  
+  // ИСПРАВЛЕНО: предметы из папки items
+  if (type === 'coin') spritePath = "assets/sprites/ui/coin.png"; 
   if (type === 'star') spritePath = "assets/sprites/items/star.png";
   if (type === 'shield') spritePath = "assets/sprites/items/shield.png";
   if (type === 'lightning') spritePath = "assets/sprites/items/lightning.png";
@@ -128,7 +134,6 @@ export function draw(ctx, bgCanvas) {
   state.monsters.forEach(m => {
     if (m.isStunned) { ctx.fillStyle = "rgba(56,189,248,0.3)"; ctx.beginPath(); ctx.arc(m.px + CELL/2, m.py + CELL/2, 14, 0, Math.PI*2); ctx.fill(); }
     
-    // БОБ-ЭФФЕКТ (Покачивание)
     const bobY = Math.sin(now / 300 + (m.x + m.y)) * 2;
     
     if (m.spinFx > 0) {
@@ -148,8 +153,8 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   const currentHero = HEROES[state.heroIdx];
-  const heroSprite = currentHero.skins ? currentHero.skins[0] : null; // Берем первый скин
-  const heroBobY = Math.sin(now / 300) * 2; // Герой тоже дышит
+  const heroSprite = currentHero.skins ? currentHero.skins[0] : null;
+  const heroBobY = Math.sin(now / 300) * 2;
 
   drawSpriteOrEmoji(ctx, state.player.px, state.player.py + heroBobY, currentHero.emoji, heroSprite, 30);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());

@@ -40,7 +40,7 @@ function renderCarousel() {
     for (let offset = -1; offset <= 1; offset++) {
         const idx = (state.heroIdx + offset + total) % total;
         const h = HEROES[idx];
-        const heroSprite = h.skins ? h.skins[0] : null; // берем первый скин
+        const heroSprite = h.skins ? h.skins[0] : null; 
         
         const div = document.createElement('div');
         div.className = `hero-card ${offset === 0 ? 'center' : 'side'}`;
@@ -56,8 +56,8 @@ function renderCarousel() {
     
     const h = HEROES[state.heroIdx];
     const w = getWeaponsBySet(h.set)[0];
+    
     document.getElementById('hero-desc').innerHTML = `
-        <b>${h.name}</b><br>
         ❤️ ${h.maxHp} HP &nbsp;|&nbsp; ⚡ ${h.maxMp} MP &nbsp;|&nbsp; ⚔️ Урон: ${w.dmg}
     `;
 }

@@ -62,7 +62,7 @@ function autoNextFloor() {
         if (state.gameActive && state.monsters.length === 0) {
             state.currentFloor++; 
             clearBonuses(); 
-            state.items = []; // Очистка старых предметов при переходе
+            state.items = [];
             initFloor(); 
             floorClearTimer = null;
         }
@@ -352,18 +352,16 @@ export function movePlayer(dx, dy) {
   }
   
   if (state.totalTurns % state.settings.itemRate === 0 && !state.stairs.active) {
-    // ОГРАНИЧЕНИЕ 60% (60 ШТУК)
     if (state.items.length < 60) {
         let cell = findFreeCell();
         let attempts = 0;
-        // Ищем свободную клетку, где нет других предметов
         while (state.items.some(i => i.x === cell.x && i.y === cell.y) && attempts < 50) {
             cell = findFreeCell();
             attempts++;
         }
         if (attempts < 50) {
             const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
-            state.items.push({x:cell.x, y:cell.y, type: type, life: 20}); // ВРЕМЯ ЖИЗНИ 20 ХОДОВ
+            state.items.push({x:cell.x, y:cell.y, type: type, life: 20});
         }
     }
   }
@@ -372,7 +370,6 @@ export function movePlayer(dx, dy) {
 }
 
 function tickEffects() {
-    // УМЕНЬШАЕМ ЖИЗНЬ ПРЕДМЕТОВ
     state.items.forEach(i => i.life--);
     state.items = state.items.filter(i => i.life > 0);
 
@@ -404,6 +401,27 @@ export function skipTurn() {
     processTurnEnd();
 }
 
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ СМЕРТИ
 function endGame() {
-  state.gameActive = false; alert("Вы погибли! Игра окончена."); location.reload();
+  if (!state.gameActive) return; // Защита от повторного вызова
+  state.gameActive = false; 
+  state.playerHp = 0;
+  playSound('hit'); 
+  
+  // Сохраняем рекорд
+  if (state.totalTurns > state.highScore.turns) {
+      state.highScore.turns = state.totalTurns;
+      state.highScore.name = localStorage.getItem('pz_heroName') || 'Гость';
+      localStorage.setItem('pz_highscore', JSON.stringify(state.highScore));
+  }
+
+  // Делаем мягкий переход, чтобы браузер не завис
+  setTimeout(() => {
+      alert("Вы погибли! Игра окончена.");
+      // Вместо location.reload() делаем безопасный возврат в меню
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.querySelector('#login-screen h1').innerText = 'ПОДЗЕМЕЛЬЕ ' + VERSION; // Обновляем версию на экране
+      renderCarousel(); // Перерисовываем карусель
+  }, 100);
 }
