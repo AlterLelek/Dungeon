@@ -1,21 +1,23 @@
-import { CELL, HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, ENEMY_BASE } from './config.js';
+import { CELL, HEROES, MONSTER_SKINS } from './config.js';
 import { state, getTotalAtk, getTotalDef } from './state.js';
 
-// Кэш для хранения загруженных картинок
 const spriteCache = {};
 
-// Предзагрузка спрайтов при старте
 export function preloadSprites() {
-    const paths = [
-        ...HEROES.map(h => h.sprite),
-        "assets/sprites/monsters/orc.png", // Пример для монстра
-        "assets/sprites/items/staff.png",
-        "assets/sprites/items/shield.png",
-        "assets/sprites/items/star.png",
-        "assets/sprites/items/lightning.png",
-        "assets/sprites/ui/coin.png",
-        "assets/sprites/ui/castle.png"
-    ];
+    const paths = [];
+    
+    // Добавляем скины героев
+    HEROES.forEach(h => {
+        if (h.skins) h.skins.forEach(s => paths.push(s));
+    });
+    
+    // Добавляем скины монстров
+    Object.values(MONSTER_SKINS).forEach(skinsArray => {
+        skinsArray.forEach(s => paths.push(s));
+    });
+
+    // Добавляем предметы
+    paths.push("assets/sprites/ui/coin.png", "assets/sprites/ui/castle.png", "assets/sprites/items/star.png", "assets/sprites/items/shield.png", "assets/sprites/items/lightning.png");
 
     paths.forEach(path => {
         if (path && !spriteCache[path]) {
@@ -33,18 +35,18 @@ function drawCell(ctx, x, y, emoji, size, alpha = 1.0) {
   ctx.globalAlpha = 1.0;
 }
 
-// Универсальная функция отрисовки (Спрайт или Эмодзи)
-function drawSpriteOrEmoji(ctx, x, y, emoji, spritePath, size = 24, alpha = 1.0) {
-    if (spritePath && spriteCache[spritePath] && spriteCache[spritePath].complete) {
-        ctx.globalAlpha = alpha;
-        ctx.drawImage(spriteCache[spritePath], x + (CELL - size)/2, y + (CELL - size)/2, size, size);
-        ctx.globalAlpha = 1.0;
-    } else {
-        drawCell(ctx, x, y, emoji, size + 2, alpha);
+function drawSpriteOrEmoji(ctx, x, y, emoji, spritePath, size = 28, alpha = 1.0) {
+    if (spritePath && spriteCache[spritePath] && spriteCache[spritePath].complete && spriteCache[spritePath].naturalWidth > 0) {
+        try {
+            ctx.globalAlpha = alpha;
+            ctx.drawImage(spriteCache[spritePath], x + (CELL - size)/2, y + (CELL - size)/2, size, size);
+            ctx.globalAlpha = 1.0;
+            return;
+        } catch(e) {}
     }
+    drawCell(ctx, x, y, emoji, size, alpha);
 }
 
-// ... (Функции drawBars, drawTombstone, drawStairs остаются без изменений) ...
 function drawBars(ctx, x, y, hp, maxHp, def, atk) {
   const frac = Math.max(0, Math.min(1, hp / maxHp));
   ctx.fillStyle = "#4b5563"; ctx.fillRect(x + 4, y + 1, 24, 3);
@@ -76,18 +78,16 @@ function drawStairs(ctx) {
 
 function drawItem(ctx, x, y, type) {
   const cx = x + CELL / 2, cy = y + CELL / 2;
-  // Ищем спрайт для предмета
   let spritePath = null;
+  if (type === 'coin') spritePath = "assets/sprites/ui/coin.png";
   if (type === 'star') spritePath = "assets/sprites/items/star.png";
   if (type === 'shield') spritePath = "assets/sprites/items/shield.png";
   if (type === 'lightning') spritePath = "assets/sprites/items/lightning.png";
 
-  if (spritePath && spriteCache[spritePath] && spriteCache[spritePath].complete) {
-      ctx.drawImage(spriteCache[spritePath], x + 4, y + 4, 24, 24);
-      return;
+  if (spritePath && spriteCache[spritePath] && spriteCache[spritePath].complete && spriteCache[spritePath].naturalWidth > 0) {
+      try { ctx.drawImage(spriteCache[spritePath], x + 4, y + 4, 24, 24); return; } catch(e) {}
   }
 
-  // Если спрайта нет, рисуем как раньше
   if (type === 'coin') { ctx.fillStyle = "#fbbf24"; ctx.beginPath(); ctx.arc(cx, cy, 8, 0, 2 * Math.PI); ctx.fill(); } 
   else if (type === 'star') { ctx.fillStyle = "#fbbf24"; ctx.beginPath(); for (let k = 0; k < 5; k++) { const a1 = -Math.PI/2 + k*2*Math.PI/5, a2 = a1 + Math.PI/5; ctx.lineTo(cx + Math.cos(a1)*9, cy + Math.sin(a1)*9); ctx.lineTo(cx + Math.cos(a2)*4, cy + Math.sin(a2)*4); } ctx.closePath(); ctx.fill(); } 
   else if (type === 'shield') { ctx.fillStyle = "#3b82f6"; ctx.beginPath(); ctx.moveTo(cx-7, cy-8); ctx.lineTo(cx+7, cy-8); ctx.lineTo(cx+7, cy+2); ctx.quadraticCurveTo(cx, cy+10, cx, cy+10); ctx.quadraticCurveTo(cx-7, cy+2, cx-7, cy+2); ctx.closePath(); ctx.fill(); } 
@@ -122,18 +122,21 @@ export function draw(ctx, bgCanvas) {
       drawBars(ctx, state.skeletonAlly.x, state.skeletonAlly.y, state.skeletonAlly.hp, state.skeletonAlly.maxHp, 0, 0);
   }
 
+  const now = performance.now();
+
   ctx.globalAlpha = 1.0;
   state.monsters.forEach(m => {
-    let sprite = m.type === "👺" ? "assets/sprites/monsters/orc.png" : null; // Пока только орк
-    
     if (m.isStunned) { ctx.fillStyle = "rgba(56,189,248,0.3)"; ctx.beginPath(); ctx.arc(m.px + CELL/2, m.py + CELL/2, 14, 0, Math.PI*2); ctx.fill(); }
+    
+    // БОБ-ЭФФЕКТ (Покачивание)
+    const bobY = Math.sin(now / 300 + (m.x + m.y)) * 2;
     
     if (m.spinFx > 0) {
         ctx.save(); ctx.translate(m.px + CELL/2, m.py + CELL/2); ctx.rotate(m.spinFx * Math.PI * 4); ctx.translate(-(m.px + CELL/2), -(m.py + CELL/2));
-        drawSpriteOrEmoji(ctx, m.px, m.py, m.type, sprite, 24); 
+        drawSpriteOrEmoji(ctx, m.px, m.py + bobY, m.type, m.sprite, 28); 
         ctx.restore(); m.spinFx -= 0.05; 
     } else {
-        drawSpriteOrEmoji(ctx, m.px, m.py, m.type, sprite, 24); 
+        drawSpriteOrEmoji(ctx, m.px, m.py + bobY, m.type, m.sprite, 28); 
     }
     
     if (m.lightningFx > 0) {
@@ -145,7 +148,10 @@ export function draw(ctx, bgCanvas) {
 
   ctx.globalAlpha = 1.0;
   const currentHero = HEROES[state.heroIdx];
-  drawSpriteOrEmoji(ctx, state.player.px, state.player.py, currentHero.emoji, currentHero.sprite, 26);
+  const heroSprite = currentHero.skins ? currentHero.skins[0] : null; // Берем первый скин
+  const heroBobY = Math.sin(now / 300) * 2; // Герой тоже дышит
+
+  drawSpriteOrEmoji(ctx, state.player.px, state.player.py + heroBobY, currentHero.emoji, heroSprite, 30);
   drawBars(ctx, state.player.px, state.player.py, state.playerHp, state.devSettings.heroes[state.heroIdx].maxHp, getTotalDef(), getTotalAtk());
 
   if (state.player.healFx > 0) {

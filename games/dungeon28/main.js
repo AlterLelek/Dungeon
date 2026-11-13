@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
-import { draw, preloadSprites } from './ui.js'; // ДОБАВЛЕН ИМПОРТ
+import { draw, preloadSprites } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume } from './audio.js'; 
@@ -40,10 +40,13 @@ function renderCarousel() {
     for (let offset = -1; offset <= 1; offset++) {
         const idx = (state.heroIdx + offset + total) % total;
         const h = HEROES[idx];
+        const heroSprite = h.skins ? h.skins[0] : null; // берем первый скин
         
         const div = document.createElement('div');
         div.className = `hero-card ${offset === 0 ? 'center' : 'side'}`;
-        div.innerHTML = `<div class="c-emoji">${h.emoji}</div><div class="c-name">${h.name}</div>`;
+        
+        let imgHTML = heroSprite ? `<img src="${heroSprite}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='${h.emoji}';">` : h.emoji;
+        div.innerHTML = `<div class="c-emoji">${imgHTML}</div><div class="c-name">${h.name}</div>`;
         
         if (offset !== 0) {
             div.onclick = () => { state.heroIdx = idx; renderCarousel(); playSound('menu'); };
@@ -248,7 +251,23 @@ function updateHUD() {
   document.getElementById('score').innerText = state.goldCount;
   document.getElementById('energy').innerText = state.playerMp;
   document.getElementById('hero-name-label').innerText = localStorage.getItem('pz_heroName').toUpperCase();
-  document.getElementById('hero-fig').innerText = HEROES[state.heroIdx].emoji;
+  
+  const figEl = document.getElementById('hero-fig');
+  const heroSprite = HEROES[state.heroIdx].skins ? HEROES[state.heroIdx].skins[0] : null;
+  
+  if (figEl.dataset.lastSprite !== heroSprite) {
+      figEl.dataset.lastSprite = heroSprite;
+      if (heroSprite) {
+          figEl.innerHTML = `<img src="${heroSprite}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='${HEROES[state.heroIdx].emoji}';" onload="this.style.display='block'; this.parentElement.innerText='';">`;
+      } else {
+          figEl.innerText = HEROES[state.heroIdx].emoji;
+      }
+  }
+
+  const coinEl = document.getElementById('coin-hud');
+  if (coinEl && !coinEl.innerHTML.includes('img')) {
+      coinEl.innerHTML = `<img src="assets/sprites/ui/coin.png" style="width:14px;height:14px;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='🪙';">`;
+  }
   
   const w = state.weapons[state.weaponLevel];
   document.getElementById('w-dmg').innerText = w.dmg;
@@ -434,4 +453,4 @@ document.getElementById('settings-btn').onclick = () => { playSound('menu'); doc
 document.getElementById('close-settings').onclick = () => document.getElementById('settings-panel').style.display = 'none';
 
 generateRandomName();
-preloadSprites(); // ВЫЗОВ ПРЕДЗАГРУЗКИ СПРАЙТОВ
+preloadSprites(); 
