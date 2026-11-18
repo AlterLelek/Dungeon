@@ -185,10 +185,10 @@
         <div class="legend-item">Маны не хватает — тратится заряд заклинания.</div>
       </div>
       <div class="set-subgroup">
-        <div class="set-subtitle">🏹 Лучник (дальность от сложности)</div>
-        <div class="legend-item">🙂 Простой — не стреляет, только ближний бой.</div>
-        <div class="legend-item">🔥 Экстрим — выстрел ровно через клетку (2), по прямой или наискосок.</div>
-        <div class="legend-item">🧠 Критический ИИ — через клетку + вампиризм (50% урона в HP).</div>
+        <div class="set-subtitle">🏹 Лучник (всегда через клетку)</div>
+        <div class="legend-item">Выстрел всегда ровно через клетку (2), по прямой или наискосок, в любом режиме.</div>
+        <div class="legend-item">Сложность меняет только силу удара: 🙂 ×1, 🔥 ×1.25, 🧠 ×1.5.</div>
+        <div class="legend-item">🧠 Критический ИИ — дополнительно вампиризм (50% урона в HP).</div>
         <div class="legend-item">Вплотную стрелой не бьёт: рядом — только наступая или обороняясь.</div>
         <div class="legend-item">✨ Умение — +50% урона на 3 хода, дальность не меняет.</div>
       </div>
@@ -202,7 +202,8 @@
       <div class="set-row"><span class="set-label">Мелодия</span><input type="number" id="set-mel" min="0" max="10" step="1" value="5" class="num-input"></div>
       <div class="set-row"><span class="set-label">Темп (мс)</span><input type="number" id="set-tempo" min="300" max="1200" step="100" value="600" class="num-input"></div>
       <div class="mel-row">
-        <button class="mel-btn active" id="mel-cave">SF2 Тема</button>
+        <button class="mel-btn active" id="mel-town">Городская 🎵</button>
+        <button class="mel-btn" id="mel-cave">SF2 Тема</button>
         <button class="mel-btn" id="mel-elven">Эльфийская</button>
         <button class="mel-btn" id="mel-dwarven">Гномий</button>
         <button class="mel-btn" id="mel-dice">Кости 🎲</button>

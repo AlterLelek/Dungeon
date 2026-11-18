@@ -239,6 +239,7 @@ function selectMelody(btnId, track) {
     setTrack(track);
     startMusic(track);
 }
+document.getElementById('mel-town').onclick = () => selectMelody('mel-town', 'town');
 document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'sf2');
 document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', 'elven');
 document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
@@ -247,7 +248,7 @@ document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'di
 // Восстанавливаем выбранную мелодию из сохранённых настроек
 (function restoreMelody() {
     const saved = getTrack();
-    const id = { sf2: 'mel-cave', elven: 'mel-elven', dwarven: 'mel-dwarven', dice: 'mel-dice' }[saved] || 'mel-cave';
+    const id = { town: 'mel-town', sf2: 'mel-cave', elven: 'mel-elven', dwarven: 'mel-dwarven', dice: 'mel-dice' }[saved] || 'mel-town';
     document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 })();

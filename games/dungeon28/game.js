@@ -143,6 +143,9 @@ export function fight(m, index, ranged = false) {
   if (isArcher) {
       if (ranged) pDmg = Math.floor(pDmg * 1.2);
       else pDmg = Math.floor(pDmg * 0.8);
+      // Сложность меняет только силу удара: простой ×1, экстрим ×1.25, крит ×1.5.
+      const power = state.settings.criticalAI ? 1.5 : state.settings.difficulty === 'extreme' ? 1.25 : 1;
+      pDmg = Math.floor(pDmg * power);
       if (state.abilityTurns > 0) pDmg = Math.floor(pDmg * 1.5); // умение «Дальний выстрел»: +50% урона
   }
 
@@ -378,12 +381,10 @@ function moveMonsters() {
   });
 }
 
-// Дальность выстрела лучника задаётся сложностью, а не умением:
-// простой — не стреляет вообще, экстрим — ровно через клетку, крит — через клетку + вампиризм.
+// Лучник всегда стреляет ровно через клетку (2), по прямой или наискосок.
+// Сложность влияет только на силу удара (и вампиризм на критическом ИИ).
 export function getArcherShotRange() {
-  if (state.settings.criticalAI) return 2;
-  if (state.settings.difficulty === 'extreme') return 2;
-  return 0;
+  return 2;
 }
 
 export function movePlayer(dx, dy) {
