@@ -18,15 +18,53 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// Поле 15×15 без D-pad: ширина контента 480px, высота с HUD ≈ 760px.
-// Масштабируем по защите экрана, затем растягиваем блоки по высоте.
+// Поле 15×15 без D-pad. На телефоне окно просмотра --layout-size = 320px (10 клеток),
+// на ПК — 480px (всё поле). Масштабируем по окну просмотра, а не по всему миру:
+// так клетки на телефоне остаются крупными, а остальное поле доступно сдвигом.
+function viewSize() {
+    const root = document.documentElement;
+    const v = parseFloat(getComputedStyle(root).getPropertyValue('--layout-size'));
+    return Number.isFinite(v) && v > 0 ? v : WORLD;
+}
+
+let camX = 0, camY = 0;
+let camFollowX = null, camFollowY = null, camManual = false;
+
+function applyCamera() {
+    const view = viewSize();
+    const max = Math.max(0, WORLD - view);
+    camX = Math.max(0, Math.min(max, camX));
+    camY = Math.max(0, Math.min(max, camY));
+    canvas.style.transform = `translate(${-camX}px, ${-camY}px)`;
+}
+
+// Следим за героем, пока игрок сам не сдвинул поле. После шага героя следим снова.
+function centerCamera(force = false) {
+    const view = viewSize();
+    if (view >= WORLD) {
+        if (camX !== 0 || camY !== 0) { camX = 0; camY = 0; applyCamera(); }
+        camFollowX = camFollowY = null;
+        return;
+    }
+    const px = state.player.px, py = state.player.py;
+    if (!force && camManual && px === camFollowX && py === camFollowY) return;
+    camX = px + CELL / 2 - view / 2;
+    camY = py + CELL / 2 - view / 2;
+    camFollowX = px; camFollowY = py;
+    camManual = false;
+    applyCamera();
+}
+
 function fitGameScreen() {
+    const layout = viewSize();
+    const contentHeight = layout + 260; // HUD + кнопки + магия + подсказки
     const scale = Math.min(
-        window.innerWidth / (WORLD + 8),
-        window.innerHeight / 760,
+        window.innerWidth / (layout + 10),
+        window.innerHeight / contentHeight,
         2.5
     );
     document.documentElement.style.setProperty('--game-scale', Math.max(0.4, scale).toFixed(3));
+    centerCamera(true);
 }
 window.addEventListener('resize', fitGameScreen);
 fitGameScreen();
@@ -299,6 +337,7 @@ function getMonsterStatus(m) {
 }
 
 function updateHUD() {
+  centerCamera();
   document.getElementById('hp').innerText = state.playerHp;
   document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
   document.getElementById('bonus').innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
@@ -480,7 +519,7 @@ function startGame(name) {
     rollCaveTint();
     syncCurrentRecord();
 
-    bgCanvas = initFloor(); updateHUD();
+    bgCanvas = initFloor(); centerCamera(true); updateHUD();
     if (!gameLoopStarted) { gameLoopStarted = true; requestAnimationFrame(gameLoop); }
 
     ['shop-panel', 'records-panel', 'settings-panel'].forEach(id => {
@@ -543,18 +582,60 @@ document.getElementById('btn-stun').onclick = () => { if (castStun()) flashField
 document.getElementById('btn-hurricane').onclick = () => { if (castHurricane()) flashField('#a855f7'); updateHUD(); };
 document.getElementById('ability-btn').onclick = () => { if (activateAbility()) flashField('#fbbf24'); updateHUD(); };
 
-// Клик по полю: соседняя клетка = ход, клик по герою = пропуск хода
-canvas.addEventListener('click', (e) => {
-    if (!state.gameActive || state.isProcessingTurn) return;
+// Управление по направлению: клик/тап в любом месте поля задаёт направление шага.
+// Неважно, рядом клетка или в другом конце поля — герой делает один шаг в эту сторону.
+// Клик по герою (или по его клетке) — пропуск хода.
+function pointerToWorld(e) {
     const r = canvas.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width * canvas.width;
-    const py = (e.clientY - r.top) / r.height * canvas.height;
-    const x = Math.floor(px / CELL) * CELL;
-    const y = Math.floor(py / CELL) * CELL;
+    return {
+        x: (e.clientX - r.left) / r.width * canvas.width,
+        y: (e.clientY - r.top) / r.height * canvas.height
+    };
+}
 
-    if (x === state.player.x && y === state.player.y) { skipTurn(); return; }
-    if (Math.abs(x - state.player.x) + Math.abs(y - state.player.y) !== CELL) return;
-    movePlayer(x - state.player.x, y - state.player.y);
+function stepTowards(e) {
+    if (!state.gameActive || state.isProcessingTurn) return;
+    const p = pointerToWorld(e);
+    const hx = state.player.px + CELL / 2, hy = state.player.py + CELL / 2;
+    const dx = p.x - hx, dy = p.y - hy;
+
+    if (Math.abs(dx) < CELL / 2 && Math.abs(dy) < CELL / 2) { skipTurn(); return; }
+    if (Math.abs(dx) >= Math.abs(dy)) movePlayer(dx > 0 ? CELL : -CELL, 0);
+    else movePlayer(0, dy > 0 ? CELL : -CELL);
+}
+
+// Перетаскивание поля сдвигает камеру (на телефоне видно 10×10 клеток).
+let panStart = null, didPan = false, suppressClick = false;
+canvas.addEventListener('pointerdown', (e) => {
+    if (!state.gameActive) return;
+    panStart = { x: e.clientX, y: e.clientY, camX, camY };
+    didPan = false;
+    if (canvas.setPointerCapture) { try { canvas.setPointerCapture(e.pointerId); } catch (err) {} }
+});
+canvas.addEventListener('pointermove', (e) => {
+    if (!panStart) return;
+    const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--game-scale')) || 1;
+    const dx = (e.clientX - panStart.x) / scale;
+    const dy = (e.clientY - panStart.y) / scale;
+    if (Math.abs(dx) + Math.abs(dy) > 6) didPan = true;
+    if (didPan) {
+        camX = panStart.camX - dx;
+        camY = panStart.camY - dy;
+        camManual = true;
+        applyCamera();
+    }
+});
+canvas.addEventListener('pointerup', (e) => {
+    if (!panStart) return;
+    panStart = null;
+    suppressClick = didPan;
+    if (!didPan) stepTowards(e);
+});
+canvas.addEventListener('pointercancel', () => { panStart = null; suppressClick = didPan; });
+canvas.addEventListener('click', (e) => {
+    if (suppressClick) { suppressClick = false; return; }
+    // Для синтетических кликов без pointer-событий работаем как обычный тап.
+    if (e.detail === 0) stepTowards(e);
 });
 
 document.getElementById('shop-btn').onclick = () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); };
