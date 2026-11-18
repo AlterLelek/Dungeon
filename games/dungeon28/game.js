@@ -29,14 +29,15 @@ export function activateAbility() {
     state.abilityTurns = 5;
     state.abilityCooldown = 10;
 
-    if (hero.name === 'Воин') { state.tempAtk += 5; addFloater(state.player.px, state.player.py, "+5 ATK", "#fbbf24"); }
-    else if (hero.name === 'Лучник') { state.heroAttackRange += 2; addFloater(state.player.px, state.player.py, "+2 RNG", "#fbbf24"); }
-    else if (hero.name === 'Маг') { state.spellDiscount = 1; addFloater(state.player.px, state.player.py, "-1 MP", "#fbbf24"); }
-    else if (hero.name === 'Паладин') { state.skeletonAlly = { x: state.player.x, y: state.player.y, hp: 50, maxHp: 50 }; addFloater(state.player.px, state.player.py, "☠️ Союзник!", "#fbbf24"); }
+    if (hero.name === 'Воин') { state.tempAtk += 5; state.elementFx.fire = 1.0; addFloater(state.player.px, state.player.py, "+5 ATK", "#fbbf24"); }
+    else if (hero.name === 'Лучник') { state.heroAttackRange += 2; state.elementFx.wind = 1.0; addFloater(state.player.px, state.player.py, "+2 RNG", "#fbbf24"); }
+    else if (hero.name === 'Маг') { state.spellDiscount = 1; state.elementFx.water = 1.0; addFloater(state.player.px, state.player.py, "-1 MP", "#fbbf24"); }
+    else if (hero.name === 'Паладин') { state.skeletonAlly = { x: state.player.x, y: state.player.y, hp: 50, maxHp: 50 }; state.elementFx.earth = 1.0; addFloater(state.player.px, state.player.py, "☠️ Союзник!", "#fbbf24"); }
     else if (hero.name === 'Ангел') {
         state.playerHp = Math.min(state.devSettings.heroes[state.heroIdx].maxHp, state.playerHp + 50);
         state.angelCooldown = 30;
         state.player.healFx = 1.0;
+        state.elementFx.water = 1.0;
         addFloater(state.player.px, state.player.py, "+50 HP", "#fbbf24");
     }
     playSound('magic');
@@ -154,15 +155,19 @@ export function fight(m, index, ranged = false) {
 }
 
 export function castLightning() {
-    if (state.spellLightning <= 0) return false;
     const range = CELL * 2;
     const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= range && Math.abs(m.y - state.player.y) <= range);
     if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
-    state.playerMp -= cost;
-    state.spellLightning--; playSound('magic');
+    if (state.playerMp >= cost) {
+        state.playerMp -= cost;
+    } else {
+        if (state.spellLightning <= 0) { addFloater(state.player.px, state.player.py, "Нет маны и зарядов", "#9ca3af"); return false; }
+        state.spellLightning--;
+        addFloater(state.player.px, state.player.py, "-1⚡", "#fbbf24");
+    }
+    playSound('magic');
     
     targets.forEach(m => {
         m.hp -= 20; m.lightningFx = 1.0;
@@ -174,14 +179,18 @@ export function castLightning() {
 }
 
 export function castHeal() {
-    if (state.spellHeal <= 0) return false;
     const maxHp = state.devSettings.heroes[state.heroIdx].maxHp;
     if (state.playerHp >= maxHp) { addFloater(state.player.px, state.player.py, "Полное HP", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
-    state.playerMp -= cost;
-    state.spellHeal--; playSound('magic');
+    if (state.playerMp >= cost) {
+        state.playerMp -= cost;
+    } else {
+        if (state.spellHeal <= 0) { addFloater(state.player.px, state.player.py, "Нет маны и зарядов", "#9ca3af"); return false; }
+        state.spellHeal--;
+        addFloater(state.player.px, state.player.py, "-1💚", "#22c55e");
+    }
+    playSound('magic');
     
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
     state.player.healFx = 1.0;
@@ -191,11 +200,15 @@ export function castHeal() {
 }
 
 export function castStun() {
-    if (state.spellStun <= 0) return false;
     const cost = Math.max(0, 2 - state.spellDiscount);
-    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
-    state.playerMp -= cost;
-    state.spellStun--; playSound('magic');
+    if (state.playerMp >= cost) {
+        state.playerMp -= cost;
+    } else {
+        if (state.spellStun <= 0) { addFloater(state.player.px, state.player.py, "Нет маны и зарядов", "#9ca3af"); return false; }
+        state.spellStun--;
+        addFloater(state.player.px, state.player.py, "-1❄️", "#38bdf8");
+    }
+    playSound('magic');
     
     state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; m.stunFx = 1.0; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
     state.elementFx.water = 1.0;
@@ -203,15 +216,19 @@ export function castStun() {
 }
 
 export function castHurricane() {
-    if (state.spellHurricane <= 0) return false;
     const range = CELL * 2;
     const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= range && Math.abs(m.y - state.player.y) <= range);
     if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 4 - state.spellDiscount);
-    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
-    state.playerMp -= cost;
-    state.spellHurricane--; playSound('magic');
+    if (state.playerMp >= cost) {
+        state.playerMp -= cost;
+    } else {
+        if (state.spellHurricane <= 0) { addFloater(state.player.px, state.player.py, "Нет маны и зарядов", "#9ca3af"); return false; }
+        state.spellHurricane--;
+        addFloater(state.player.px, state.player.py, "-1🌪️", "#a855f7");
+    }
+    playSound('magic');
     
     targets.forEach(m => {
         let nx = m.x + Math.sign(m.x - state.player.x) * CELL * 3;
@@ -391,9 +408,6 @@ export function movePlayer(dx, dy) {
   state.player.moveStartTime = performance.now(); state.player.isMoving = true;
   playSound('step'); 
   
-  if (state.permanentShield > 0) state.elementFx.earth = 1.0;
-  if (state.tempAtk > 0) state.elementFx.fire = 1.0;
-
   if (state.stairs.active && nx === state.stairs.x && ny === state.stairs.y) {
     advanceFloor(); return;
   }

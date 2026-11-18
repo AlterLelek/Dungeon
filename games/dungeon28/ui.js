@@ -80,35 +80,33 @@ function drawStairs(ctx) {
 }
 
 // Активные эффекты героя. Возвращается и для карты, и для HUD.
+// Только временные эффекты. Постоянная броня и оружие эффектом не считаются.
 export function getActiveEffects() {
   return [
     { icon: '☠️', color: '#22c55e', name: 'яд', on: state.poisonTurns > 0 },
     { icon: '⚡', color: '#fbbf24', name: 'электричество', on: state.elementFx.lightning > 0 },
     { icon: '💧', color: '#38bdf8', name: 'вода', on: state.elementFx.water > 0 },
-    { icon: '🪨', color: '#a78bfa', name: 'земля', on: state.elementFx.earth > 0 || getTotalDef() > 0 },
-    { icon: '🔥', color: '#ef4444', name: 'огонь', on: state.elementFx.fire > 0 || getTotalAtk() > state.weapons[state.weaponLevel].dmg },
+    { icon: '🪨', color: '#a78bfa', name: 'земля', on: state.elementFx.earth > 0 },
+    { icon: '🔥', color: '#ef4444', name: 'огонь', on: state.elementFx.fire > 0 },
     { icon: '🌪️', color: '#c084fc', name: 'ветер', on: state.elementFx.wind > 0 || state.abilityTurns > 0 }
   ].filter(e => e.on);
 }
 
-// Значки наложенных эффектов прямо в ячейке героя
+// Один красный знак в ячейке героя: есть эффект — виден, нет — исчез.
 function drawHeroEffects(ctx) {
-  const effects = getActiveEffects();
-  if (effects.length === 0) return;
+  if (getActiveEffects().length === 0) return;
 
-  const x = state.player.px, y = state.player.py;
+  const cx = state.player.px + CELL / 2, cy = state.player.py + CELL / 2;
   ctx.save();
-  ctx.font = '9px sans-serif';
+  ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#fecaca'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 10px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  effects.slice(0, 6).forEach((e, i) => {
-    const col = i % 3, row = Math.floor(i / 3);
-    const bx = x + 2 + col * 10, by = y + 1 + row * 10;
-    ctx.fillStyle = 'rgba(8,8,12,0.72)';
-    ctx.fillRect(bx, by, 10, 10);
-    ctx.strokeStyle = e.color; ctx.lineWidth = 1;
-    ctx.strokeRect(bx + 0.5, by + 0.5, 9, 9);
-    ctx.fillText(e.icon, bx + 5, by + 5.5);
-  });
+  ctx.fillText('!', cx, cy + 0.5);
   ctx.restore();
 }
 

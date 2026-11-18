@@ -328,17 +328,20 @@ function updateHUD() {
   
   if (figEl.dataset.lastSprite !== heroSprite) {
       figEl.dataset.lastSprite = heroSprite;
+      const emoji = HEROES[state.heroIdx].emoji;
       if (heroSprite) {
-          figEl.innerHTML = `<img src="${heroSprite}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='${HEROES[state.heroIdx].emoji}';" onload="this.style.display='block'; this.parentElement.innerText='';">`;
+          figEl.innerHTML = `<span class="hero-emoji">${emoji}</span><img src="${heroSprite}" alt="" onerror="this.remove();" onload="this.style.display='block'; this.previousElementSibling.style.display='none';">`;
       } else {
-          figEl.innerText = HEROES[state.heroIdx].emoji;
+          figEl.innerHTML = `<span class="hero-emoji">${emoji}</span>`;
       }
   }
 
   const fxEl = document.getElementById('hero-fx');
   if (fxEl) {
       const fx = getActiveEffects();
-      fxEl.innerHTML = fx.map(e => `<span style="color:${e.color};" title="${e.name}">${e.icon}</span>`).join('');
+      fxEl.innerHTML = fx.length
+          ? `<span class="fx-mark" title="${fx.map(e => e.name).join(', ')}">!</span>`
+          : '';
   }
 
   const coinEl = document.getElementById('coin-hud');
@@ -360,19 +363,19 @@ function updateHUD() {
   const mpCostHurr = Math.max(0, 4 - state.spellDiscount);
 
   const bLight = document.getElementById('btn-light');
-  bLight.disabled = state.playerMp < mpCostLight || state.spellLightning <= 0;
+  bLight.disabled = state.playerMp < mpCostLight && state.spellLightning <= 0;
   bLight.innerHTML = `⚡<br><span>${mpCostLight}M|x${state.spellLightning}</span>`;
   
   const bHeal = document.getElementById('btn-heal');
-  bHeal.disabled = state.playerMp < mpCostHeal || state.spellHeal <= 0;
+  bHeal.disabled = state.playerMp < mpCostHeal && state.spellHeal <= 0;
   bHeal.innerHTML = `💚<br><span>${mpCostHeal}M|x${state.spellHeal}</span>`;
   
   const bStun = document.getElementById('btn-stun');
-  bStun.disabled = state.playerMp < mpCostStun || state.spellStun <= 0;
+  bStun.disabled = state.playerMp < mpCostStun && state.spellStun <= 0;
   bStun.innerHTML = `❄️<br><span>${mpCostStun}M|x${state.spellStun}</span>`;
   
   const bHurr = document.getElementById('btn-hurricane');
-  bHurr.disabled = state.playerMp < mpCostHurr || state.spellHurricane <= 0;
+  bHurr.disabled = state.playerMp < mpCostHurr && state.spellHurricane <= 0;
   bHurr.innerHTML = `🌪️<br><span>${mpCostHurr}M|x${state.spellHurricane}</span>`;
 
   const bAbility = document.getElementById('ability-btn');
