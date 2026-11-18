@@ -88,7 +88,15 @@ function advanceFloor() {
 
     state.currentFloor++;
     state.stats.floors++;
-    if (state.settings.bonusReset) clearBonuses();
+
+    // Броня, оружие и найденные заклинания сохраняются.
+    // Мана и временные бонусы (звезда/щит/умение) сбрасываются на каждом этаже.
+    state.playerMp = 0;
+    clearBonuses();
+    state.spellDiscount = 0;
+    state.abilityTurns = 0;
+    state.skeletonAlly = null;
+    state.heroAttackRange = state.devSettings.heroes[state.heroIdx].attackRange;
 
     initFloor();
 }
@@ -152,7 +160,8 @@ export function castLightning() {
     if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp >= cost) state.playerMp -= cost;
+    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
+    state.playerMp -= cost;
     state.spellLightning--; playSound('magic');
     
     targets.forEach(m => {
@@ -170,7 +179,8 @@ export function castHeal() {
     if (state.playerHp >= maxHp) { addFloater(state.player.px, state.player.py, "Полное HP", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
-    if (state.playerMp >= cost) state.playerMp -= cost;
+    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
+    state.playerMp -= cost;
     state.spellHeal--; playSound('magic');
     
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
@@ -183,7 +193,8 @@ export function castHeal() {
 export function castStun() {
     if (state.spellStun <= 0) return false;
     const cost = Math.max(0, 2 - state.spellDiscount);
-    if (state.playerMp >= cost) state.playerMp -= cost;
+    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
+    state.playerMp -= cost;
     state.spellStun--; playSound('magic');
     
     state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; m.stunFx = 1.0; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
@@ -198,7 +209,8 @@ export function castHurricane() {
     if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 4 - state.spellDiscount);
-    if (state.playerMp >= cost) state.playerMp -= cost;
+    if (state.playerMp < cost) { addFloater(state.player.px, state.player.py, "Нет маны", "#38bdf8"); return false; }
+    state.playerMp -= cost;
     state.spellHurricane--; playSound('magic');
     
     targets.forEach(m => {

@@ -61,19 +61,20 @@
         <div class="hud-hero">
           <div class="hero-stats">
             <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
-            <div class="hero-main-row">
-              <div class="hero-vitals">
-                <div class="stat-line">❤️ <span id="hp">100</span></div>
-                <div class="stat-line">🛡️ <span id="shd-hud">0</span></div>
-                <div class="stat-line">💪 <span id="bonus">1</span></div>
-              </div>
-              <div class="hero-fig" id="hero-fig">⚔️</div>
+            <div class="hero-vitals">
+              <div class="stat-line">❤️ <span id="hp">100</span></div>
+              <div class="stat-line">🛡️ <span id="shd-hud">0</span></div>
+              <div class="stat-line">💪 <span id="bonus">1</span></div>
             </div>
             <div class="hero-weapon-row" id="hero-weapon">
               <span class="w-icon">⚔️</span>
               <span id="w-dmg">1</span>
               <span id="w-name" class="w-name">Кулаки</span>
             </div>
+          </div>
+          <div class="hero-side">
+            <div class="hero-fig" id="hero-fig">⚔️</div>
+            <div class="hero-fx" id="hero-fx"></div>
           </div>
         </div>
         
@@ -153,12 +154,12 @@
         <div class="legend-item"><span class="l-ico">🕸️</span> Замедлен (паутина)</div>
         <div class="legend-item"><span class="l-ico">💚</span> Регенерация (лечится)</div>
         <div class="legend-item"><span class="l-ico">🏹</span> Готовится к выстрелу</div>
-        <div class="legend-item"><span class="l-ico">🪄</span> Некромантия (ищет труп)</div>
+        <div class="legend-item"><span class="l-ico"><img src="assets/sprites/monsters/necromancer_0.png" alt="" onerror="this.style.display='none';this.parentElement.textContent='🧙';"></span> Некромант (ищет труп)</div>
         <div class="legend-item"><span class="l-ico">🍽️</span> Съедает бонусы (Огр)</div>
         <div class="legend-item"><span class="l-ico">🤢</span> Отравление (Атака ядом)</div>
         <div class="legend-item"><span class="l-ico">🩸</span> Вампиризм (Скелет)</div>
         <div class="legend-item"><span class="l-ico">💧</span> Высасывает ману (Призрак)</div>
-        <div class="legend-item"><span class="l-ico">🐁</span> Готовится делиться (Мышь)</div>
+        <div class="legend-item"><span class="l-ico">🐭</span> Делится после смерти (Мышь)</div>
         <div class="legend-item"><span class="l-ico">🛡️</span> Толстая броня (Черепаха)</div>
         <div class="legend-item"><span class="l-ico">🚶</span> Идет к цели (Обычное движение)</div>
       </div>
@@ -188,24 +189,41 @@
       <div class="set-check"><input type="checkbox" id="diff-simple" checked><span>🙂 Простой</span></div>
       <div class="set-check"><input type="checkbox" id="diff-extreme"><span>🔥 Экстрим (вкусы)</span></div>
       <div class="set-check"><input type="checkbox" id="diff-critical"><span>🧠 Критический ИИ</span></div>
-      <div class="set-check"><input type="checkbox" id="set-bonus-reset"><span>Сброс бонусов на этаже</span></div>
       <div class="set-check"><input type="checkbox" id="set-vibro" checked><span>📳 Вибрация</span></div>
     </details>
     <details class="set-accordion">
       <summary>🎮 Управление</summary>
-      <div class="set-row"><span class="set-label">Клавиши</span>
-        <select id="set-keys-mode" class="sel-input">
-          <option value="all" selected>WASD + Стрелки</option>
-          <option value="arrows">Только стрелки</option>
-          <option value="wasd">Только WASD</option>
-        </select>
+      <div class="set-subgroup">
+        <div class="set-subtitle">Настройки клавиш</div>
+        <div class="set-row"><span class="set-label">Клавиши</span>
+          <select id="set-keys-mode" class="sel-input">
+            <option value="all" selected>WASD + Стрелки</option>
+            <option value="arrows">Только стрелки</option>
+            <option value="wasd">Только WASD</option>
+          </select>
+        </div>
+        <div class="set-row"><span class="set-label">Раскладка</span>
+          <select id="set-keys-layout" class="sel-input">
+            <option value="both" selected>Обе</option>
+            <option value="lat">Латиница</option>
+            <option value="cyr">Кириллица</option>
+          </select>
+        </div>
       </div>
-      <div class="set-row"><span class="set-label">Раскладка</span>
-        <select id="set-keys-layout" class="sel-input">
-          <option value="both" selected>Обе</option>
-          <option value="lat">Латиница</option>
-          <option value="cyr">Кириллица</option>
-        </select>
+      <div class="set-subgroup">
+        <div class="set-subtitle">Все клавиши и действия</div>
+        <div class="keys-help">
+          <div class="key-line"><span class="key-cap">WASD</span><span class="key-cap">↑↓←→</span><span>Ход / атака</span></div>
+          <div class="key-line"><span class="key-cap">Клик</span><span>по клетке</span><span>Ход / атака</span></div>
+          <div class="key-line"><span class="key-cap">Клик</span><span class="key-cap">Пробел</span><span>Пропуск хода</span></div>
+          <div class="key-line"><span class="key-cap">1</span><span class="key-cap">Z</span><span class="key-cap">Я</span><span>⚡ Молния</span></div>
+          <div class="key-line"><span class="key-cap">2</span><span class="key-cap">X</span><span class="key-cap">Ч</span><span>💚 Лечение</span></div>
+          <div class="key-line"><span class="key-cap">3</span><span class="key-cap">C</span><span class="key-cap">С</span><span>❄️ Стан</span></div>
+          <div class="key-line"><span class="key-cap">4</span><span class="key-cap">V</span><span class="key-cap">М</span><span>🌪️ Ураган</span></div>
+          <div class="key-line"><span class="key-cap">`</span><span class="key-cap">Ё</span><span class="key-cap">~</span><span>✨ Умение</span></div>
+          <div class="key-line"><span class="key-cap">M</span><span class="key-cap">Ь</span><span>🛒 Лавка</span></div>
+          <div class="key-line"><span class="key-cap">Esc</span><span>Закрыть панель</span></div>
+        </div>
       </div>
     </details>
     <details class="set-accordion">

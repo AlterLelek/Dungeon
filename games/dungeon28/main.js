@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { initFloor, rollCaveTint, getFloorStage } from './map.js';
-import { draw, preloadSprites } from './ui.js'; 
+import { draw, preloadSprites, getActiveEffects } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, CELL, WORLD } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js'; 
@@ -157,7 +157,6 @@ function loadSettings() {
     setVal('set-star-val', state.settings.starVal);
     
     document.getElementById('set-vibro').checked = state.settings.vibro;
-    document.getElementById('set-bonus-reset').checked = state.settings.bonusReset;
     document.getElementById('diff-critical').checked = state.settings.criticalAI;
     document.getElementById('diff-simple').checked = state.settings.difficulty === 'simple';
     document.getElementById('diff-extreme').checked = state.settings.difficulty === 'extreme';
@@ -221,7 +220,6 @@ document.getElementById('set-item-rate').addEventListener('change', (e) => { sta
 document.getElementById('set-shield-val').addEventListener('change', (e) => { state.settings.shieldVal = parseInt(e.target.value); saveSettings(); });
 document.getElementById('set-star-val').addEventListener('change', (e) => { state.settings.starVal = parseInt(e.target.value); saveSettings(); });
 document.getElementById('set-vibro').addEventListener('change', (e) => { state.settings.vibro = e.target.checked; saveSettings(); });
-document.getElementById('set-bonus-reset').addEventListener('change', (e) => { state.settings.bonusReset = e.target.checked; saveSettings(); });
 document.getElementById('diff-critical').addEventListener('change', (e) => { state.settings.criticalAI = e.target.checked; saveSettings(); });
 document.getElementById('diff-simple').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'simple'; saveSettings(); } else e.target.checked = true; });
 document.getElementById('diff-extreme').addEventListener('change', (e) => { if (e.target.checked) { state.settings.difficulty = 'extreme'; saveSettings(); } else e.target.checked = true; });
@@ -296,7 +294,6 @@ function getMonsterStatus(m) {
     if (m.type === "🧟") return '🤢';
     if (m.type === "💀") return '🩸';
     if (m.type === "👻") return '💧';
-    if (m.type === "🐭") return '🐁';
     if (m.type === "🐢") return '🛡️';
     return '🚶';
 }
@@ -338,6 +335,12 @@ function updateHUD() {
       }
   }
 
+  const fxEl = document.getElementById('hero-fx');
+  if (fxEl) {
+      const fx = getActiveEffects();
+      fxEl.innerHTML = fx.map(e => `<span style="color:${e.color};" title="${e.name}">${e.icon}</span>`).join('');
+  }
+
   const coinEl = document.getElementById('coin-hud');
   if (coinEl && !coinEl.innerHTML.includes('img')) {
       coinEl.innerHTML = `<img src="assets/sprites/ui/coin.png" style="width:14px;height:14px;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='🪙';">`;
@@ -357,19 +360,19 @@ function updateHUD() {
   const mpCostHurr = Math.max(0, 4 - state.spellDiscount);
 
   const bLight = document.getElementById('btn-light');
-  bLight.disabled = state.playerMp < mpCostLight && state.spellLightning <= 0;
+  bLight.disabled = state.playerMp < mpCostLight || state.spellLightning <= 0;
   bLight.innerHTML = `⚡<br><span>${mpCostLight}M|x${state.spellLightning}</span>`;
   
   const bHeal = document.getElementById('btn-heal');
-  bHeal.disabled = state.playerMp < mpCostHeal && state.spellHeal <= 0;
+  bHeal.disabled = state.playerMp < mpCostHeal || state.spellHeal <= 0;
   bHeal.innerHTML = `💚<br><span>${mpCostHeal}M|x${state.spellHeal}</span>`;
   
   const bStun = document.getElementById('btn-stun');
-  bStun.disabled = state.playerMp < mpCostStun && state.spellStun <= 0;
+  bStun.disabled = state.playerMp < mpCostStun || state.spellStun <= 0;
   bStun.innerHTML = `❄️<br><span>${mpCostStun}M|x${state.spellStun}</span>`;
   
   const bHurr = document.getElementById('btn-hurricane');
-  bHurr.disabled = state.playerMp < mpCostHurr && state.spellHurricane <= 0;
+  bHurr.disabled = state.playerMp < mpCostHurr || state.spellHurricane <= 0;
   bHurr.innerHTML = `🌪️<br><span>${mpCostHurr}M|x${state.spellHurricane}</span>`;
 
   const bAbility = document.getElementById('ability-btn');

@@ -22,7 +22,7 @@ export const state = {
 
   settings: {
       floors: 5, monsterAdd: 0, itemRate: 2, shieldVal: 3, starVal: 1,
-      difficulty: 'simple', bonusReset: false, vibro: true, vibroPower: 100, 
+      difficulty: 'simple', vibro: true, vibroPower: 100,
       keysMode: 'all', keysLayout: 'both', criticalAI: false
   },
   

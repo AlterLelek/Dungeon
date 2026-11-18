@@ -79,34 +79,35 @@ function drawStairs(ctx) {
     }
 }
 
-// Элементарные эффекты в левом верхнем углу карты
-function drawElementStrip(ctx) {
-  const items = [
-    { icon: '☠️', color: '#22c55e', on: state.poisonTurns > 0 },
-    { icon: '⚡', color: '#fbbf24', on: state.elementFx.lightning > 0 },
-    { icon: '💧', color: '#38bdf8', on: state.elementFx.water > 0 },
-    { icon: '🪨', color: '#a78bfa', on: state.elementFx.earth > 0 || getTotalDef() > 0 },
-    { icon: '🔥', color: '#ef4444', on: state.elementFx.fire > 0 || getTotalAtk() > state.weapons[state.weaponLevel].dmg },
-    { icon: '🌪️', color: '#c084fc', on: state.elementFx.wind > 0 || state.abilityTurns > 0 }
-  ];
+// Активные эффекты героя. Возвращается и для карты, и для HUD.
+export function getActiveEffects() {
+  return [
+    { icon: '☠️', color: '#22c55e', name: 'яд', on: state.poisonTurns > 0 },
+    { icon: '⚡', color: '#fbbf24', name: 'электричество', on: state.elementFx.lightning > 0 },
+    { icon: '💧', color: '#38bdf8', name: 'вода', on: state.elementFx.water > 0 },
+    { icon: '🪨', color: '#a78bfa', name: 'земля', on: state.elementFx.earth > 0 || getTotalDef() > 0 },
+    { icon: '🔥', color: '#ef4444', name: 'огонь', on: state.elementFx.fire > 0 || getTotalAtk() > state.weapons[state.weaponLevel].dmg },
+    { icon: '🌪️', color: '#c084fc', name: 'ветер', on: state.elementFx.wind > 0 || state.abilityTurns > 0 }
+  ].filter(e => e.on);
+}
 
+// Значки наложенных эффектов прямо в ячейке героя
+function drawHeroEffects(ctx) {
+  const effects = getActiveEffects();
+  if (effects.length === 0) return;
+
+  const x = state.player.px, y = state.player.py;
   ctx.save();
-  ctx.fillStyle = 'rgba(8,8,12,0.55)';
-  ctx.fillRect(4, 4, items.length * 18 + 6, 24);
-  ctx.strokeStyle = 'rgba(255,255,255,0.10)';
-  ctx.lineWidth = 1; ctx.strokeRect(4, 4, items.length * 18 + 6, 24);
-
-  ctx.font = '14px sans-serif';
+  ctx.font = '9px sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  items.forEach((it, i) => {
-    const x = 13 + i * 18, y = 16;
-    if (it.on) {
-      ctx.shadowColor = it.color; ctx.shadowBlur = 10;
-      ctx.fillStyle = it.color;
-      ctx.fillRect(5 + i * 18, 5, 16, 22);
-    }
-    ctx.fillText(it.icon, x, y);
-    ctx.shadowBlur = 0;
+  effects.slice(0, 6).forEach((e, i) => {
+    const col = i % 3, row = Math.floor(i / 3);
+    const bx = x + 2 + col * 10, by = y + 1 + row * 10;
+    ctx.fillStyle = 'rgba(8,8,12,0.72)';
+    ctx.fillRect(bx, by, 10, 10);
+    ctx.strokeStyle = e.color; ctx.lineWidth = 1;
+    ctx.strokeRect(bx + 0.5, by + 0.5, 9, 9);
+    ctx.fillText(e.icon, bx + 5, by + 5.5);
   });
   ctx.restore();
 }
@@ -196,7 +197,7 @@ export function draw(ctx, bgCanvas) {
       state.player.healFx -= 0.03;
   }
 
-  drawElementStrip(ctx);
+  drawHeroEffects(ctx);
 
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; ctx.fillStyle = f.color; ctx.font = "bold 16px sans-serif";
