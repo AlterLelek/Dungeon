@@ -160,16 +160,23 @@ input[type=text]:focus { border-color: #fbbf24; background: #29283a; box-shadow:
 /* HUD - ЖЕСТКИЕ ПРОПОРЦИИ 2/6 - 1/6 - 3/6 */
 #hud { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 10px; width: 100%; display: flex; gap: 8px; height: 132px; box-sizing: border-box; border: 2px solid #4b5563; }
 
-/* Левая колонка: показатели слева, имя над логотипом и оружие под ним */
-.hud-hero { flex: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px; min-width: 0; }
+/* Левая колонка: имя — весь верх, оружие — весь низ, между ними показатели и лого */
+.hud-hero {
+  flex: 2; display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "name name" "vitals fig" "weapon weapon";
+  align-items: center; gap: 3px 6px; min-width: 0;
+}
 .hs-title {
+  grid-area: name;
   width: 100%; font-size: 12px; line-height: 1.15; font-weight: bold;
   border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
 }
-.hero-vitals { display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; font-size: 12px; font-weight: bold; }
+.hero-vitals { grid-area: vitals; display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; font-size: 12px; font-weight: bold; }
 .stat-line { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-.hero-side { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1px; min-width: 0; }
+.hero-side { grid-area: fig; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1px; min-width: 0; }
 .hero-fig { position: relative; font-size: 28px; display: flex; align-items: center; justify-content: center; width: 38px; height: 44px; flex-shrink: 0; }
 .hero-fig .hero-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .hero-fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
@@ -181,8 +188,9 @@ input[type=text]:focus { border-color: #fbbf24; background: #29283a; box-shadow:
   background: #dc2626; color: #fff; font-weight: bold; font-size: 10px;
   box-shadow: 0 0 6px rgba(239,68,68,0.8);
 }
-/* Оружие под логотипом героя */
+/* Оружие занимает весь низ левой колонки */
 .hero-weapon-row {
+  grid-area: weapon;
   display: flex; align-items: center; justify-content: center; gap: 2px; width: 100%; min-width: 0;
   font-size: 11px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 3px;
 }
@@ -316,9 +324,9 @@ canvas {
   .hud-enemies { flex: 1.9; padding: 2px 2px; }
   .he-title { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
   #e-list { gap: 2px; }
-  .enemy-row { grid-template-columns: 24px repeat(3, minmax(0, 1fr)); gap: 2px; font-size: 9px; }
-  .enemy-row .e-type { gap: 0; font-size: 10px; }
-  .enemy-row .e-stat { font-size: 9px; }
+  .enemy-row { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; font-size: 9px; }
+  .enemy-row .e-type { justify-content: center; text-align: center; gap: 0; font-size: 10px; }
+  .enemy-row .e-stat { text-align: center; font-size: 9px; }
   .game-hint { font-size: 11px; }
   #btn-row button { font-size: 10px; padding: 6px 2px; }
   .m-btn { font-size: 9px; }

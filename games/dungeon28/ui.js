@@ -103,7 +103,7 @@ export function getActiveEffects() {
     { icon: '☠️', color: '#22c55e', name: 'яд', on: state.poisonTurns > 0 },
     { icon: '⚡', color: '#fbbf24', name: 'электричество', on: state.elementFx.lightning > 0 },
     { icon: '💧', color: '#38bdf8', name: 'вода', on: state.elementFx.water > 0 },
-    { icon: '🪨', color: '#a78bfa', name: 'земля', on: state.elementFx.earth > 0 },
+    { icon: '⛰️', color: '#a78bfa', name: 'земля', on: state.elementFx.earth > 0 },
     { icon: '🔥', color: '#ef4444', name: 'огонь', on: state.elementFx.fire > 0 },
     { icon: '🌪️', color: '#c084fc', name: 'ветер', on: state.elementFx.wind > 0 || state.abilityTurns > 0 }
   ].filter(e => e.on);
