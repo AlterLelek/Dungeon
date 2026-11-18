@@ -1,4 +1,4 @@
-import { HEROES, ENEMY_BASE, WARRIOR_WEAPONS, WORLD } from './config.js';
+import { HEROES, ENEMY_BASE, WARRIOR_WEAPONS, GRID, WORLD } from './config.js';
 
 export const state = {
   goldCount: 0, playerHp: 100, playerMp: 0, maxMp: 0,
@@ -18,7 +18,7 @@ export const state = {
   elementFx: { lightning: 0, water: 0, earth: 0, fire: 0, wind: 0 },
   
   player: { x: 32, y: 224, px: 32, py: 224, startPx: 32, startPy: 224, isMoving: false, moveStartTime: 0, healFx: 0 },
-  stairs: { x: WORLD - 32, y: WORLD - 32, active: false },
+  stairs: { x: Math.floor(GRID / 2) * (WORLD / GRID), y: Math.floor(GRID / 2) * (WORLD / GRID), active: false },
   
   heroIdx: 0, gameMode: 'chase_5', gameActive: false, weapons: WARRIOR_WEAPONS,
   stats: { kills: 0, gold: 0, floors: 0 },

@@ -160,19 +160,16 @@ input[type=text]:focus { border-color: #fbbf24; background: #29283a; box-shadow:
 /* HUD - ЖЕСТКИЕ ПРОПОРЦИИ 2/6 - 1/6 - 3/6 */
 #hud { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 10px; width: 100%; display: flex; gap: 8px; height: 132px; box-sizing: border-box; border: 2px solid #4b5563; }
 
-/* Левая колонка (2/6): текст слева, иконка героя справа от всех подписей */
-.hud-hero { flex: 2; display: grid; grid-template-columns: 1fr 42px; align-items: center; gap: 4px; min-width: 0; }
-.hero-stats { display: flex; flex-direction: column; justify-content: center; min-width: 0; font-size: 12px; font-weight: bold; gap: 4px; }
-/* Имя переносится по словам на всю ширину текстовой части */
+/* Левая колонка: показатели слева, имя над логотипом и оружие под ним */
+.hud-hero { flex: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px; min-width: 0; }
 .hs-title {
-  width: 100%; font-size: 12px; line-height: 1.15;
-  border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 3px;
-  white-space: normal; overflow-wrap: break-word; word-break: normal; text-align: left;
+  width: 100%; font-size: 12px; line-height: 1.15; font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
 }
-.hero-vitals { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.hero-vitals { display: flex; flex-direction: column; justify-content: center; gap: 3px; min-width: 0; font-size: 12px; font-weight: bold; }
 .stat-line { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-.hero-side { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 2px; }
-/* Логотип героя стоит справа от имени, HP/защиты/атаки и оружия */
+.hero-side { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1px; min-width: 0; }
 .hero-fig { position: relative; font-size: 28px; display: flex; align-items: center; justify-content: center; width: 38px; height: 44px; flex-shrink: 0; }
 .hero-fig .hero-emoji { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 .hero-fig img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
@@ -184,14 +181,14 @@ input[type=text]:focus { border-color: #fbbf24; background: #29283a; box-shadow:
   background: #dc2626; color: #fff; font-weight: bold; font-size: 10px;
   box-shadow: 0 0 6px rgba(239,68,68,0.8);
 }
-/* Оружие полностью, при нехватке места — многоточие в конце */
+/* Оружие под логотипом героя */
 .hero-weapon-row {
-  display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0;
-  font-size: 11px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 2px; width: 100%; min-width: 0;
+  font-size: 11px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 3px;
 }
 #hero-weapon .w-icon, .w-icon { font-size: 13px; flex-shrink: 0; }
 #w-dmg { color: #fbbf24; flex-shrink: 0; }
-.w-name { color: #d1d5db; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-name { color: #d1d5db; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.1px; }
 
 /* Центральная колонка (1/6) — по центру */
 .hud-center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-left: 1px solid #4b5563; border-right: 1px solid #4b5563; padding: 0 4px; font-size: 12px; font-weight: bold; gap: 4px; min-width: 0; }
@@ -309,12 +306,19 @@ canvas {
 /* Телефон: HUD и подсказки собранее под окно 10×10 */
 @media (max-width: 700px) {
   #hud { gap: 4px; padding: 6px; }
-  .hud-hero { grid-template-columns: 1fr 32px; }
-  .hero-fig { width: 30px; height: 38px; font-size: 24px; }
-  .hero-fx { width: 32px; }
-  .hud-center { padding: 0 2px; font-size: 11px; }
-  .hud-enemies { padding: 2px 4px; }
-  .enemy-row { grid-template-columns: 34px 1fr 1fr 1fr; gap: 3px; font-size: 10px; }
+  .hud-hero { flex: 2.8; grid-template-columns: auto minmax(0, 1fr); gap: 3px; }
+  .hero-vitals { font-size: 10px; gap: 2px; }
+  .hero-fig { width: 30px; height: 34px; font-size: 22px; }
+  .hero-fx { width: 32px; min-height: 10px; }
+  .hs-title { font-size: 10px; }
+  .hero-weapon-row, .w-name { font-size: 9px; }
+  .hud-center { flex: 0.7; padding: 0 1px; font-size: 10px; gap: 2px; }
+  .hud-enemies { flex: 1.9; padding: 2px 2px; }
+  .he-title { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
+  #e-list { gap: 2px; }
+  .enemy-row { grid-template-columns: 24px repeat(3, minmax(0, 1fr)); gap: 2px; font-size: 9px; }
+  .enemy-row .e-type { gap: 0; font-size: 10px; }
+  .enemy-row .e-stat { font-size: 9px; }
   .game-hint { font-size: 11px; }
   #btn-row button { font-size: 10px; padding: 6px 2px; }
   .m-btn { font-size: 9px; }

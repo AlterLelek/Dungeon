@@ -68,11 +68,24 @@ function processTurnEnd() {
 
 export function startFadeOut() {
   if (fadeTimer) return;
+  // Жёсткий отбойник: все бонусы исчезают не дольше чем за 1 секунду.
+  const total = Math.max(1, state.items.length);
+  const deadline = 950;
+  const startedAt = performance.now();
+  let removed = 0;
   fadeTimer = setInterval(() => {
-    if (state.items.length === 0) { clearInterval(fadeTimer); fadeTimer = null; return; }
-    state.items.splice(0, Math.max(1, Math.ceil(state.items.length / 25)));
+    const elapsed = performance.now() - startedAt;
+    if (state.items.length === 0 || elapsed >= deadline) {
+      state.items.length = 0;
+      clearInterval(fadeTimer); fadeTimer = null;
+      return;
+    }
+    const target = Math.ceil(total * (elapsed / deadline));
+    const chunk = Math.max(1, target - removed);
+    state.items.splice(0, chunk);
+    removed += chunk;
     playSound('collect');
-  }, 60);
+  }, 50);
 }
 
 function advanceFloor() {
@@ -132,7 +145,10 @@ function handleMonsterDeath(m, index) {
       }
       if (spawned > 0) addFloater(m.x, m.y, "Деление!", "#a855f7");
   }
-  if (m.type !== "🐭" && m.type !== "🕷") state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15 });
+  if (m.type !== "🐭" && m.type !== "🕷") {
+      const ashen = m.type === "💀" || m.type === "👻" || m.type === "🧟";
+      state.corpses.push({ x: m.x, y: m.y, type: m.type, decay: 15, kind: ashen ? 'ash' : 'tomb' });
+  }
 }
 
 export function fight(m, index, ranged = false) {
@@ -151,6 +167,7 @@ export function fight(m, index, ranged = false) {
 
   if (pDmg < 1) pDmg = 1;
   m.hp -= pDmg; addFloater(m.x, m.y, "-" + pDmg, "#ef4444");
+  if (m.hp > 0) devilRegenOnHit(m);
 
   // Критический ИИ: лучник вампирит половину нанесённого урона
   if (isArcher && state.settings.criticalAI) {
@@ -187,6 +204,7 @@ export function castLightning() {
         m.hp -= 20; m.lightningFx = 1.0;
         state.elementFx.lightning = 1.0;
         addFloater(m.x, m.y, "-20", "#fbbf24");
+        if (m.hp > 0) devilRegenOnHit(m);
         if (m.hp <= 0) handleMonsterDeath(m, state.monsters.indexOf(m));
     });
     return true;
@@ -265,7 +283,11 @@ function monsterAttack(m) {
     if (m.type === "💀") { m.hp = Math.min(m.maxHp, m.hp + 3); addFloater(m.x, m.y, "+3 HP", "#22c55e"); }
     if (m.type === "👻") { state.playerMp = Math.max(0, state.playerMp - 2); addFloater(state.player.px, state.player.py, "-2 MP", "#3b82f6"); }
     if (m.type === "🕷") { if (state.playerSlowTurns === 0) state.playerSlowTurns = 3; else state.playerSlowTurns += 1; addFloater(state.player.px, state.player.py, "🕸️", "#38bdf8"); }
-    if (m.type === "🧟") { if (state.poisonTurns > 0) { state.poisonDmg += 3; state.poisonTurns = 3; } else { state.poisonDmg = 5; state.poisonTurns = 3; } addFloater(state.player.px, state.player.py, "☠️", "#22c55e"); }
+    if (m.type === "🧟") {
+      if (state.poisonTurns > 0) { state.poisonDmg = Math.min(8, state.poisonDmg + 2); state.poisonTurns = 2; }
+      else { state.poisonDmg = 3; state.poisonTurns = 2; }
+      addFloater(state.player.px, state.player.py, "☠️", "#22c55e");
+    }
 
     if (state.skeletonAlly) {
         state.skeletonAlly.hp -= mDmg; addFloater(state.skeletonAlly.x, state.skeletonAlly.y, "-" + mDmg, "#ef4444");
@@ -278,6 +300,15 @@ function monsterAttack(m) {
         }
     }
   }
+}
+
+// Черт восстанавливается только после полученного урона: +1 сразу,
+// затем +2, +3, +4, +5 в следующие ходы и стоп до новой атаки.
+function devilRegenOnHit(m) {
+  if (m.type !== "😈" || m.hp <= 0) return;
+  m.hp = Math.min(m.maxHp, m.hp + 1);
+  m.regenStep = 1;
+  addFloater(m.x, m.y, "+1", "#22c55e");
 }
 
 function findClosestItem(m, type) {
@@ -345,7 +376,12 @@ function moveMonsters() {
         if (dx <= CELL * 3 && dy <= CELL * 3) { monsterAttack(m); addFloater(m.x, m.y, "🏹", "#f59e0b"); return; }
     }
     
-    if (m.type === "😈" && m.hp < m.maxHp) { m.hp = Math.min(m.maxHp, m.hp + 10); addFloater(m.x, m.y, "+10", "#22c55e"); }
+    if (m.type === "😈" && m.regenStep > 0 && m.regenStep < 5 && m.hp < m.maxHp) {
+        const amount = m.regenStep + 1; // +2, +3, +4, +5
+        m.regenStep++;
+        m.hp = Math.min(m.maxHp, m.hp + amount);
+        addFloater(m.x, m.y, "+" + amount, "#22c55e");
+    }
     
     if (m.type === "👺" || m.type === "💀" || m.type === "👻" || m.type === "🐭" || m.type === "🐢") {
         const itemIdx = state.items.findIndex(i => Math.abs(i.x - m.x) < CELL && Math.abs(i.y - m.y) < CELL);

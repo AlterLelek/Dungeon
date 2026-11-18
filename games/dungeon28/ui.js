@@ -68,6 +68,23 @@ function drawTombstone(ctx, x, y) {
     ctx.fillStyle = "#111827"; ctx.fillRect(x + 14, y + 9, 4, 14); ctx.fillRect(x + 9, y + 14, 14, 4); 
 }
 
+// Горсть пепла вместо могилы: скелет, дух и зомби рассыпаются.
+function drawAshes(ctx, x, y) {
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.beginPath(); ctx.ellipse(x + 16, y + 27, 11, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#6b7280";
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y + 26);
+    ctx.quadraticCurveTo(x + 9, y + 15, x + 13, y + 20);
+    ctx.quadraticCurveTo(x + 16, y + 11, x + 20, y + 20);
+    ctx.quadraticCurveTo(x + 25, y + 16, x + 26, y + 26);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#9ca3af";
+    [[11,22,1.5],[17,24,2],[22,21,1.2],[15,18,1]].forEach(([ox, oy, r]) => {
+        ctx.beginPath(); ctx.arc(x + ox, y + oy, r, 0, Math.PI * 2); ctx.fill();
+    });
+}
+
 function drawStairs(ctx) {
     if (state.stairs.active) {
         ctx.fillStyle = "#f59e0b"; ctx.fillRect(state.stairs.x + 4, state.stairs.y + 4, 24, 24);
@@ -143,7 +160,7 @@ export function draw(ctx, bgCanvas) {
   for (let i = 0; i <= WORLD; i += CELL) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, WORLD); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(WORLD, i); ctx.stroke(); }
 
   drawStairs(ctx);
-  state.corpses.forEach(c => { drawTombstone(ctx, c.x, c.y); });
+  state.corpses.forEach(c => { if (c.kind === 'ash') drawAshes(ctx, c.x, c.y); else drawTombstone(ctx, c.x, c.y); });
   
   state.items.forEach(i => {
       let alpha = 1.0;
