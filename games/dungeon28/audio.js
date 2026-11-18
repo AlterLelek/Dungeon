@@ -220,9 +220,9 @@ const MELODY_SF2 = {
 
 // «Городская тема» — переложение MIDI Shining Force «Begining in the Village»
 // (в GBA-версии — «Cheerful Street Corner») в 7 голосов звукового движка игры.
-// stepScale: 0.5 — вдвое чаще шагов обычной мелодии (128 шагов ≈ 38 сек).
+// step: 300 мс — оригинальный темп MIDI (60 BPM, 128 шагов ≈ 37.8 сек).
 const MELODY_TOWN = {
-    stepScale: 0.5,
+    step: 300,
     v1: [
         0, 0, 329.63, 0, 329.63, 329.63, 0, 0, 329.63, 349.23, 369.99, 392, 0, 0, 392, 349.23,
         0, 349.23, 349.23, 349.23, 0, 349.23, 0, 349.23, 329.63, 0, 0, 329.63, 0, 0, 329.63, 0,
@@ -312,7 +312,7 @@ export function startMusic(track = 'town') {
   
   const mel = MELODIES[track] || MELODIES.town;
   const length = mel.v1.length;
-  const stepTime = Math.round(currentTempo * (mel.stepScale || 1));
+  const stepTime = mel.step || Math.round(currentTempo * (mel.stepScale || 1));
 
   melodyTimer = setInterval(() => {
     if (volumes.music <= 0.01) return;
