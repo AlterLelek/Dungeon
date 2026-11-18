@@ -15,40 +15,44 @@
         <span class="version-badge">v<span id="ver-login"></span></span>
       </header>
 
-      <div class="login-section">
-        <div class="section-label">Выберите героя</div>
-        <div class="carousel-container">
-          <button class="c-arrow" id="prev-hero" aria-label="Предыдущий герой">◀</button>
-          <div class="carousel" id="hero-carousel"></div>
-          <button class="c-arrow" id="next-hero" aria-label="Следующий герой">▶</button>
+      <div class="login-choices">
+        <div class="login-section">
+          <div class="section-label">Выберите героя</div>
+          <div class="carousel-container">
+            <button class="c-arrow" id="prev-hero" aria-label="Предыдущий герой">◀</button>
+            <div class="carousel" id="hero-carousel"></div>
+            <button class="c-arrow" id="next-hero" aria-label="Следующий герой">▶</button>
+          </div>
+          <div class="desc-text" id="hero-desc" aria-live="polite"></div>
         </div>
-        <div class="desc-text" id="hero-desc" aria-live="polite"></div>
-      </div>
 
-      <div class="login-section">
-        <div class="section-label">Режим игры</div>
-        <div class="carousel-container mode-row">
-          <button class="c-arrow" id="prev-mode" aria-label="Предыдущий режим">◀</button>
-          <div class="carousel mode-carousel" id="mode-carousel"></div>
-          <button class="c-arrow" id="next-mode" aria-label="Следующий режим">▶</button>
-        </div>
-        <div class="desc-text" id="mode-desc" aria-live="polite"></div>
-      </div>
-
-      <div class="login-section">
-        <label class="section-label" for="guest-name">Имя героя</label>
-        <div class="name-row">
-          <input type="text" id="guest-name" placeholder="Например, Арагорн" maxlength="16" autocomplete="nickname" spellcheck="false">
-          <button id="btn-random-name" class="btn-secondary" title="Случайное имя" aria-label="Случайное имя">🎲</button>
+        <div class="login-section">
+          <div class="section-label">Режим игры</div>
+          <div class="carousel-container">
+            <button class="c-arrow" id="prev-mode" aria-label="Предыдущий режим">◀</button>
+            <div class="carousel mode-carousel" id="mode-carousel"></div>
+            <button class="c-arrow" id="next-mode" aria-label="Следующий режим">▶</button>
+          </div>
+          <div class="desc-text" id="mode-desc" aria-live="polite"></div>
         </div>
       </div>
 
-      <div class="login-actions">
-        <button id="btn-guest" class="btn-primary">Играть гостем <span class="cta-arrow" aria-hidden="true">➜</span></button>
-        <button id="btn-google" class="btn-google" disabled>Войти через Google <span class="soon-badge">скоро</span></button>
-      </div>
+      <div class="login-bottom">
+        <div class="login-section">
+          <label class="section-label" for="guest-name">Имя героя</label>
+          <div class="name-row">
+            <input type="text" id="guest-name" placeholder="Например, Арагорн" maxlength="16" autocomplete="nickname" spellcheck="false">
+            <button id="btn-random-name" class="btn-secondary" title="Случайное имя" aria-label="Случайное имя">🎲</button>
+          </div>
+        </div>
 
-      <div id="error-msg" class="error-msg" role="alert" aria-live="assertive"></div>
+        <div class="login-actions">
+          <button id="btn-guest" class="btn-primary">Играть гостем <span class="cta-arrow" aria-hidden="true">➜</span></button>
+          <button id="btn-google" class="btn-google" disabled>Войти через Google <span class="soon-badge">скоро</span></button>
+        </div>
+
+        <div id="error-msg" class="error-msg" role="alert" aria-live="assertive"></div>
+      </div>
     </div>
 
     <div id="game-screen" style="display: none;">

@@ -18,6 +18,19 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
+// Ширина контента 326px, высота с HUD и пультом ≈ 700px.
+// Масштабируем так, чтобы на ПК и телефоне поле с пультом занимали весь экран.
+function fitGameScreen() {
+    const scale = Math.min(
+        window.innerWidth / 326,
+        window.innerHeight / 700,
+        2.5
+    );
+    document.documentElement.style.setProperty('--game-scale', Math.max(0.45, scale).toFixed(3));
+}
+window.addEventListener('resize', fitGameScreen);
+fitGameScreen();
+
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
