@@ -1,6 +1,6 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.136";
+export const VERSION = "5.140";
 export const GRID = 10;          
 export const CELL = 32;          
 

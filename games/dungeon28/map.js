@@ -16,7 +16,7 @@ export function findFreeCell() {
 }
 
 export function placeMonster(type, hp, atk, behavior, x, y) {
-    let base = ENEMY_BASE[type] || { def: 0, speed: 1 };
+    let base = state.devSettings.monsters[type] || ENEMY_BASE[type] || { def: 0, speed: 1 };
     
     // Выбираем случайный скин из доступных для этого типа
     let skinsList = MONSTER_SKINS[type] || [];
@@ -35,33 +35,87 @@ export function placeMonster(type, hp, atk, behavior, x, y) {
 
 export function initFloor() {
     state.monsters = [];
-    
-    let count = 4 + state.settings.monsterAdd; 
+    state.items = [];
+    state.corpses = [];
+    state.floaters = [];
+    state.stairs.active = false;
+
+    state.player.x = 32; state.player.y = 160;
+    state.player.px = 32; state.player.py = 160;
+    state.player.startPx = 32; state.player.startPy = 160;
+    state.player.isMoving = false;
+    state.player.healFx = 0;
+
+    let count = 4 + state.settings.monsterAdd;
     for (let i = 0; i < count; i++) {
         let cell = findFreeCell();
         let type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
-        let base = ENEMY_BASE[type];
+        const base = state.devSettings.monsters[type] || ENEMY_BASE[type];
         let hp = Math.floor(base.hp * (1 + (state.currentFloor - 1) * 0.2));
         let atk = Math.floor(base.atk * (1 + (state.currentFloor - 1) * 0.1));
         
         // Для мышей не спавним их сразу, если их слишком много
         if (type === "🐭" && state.monsters.filter(m => m.type === "🐭").length >= 2) {
             type = "💀"; // замена на скелета
-            base = ENEMY_BASE[type];
-            hp = Math.floor(base.hp * (1 + (state.currentFloor - 1) * 0.2));
-            atk = Math.floor(base.atk * (1 + (state.currentFloor - 1) * 0.1));
+            const skeletonBase = state.devSettings.monsters[type] || ENEMY_BASE[type];
+            hp = Math.floor(skeletonBase.hp * (1 + (state.currentFloor - 1) * 0.2));
+            atk = Math.floor(skeletonBase.atk * (1 + (state.currentFloor - 1) * 0.1));
         }
 
         placeMonster(type, hp, atk, 'chase', cell.x, cell.y);
     }
 
-    // Отрисовка фона
+    // Пещерный фон (перенесён из старой версии)
     const bg = document.createElement('canvas');
     bg.width = 320; bg.height = 320;
-    const bctx = bg.getContext('2d');
-    bctx.fillStyle = "#241f1d";
-    bctx.fillRect(0, 0, 320, 320);
-    
-    // ... добавление текстур пола (если нужно)
+    const c = bg.getContext('2d');
+
+    c.fillStyle = '#26211d';
+    c.fillRect(0, 0, 320, 320);
+
+    // Пятна и неровности породы
+    for (let i = 0; i < 160; i++) {
+        const x = Math.random() * 320, y = Math.random() * 320;
+        const r = 4 + Math.random() * 18;
+        c.fillStyle = Math.random() < 0.5 ? 'rgba(64,54,48,0.35)' : 'rgba(28,24,22,0.35)';
+        c.beginPath();
+        c.ellipse(x, y, r, r * (0.5 + Math.random() * 0.7), Math.random() * Math.PI, 0, 2 * Math.PI);
+        c.fill();
+    }
+
+    // Трещины
+    for (let i = 0; i < 14; i++) {
+        let x = Math.random() * 320, y = Math.random() * 320;
+        c.strokeStyle = 'rgba(12,10,9,0.5)';
+        c.lineWidth = 1 + Math.random() * 1.5;
+        c.beginPath(); c.moveTo(x, y);
+        for (let k = 0; k < 5; k++) {
+            x += (Math.random() - 0.5) * 40;
+            y += (Math.random() - 0.5) * 40;
+            c.lineTo(x, y);
+        }
+        c.stroke();
+    }
+
+    // Сталактиты сверху
+    c.fillStyle = 'rgba(10,8,8,0.85)';
+    for (let i = 0; i < 8; i++) {
+        const x = i * 40 + Math.random() * 20, w = 14 + Math.random() * 18, h = 20 + Math.random() * 36;
+        c.beginPath(); c.moveTo(x - w / 2, 0); c.lineTo(x + w / 2, 0); c.lineTo(x, h); c.closePath(); c.fill();
+    }
+
+    // Сталагмиты снизу
+    for (let i = 0; i < 6; i++) {
+        const x = Math.random() * 320, w = 16 + Math.random() * 20, h = 14 + Math.random() * 30;
+        c.beginPath(); c.moveTo(x - w / 2, 320); c.lineTo(x + w / 2, 320); c.lineTo(x, 320 - h); c.closePath(); c.fill();
+    }
+
+    // Затемнение по краям
+    const g = c.createRadialGradient(160, 160, 80, 160, 160, 230);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(1, 'rgba(0,0,0,0.55)');
+    c.fillStyle = g;
+    c.fillRect(0, 0, 320, 320);
+
     return bg;
 }

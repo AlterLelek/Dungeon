@@ -1,9 +1,9 @@
 import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw, preloadSprites } from './ui.js'; 
-import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility } from './game.js';
+import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume } from './audio.js'; 
+import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -66,17 +66,40 @@ document.getElementById('prev-hero').onclick = () => { state.heroIdx = (state.he
 document.getElementById('next-hero').onclick = () => { state.heroIdx = (state.heroIdx + 1) % HEROES.length; renderCarousel(); playSound('menu'); };
 renderCarousel();
 
+setGameEndHandler(() => {
+  gameScreen.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  ['shop-panel', 'records-panel', 'settings-panel'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  renderCarousel();
+});
+
 const GAME_MODES = [
-    { id: 'chase_5', name: 'Погоня (1-5)' },
-    { id: 'def_5', name: 'Защита (1-5)' },
-    { id: 'def_inf', name: 'Защита (Безлимит)' },
-    { id: 'wave_5', name: 'Волны монстров (1-5)' },
-    { id: 'wave_inf', name: 'Волны монстров (Безлимит)' }
+    { id: 'chase_5', name: 'Погоня (1-5)', short: 'Погоня', icon: '🏃' },
+    { id: 'def_5', name: 'Защита (1-5)', short: 'Защита', icon: '🛡️' },
+    { id: 'def_inf', name: 'Защита (Безлимит)', short: 'Безлимит', icon: '♾️' },
+    { id: 'wave_5', name: 'Волны монстров (1-5)', short: 'Волны', icon: '🌊' },
+    { id: 'wave_inf', name: 'Волны монстров (Безлимит)', short: 'Волны ∞', icon: '🌊' }
 ];
 let currentModeIdx = 0;
 
 function renderMode() {
-    document.getElementById('mode-display').innerText = GAME_MODES[currentModeIdx].name;
+    const container = document.getElementById('mode-carousel');
+    container.innerHTML = '';
+    const total = GAME_MODES.length;
+
+    for (let offset = -1; offset <= 1; offset++) {
+        const idx = (currentModeIdx + offset + total) % total;
+        const m = GAME_MODES[idx];
+        const div = document.createElement('div');
+        div.className = `mode-card ${offset === 0 ? 'center' : 'side'}`;
+        div.innerHTML = `<span class="m-icon">${m.icon}</span><span class="m-name">${m.short}</span>`;
+        if (offset !== 0) div.onclick = () => { currentModeIdx = idx; renderMode(); playSound('menu'); };
+        container.appendChild(div);
+    }
+
+    document.getElementById('mode-desc').innerText = GAME_MODES[currentModeIdx].name;
     state.gameMode = GAME_MODES[currentModeIdx].id;
 }
 document.getElementById('prev-mode').onclick = () => { currentModeIdx = (currentModeIdx - 1 + GAME_MODES.length) % GAME_MODES.length; renderMode(); playSound('menu'); };
@@ -120,7 +143,7 @@ const handleVol = (id, type) => {
     el.addEventListener('input', (e) => {
         let v = parseFloat(e.target.value);
         if (isNaN(v)) return; 
-        setVolume(type, v / 10);
+        setVolume(type, v);
     });
 };
 handleVol('set-master', 'master');
@@ -140,12 +163,21 @@ if (elTempo) {
 function selectMelody(btnId, track) {
     document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(btnId).classList.add('active');
+    setTrack(track);
     startMusic(track);
 }
 document.getElementById('mel-cave').onclick = () => selectMelody('mel-cave', 'sf2');
 document.getElementById('mel-elven').onclick = () => selectMelody('mel-elven', 'elven');
 document.getElementById('mel-dwarven').onclick = () => selectMelody('mel-dwarven', 'dwarven');
 document.getElementById('mel-dice').onclick = () => selectMelody('mel-dice', 'dice');
+
+// Восстанавливаем выбранную мелодию из сохранённых настроек
+(function restoreMelody() {
+    const saved = getTrack();
+    const id = { sf2: 'mel-cave', elven: 'mel-elven', dwarven: 'mel-dwarven', dice: 'mel-dice' }[saved] || 'mel-cave';
+    document.querySelectorAll('.mel-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+})();
 
 document.getElementById('set-floors').addEventListener('change', (e) => { state.settings.floors = parseInt(e.target.value); document.getElementById('floor-max').innerText = '/' + state.settings.floors; saveSettings(); });
 document.getElementById('set-monst-add').addEventListener('change', (e) => { state.settings.monsterAdd = parseInt(e.target.value); saveSettings(); });
@@ -376,7 +408,7 @@ function gameLoop() {
 }
 
 function startGame(name) {
-    initAudio(); startAmbient(); startMusic('sf2');   
+    initAudio(); startAmbient(); startMusic(getTrack());
     loginScreen.style.display = 'none'; gameScreen.style.display = 'flex';
     const canvasWrapper = document.getElementById('canvas-wrapper');
     canvasWrapper.insertBefore(canvas, canvasWrapper.firstChild);
@@ -397,34 +429,53 @@ function startGame(name) {
     bgCanvas = initFloor(); updateHUD();
     if (!gameLoopStarted) { gameLoopStarted = true; requestAnimationFrame(gameLoop); }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.getElementById('shop-panel').style.display = 'none'; document.getElementById('settings-panel').style.display = 'none'; return;
-      }
-      if (!state.gameActive || state.isProcessingTurn) return;
-      const key = e.key.toLowerCase();
-      const mode = state.settings.keysMode || 'all', layout = state.settings.keysLayout || 'both';
-      
-      if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp') || ((mode === 'all' || mode === 'wasd') && (key === 'w' || key === 'ц'))) movePlayer(0, -32);
-      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown') || ((mode === 'all' || mode === 'wasd') && (key === 's' || key === 'ы'))) movePlayer(0, 32);
-      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft') || ((mode === 'all' || mode === 'wasd') && (key === 'a' || key === 'ф'))) movePlayer(-32, 0);
-      else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight') || ((mode === 'all' || mode === 'wasd') && (key === 'd' || key === 'в'))) movePlayer(32, 0);
-      
-      else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
-      else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
-      else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
-      else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
-      else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
-      else if (key === 'm' || key === 'ь') { document.getElementById('shop-panel').style.display = 'block'; updateShop(); }
-      
-      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) e.preventDefault();
+    ['shop-panel', 'records-panel', 'settings-panel'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
     });
 }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    ['shop-panel', 'records-panel', 'settings-panel'].forEach(id => {
+      document.getElementById(id).style.display = 'none';
+    });
+    return;
+  }
+  if (!state.gameActive || state.isProcessingTurn) return;
+
+  const key = e.key.toLowerCase();
+  const mode = state.settings.keysMode || 'all';
+
+  if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp') || ((mode === 'all' || mode === 'wasd') && (key === 'w' || key === 'ц'))) movePlayer(0, -32);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown') || ((mode === 'all' || mode === 'wasd') && (key === 's' || key === 'ы'))) movePlayer(0, 32);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft') || ((mode === 'all' || mode === 'wasd') && (key === 'a' || key === 'ф'))) movePlayer(-32, 0);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight') || ((mode === 'all' || mode === 'wasd') && (key === 'd' || key === 'в'))) movePlayer(32, 0);
+
+  else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
+  else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
+  else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
+  else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
+  else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
+  else if (key === 'm' || key === 'ь') { document.getElementById('shop-panel').style.display = 'block'; updateShop(); }
+
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) e.preventDefault();
+});
 
 window.movePlayer = movePlayer;
 window.skipTurn = skipTurn;
 
-btnRandomName.onclick = () => { playSound('menu'); generateRandomName(); };
+// Подставляем имя прошлой игры и упрощаем ввод
+try {
+    const lastName = localStorage.getItem('pz_heroName');
+    if (lastName) guestNameInput.value = lastName;
+} catch (e) {}
+
+guestNameInput.addEventListener('input', () => { errorMsg.innerText = ''; });
+guestNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); btnGuest.click(); }
+});
+
+btnRandomName.onclick = () => { playSound('menu'); generateRandomName(); errorMsg.innerText = ''; };
 btnGuest.onclick = () => {
     const name = guestNameInput.value.trim();
     if (name === "") { errorMsg.innerText = "Введите имя!"; return; }

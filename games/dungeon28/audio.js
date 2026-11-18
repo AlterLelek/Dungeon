@@ -6,10 +6,54 @@ let ambNodes = null;
 let dripTimeout = null;
 let melodyTimer = null;
 let currentMelodyIdx = 0;
-let currentTrack = 'sf2';
-let currentTempo = 600; // Миллисекунды
 
-const volumes = { master: 0.4, music: 0.4, ambient: 0.05, sfx: 0.4 };
+const AUDIO_KEY = 'pz_audio';
+const DEFAULTS = { master: 10, music: 5, ambient: 3, sfx: 10, tempo: 600, melody: 'sf2' };
+
+let audioSettings = { ...DEFAULTS };
+let currentTrack = audioSettings.melody;
+let currentTempo = audioSettings.tempo;
+const volumes = { master: 1, music: 0.5, ambient: 0.3, sfx: 1 };
+
+function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+
+function syncVolumes() {
+  volumes.master = audioSettings.master / 10;
+  volumes.music = audioSettings.music / 10;
+  volumes.ambient = audioSettings.ambient / 10;
+  volumes.sfx = audioSettings.sfx / 10;
+}
+
+function saveAudioSettings() {
+  try { localStorage.setItem(AUDIO_KEY, JSON.stringify(audioSettings)); } catch (e) {}
+}
+
+function loadAudioSettings() {
+  try {
+    const raw = localStorage.getItem(AUDIO_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    for (const key of ['master', 'music', 'ambient', 'sfx']) {
+      if (Number.isFinite(saved[key])) audioSettings[key] = clamp(saved[key], 0, 10);
+    }
+    if (Number.isFinite(saved.tempo)) audioSettings.tempo = clamp(saved.tempo, 300, 1200);
+    if (saved.melody) audioSettings.melody = saved.melody;
+  } catch (e) {}
+}
+
+export function resetAudioSettings() {
+  audioSettings = { ...DEFAULTS };
+  currentTempo = audioSettings.tempo;
+  currentTrack = audioSettings.melody;
+  syncVolumes();
+  applyVolumes();
+  saveAudioSettings();
+}
+
+loadAudioSettings();
+currentTempo = audioSettings.tempo;
+currentTrack = audioSettings.melody;
+syncVolumes();
 
 export function initAudio() {
   if (isInit) return;
@@ -31,7 +75,18 @@ export function initAudio() {
 
 export function getVolume(type) {
     if (type === 'tempo') return currentTempo;
-    return Math.round(volumes[type] * 10);
+    if (type === 'melody') return currentTrack;
+    if (type in audioSettings) return audioSettings[type];
+    return Math.round((volumes[type] || 0) * 10);
+}
+
+export function getTrack() { return currentTrack; }
+
+export function setTrack(track) {
+  if (!MELODIES[track]) return;
+  currentTrack = track;
+  audioSettings.melody = track;
+  saveAudioSettings();
 }
 
 function applyVolumes() {
@@ -40,25 +95,31 @@ function applyVolumes() {
   musicGain.gain.value = volumes.music;
   ambientGain.gain.value = volumes.ambient;
   sfxGain.gain.value = volumes.sfx;
+  if (ambNodes && ambNodes.lfoDepth) ambNodes.lfoDepth.gain.value = volumes.ambient * 0.15;
 }
 
 export function setVolume(type, val) {
-  if (isNaN(val) || val === undefined || val === null) return; // Защита от пустых значений
-  
+  if (!Number.isFinite(val)) return;
+
   if (type === 'tempo') {
-    currentTempo = Math.max(100, Math.min(2000, val)); 
-    if (currentTrack) startMusic(currentTrack); 
+    currentTempo = clamp(val, 300, 1200);
+    audioSettings.tempo = currentTempo;
+    if (currentTrack) startMusic(currentTrack);
+    saveAudioSettings();
     return;
   }
-  const normVal = Math.max(0, Math.min(1, val));
-  if (type === 'master') volumes.master = normVal;
-  if (type === 'music') volumes.music = normVal;
-  if (type === 'ambient') volumes.ambient = normVal;
-  if (type === 'sfx') volumes.sfx = normVal;
+  if (!(type in audioSettings)) return;
+
+  audioSettings[type] = clamp(val, 0, 10);
+  syncVolumes();
   applyVolumes();
+  saveAudioSettings();
+
+  if (type === 'ambient' && audioSettings.ambient > 0 && !ambNodes) startAmbient();
 }
 
 export function startAmbient() {
+  if (audioSettings.ambient <= 0) return;
   try {
     initAudio();
     if (ambNodes) return;
@@ -78,11 +139,11 @@ export function startAmbient() {
     const lfo = audioCtx.createOscillator();
     lfo.frequency.value = 0.1;
     const lfoDepth = audioCtx.createGain();
-    lfoDepth.gain.value = 0.05; 
+    lfoDepth.gain.value = volumes.ambient * 0.15;
     lfo.connect(lfoDepth); lfoDepth.connect(ambientGain.gain); lfo.start();
     src.connect(filter); filter.connect(ambientGain);
     src.start();
-    ambNodes = { src, lfo };
+    ambNodes = { src, lfo, lfoDepth };
     drip();
   } catch (e) {}
 }

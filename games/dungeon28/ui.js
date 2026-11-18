@@ -16,10 +16,9 @@ export function preloadSprites() {
 
     // ПРАВИЛЬНЫЕ ПУТИ: UI отдельно, Предметы (items) отдельно
     paths.push(
-        "assets/sprites/ui/coin.png", 
-        "assets/sprites/ui/castle.png",
-        "assets/sprites/items/star.png", 
-        "assets/sprites/items/shield.png", 
+        "assets/sprites/ui/coin.png",
+        "assets/sprites/items/star.png",
+        "assets/sprites/items/shield.png",
         "assets/sprites/items/lightning.png"
     );
 
