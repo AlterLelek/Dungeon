@@ -26,11 +26,11 @@ export function activateAbility() {
         return false;
     }
 
-    state.abilityTurns = 5;
+    state.abilityTurns = hero.name === 'Лучник' ? 4 : 5; // у лучника 3 полных хода после текущего
     state.abilityCooldown = 10;
 
     if (hero.name === 'Воин') { state.tempAtk += 5; state.elementFx.fire = 1.0; addFloater(state.player.px, state.player.py, "+5 ATK", "#fbbf24"); }
-    else if (hero.name === 'Лучник') { state.heroAttackRange += 2; state.elementFx.wind = 1.0; addFloater(state.player.px, state.player.py, "+2 RNG", "#fbbf24"); }
+    else if (hero.name === 'Лучник') { state.elementFx.wind = 1.0; addFloater(state.player.px, state.player.py, "+50% УРОН", "#fbbf24"); }
     else if (hero.name === 'Маг') { state.spellDiscount = 1; state.elementFx.water = 1.0; addFloater(state.player.px, state.player.py, "-1 MP", "#fbbf24"); }
     else if (hero.name === 'Паладин') { state.skeletonAlly = { x: state.player.x, y: state.player.y, hp: 50, maxHp: 50 }; state.elementFx.earth = 1.0; addFloater(state.player.px, state.player.py, "☠️ Союзник!", "#fbbf24"); }
     else if (hero.name === 'Ангел') {
@@ -139,13 +139,24 @@ export function fight(m, index, ranged = false) {
   playSound('hit');
   let pDmg = getTotalAtk() - m.def;
 
-  if (HEROES[state.heroIdx].set === 'archer') {
+  const isArcher = HEROES[state.heroIdx].set === 'archer';
+  if (isArcher) {
       if (ranged) pDmg = Math.floor(pDmg * 1.2);
       else pDmg = Math.floor(pDmg * 0.8);
+      if (state.abilityTurns > 0) pDmg = Math.floor(pDmg * 1.5); // умение «Дальний выстрел»: +50% урона
   }
 
   if (pDmg < 1) pDmg = 1;
   m.hp -= pDmg; addFloater(m.x, m.y, "-" + pDmg, "#ef4444");
+
+  // Критический ИИ: лучник вампирит половину нанесённого урона
+  if (isArcher && state.settings.criticalAI) {
+      const maxHp = state.devSettings.heroes[state.heroIdx].maxHp;
+      const before = state.playerHp;
+      state.playerHp = Math.min(maxHp, before + Math.max(1, Math.floor(pDmg * 0.5)));
+      const healed = state.playerHp - before;
+      if (healed > 0) addFloater(state.player.px, state.player.py, "+" + healed + " hp", "#22c55e");
+  }
 
   if (m.hp <= 0) {
     handleMonsterDeath(m, index);
@@ -367,6 +378,14 @@ function moveMonsters() {
   });
 }
 
+// Дальность выстрела лучника задаётся сложностью, а не умением:
+// простой — не стреляет вообще, экстрим — ровно через клетку, крит — через клетку + вампиризм.
+export function getArcherShotRange() {
+  if (state.settings.criticalAI) return 2;
+  if (state.settings.difficulty === 'extreme') return 2;
+  return 0;
+}
+
 export function movePlayer(dx, dy) {
   if (!state.gameActive || state.playerHp <= 0 || floorClearTimer || state.isProcessingTurn) return;
   
@@ -376,15 +395,14 @@ export function movePlayer(dx, dy) {
   
   if (victimIdx === -1) {
     const hero = HEROES[state.heroIdx];
-    // Лучник с базовой дальностью 2 бьёт любого монстра в радиусе 2 клеток,
-    // включая диагонали, даже если соседняя клетка свободна.
-    if (hero.set === 'archer' && state.heroAttackRange >= 2) {
-      const range = CELL * 2;
-      const target = state.monsters.find(m =>
-        Math.abs(m.x - state.player.x) <= range &&
-        Math.abs(m.y - state.player.y) <= range &&
-        (m.x !== nx || m.y !== ny)
-      );
+    const shotRange = hero.set === 'archer' ? getArcherShotRange() : 0;
+    // Стрела летит ровно через клетку: по прямой или наискосок, но не рядом и не через две.
+    if (shotRange > 0) {
+      const range = shotRange * CELL;
+      const target = state.monsters.find(m => {
+        const dxm = Math.abs(m.x - state.player.x), dym = Math.abs(m.y - state.player.y);
+        return Math.max(dxm, dym) === range && !(m.x === nx && m.y === ny);
+      });
       if (target) {
         const rangedIdx = state.monsters.indexOf(target);
         fight(target, rangedIdx, true);
@@ -461,7 +479,6 @@ function tickEffects() {
         if (state.abilityTurns === 0) {
             const heroName = HEROES[state.heroIdx].name;
             if (heroName === 'Воин') state.tempAtk = Math.max(0, state.tempAtk - 5);
-            else if (heroName === 'Лучник') state.heroAttackRange = state.devSettings.heroes[state.heroIdx].attackRange;
             else if (heroName === 'Маг') state.spellDiscount = 0;
             else if (heroName === 'Паладин') state.skeletonAlly = null;
         }
