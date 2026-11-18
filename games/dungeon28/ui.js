@@ -79,6 +79,38 @@ function drawStairs(ctx) {
     }
 }
 
+// Элементарные эффекты в левом верхнем углу карты
+function drawElementStrip(ctx) {
+  const items = [
+    { icon: '☠️', color: '#22c55e', on: state.poisonTurns > 0 },
+    { icon: '⚡', color: '#fbbf24', on: state.elementFx.lightning > 0 },
+    { icon: '💧', color: '#38bdf8', on: state.elementFx.water > 0 },
+    { icon: '🪨', color: '#a78bfa', on: state.elementFx.earth > 0 || getTotalDef() > 0 },
+    { icon: '🔥', color: '#ef4444', on: state.elementFx.fire > 0 || getTotalAtk() > state.weapons[state.weaponLevel].dmg },
+    { icon: '🌪️', color: '#c084fc', on: state.elementFx.wind > 0 || state.abilityTurns > 0 }
+  ];
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(8,8,12,0.55)';
+  ctx.fillRect(4, 4, items.length * 18 + 6, 24);
+  ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+  ctx.lineWidth = 1; ctx.strokeRect(4, 4, items.length * 18 + 6, 24);
+
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  items.forEach((it, i) => {
+    const x = 13 + i * 18, y = 16;
+    if (it.on) {
+      ctx.shadowColor = it.color; ctx.shadowBlur = 10;
+      ctx.fillStyle = it.color;
+      ctx.fillRect(5 + i * 18, 5, 16, 22);
+    }
+    ctx.fillText(it.icon, x, y);
+    ctx.shadowBlur = 0;
+  });
+  ctx.restore();
+}
+
 function drawItem(ctx, x, y, type) {
   const cx = x + CELL / 2, cy = y + CELL / 2;
   let spritePath = null;
@@ -163,6 +195,8 @@ export function draw(ctx, bgCanvas) {
       ctx.beginPath(); ctx.arc(state.player.px + CELL/2, state.player.py + CELL/2, (1.0 - state.player.healFx) * 30, 0, Math.PI*2); ctx.stroke();
       state.player.healFx -= 0.03;
   }
+
+  drawElementStrip(ctx);
 
   state.floaters.forEach(f => {
     ctx.globalAlpha = f.life / f.maxLife; ctx.fillStyle = f.color; ctx.font = "bold 16px sans-serif";

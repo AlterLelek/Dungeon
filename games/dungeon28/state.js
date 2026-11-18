@@ -11,6 +11,8 @@ export const state = {
   spellDiscount: 0, poisonTurns: 0, poisonDmg: 0, playerSlowTurns: 0, skeletonAlly: null,
   
   isProcessingTurn: false, angelCooldown: 0,
+  caveTint: 0, records: {},
+  elementFx: { lightning: 0, water: 0, earth: 0, fire: 0, wind: 0 },
   
   player: { x: 32, y: 224, px: 32, py: 224, startPx: 32, startPy: 224, isMoving: false, moveStartTime: 0, healFx: 0 },
   stairs: { x: WORLD - 32, y: WORLD - 32, active: false },

@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { initFloor } from './map.js';
+import { initFloor, rollCaveTint, getFloorStage } from './map.js';
 import { draw, preloadSprites } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, CELL, WORLD } from './config.js';
@@ -47,10 +47,20 @@ function flashField(color) {
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
 
+// Рекорды: по одному на режим + герой, с именем игрока
 try {
-    const saved = JSON.parse(localStorage.getItem('pz_highscore'));
-    if (saved) state.highScore = saved;
+    const saved = JSON.parse(localStorage.getItem('pz_records_v2'));
+    if (saved) state.records = saved;
+    else {
+        const old = JSON.parse(localStorage.getItem('pz_highscore'));
+        if (old) state.records['chase_5|' + HEROES[0].name] = { turns: old.turns, name: old.name, hero: HEROES[0].name, mode: 'chase_5', kills: 0, gold: 0, floor: 1 };
+    }
 } catch (e) {}
+
+function recordKey() { return state.gameMode + '|' + HEROES[state.heroIdx].name; }
+function syncCurrentRecord() {
+    state.highScore = state.records[recordKey()] || { turns: 0, name: 'Никто' };
+}
 
 function getWeaponsBySet(set) {
     if (set === 'mage') return MAGE_WEAPONS;
@@ -296,6 +306,12 @@ function updateHUD() {
   document.getElementById('shd-hud').innerText = state.permanentShield + state.tempDef;
   document.getElementById('bonus').innerText = state.weapons[state.weaponLevel].dmg + state.tempAtk;
   document.getElementById('floor-hud').innerText = state.currentFloor;
+  const floorIcon = document.getElementById('floor-icon');
+  if (floorIcon) {
+      const stage = getFloorStage();
+      floorIcon.innerText = ['🕳️', '🧱', '🏰', '🗼', '🌤️'][stage];
+      floorIcon.title = ['Подвал', 'Каменный коридор', 'Крепость', 'Башня', 'Верх башни'][stage];
+  }
   
   const floorMaxEl = document.getElementById('floor-max');
   if (state.gameMode.includes('inf')) {
@@ -428,6 +444,9 @@ function gameLoop() {
       const f = state.floaters[i]; f.y += f.vy; f.life -= 0.02;
       if (f.life <= 0) state.floaters.splice(i, 1);
     }
+    Object.keys(state.elementFx).forEach(k => {
+      if (state.elementFx[k] > 0) state.elementFx[k] = Math.max(0, state.elementFx[k] - 0.012);
+    });
     draw(ctx, bgCanvas); updateHUD();
   }
   requestAnimationFrame(gameLoop);
@@ -451,6 +470,9 @@ function startGame(name) {
     state.spellDiscount = 0; state.poisonTurns = 0; state.poisonDmg = 0;
     state.playerSlowTurns = 0; state.skeletonAlly = null;
     state.angelCooldown = 0; state.isProcessingTurn = false;
+    Object.keys(state.elementFx).forEach(k => state.elementFx[k] = 0);
+    rollCaveTint();
+    syncCurrentRecord();
 
     bgCanvas = initFloor(); updateHUD();
     if (!gameLoopStarted) { gameLoopStarted = true; requestAnimationFrame(gameLoop); }
@@ -535,10 +557,21 @@ document.getElementById('shop-wpn-btn').onclick = () => buyOption('weapon');
 document.getElementById('shop-shd-btn').onclick = () => buyOption('shield');
 document.getElementById('records-btn').onclick = () => { 
   playSound('menu'); document.getElementById('records-panel').style.display = 'block'; 
-  document.getElementById('rec-highscore').innerText = state.highScore.turns;
-  document.getElementById('rec-best-name').innerText = state.highScore.name;
-  document.getElementById('rec-kills').innerText = state.stats.kills;
-  document.getElementById('rec-gold').innerText = state.stats.gold;
+  const list = document.getElementById('rec-list');
+  const entries = Object.values(state.records).sort((a, b) => b.turns - a.turns);
+  if (entries.length === 0) {
+      list.innerHTML = '<div style="color:#9ca3af; text-align:center; padding:8px;">Рекордов пока нет</div>';
+  } else {
+      list.innerHTML = entries.map(r => {
+        const mode = GAME_MODES.find(m => m.id === r.mode)?.short || r.mode || '';
+        return `<div class="record-row">
+          <span class="rec-hero">${HEROES.find(h => h.name === r.hero)?.emoji || '🎮'} ${r.hero}</span>
+          <span class="rec-name">${r.name || 'Никто'}</span>
+          <span class="rec-turns">${r.turns} ход.</span>
+          <span class="rec-detail">${mode}${r.win ? ' · победа' : ''}</span>
+        </div>`;
+      }).join('');
+  }
 };
 document.getElementById('close-records').onclick = () => document.getElementById('records-panel').style.display = 'none';
 document.getElementById('settings-btn').onclick = () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; };

@@ -80,7 +80,7 @@
         <!-- ЦЕНТР (1/6) -->
         <div class="hud-center">
           <div class="floor-container">
-            <div class="floor-icon">🏰</div>
+            <div class="floor-icon" id="floor-icon">🕳️</div>
             <div class="floor-num"><span id="floor-hud">1</span><span id="floor-max">/5</span></div>
           </div>
           <div class="stat-line">👣 <span id="turns">0</span></div>
@@ -137,10 +137,7 @@
 
   <div id="records-panel" class="panel" style="display:none;">
     <h3>🏆 Рекорды</h3>
-    <div>Лучший результат: <span id="rec-highscore">0</span> ходов</div>
-    <div>Имя: <span id="rec-best-name">Никто</span></div>
-    <div>Убито монстров: <span id="rec-kills">0</span></div>
-    <div>Собрано золота: <span id="rec-gold">0</span></div>
+    <div id="rec-list"></div>
     <button id="close-records" class="close-panel">Закрыть</button>
   </div>
 

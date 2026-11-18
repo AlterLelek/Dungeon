@@ -157,6 +157,7 @@ export function castLightning() {
     
     targets.forEach(m => {
         m.hp -= 20; m.lightningFx = 1.0;
+        state.elementFx.lightning = 1.0;
         addFloater(m.x, m.y, "-20", "#fbbf24");
         if (m.hp <= 0) handleMonsterDeath(m, state.monsters.indexOf(m));
     });
@@ -173,7 +174,8 @@ export function castHeal() {
     state.spellHeal--; playSound('magic');
     
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
-    state.player.healFx = 1.0; 
+    state.player.healFx = 1.0;
+    state.elementFx.water = 1.0;
     addFloater(state.player.px, state.player.py, "+30hp", "#22c55e");
     return true;
 }
@@ -185,6 +187,7 @@ export function castStun() {
     state.spellStun--; playSound('magic');
     
     state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; m.stunFx = 1.0; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
+    state.elementFx.water = 1.0;
     return true;
 }
 
@@ -204,7 +207,8 @@ export function castHurricane() {
         nx = Math.max(0, Math.min(WORLD - CELL, nx)); ny = Math.max(0, Math.min(WORLD - CELL, ny));
         m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py;
         m.moveStartTime = performance.now(); m.isMoving = true;
-        m.spinFx = 1.0; 
+        m.spinFx = 1.0;
+        state.elementFx.wind = 1.0;
         addFloater(m.x, m.y, "🌪️", "#a855f7");
     });
     return true;
@@ -343,16 +347,21 @@ export function movePlayer(dx, dy) {
   
   if (victimIdx === -1) {
     const hero = HEROES[state.heroIdx];
+    // Лучник с базовой дальностью 2 бьёт любого монстра в радиусе 2 клеток,
+    // включая диагонали, даже если соседняя клетка свободна.
     if (hero.set === 'archer' && state.heroAttackRange >= 2) {
-      const tx = nx + dx, ty = ny + dy;
-      if (tx >= 0 && tx < WORLD && ty >= 0 && ty < WORLD) {
-        const rangedIdx = state.monsters.findIndex(m => m.x === tx && m.y === ty);
-        if (rangedIdx !== -1) {
-          const m = state.monsters[rangedIdx]; fight(m, rangedIdx, true);
-          if (!m.slowedByArrow && m.hp > 0) { m.slowTurns = 1; m.slowedByArrow = true; addFloater(m.x, m.y, "❄️", "#38bdf8"); } 
-          else if (m.hp > 0) m.slowedByArrow = false;
-          processTurnEnd(); return;
-        }
+      const range = CELL * 2;
+      const target = state.monsters.find(m =>
+        Math.abs(m.x - state.player.x) <= range &&
+        Math.abs(m.y - state.player.y) <= range &&
+        (m.x !== nx || m.y !== ny)
+      );
+      if (target) {
+        const rangedIdx = state.monsters.indexOf(target);
+        fight(target, rangedIdx, true);
+        if (!target.slowedByArrow && target.hp > 0) { target.slowTurns = 1; target.slowedByArrow = true; addFloater(target.x, target.y, "❄️", "#38bdf8"); }
+        else if (target.hp > 0) target.slowedByArrow = false;
+        processTurnEnd(); return;
       }
     }
   }
@@ -370,6 +379,9 @@ export function movePlayer(dx, dy) {
   state.player.moveStartTime = performance.now(); state.player.isMoving = true;
   playSound('step'); 
   
+  if (state.permanentShield > 0) state.elementFx.earth = 1.0;
+  if (state.tempAtk > 0) state.elementFx.fire = 1.0;
+
   if (state.stairs.active && nx === state.stairs.x && ny === state.stairs.y) {
     advanceFloor(); return;
   }
@@ -455,9 +467,19 @@ function endGame(win = false) {
   playSound(win ? 'collect' : 'hit');
 
   const heroName = localStorage.getItem('pz_heroName') || 'Гость';
-  if (state.totalTurns > state.highScore.turns) {
-      state.highScore = { turns: state.totalTurns, name: heroName };
-      try { localStorage.setItem('pz_highscore', JSON.stringify(state.highScore)); } catch (e) {}
+
+  // Рекорд хранится отдельно для каждого режима и героя, вместе с именем игрока
+  const hero = HEROES[state.heroIdx].name;
+  const key = state.gameMode + '|' + hero;
+  const prev = state.records[key];
+  if (!prev || state.totalTurns > prev.turns) {
+      state.records[key] = {
+          turns: state.totalTurns, name: heroName, hero: hero,
+          mode: state.gameMode, kills: state.stats.kills, gold: state.stats.gold,
+          floor: state.currentFloor, win: win
+      };
+      state.highScore = state.records[key];
+      try { localStorage.setItem('pz_records_v2', JSON.stringify(state.records)); } catch (e) {}
   }
 
   const message = win
