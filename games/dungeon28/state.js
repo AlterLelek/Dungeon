@@ -1,4 +1,4 @@
-import { HEROES, ENEMY_BASE, WARRIOR_WEAPONS } from './config.js';
+import { HEROES, ENEMY_BASE, WARRIOR_WEAPONS, WORLD } from './config.js';
 
 export const state = {
   goldCount: 0, playerHp: 100, playerMp: 0, maxMp: 0,
@@ -12,8 +12,8 @@ export const state = {
   
   isProcessingTurn: false, angelCooldown: 0,
   
-  player: { x: 32, y: 160, px: 32, py: 160, startPx: 32, startPy: 160, isMoving: false, moveStartTime: 0, healFx: 0 },
-  stairs: { x: 288, y: 288, active: false },
+  player: { x: 32, y: 224, px: 32, py: 224, startPx: 32, startPy: 224, isMoving: false, moveStartTime: 0, healFx: 0 },
+  stairs: { x: WORLD - 32, y: WORLD - 32, active: false },
   
   heroIdx: 0, gameMode: 'chase_5', gameActive: false, weapons: WARRIOR_WEAPONS,
   stats: { kills: 0, gold: 0, floors: 0 },

@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { initFloor } from './map.js';
 import { draw, preloadSprites } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE } from './config.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, CELL, WORLD } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
@@ -13,23 +13,36 @@ const errorMsg = document.getElementById('error-msg');
 const btnRandomName = document.getElementById('btn-random-name');
 
 const canvas = document.createElement('canvas');
-canvas.width = 320; canvas.height = 320;
+canvas.width = WORLD; canvas.height = WORLD;
 const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
-// Ширина контента 326px, высота с HUD и пультом ≈ 700px.
-// Масштабируем так, чтобы на ПК и телефоне поле с пультом занимали весь экран.
+// Поле 15×15 без D-pad: ширина контента 480px, высота с HUD ≈ 760px.
+// Масштабируем по защите экрана, затем растягиваем блоки по высоте.
 function fitGameScreen() {
     const scale = Math.min(
-        window.innerWidth / 326,
-        window.innerHeight / 700,
+        window.innerWidth / (WORLD + 8),
+        window.innerHeight / 760,
         2.5
     );
-    document.documentElement.style.setProperty('--game-scale', Math.max(0.45, scale).toFixed(3));
+    document.documentElement.style.setProperty('--game-scale', Math.max(0.4, scale).toFixed(3));
 }
 window.addEventListener('resize', fitGameScreen);
 fitGameScreen();
+
+// Цветная подсветка краёв поля при заклинании
+let flashTimer = null;
+function flashField(color) {
+    const el = document.getElementById('magic-flash');
+    if (!el) return;
+    el.style.setProperty('--flash-color', color);
+    el.classList.remove('active');
+    void el.offsetWidth; // перезапуск анимации
+    el.classList.add('active');
+    if (flashTimer) clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => el.classList.remove('active'), 320);
+}
 
 document.getElementById('ver-login').innerText = VERSION;
 document.getElementById('ver-game').innerText = VERSION;
@@ -459,16 +472,17 @@ document.addEventListener('keydown', (e) => {
   const key = e.key.toLowerCase();
   const mode = state.settings.keysMode || 'all';
 
-  if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp') || ((mode === 'all' || mode === 'wasd') && (key === 'w' || key === 'ц'))) movePlayer(0, -32);
-  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown') || ((mode === 'all' || mode === 'wasd') && (key === 's' || key === 'ы'))) movePlayer(0, 32);
-  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft') || ((mode === 'all' || mode === 'wasd') && (key === 'a' || key === 'ф'))) movePlayer(-32, 0);
-  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight') || ((mode === 'all' || mode === 'wasd') && (key === 'd' || key === 'в'))) movePlayer(32, 0);
+  if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowUp') || ((mode === 'all' || mode === 'wasd') && (key === 'w' || key === 'ц'))) movePlayer(0, -CELL);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowDown') || ((mode === 'all' || mode === 'wasd') && (key === 's' || key === 'ы'))) movePlayer(0, CELL);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowLeft') || ((mode === 'all' || mode === 'wasd') && (key === 'a' || key === 'ф'))) movePlayer(-CELL, 0);
+  else if (((mode === 'all' || mode === 'arrows') && e.key === 'ArrowRight') || ((mode === 'all' || mode === 'wasd') && (key === 'd' || key === 'в'))) movePlayer(CELL, 0);
 
-  else if (key === '1' || key === 'z' || key === 'я') { castLightning(); updateHUD(); }
-  else if (key === '2' || key === 'x' || key === 'ч') { castHeal(); updateHUD(); }
-  else if (key === '3' || key === 'c' || key === 'с') { castStun(); updateHUD(); }
-  else if (key === '4' || key === 'v' || key === 'м') { castHurricane(); updateHUD(); }
-  else if (key === '`' || key === 'ё' || key === '~') { activateAbility(); updateHUD(); }
+  else if (key === '1' || key === 'z' || key === 'я') { if (castLightning()) flashField('#fbbf24'); updateHUD(); }
+  else if (key === '2' || key === 'x' || key === 'ч') { if (castHeal()) flashField('#22c55e'); updateHUD(); }
+  else if (key === '3' || key === 'c' || key === 'с') { if (castStun()) flashField('#38bdf8'); updateHUD(); }
+  else if (key === '4' || key === 'v' || key === 'м') { if (castHurricane()) flashField('#a855f7'); updateHUD(); }
+  else if (key === '`' || key === 'ё' || key === '~') { if (activateAbility()) flashField('#fbbf24'); updateHUD(); }
+  else if (e.key === ' ') { e.preventDefault(); skipTurn(); }
   else if (key === 'm' || key === 'ь') { document.getElementById('shop-panel').style.display = 'block'; updateShop(); }
 
   if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) e.preventDefault();
@@ -495,11 +509,25 @@ btnGuest.onclick = () => {
     errorMsg.innerText = ""; playSound('menu'); startGame(name);
 };
 document.getElementById('btn-google').onclick = () => { errorMsg.innerText = "Google отключен."; };
-document.getElementById('btn-light').onclick = () => { castLightning(); updateHUD(); };
-document.getElementById('btn-heal').onclick = () => { castHeal(); updateHUD(); };
-document.getElementById('btn-stun').onclick = () => { castStun(); updateHUD(); };
-document.getElementById('btn-hurricane').onclick = () => { castHurricane(); updateHUD(); };
-document.getElementById('ability-btn').onclick = () => { activateAbility(); updateHUD(); };
+document.getElementById('btn-light').onclick = () => { if (castLightning()) flashField('#fbbf24'); updateHUD(); };
+document.getElementById('btn-heal').onclick = () => { if (castHeal()) flashField('#22c55e'); updateHUD(); };
+document.getElementById('btn-stun').onclick = () => { if (castStun()) flashField('#38bdf8'); updateHUD(); };
+document.getElementById('btn-hurricane').onclick = () => { if (castHurricane()) flashField('#a855f7'); updateHUD(); };
+document.getElementById('ability-btn').onclick = () => { if (activateAbility()) flashField('#fbbf24'); updateHUD(); };
+
+// Клик по полю: соседняя клетка = ход, клик по герою = пропуск хода
+canvas.addEventListener('click', (e) => {
+    if (!state.gameActive || state.isProcessingTurn) return;
+    const r = canvas.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width * canvas.width;
+    const py = (e.clientY - r.top) / r.height * canvas.height;
+    const x = Math.floor(px / CELL) * CELL;
+    const y = Math.floor(py / CELL) * CELL;
+
+    if (x === state.player.x && y === state.player.y) { skipTurn(); return; }
+    if (Math.abs(x - state.player.x) + Math.abs(y - state.player.y) !== CELL) return;
+    movePlayer(x - state.player.x, y - state.player.y);
+});
 
 document.getElementById('shop-btn').onclick = () => { playSound('menu'); document.getElementById('shop-panel').style.display = 'block'; updateShop(); };
 document.getElementById('close-shop').onclick = () => document.getElementById('shop-panel').style.display = 'none';

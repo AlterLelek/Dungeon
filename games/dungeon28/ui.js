@@ -1,4 +1,4 @@
-import { CELL, HEROES, MONSTER_SKINS } from './config.js';
+import { CELL, WORLD, HEROES, MONSTER_SKINS } from './config.js';
 import { state, getTotalAtk, getTotalDef } from './state.js';
 
 const spriteCache = {};
@@ -105,11 +105,11 @@ function drawItem(ctx, x, y, type) {
 }
 
 export function draw(ctx, bgCanvas) {
-  ctx.globalAlpha = 1.0; ctx.clearRect(0, 0, 320, 320);
-  if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); else { ctx.fillStyle = "#241f1d"; ctx.fillRect(0, 0, 320, 320); }
+  ctx.globalAlpha = 1.0; ctx.clearRect(0, 0, WORLD, WORLD);
+  if (bgCanvas) ctx.drawImage(bgCanvas, 0, 0); else { ctx.fillStyle = "#241f1d"; ctx.fillRect(0, 0, WORLD, WORLD); }
   
   ctx.strokeStyle = "rgba(90,80,70,0.4)"; ctx.lineWidth = 1;
-  for (let i = 0; i <= 320; i += CELL) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 320); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(320, i); ctx.stroke(); }
+  for (let i = 0; i <= WORLD; i += CELL) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, WORLD); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(WORLD, i); ctx.stroke(); }
 
   drawStairs(ctx);
   state.corpses.forEach(c => { drawTombstone(ctx, c.x, c.y); });

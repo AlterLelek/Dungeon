@@ -61,16 +61,20 @@
         <div class="hud-hero">
           <div class="hero-stats">
             <div class="hs-title" id="hero-name-label">ГЕРОЙ</div>
-            <div class="stat-line">❤️ <span id="hp">100</span></div>
-            <div class="stat-line">🛡️ <span id="shd-hud">0</span></div>
-            <div class="stat-line">💪 <span id="bonus">1</span></div>
-            <div class="stat-line" id="hero-weapon">
-                <span class="w-icon">⚔️</span> 
-                <span id="w-dmg">1</span> 
-                <span id="w-name" class="w-name">Кулаки</span>
+            <div class="hero-main-row">
+              <div class="hero-vitals">
+                <div class="stat-line">❤️ <span id="hp">100</span></div>
+                <div class="stat-line">🛡️ <span id="shd-hud">0</span></div>
+                <div class="stat-line">💪 <span id="bonus">1</span></div>
+              </div>
+              <div class="hero-fig" id="hero-fig">⚔️</div>
+            </div>
+            <div class="hero-weapon-row" id="hero-weapon">
+              <span class="w-icon">⚔️</span>
+              <span id="w-dmg">1</span>
+              <span id="w-name" class="w-name">Кулаки</span>
             </div>
           </div>
-          <div class="hero-fig" id="hero-fig">⚔️</div>
         </div>
         
         <!-- ЦЕНТР (1/6) -->
@@ -110,14 +114,8 @@
         <div id="magic-flash"></div>
       </div>
 
-      <div class="dpad" style="margin-top: 10px;">
-        <button class="btn wide-row" onclick="movePlayer(0,-32)">▲ W</button>
-        <button class="btn" onclick="movePlayer(-32,0)">◀ A</button>
-        <button class="btn" style="background-color:#e11d48;" onclick="skipTurn()">● Пропуск</button>
-        <button class="btn" onclick="movePlayer(32,0)">▶ D</button>
-        <button class="btn wide-row" onclick="movePlayer(0,32)">▼ S</button>
-      </div>
-      <div style="text-align:center; color:#9ca3af; font-size:12px; margin-top:10px;">Версия: <span id="ver-game"></span></div>
+      <div class="game-hint">Клик по соседней клетке — ход · клик по герою — пропуск</div>
+      <div style="text-align:center; color:#9ca3af; font-size:12px;">Версия: <span id="ver-game"></span></div>
     </div>
   </div>
 

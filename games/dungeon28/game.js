@@ -1,4 +1,4 @@
-import { CELL, ITEM_TYPES, HEROES, ENEMY_BASE } from './config.js';
+import { CELL, WORLD, ITEM_TYPES, HEROES, ENEMY_BASE } from './config.js';
 import { state, getTotalAtk, getTotalDef, randomInt, clearBonuses } from './state.js';
 import { initFloor, findFreeCell, placeMonster } from './map.js';
 import { playSound } from './audio.js'; 
@@ -18,12 +18,12 @@ export function addFloater(x, y, text, color) {
 }
 
 export function activateAbility() {
-    if (state.abilityCooldown > 0 || state.abilityTurns > 0) return;
+    if (state.abilityCooldown > 0 || state.abilityTurns > 0) return false;
 
     const hero = HEROES[state.heroIdx];
     if (hero.name === 'Ангел' && state.angelCooldown > 0) {
         addFloater(state.player.px, state.player.py, "КД!", "#ef4444");
-        return;
+        return false;
     }
 
     state.abilityTurns = 5;
@@ -40,6 +40,7 @@ export function activateAbility() {
         addFloater(state.player.px, state.player.py, "+50 HP", "#fbbf24");
     }
     playSound('magic');
+    return true;
 }
 
 function processTurnEnd() {
@@ -112,7 +113,7 @@ function handleMonsterDeath(m, index) {
       for (let d of dirs) {
           if (spawned >= 2) break;
           const nx = m.x + d[0] * CELL, ny = m.y + d[1] * CELL;
-          if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320 && !state.monsters.some(o => o.x === nx && o.y === ny) && !(state.player.x === nx && state.player.y === ny)) {
+          if (nx >= 0 && nx < WORLD && ny >= 0 && ny < WORLD && !state.monsters.some(o => o.x === nx && o.y === ny) && !(state.player.x === nx && state.player.y === ny)) {
               const newHp = Math.max(1, Math.floor(m.maxHp / 3)), newAtk = Math.max(1, Math.floor(m.atk / 3));
               placeMonster("🐭", newHp, newAtk, m.behavior, nx, ny);
               const newMouse = state.monsters.find(o => o.x === nx && o.y === ny);
@@ -145,9 +146,10 @@ export function fight(m, index, ranged = false) {
 }
 
 export function castLightning() {
-    if (state.spellLightning <= 0) return;
-    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= 64 && Math.abs(m.y - state.player.y) <= 64);
-    if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return; }
+    if (state.spellLightning <= 0) return false;
+    const range = CELL * 2;
+    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= range && Math.abs(m.y - state.player.y) <= range);
+    if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
     if (state.playerMp >= cost) state.playerMp -= cost;
@@ -158,12 +160,13 @@ export function castLightning() {
         addFloater(m.x, m.y, "-20", "#fbbf24");
         if (m.hp <= 0) handleMonsterDeath(m, state.monsters.indexOf(m));
     });
+    return true;
 }
 
 export function castHeal() {
-    if (state.spellHeal <= 0) return;
+    if (state.spellHeal <= 0) return false;
     const maxHp = state.devSettings.heroes[state.heroIdx].maxHp;
-    if (state.playerHp >= maxHp) { addFloater(state.player.px, state.player.py, "Полное HP", "#9ca3af"); return; }
+    if (state.playerHp >= maxHp) { addFloater(state.player.px, state.player.py, "Полное HP", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 3 - state.spellDiscount);
     if (state.playerMp >= cost) state.playerMp -= cost;
@@ -172,21 +175,24 @@ export function castHeal() {
     state.playerHp += 30; if (state.playerHp > maxHp) state.playerHp = maxHp;
     state.player.healFx = 1.0; 
     addFloater(state.player.px, state.player.py, "+30hp", "#22c55e");
+    return true;
 }
 
 export function castStun() {
-    if (state.spellStun <= 0) return;
+    if (state.spellStun <= 0) return false;
     const cost = Math.max(0, 2 - state.spellDiscount);
     if (state.playerMp >= cost) state.playerMp -= cost;
     state.spellStun--; playSound('magic');
     
     state.monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; m.stunFx = 1.0; addFloater(m.x, m.y, "❄️", "#38bdf8"); });
+    return true;
 }
 
 export function castHurricane() {
-    if (state.spellHurricane <= 0) return;
-    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= 64 && Math.abs(m.y - state.player.y) <= 64);
-    if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return; }
+    if (state.spellHurricane <= 0) return false;
+    const range = CELL * 2;
+    const targets = state.monsters.filter(m => Math.abs(m.x - state.player.x) <= range && Math.abs(m.y - state.player.y) <= range);
+    if (targets.length === 0) { addFloater(state.player.px, state.player.py, "Нет целей", "#9ca3af"); return false; }
     
     const cost = Math.max(0, 4 - state.spellDiscount);
     if (state.playerMp >= cost) state.playerMp -= cost;
@@ -195,12 +201,13 @@ export function castHurricane() {
     targets.forEach(m => {
         let nx = m.x + Math.sign(m.x - state.player.x) * CELL * 3;
         let ny = m.y + Math.sign(m.y - state.player.y) * CELL * 3;
-        nx = Math.max(0, Math.min(288, nx)); ny = Math.max(0, Math.min(288, ny));
+        nx = Math.max(0, Math.min(WORLD - CELL, nx)); ny = Math.max(0, Math.min(WORLD - CELL, ny));
         m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py;
         m.moveStartTime = performance.now(); m.isMoving = true;
         m.spinFx = 1.0; 
         addFloater(m.x, m.y, "🌪️", "#a855f7");
     });
+    return true;
 }
 
 function monsterAttack(m) {
@@ -309,7 +316,7 @@ function moveMonsters() {
             if (Math.abs(dx) <= CELL && Math.abs(dy) <= CELL && (dx === 0 || dy === 0)) { monsterAttack(m); break; }
             let nx = m.x, ny = m.y;
             if (Math.abs(dx) >= Math.abs(dy)) nx += Math.sign(dx) * CELL; else ny += Math.sign(dy) * CELL;
-            if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320 && !state.monsters.some(o => o !== m && o.x === nx && o.y === ny) && !(nx === state.player.x && ny === state.player.y)) {
+            if (nx >= 0 && nx < WORLD && ny >= 0 && ny < WORLD && !state.monsters.some(o => o !== m && o.x === nx && o.y === ny) && !(nx === state.player.x && ny === state.player.y)) {
                 m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py; m.moveStartTime = performance.now(); m.isMoving = true;
             } else break; 
         }
@@ -317,7 +324,7 @@ function moveMonsters() {
     } else if (m.actionState === 1) {
         const dist = randomInt(1, 4), dirs = [[1,0], [-1,0], [0,1], [0,-1]], dir = dirs[Math.floor(Math.random() * 4)];
         let nx = m.x + dir[0] * dist * CELL, ny = m.y + dir[1] * dist * CELL;
-        if (nx >= 0 && nx < 320 && ny >= 0 && ny < 320 && !state.monsters.some(o => o !== m && o.x === nx && o.y === ny) && !(nx === state.player.x && ny === state.player.y)) {
+        if (nx >= 0 && nx < WORLD && ny >= 0 && ny < WORLD && !state.monsters.some(o => o !== m && o.x === nx && o.y === ny) && !(nx === state.player.x && ny === state.player.y)) {
             m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py; m.moveStartTime = performance.now(); m.isMoving = true;
         }
         m.actionState = 2; m.restTimer = randomInt(1, 3); 
@@ -331,14 +338,14 @@ export function movePlayer(dx, dy) {
   if (!state.gameActive || state.playerHp <= 0 || floorClearTimer || state.isProcessingTurn) return;
   
   let nx = state.player.x + dx, ny = state.player.y + dy;
-  if (nx < 0 || nx >= 320 || ny < 0 || ny >= 320) return;
+  if (nx < 0 || nx >= WORLD || ny < 0 || ny >= WORLD) return;
   let victimIdx = state.monsters.findIndex(m => m.x === nx && m.y === ny);
   
   if (victimIdx === -1) {
     const hero = HEROES[state.heroIdx];
     if (hero.set === 'archer' && state.heroAttackRange >= 2) {
       const tx = nx + dx, ty = ny + dy;
-      if (tx >= 0 && tx < 320 && ty >= 0 && ty < 320) {
+      if (tx >= 0 && tx < WORLD && ty >= 0 && ty < WORLD) {
         const rangedIdx = state.monsters.findIndex(m => m.x === tx && m.y === ty);
         if (rangedIdx !== -1) {
           const m = state.monsters[rangedIdx]; fight(m, rangedIdx, true);

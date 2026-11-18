@@ -1,8 +1,9 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.141";
-export const GRID = 10;          
-export const CELL = 32;          
+export const VERSION = "5.142";
+export const GRID = 15;          // поле 15×15 клеток
+export const CELL = 32;
+export const WORLD = GRID * CELL; // 480px, размер игрового поля
 
 export { HEROES };
 
