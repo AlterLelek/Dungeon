@@ -167,7 +167,7 @@ export function fight(m, index, ranged = false) {
 
   if (pDmg < 1) pDmg = 1;
   m.hp -= pDmg; addFloater(m.x, m.y, "-" + pDmg, "#ef4444");
-  if (m.hp > 0) devilRegenOnHit(m);
+  if (m.hp > 0) startDevilRegen(m);
 
   // Критический ИИ: лучник вампирит половину нанесённого урона
   if (isArcher && state.settings.criticalAI) {
@@ -204,7 +204,7 @@ export function castLightning() {
         m.hp -= 20; m.lightningFx = 1.0;
         state.elementFx.lightning = 1.0;
         addFloater(m.x, m.y, "-20", "#fbbf24");
-        if (m.hp > 0) devilRegenOnHit(m);
+        if (m.hp > 0) startDevilRegen(m);
         if (m.hp <= 0) handleMonsterDeath(m, state.monsters.indexOf(m));
     });
     return true;
@@ -284,8 +284,9 @@ function monsterAttack(m) {
     if (m.type === "👻") { state.playerMp = Math.max(0, state.playerMp - 2); addFloater(state.player.px, state.player.py, "-2 MP", "#3b82f6"); }
     if (m.type === "🕷") { if (state.playerSlowTurns === 0) state.playerSlowTurns = 3; else state.playerSlowTurns += 1; addFloater(state.player.px, state.player.py, "🕸️", "#38bdf8"); }
     if (m.type === "🧟") {
-      if (state.poisonTurns > 0) { state.poisonDmg = Math.min(8, state.poisonDmg + 2); state.poisonTurns = 2; }
-      else { state.poisonDmg = 3; state.poisonTurns = 2; }
+      // Каждый удар зомби: -3, затем -2. Повтор начинает заново, без усиления.
+      state.poisonDmg = 3;
+      state.poisonTurns = 2;
       addFloater(state.player.px, state.player.py, "☠️", "#22c55e");
     }
 
@@ -302,13 +303,11 @@ function monsterAttack(m) {
   }
 }
 
-// Черт восстанавливается только после полученного урона: +1 сразу,
-// затем +2, +3, +4, +5 в следующие ходы и стоп до новой атаки.
-function devilRegenOnHit(m) {
+// Черт начинает лечение со следующего хода после полученного урона:
+// +1, +2, +3, +4, +5, дальше 0. Новая атака обнуляет счётчик.
+function startDevilRegen(m) {
   if (m.type !== "😈" || m.hp <= 0) return;
-  m.hp = Math.min(m.maxHp, m.hp + 1);
-  m.regenStep = 1;
-  addFloater(m.x, m.y, "+1", "#22c55e");
+  m.regenStep = 0;
 }
 
 function findClosestItem(m, type) {
@@ -376,8 +375,8 @@ function moveMonsters() {
         if (dx <= CELL * 3 && dy <= CELL * 3) { monsterAttack(m); addFloater(m.x, m.y, "🏹", "#f59e0b"); return; }
     }
     
-    if (m.type === "😈" && m.regenStep > 0 && m.regenStep < 5 && m.hp < m.maxHp) {
-        const amount = m.regenStep + 1; // +2, +3, +4, +5
+    if (m.type === "😈" && m.regenStep >= 0 && m.regenStep < 5 && m.hp < m.maxHp) {
+        const amount = m.regenStep + 1; // +1, +2, +3, +4, +5
         m.regenStep++;
         m.hp = Math.min(m.maxHp, m.hp + amount);
         addFloater(m.x, m.y, "+" + amount, "#22c55e");
@@ -518,7 +517,10 @@ function tickEffects() {
     state.corpses.forEach(c => c.decay--); state.corpses = state.corpses.filter(c => c.decay > 0);
     if (state.poisonTurns > 0) {
         state.lastDamageSource = 'poison'; // магия зомби: смерть от яда считается отдельно
-        state.playerHp -= state.poisonDmg; state.poisonTurns--; addFloater(state.player.px, state.player.py, "-" + state.poisonDmg + " яд", "#22c55e");
+        state.playerHp -= state.poisonDmg;
+        addFloater(state.player.px, state.player.py, "-" + state.poisonDmg + " яд", "#22c55e");
+        state.poisonDmg = Math.max(0, state.poisonDmg - 1); // -3, затем -2; новый удар снова даёт 3
+        state.poisonTurns--;
         if (state.playerHp <= 0) endGame(false);
     }
     if (state.playerSlowTurns > 0) state.playerSlowTurns--;
