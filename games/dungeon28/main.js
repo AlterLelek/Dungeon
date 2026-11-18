@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { initFloor, rollCaveTint, getFloorStage } from './map.js';
 import { draw, preloadSprites, getActiveEffects } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
-import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, CELL, WORLD } from './config.js';
+import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, DEATH_CAUSES, CELL, WORLD } from './config.js';
 import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js'; 
 
 const loginScreen = document.getElementById('login-screen');
@@ -93,6 +93,12 @@ try {
         const old = JSON.parse(localStorage.getItem('pz_highscore'));
         if (old) state.records['chase_5|' + HEROES[0].name] = { turns: old.turns, name: old.name, hero: HEROES[0].name, mode: 'chase_5', kills: 0, gold: 0, floor: 1 };
     }
+} catch (e) {}
+
+// Рекорды смертей: по всем монстрам и отдельно по магии (яд)
+try {
+    const savedDeaths = JSON.parse(localStorage.getItem('pz_death_causes'));
+    if (savedDeaths) state.deathCauses = savedDeaths;
 } catch (e) {}
 
 function recordKey() { return state.gameMode + '|' + HEROES[state.heroIdx].name; }
@@ -467,7 +473,7 @@ function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2
 function gameLoop() {
   if (state.gameActive) {
     const now = performance.now();
-    const PLAYER_DUR = 400; const MON_DUR = 250; 
+    const PLAYER_DUR = 220; const MON_DUR = 150; // ×2 быстрее; у монстров своя длительность шага
     if (state.player.isMoving) {
         let t = (now - state.player.moveStartTime) / PLAYER_DUR;
         if (t >= 1) t = 1;
@@ -478,7 +484,7 @@ function gameLoop() {
     }
     state.monsters.forEach(m => {
         if (m.isMoving) {
-            let t = (now - m.moveStartTime) / MON_DUR;
+            let t = (now - m.moveStartTime) / (m.moveDur || MON_DUR);
             if (t >= 1) t = 1;
             let ease = easeInOutQuad(t);
             m.px = m.startPx + (m.x - m.startPx) * ease;
@@ -487,11 +493,11 @@ function gameLoop() {
         } else { m.px = m.x; m.py = m.y; }
     });
     for (let i = state.floaters.length - 1; i >= 0; i--) {
-      const f = state.floaters[i]; f.y += f.vy; f.life -= 0.02;
+      const f = state.floaters[i]; f.y += f.vy; f.life -= 0.035;
       if (f.life <= 0) state.floaters.splice(i, 1);
     }
     Object.keys(state.elementFx).forEach(k => {
-      if (state.elementFx[k] > 0) state.elementFx[k] = Math.max(0, state.elementFx[k] - 0.012);
+      if (state.elementFx[k] > 0) state.elementFx[k] = Math.max(0, state.elementFx[k] - 0.02);
     });
     draw(ctx, bgCanvas); updateHUD();
   }
@@ -510,6 +516,7 @@ function startGame(name) {
     state.weapons = getWeaponsBySet(hero.set); state.weaponLevel = 0;
     state.currentFloor = 1; state.gameActive = true;
     state.goldCount = 0; state.totalTurns = 0; state.stats = { kills: 0, gold: 0, floors: 0 };
+    state.itemSpawnProgress = 0; state.lastDamageSource = null;
     state.tempAtk = 0; state.tempDef = 0; state.permanentShield = 0;
     state.spellLightning = 0; state.spellHeal = 0; state.spellStun = 0; state.spellHurricane = 0;
     state.abilityCooldown = 0; state.abilityTurns = 0; state.heroAttackRange = hero.attackRange;
@@ -647,10 +654,11 @@ document.getElementById('records-btn').onclick = () => {
   playSound('menu'); document.getElementById('records-panel').style.display = 'block'; 
   const list = document.getElementById('rec-list');
   const entries = Object.values(state.records).sort((a, b) => b.turns - a.turns);
+  let html = '';
   if (entries.length === 0) {
-      list.innerHTML = '<div style="color:#9ca3af; text-align:center; padding:8px;">Рекордов пока нет</div>';
+      html += '<div style="color:#9ca3af; text-align:center; padding:8px;">Рекордов пока нет</div>';
   } else {
-      list.innerHTML = entries.map(r => {
+      html += entries.map(r => {
         const mode = GAME_MODES.find(m => m.id === r.mode)?.short || r.mode || '';
         return `<div class="record-row">
           <span class="rec-hero">${HEROES.find(h => h.name === r.hero)?.emoji || '🎮'} ${r.hero}</span>
@@ -660,6 +668,22 @@ document.getElementById('records-btn').onclick = () => {
         </div>`;
       }).join('');
   }
+
+  const plural = n => {
+    const a = n % 10, b = n % 100;
+    if (a === 1 && b !== 11) return 'раз';
+    if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'раза';
+    return 'раз';
+  };
+  html += '<div class="rec-subtitle">💀 Причины смерти</div>';
+  html += DEATH_CAUSES.map(c => {
+    const n = state.deathCauses[c.key] || 0;
+    return `<div class="record-row death-row${n ? '' : ' death-zero'}">
+      <span class="rec-hero">${c.icon} ${c.label}</span>
+      <span class="rec-turns">${n} ${plural(n)}</span>
+    </div>`;
+  }).join('');
+  list.innerHTML = html;
 };
 document.getElementById('close-records').onclick = () => document.getElementById('records-panel').style.display = 'none';
 document.getElementById('settings-btn').onclick = () => { playSound('menu'); document.getElementById('settings-panel').style.display = 'block'; };

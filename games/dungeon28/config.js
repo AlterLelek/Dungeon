@@ -1,6 +1,6 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.150";
+export const VERSION = "5.151";
 export const GRID = 15;          // поле 15×15 клеток
 export const CELL = 32;
 export const WORLD = GRID * CELL; // 480px, размер игрового поля
@@ -52,6 +52,19 @@ export const ENEMY_NAMES = {
   "👺": "Огр", "🧟": "Зомби", "🐢": "Черепаха", "😈": "Черт", 
   "🧙‍♂️": "Некромант", "🦹": "Тёмный арбалетчик"
 };
+
+// Причины смерти: все монстры, их магия (яд) и прочее.
+export const ENEMY_KILLER_NAMES = {
+  "💀": "убит скелетом", "👻": "убит призраком", "🐭": "убит мышью", "🕷": "убит пауком",
+  "👺": "убит огром", "🧟": "убит зомби", "🐢": "убит черепахой", "😈": "убит чертом",
+  "🧙‍♂️": "убит некромантом", "🦹": "убит тёмным арбалетчиком"
+};
+
+export const DEATH_CAUSES = [
+  ...ENEMY_TYPES.map(t => ({ key: t, icon: t, label: ENEMY_KILLER_NAMES[t] })),
+  { key: 'poison', icon: '☠️', label: 'убит ядом' },
+  { key: 'unknown', icon: '❓', label: 'другая причина' }
+];
 
 export const ENEMY_BASE = {
   "💀": {hp:100, atk:5, def:0, speed:1, interest1:"Герой", interest2:"Атака", special:"Вампиризм"},

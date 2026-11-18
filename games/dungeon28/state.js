@@ -12,6 +12,9 @@ export const state = {
   
   isProcessingTurn: false, angelCooldown: 0,
   caveTint: 0, records: {},
+
+  // Частота появления бонусов и причина последней смерти героя
+  itemSpawnProgress: 0, lastDamageSource: null, deathCauses: {},
   elementFx: { lightning: 0, water: 0, earth: 0, fire: 0, wind: 0 },
   
   player: { x: 32, y: 224, px: 32, py: 224, startPx: 32, startPy: 224, isMoving: false, moveStartTime: 0, healFx: 0 },

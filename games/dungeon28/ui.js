@@ -164,7 +164,7 @@ export function draw(ctx, bgCanvas) {
   state.monsters.forEach(m => {
     if (m.isStunned) { ctx.fillStyle = "rgba(56,189,248,0.3)"; ctx.beginPath(); ctx.arc(m.px + CELL/2, m.py + CELL/2, 14, 0, Math.PI*2); ctx.fill(); }
     
-    const bobY = Math.sin(now / 300 + (m.x + m.y)) * 2;
+    const bobY = Math.sin(now / 260 + (m.bobPhase || 0)) * 2;
     
     if (m.spinFx > 0) {
         ctx.save(); ctx.translate(m.px + CELL/2, m.py + CELL/2); ctx.rotate(m.spinFx * Math.PI * 4); ctx.translate(-(m.px + CELL/2), -(m.py + CELL/2));
@@ -179,6 +179,7 @@ export function draw(ctx, bgCanvas) {
         ctx.fillStyle = "rgba(251,191,36,0.4)"; ctx.fillRect(m.px, m.py, CELL, CELL); m.lightningFx -= 0.05;
     }
     drawBars(ctx, m.px, m.py, m.hp, m.maxHp, m.def, m.atk);
+    if (m.actionState === 2 && m.restTimer > 0) drawCell(ctx, m.px, m.py - 8, "💤", 12);
   });
 
   ctx.globalAlpha = 1.0;

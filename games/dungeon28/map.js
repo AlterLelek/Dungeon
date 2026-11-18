@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { CELL, WORLD, MONSTER_SKINS, ENEMY_BASE, ENEMY_TYPES } from './config.js';
+import { CELL, WORLD, GRID, MONSTER_SKINS, ENEMY_BASE, ENEMY_TYPES } from './config.js';
 
 // Полутоновые оттенки пещеры — выбираются заново при каждом запуске игры
 const CAVE_TINTS = [
@@ -51,16 +51,30 @@ export function getFloorStage() {
     return state.gameMode.includes('inf') ? idx % total : Math.min(total - 1, Math.max(0, idx));
 }
 
-export function findFreeCell() {
-    let attempts = 0;
-    while (attempts < 100) {
-        let cx = Math.floor(Math.random() * (WORLD / CELL)) * CELL;
-        let cy = Math.floor(Math.random() * (WORLD / CELL)) * CELL;
-        if (cx === state.player.x && cy === state.player.y) { attempts++; continue; }
-        if (state.monsters.some(m => m.x === cx && m.y === cy)) { attempts++; continue; }
-        if (state.items.some(i => i.x === cx && i.y === cy)) { attempts++; continue; }
-        if (state.stairs.x === cx && state.stairs.y === cy) { attempts++; continue; }
-        return { x: cx, y: cy };
+export function findFreeCell(minDistanceCells = 0) {
+    const valid = (cx, cy, minDist) => {
+        if (cx === state.player.x && cy === state.player.y) return false;
+        if (state.monsters.some(m => m.x === cx && m.y === cy)) return false;
+        if (state.items.some(i => i.x === cx && i.y === cy)) return false;
+        if (state.stairs.x === cx && state.stairs.y === cy) return false;
+        if (minDist > 0) {
+            const dx = Math.abs(cx - state.player.x) / CELL;
+            const dy = Math.abs(cy - state.player.y) / CELL;
+            if (Math.max(dx, dy) < minDist) return false;
+        }
+        return true;
+    };
+
+    for (let attempt = 0; attempt < 150; attempt++) {
+        const cx = Math.floor(Math.random() * (WORLD / CELL)) * CELL;
+        const cy = Math.floor(Math.random() * (WORLD / CELL)) * CELL;
+        if (valid(cx, cy, minDistanceCells)) return { x: cx, y: cy };
+    }
+    // Если поле почти заполнено — ищем любую свободную клетку без требования дистанции.
+    for (let y = 0; y < WORLD; y += CELL) {
+        for (let x = 0; x < WORLD; x += CELL) {
+            if (valid(x, y, 0)) return { x, y };
+        }
     }
     return { x: 0, y: 0 };
 }
@@ -71,6 +85,10 @@ export function placeMonster(type, hp, atk, behavior, x, y) {
     let skinsList = MONSTER_SKINS[type] || [];
     let selectedSkin = skinsList.length > 0 ? skinsList[Math.floor(Math.random() * skinsList.length)] : null;
 
+    // Разная стартовая фаза, отдых и длительность шага — монстры не ходят в такт.
+    const actionState = Math.floor(Math.random() * 3);
+    const restTimer = actionState === 2 ? 1 + Math.floor(Math.random() * 2) : 0;
+
     state.monsters.push({
         x: x, y: y, px: x, py: y, startPx: x, startPy: y,
         type: type,
@@ -78,7 +96,10 @@ export function placeMonster(type, hp, atk, behavior, x, y) {
         hp: hp, maxHp: hp, atk: atk, def: base.def,
         speed: base.speed, behavior: behavior,
         isStunned: false, stunTimer: 0, isMoving: false, moveStartTime: 0,
-        actionState: 0, restTimer: 0, slowTurns: 0, hasSplit: false
+        actionState: actionState, restTimer: restTimer,
+        moveDur: 120 + Math.floor(Math.random() * 70),
+        bobPhase: Math.random() * Math.PI * 2,
+        slowTurns: 0, hasSplit: false
     });
 }
 
@@ -143,16 +164,24 @@ export function initFloor() {
     state.floaters = [];
     state.stairs.active = false;
 
-    const startY = Math.floor((WORLD / CELL) / 2) * CELL;
-    state.player.x = CELL; state.player.y = startY;
-    state.player.px = CELL; state.player.py = startY;
-    state.player.startPx = CELL; state.player.startPy = startY;
+    // Герой появляется в случайной клетке (кроме клетки лестницы) на каждом этаже.
+    let hx, hy, tries = 0;
+    do {
+        hx = Math.floor(Math.random() * GRID) * CELL;
+        hy = Math.floor(Math.random() * GRID) * CELL;
+        tries++;
+    } while (hx === state.stairs.x && hy === state.stairs.y && tries < 50);
+
+    state.player.x = hx; state.player.y = hy;
+    state.player.px = hx; state.player.py = hy;
+    state.player.startPx = hx; state.player.startPy = hy;
     state.player.isMoving = false;
     state.player.healFx = 0;
 
     let count = 4 + state.settings.monsterAdd;
     for (let i = 0; i < count; i++) {
-        let cell = findFreeCell();
+        // Не ближе 4 клеток (по прямой и наискосок) от точки появления героя.
+        let cell = findFreeCell(4);
         let type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
         const base = state.devSettings.monsters[type] || ENEMY_BASE[type];
         let hp = Math.floor(base.hp * (1 + (state.currentFloor - 1) * 0.2));

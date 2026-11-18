@@ -63,16 +63,16 @@ function processTurnEnd() {
             autoNextFloor();
         }
         state.isProcessingTurn = false;
-    }, 400);
+    }, 200); // ×2 быстрее: ход монстров и эффекты
 }
 
 export function startFadeOut() {
   if (fadeTimer) return;
   fadeTimer = setInterval(() => {
     if (state.items.length === 0) { clearInterval(fadeTimer); fadeTimer = null; return; }
-    state.items.splice(0, Math.max(1, Math.ceil(state.items.length / 40)));
+    state.items.splice(0, Math.max(1, Math.ceil(state.items.length / 25)));
     playSound('collect');
-  }, 100);
+  }, 60);
 }
 
 function advanceFloor() {
@@ -106,7 +106,7 @@ function autoNextFloor() {
     if (floorClearTimer) clearTimeout(floorClearTimer);
     floorClearTimer = setTimeout(() => {
         if (state.gameActive && state.monsters.length === 0) advanceFloor();
-    }, 1500);
+    }, 800);
 }
 
 function handleMonsterDeath(m, index) {
@@ -271,7 +271,11 @@ function monsterAttack(m) {
         state.skeletonAlly.hp -= mDmg; addFloater(state.skeletonAlly.x, state.skeletonAlly.y, "-" + mDmg, "#ef4444");
         if (state.skeletonAlly.hp <= 0) { state.skeletonAlly = null; addFloater(m.x, m.y, "💀", "#ef4444"); }
     } else {
-        if (mDmg > 0) { state.playerHp -= mDmg; addFloater(state.player.px, state.player.py, "-" + mDmg, "#ef4444"); }
+        if (mDmg > 0) {
+            state.lastDamageSource = m.type; // причина смерти — этот монстр
+            state.playerHp -= mDmg;
+            addFloater(state.player.px, state.player.py, "-" + mDmg, "#ef4444");
+        }
     }
   }
 }
@@ -356,7 +360,9 @@ function moveMonsters() {
     const target = getMoveTarget(m, diff);
 
     if (m.actionState === 0) {
-        let steps = (m.type === "🕷") ? 2 : randomInt(1, 3); 
+        // Поле speed из конфига теперь работает: мыши быстрее, пауки быстрее всех.
+        let steps = m.speed >= 2 ? 2 : randomInt(1, 2);
+        if (m.type === "🕷") steps = 3;
         if (m.slowTurns > 0) { steps = Math.max(1, Math.floor(steps / 2)); m.slowTurns--; }
         for (let s = 0; s < steps; s++) {
             const dx = target.x - m.x, dy = target.y - m.y;
@@ -374,7 +380,7 @@ function moveMonsters() {
         if (nx >= 0 && nx < WORLD && ny >= 0 && ny < WORLD && !state.monsters.some(o => o !== m && o.x === nx && o.y === ny) && !(nx === state.player.x && ny === state.player.y)) {
             m.x = nx; m.y = ny; m.startPx = m.px; m.startPy = m.py; m.moveStartTime = performance.now(); m.isMoving = true;
         }
-        m.actionState = 2; m.restTimer = randomInt(1, 3); 
+        m.actionState = 2; m.restTimer = randomInt(0, 2); // отдых у каждого свой
     } else if (m.actionState === 2) {
         if (m.restTimer > 0) { m.restTimer--; return; } else m.actionState = 0; 
     }
@@ -446,18 +452,23 @@ export function movePlayer(dx, dy) {
     state.items.splice(pickupIdx, 1);
   }
   
-  if (state.totalTurns % state.settings.itemRate === 0 && !state.stairs.active) {
-    if (state.items.length < 60) {
-        let cell = findFreeCell();
-        let attempts = 0;
-        while (state.items.some(i => i.x === cell.x && i.y === cell.y) && attempts < 50) {
-            cell = findFreeCell();
-            attempts++;
-        }
-        if (attempts < 50) {
-            const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
-            state.items.push({x:cell.x, y:cell.y, type: type, life: 20});
-        }
+  // Бонусы: 🙂 ×1.5, 🔥 ×1, 🧠 ×0.75 от базовой частоты (раз в itemRate ходов).
+  if (!state.stairs.active && state.items.length < 60) {
+    const diffFactor = state.settings.criticalAI ? 0.75 : state.settings.difficulty === 'extreme' ? 1 : 1.5;
+    const rate = Math.max(1, state.settings.itemRate);
+    state.itemSpawnProgress = (state.itemSpawnProgress || 0) + diffFactor / rate;
+    while (state.itemSpawnProgress >= 1 && state.items.length < 60) {
+      state.itemSpawnProgress -= 1;
+      let cell = findFreeCell();
+      let attempts = 0;
+      while (state.items.some(i => i.x === cell.x && i.y === cell.y) && attempts < 50) {
+        cell = findFreeCell();
+        attempts++;
+      }
+      if (attempts < 50) {
+        const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+        state.items.push({ x: cell.x, y: cell.y, type: type, life: 20 });
+      } else break;
     }
   }
   
@@ -470,6 +481,7 @@ function tickEffects() {
 
     state.corpses.forEach(c => c.decay--); state.corpses = state.corpses.filter(c => c.decay > 0);
     if (state.poisonTurns > 0) {
+        state.lastDamageSource = 'poison'; // магия зомби: смерть от яда считается отдельно
         state.playerHp -= state.poisonDmg; state.poisonTurns--; addFloater(state.player.px, state.player.py, "-" + state.poisonDmg + " яд", "#22c55e");
         if (state.playerHp <= 0) endGame(false);
     }
@@ -499,7 +511,12 @@ export function skipTurn() {
 function endGame(win = false) {
   if (!state.gameActive) return;
   state.gameActive = false;
-  if (!win) state.playerHp = 0;
+  if (!win) {
+    state.playerHp = 0;
+    const cause = state.lastDamageSource || 'unknown';
+    state.deathCauses[cause] = (state.deathCauses[cause] || 0) + 1;
+    try { localStorage.setItem('pz_death_causes', JSON.stringify(state.deathCauses)); } catch (e) {}
+  }
   stopFade();
   if (floorClearTimer) { clearTimeout(floorClearTimer); floorClearTimer = null; }
 

@@ -261,6 +261,10 @@ canvas {
 .record-row .rec-name { color: #c7d2fe; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .record-row .rec-turns { color: #fbbf24; font-weight: bold; }
 .record-row .rec-detail { grid-column: 1 / -1; text-align: left; color: #6b7280; font-size: 10px; }
+.rec-subtitle { color: #fca5a5; font-size: 11px; font-weight: bold; margin: 8px 0 4px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 6px; }
+.record-row.death-row { grid-template-columns: 1fr auto; }
+.record-row.death-row .rec-turns { text-align: right; }
+.record-row.death-zero { opacity: 0.35; }
 
 /* Панели и Настройки */
 .panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #151520; padding: 15px; border: 2px solid #fbbf24; border-radius: 12px; width: 90%; max-width: 340px; max-height: 85vh; overflow-y: auto; z-index: 2000; box-sizing: border-box; }
