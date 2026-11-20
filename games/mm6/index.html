@@ -1,665 +1,671 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>MM6 — Подземелье</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Подземелье 6</title>
 <style>
-  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; }
-  #cv { display: block; width: 100%; height: 100%; }
-  #hint {
-    position: fixed; bottom: 12px; left: 0; width: 100%;
-    text-align: center; color: #888; font: 13px sans-serif;
-    pointer-events: none;
-  }
-  #start-screen { position: fixed; inset: 0; z-index: 100; background: radial-gradient(circle at center, rgba(40,34,60,.97) 0%, rgba(8,8,16,.99) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #fff; font-family: sans-serif; overflow-y: auto; padding: 16px; }
-  #start-screen h1 { margin: 0; font-size: 26px; letter-spacing: 4px; text-transform: uppercase; color: #fff; text-shadow: 0 0 20px rgba(251,191,36,.6); }
-  .mm-instruction { margin: 0; font-size: 13px; line-height: 1.4; text-align: center; max-width: 330px; color: #fbbf24; font-weight: bold; text-transform: uppercase; }
-  .carousel-container { display: flex; align-items: center; justify-content: space-between; width: min(320px, 90vw); gap: 4px; }
-  .c-arrow { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); color: #fbbf24; font-size: 16px; padding: 8px; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
-  .c-arrow:hover { background: rgba(255,255,255,.15); }
-  .c-arrow:active { transform: scale(.88); }
-  .carousel { display: flex; align-items: center; justify-content: center; gap: 5px; width: 230px; height: 100px; overflow: hidden; }
-  .hero-card, .mode-card { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; width: 70px; text-align: center; cursor: pointer; transition: transform .2s, opacity .2s, filter .2s; }
-  .hero-card.center, .mode-card.center { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 12px rgba(251,191,36,.55)); z-index: 2; }
-  .hero-card.side, .mode-card.side { transform: scale(.8); opacity: .5; }
-  .c-emoji { font-size: 30px; }
-  .hero-card.center .c-emoji { font-size: 42px; }
-  .c-name, .m-name { font-size: 11px; margin-top: 5px; color: #9ca3af; font-weight: bold; }
-  .hero-card.center .c-name, .mode-card.center .m-name { color: #fbbf24; font-size: 12px; }
-  .m-icon { font-size: 24px; }
-  .mode-card.center .m-icon { font-size: 34px; }
-  .desc-text { text-align: center; font-size: 12px; color: #9ca3af; min-height: 32px; max-width: 320px; line-height: 1.35; }
-  .name-row { display: flex; gap: 8px; width: min(320px, 90vw); }
-  .name-row input { flex: 1; min-width: 0; padding: 10px; border: 2px solid #6b7280; border-radius: 8px; background: #111; color: #fff; font: inherit; outline: none; }
-  .name-row input:focus { border-color: #fbbf24; }
-  .name-row button { flex: 0 0 auto; padding: 10px 16px; border: 2px solid #fbbf24; border-radius: 8px; background: linear-gradient(135deg,#b45309,#92400e); color: #fff; font-weight: bold; cursor: pointer; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#05060d; color:#f3e8cf; font-family:"Segoe UI",Tahoma,sans-serif; }
+  #cv { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:#0a0d1c; box-shadow:0 0 70px rgba(0,0,0,.9); }
+
+  #start { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; overflow-y:auto;
+    background:radial-gradient(circle at 50% 10%,#2b2450 0%,#12142c 42%,#070810 100%); }
+  #start.hidden { display:none; }
+  .panel { width:min(620px,94vw); margin:16px auto; padding:18px 20px 22px; border:1px solid rgba(251,191,36,.38); border-radius:16px;
+    background:linear-gradient(160deg,rgba(20,22,44,.97),rgba(8,10,22,.98)); box-shadow:0 0 50px rgba(0,0,0,.75),inset 0 0 35px rgba(251,191,36,.05); }
+  .head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  h1 { margin:0; font-size:26px; letter-spacing:3px; color:#ffdc7a; text-shadow:0 0 18px rgba(251,191,36,.55); }
+  h1 span { color:#fff3c4; border:1px solid rgba(251,191,36,.6); border-radius:6px; padding:0 6px; font-size:20px; }
+  .linkbtn { background:transparent; border:1px solid rgba(255,255,255,.18); color:#b9bfd6; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:11px; }
+  .linkbtn:hover { border-color:#fbbf24; color:#ffe9b0; }
+  .progress { display:flex; align-items:center; gap:12px; margin:14px 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07); }
+  .progress svg { width:52px; height:52px; flex:0 0 52px; transform:rotate(-90deg); }
+  .progress circle { fill:none; stroke-width:4; }
+  .ringTrack { stroke:rgba(255,255,255,.10); }
+  #ring { stroke:#fbbf24; stroke-linecap:round; transition:stroke-dashoffset .5s ease,stroke .5s ease; filter:drop-shadow(0 0 4px rgba(251,191,36,.85)); }
+  body.achieved #ring { stroke:#7dffb2; filter:drop-shadow(0 0 7px rgba(125,255,178,.95)); }
+  .progress b { display:block; color:#ffe6a8; font-size:13px; }
+  .progress small { display:block; color:#a8afc8; font-size:11px; line-height:1.45; margin-top:2px; }
+  #winCounts { color:#fbbf24; font-weight:600; font-size:11px; margin-top:3px; }
+  h3 { margin:12px 0 6px; color:#9fb0d8; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+  .carousel { display:flex; align-items:center; gap:8px; }
+  .arrow { width:36px; height:46px; flex:0 0 36px; border-radius:9px; border:1px solid rgba(255,255,255,.16); color:#d7dcf0; background:rgba(255,255,255,.05); cursor:pointer; font-size:16px; }
+  .arrow:hover { border-color:#fbbf24; color:#ffe9b0; }
+  .cards { flex:1; height:112px; display:flex; align-items:center; justify-content:center; gap:22px; overflow:hidden; }
+  .card { position:relative; width:128px; height:106px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; opacity:.55; transition:opacity .2s ease,transform .2s ease; }
+  .card.sel { opacity:1; transform:scale(1.05); cursor:default; }
+  .ring { position:absolute; left:50%; top:4px; width:82px; height:82px; margin-left:-41px; border:3px solid rgba(255,255,255,.20); border-radius:50%; transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease; }
+  .card.sel .ring { border-color:#ffd35e; box-shadow:0 0 14px rgba(255,211,94,.9),inset 0 0 12px rgba(255,211,94,.35); transform:scale(1.04); }
+  .card img { position:relative; width:70px; height:70px; object-fit:contain; filter:drop-shadow(0 4px 6px rgba(0,0,0,.6)); }
+  .cname { position:relative; margin-top:4px; font-size:11px; font-weight:700; color:#f4e7c6; }
+  .card.sel .cname { color:#ffe9b0; }
+  .desc { min-height:30px; margin:4px 0 0; text-align:center; font-size:11px; color:#aab4d0; line-height:1.45; }
+  .row { display:flex; gap:8px; margin-top:12px; }
+  .row input { flex:1; min-width:0; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); border-radius:9px; padding:10px 12px; color:#fff3d0; outline:none; }
+  .row input:focus { border-color:#fbbf24; }
+  #playBtn { padding:10px 18px; border:0; border-radius:9px; cursor:pointer; font-weight:800; color:#241704; background:linear-gradient(180deg,#ffe9a8,#f5b92c); box-shadow:0 4px 0 #8a5b0c,0 0 20px rgba(251,191,36,.35); }
+  #playBtn:active { transform:translateY(2px); box-shadow:0 2px 0 #8a5b0c; }
+  .hint { margin-top:10px; text-align:center; color:#6f7898; font-size:10px; }
+
+  #shop { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(3,4,10,.82); }
+  #shop.show { display:flex; }
+  .shopPanel { width:min(560px,94vw); max-height:86vh; overflow:auto; padding:18px; border:1px solid rgba(251,191,36,.5); border-radius:14px; background:linear-gradient(160deg,#171a34,#080a18); box-shadow:0 0 50px rgba(0,0,0,.8); }
+  .shopHead { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .shopHead h2 { margin:0; font-size:17px; color:#ffe09a; }
+  .shopItem { display:flex; align-items:center; gap:10px; padding:8px 10px; margin:5px 0; border:1px solid rgba(255,255,255,.10); border-radius:9px; background:rgba(255,255,255,.035); }
+  .shopItem img { width:36px; height:36px; object-fit:contain; }
+  .shopItem div { flex:1; font-size:12px; }
+  .shopItem small { display:block; color:#9aa4c2; font-size:10px; }
+  .shopItem button { border:0; border-radius:7px; padding:7px 10px; cursor:pointer; background:#fbbf24; color:#241704; font-weight:800; font-size:11px; }
+  .shopItem button:disabled { background:#3a3d52; color:#838aa4; cursor:default; }
+  .shopFoot { margin-top:10px; text-align:right; font-size:11px; color:#fbbf24; }
+
+  #toast { position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(20px); z-index:60; pointer-events:none; padding:10px 18px; border-radius:20px; background:rgba(12,14,28,.94); border:1px solid rgba(251,191,36,.6); color:#ffe9b0; font-size:12px; font-weight:700; opacity:0; transition:opacity .25s,transform .25s; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-<canvas id="cv"></canvas>
-<div id="hint">Пробел — ударить · M — меню</div>
+<canvas id="cv" width="640" height="360" aria-label="Игра Подземелье 6"></canvas>
 
-<div id="start-screen">
-  <h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1>
-  <p class="mm-instruction">Выбери активного героя и режим<br>◀ ▶ — герой, ▲ ▼ — режим, Enter — старт</p>
-  <div class="carousel-container">
-    <button class="c-arrow" id="prev-hero" aria-label="Предыдущий герой">◀</button>
-    <div class="carousel" id="hero-carousel"></div>
-    <button class="c-arrow" id="next-hero" aria-label="Следующий герой">▶</button>
-  </div>
-  <p class="desc-text" id="hero-desc"></p>
-  <div class="carousel-container">
-    <button class="c-arrow" id="prev-mode" aria-label="Предыдущий режим">◀</button>
-    <div class="carousel" id="mode-carousel"></div>
-    <button class="c-arrow" id="next-mode" aria-label="Следующий режим">▶</button>
-  </div>
-  <p class="desc-text" id="mode-desc"></p>
-  <div class="name-row">
-    <input type="text" id="hero-name-input" maxlength="16" value="Герой" placeholder="Имя героя" aria-label="Имя героя">
-    <button id="start-btn">▶ Играть</button>
+<div id="start">
+  <div class="panel">
+    <div class="head">
+      <h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1>
+      <button class="linkbtn" id="homeBtn">Главное меню</button>
+    </div>
+    <div class="progress">
+      <svg viewBox="0 0 42 42" aria-hidden="true">
+        <circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle>
+      </svg>
+      <div>
+        <b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b>
+        <small id="achText">5 побед в «Карте» и 5 побед в «Быстрой схватке»</small>
+        <div id="winCounts">Карта 0/5 · Схватка 0/5</div>
+      </div>
+    </div>
+    <h3>Герой</h3>
+    <div class="carousel">
+      <button class="arrow" id="heroPrev" aria-label="Предыдущий герой">◀</button>
+      <div class="cards" id="heroCarousel"></div>
+      <button class="arrow" id="heroNext" aria-label="Следующий герой">▶</button>
+    </div>
+    <p class="desc" id="heroDesc"></p>
+    <h3>Режим</h3>
+    <div class="carousel">
+      <button class="arrow" id="modePrev" aria-label="Предыдущий режим">◀</button>
+      <div class="cards" id="modeCarousel"></div>
+      <button class="arrow" id="modeNext" aria-label="Следующий режим">▶</button>
+    </div>
+    <p class="desc" id="modeDesc"></p>
+    <div class="row">
+      <input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя">
+      <button id="playBtn">▶ Играть</button>
+    </div>
+    <div class="hint">◀ ▶ — герой · ▲ ▼ — режим · Enter — старт · S — лавка в карте · M — главное меню</div>
   </div>
 </div>
 
+<div id="shop">
+  <div class="shopPanel">
+    <div class="shopHead"><h2>🛒 Лавка оружия</h2><button class="linkbtn" id="shopClose">Закрыть [S]</button></div>
+    <div id="shopList"></div>
+    <div class="shopFoot">Золото: <b id="shopGold">0</b></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
 <script>
-(function() {
+(function(){
   'use strict';
+  window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16);
+  window.cancelAnimationFrame = id => clearTimeout(id);
 
-  const cv = document.getElementById('cv');
-  const ctx = cv.getContext('2d');
-  let W = 0, H = 0;
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  const W = 640, H = 360, ASSET = '../dungeon28/assets/sprites/';
+  const startScreen = document.getElementById('start'), shop = document.getElementById('shop'), toastEl = document.getElementById('toast');
+  let toastTimer = 0;
 
+  function fit(){
+    const s = Math.min(innerWidth / W, innerHeight / H);
+    cv.style.width = Math.max(1,Math.floor(W*s)) + 'px';
+    cv.style.height = Math.max(1,Math.floor(H*s)) + 'px';
+  }
+  addEventListener('resize', fit); fit();
+
+  function toast(text){
+    toastEl.textContent = text; toastEl.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+  }
+
+  /* База Подземелья 28: герои и монстры с теми же параметрами и спрайтами. */
   const HEROES = [
-    { id: 'warrior', name: 'ВОИН', emoji: '🛡️', hp: 100, dmg: [8, 22], desc: 'Надёжный боец. Маг остаётся в пати и бьёт рядом.' },
-    { id: 'mage', name: 'МАГ', emoji: '🧙', hp: 60, dmg: [14, 32], desc: 'Бьёт сильнее, но хрупкий. Воин остаётся в пати.' }
+    { name:'Воин', set:'warrior', hp:100, mp:3, atk:1, def:0, sprite:ASSET+'heroes/knight_0.png',
+      desc:'Крепкий боец из Подземелья 28. Держит строй и бьёт наверняка.',
+      weapons:[
+        {name:'Кулаки',dmg:1,cost:0,sprite:ASSET+'items/sword_0.png'},
+        {name:'Кинжал',dmg:2,cost:1,sprite:ASSET+'items/sword_1.png'},
+        {name:'Меч',dmg:3,cost:2,sprite:ASSET+'items/sword_2.png'},
+        {name:'Топор',dmg:4,cost:3,sprite:ASSET+'items/axe_0.png'},
+        {name:'Молот',dmg:5,cost:4,sprite:ASSET+'items/axe_1.png'},
+        {name:'Кинжал+',dmg:6,cost:5},{name:'Меч+',dmg:7,cost:6},{name:'Топор+',dmg:8,cost:7},{name:'Молот+',dmg:9,cost:8},
+        {name:'Кинжал++',dmg:10,cost:9},{name:'Меч++',dmg:11,cost:10},{name:'Топор++',dmg:12,cost:11},{name:'Молот++',dmg:13,cost:12},
+        {name:'Кинжал★',dmg:14,cost:13},{name:'Меч★',dmg:15,cost:14},{name:'Топор★',dmg:16,cost:15},{name:'Молот★',dmg:17,cost:16}
+      ]},
+    { name:'Маг', set:'mage', hp:80, mp:5, atk:1, def:0, sprite:ASSET+'heroes/wizard_0.png',
+      desc:'Хрупкий, но дальнобойный. Заряд маны бьёт сильнее.',
+      weapons:[
+        {name:'Кулаки',dmg:1,cost:0},{name:'Кольцо',dmg:2,cost:1},
+        {name:'Палочка',dmg:3,cost:2,sprite:ASSET+'items/staff_0.png'},
+        {name:'Амулет',dmg:4,cost:3},{name:'Книга',dmg:5,cost:4},
+        {name:'Кольцо+',dmg:6,cost:5},{name:'Палочка+',dmg:7,cost:6},{name:'Амулет+',dmg:8,cost:7},{name:'Книга+',dmg:9,cost:8},
+        {name:'Кольцо++',dmg:10,cost:9},{name:'Палочка++',dmg:11,cost:10},{name:'Амулет++',dmg:12,cost:11},{name:'Книга++',dmg:13,cost:12},
+        {name:'Кольцо★',dmg:14,cost:13},{name:'Палочка★',dmg:15,cost:14},{name:'Амулет★',dmg:16,cost:15},{name:'Книга★',dmg:17,cost:16}
+      ]}
   ];
+
+  const MONSTERS = [
+    {name:'Скелет', hp:100, atk:5, def:0, sprite:ASSET+'monsters/skeleton_0.png'},
+    {name:'Призрак', hp:75, atk:4, def:0, sprite:ASSET+'monsters/ghost_0.png'},
+    {name:'Мышь', hp:50, atk:3, def:0, sprite:ASSET+'monsters/rat_0.png'},
+    {name:'Паук', hp:60, atk:4, def:0, sprite:ASSET+'monsters/spider_0.png'},
+    {name:'Огр', hp:130, atk:6, def:1, sprite:ASSET+'monsters/orge_0.png'},
+    {name:'Зомби', hp:150, atk:6, def:1, sprite:ASSET+'monsters/undead_0.png', poison:true},
+    {name:'Черепаха', hp:200, atk:3, def:8, sprite:ASSET+'monsters/turtle_0.png'},
+    {name:'Черт', hp:85, atk:7, def:2, sprite:ASSET+'monsters/demon_0.png'},
+    {name:'Некромант', hp:90, atk:5, def:2, sprite:ASSET+'monsters/necromancer_0.png'},
+    {name:'Тёмный арбалетчик', hp:85, atk:8, def:1, sprite:ASSET+'monsters/dark_archer_0.png'}
+  ];
+
   const MODES = [
-    { id: 'classic', name: 'Классика', icon: '⚔️', desc: 'Обычный бой. Слизень 68 HP, удар раз в 400 мс.', enemy: 'Слизень', enemyHp: 68, hitDelay: 400 },
-    { id: 'fast', name: 'Скорость', icon: '⚡', desc: 'Бей чаще: удар раз в 260 мс, враг послабее.', enemy: 'Слизень-спринтер', enemyHp: 54, hitDelay: 260 },
-    { id: 'hard', name: 'Тяжёлый', icon: '🔥', desc: 'Враг выносливее — 110 HP.', enemy: 'Слизень-мутант', enemyHp: 110, hitDelay: 430 }
-  ];
-  let phase = 'start';
-  let heroIdx = 0, modeIdx = 0;
-  let activeHero = HEROES[0].id;
-  let heroName = 'Герой';
-
-  function resize() {
-    W = cv.width = window.innerWidth;
-    H = cv.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  let t0 = performance.now();
-  let lastHit = 0;
-  let hitFx = 0;
-  let combo = 0;
-  let comboTimer = 0;
-  let enemies = [
-    { name: 'Слизень', hp: 68, maxHp: 68, color: '#2d1b4e', eyes: '#ff0000', yOff: 0 },
+    {id:'map', name:'Карта', icon:'🗺', desc:'Старый мир 10×10. Враги на карте, лавка оружия и древние пещеры. Победи всех врагов.'},
+    {id:'skirmish', name:'Быстрая схватка', icon:'⚔', desc:'Короткий пошаговый бой с видом из-за спины: пещера, небо или замок.'}
   ];
 
-  // Факелы мигают
-  let flamePhase = Math.random() * 6.28;
+  const imgCache = new Map();
+  function img(src){
+    if(!src) return null;
+    if(!imgCache.has(src)){ const im = new Image(); im.src = src; imgCache.set(src, im); }
+    return imgCache.get(src);
+  }
+  HEROES.forEach(h => img(h.sprite)); MONSTERS.forEach(m => img(m.sprite));
 
-  // ===== ВВОД =====
-  document.addEventListener('keydown', e => {
-    if (phase === 'start') {
-      if (e.target && e.target.id === 'hero-name-input') return;
-      if (e.key === 'ArrowLeft') { e.preventDefault(); selectHero(heroIdx - 1); }
-      else if (e.key === 'ArrowRight') { e.preventDefault(); selectHero(heroIdx + 1); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); selectMode(modeIdx - 1); }
-      else if (e.key === 'ArrowDown') { e.preventDefault(); selectMode(modeIdx + 1); }
-      else if (e.key === 'Enter') { e.preventDefault(); startGame(); }
+  const storeKey = 'mm6_progress_v2';
+  function loadProgress(){
+    try{
+      const p = JSON.parse(localStorage.getItem(storeKey) || '{}');
+      return { map:Math.max(0,Number(p.map)||0), skirmish:Math.max(0,Number(p.skirmish)||0), achieved:!!p.achieved };
+    }catch(e){ return {map:0,skirmish:0,achieved:false}; }
+  }
+  let progress = loadProgress();
+  function saveProgress(){ try{ localStorage.setItem(storeKey, JSON.stringify(progress)); }catch(e){} }
+
+  let phase='start', heroIdx=0, modeIdx=0, heroName='Герой', game=null, last=performance.now();
+  let audioCtx=null;
+
+  function beep(freq,dur){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type='triangle'; o.frequency.value=freq;
+      g.gain.setValueAtTime(.06,audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+      o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
+    }catch(e){}
+  }
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function ease(t){ return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+  function rnd(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+
+  function updateProgressUI(){
+    const mw=Math.min(5,progress.map), sw=Math.min(5,progress.skirmish), filled=Math.min(10,mw+sw);
+    const c=2*Math.PI*17, ring=document.getElementById('ring');
+    ring.style.strokeDasharray=String(c); ring.style.strokeDashoffset=String(c*(1-filled/10));
+    document.getElementById('winCounts').textContent='Карта '+mw+'/5 · Схватка '+sw+'/5';
+    if(progress.achieved){
+      document.body.classList.add('achieved');
+      document.getElementById('achTitle').textContent='ДОСТИЖЕНИЕ ПОЛУЧЕНО ✦';
+      document.getElementById('achText').textContent='Круг славы закрыт: 5 побед в карте и 5 в схватке.';
+    }else{
+      document.body.classList.remove('achieved');
+      document.getElementById('achTitle').textContent='ДОСТИЖЕНИЕ · КРУГ СЛАВЫ';
+      document.getElementById('achText').textContent='5 побед в «Карте» и 5 побед в «Быстрой схватке»';
+    }
+  }
+
+  function renderCards(){
+    const hb=document.getElementById('heroCarousel'), mb=document.getElementById('modeCarousel');
+    hb.innerHTML=''; mb.innerHTML='';
+    HEROES.forEach((h,i)=>{
+      const card=document.createElement('div');
+      card.className='card'+(i===heroIdx?' sel':'');
+      card.innerHTML='<div class="ring"></div><img src="'+h.sprite+'" alt=""><div class="cname">'+h.name+'</div>';
+      if(i!==heroIdx) card.onclick=()=>{ heroIdx=i; renderCards(); };
+      hb.appendChild(card);
+    });
+    MODES.forEach((m,i)=>{
+      const card=document.createElement('div');
+      card.className='card'+(i===modeIdx?' sel':'');
+      card.innerHTML='<div class="ring"></div><div style="position:relative;font-size:40px;line-height:70px">'+m.icon+'</div><div class="cname">'+m.name+'</div>';
+      if(i!==modeIdx) card.onclick=()=>{ modeIdx=i; renderCards(); };
+      mb.appendChild(card);
+    });
+    document.getElementById('heroDesc').textContent=HEROES[heroIdx].name+': '+HEROES[heroIdx].desc;
+    document.getElementById('modeDesc').textContent=MODES[modeIdx].desc;
+    updateProgressUI();
+  }
+  function selectHero(d){ heroIdx=(heroIdx+d+HEROES.length)%HEROES.length; renderCards(); }
+  function selectMode(d){ modeIdx=(modeIdx+d+MODES.length)%MODES.length; renderCards(); }
+  document.getElementById('heroPrev').onclick=()=>selectHero(-1);
+  document.getElementById('heroNext').onclick=()=>selectHero(1);
+  document.getElementById('modePrev').onclick=()=>selectMode(-1);
+  document.getElementById('modeNext').onclick=()=>selectMode(1);
+  document.getElementById('playBtn').onclick=startGame;
+  document.getElementById('homeBtn').onclick=goHub;
+  document.getElementById('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();startGame();} });
+
+  function goHub(){ location.href='../../index.html'; }
+
+  function startGame(){
+    heroName=(document.getElementById('heroName').value||'').trim().slice(0,14)||'Герой';
+    const h=HEROES[heroIdx];
+    game={
+      mode:MODES[modeIdx].id, heroIdx, heroName,
+      hero:{ hp:h.hp, maxHp:h.hp, mp:h.mp, maxMp:h.mp, weaponLevel:0, gold:0, weapons:h.weapons },
+      player:{ x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,face:1 },
+      map:null, enemies:[], battle:null, theme:rnd(0,2), msg:'', shopOpen:false
+    };
+    phase='play'; startScreen.classList.add('hidden');
+    if(game.mode==='map') startMap(); else startBattle('skirmish', MONSTERS[rnd(0,MONSTERS.length-1)]);
+  }
+
+  /* ---------- общая отрисовка ---------- */
+  function cloud(x,y,s,a){
+    ctx.save(); ctx.globalAlpha=a; ctx.fillStyle='#dfe8ff'; ctx.beginPath();
+    ctx.ellipse(x,y,34*s,10*s,0,0,6.29); ctx.ellipse(x-19*s,y+2*s,21*s,8*s,0,0,6.29); ctx.ellipse(x+17*s,y+3*s,23*s,8*s,0,0,6.29);
+    ctx.fill(); ctx.restore();
+  }
+  function sky(now){
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#0e1738'); g.addColorStop(.45,'#334178'); g.addColorStop(.75,'#6c5a86'); g.addColorStop(1,'#252239');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,246,210,.85)'; ctx.beginPath(); ctx.arc(544,52,19,0,6.29); ctx.fill();
+    for(let i=0;i<22;i++){ ctx.globalAlpha=.22+.4*Math.abs(Math.sin(now/700+i)); ctx.fillRect((i*83+31)%W,(i*47+13)%130,1.5,1.5); }
+    ctx.globalAlpha=1;
+    cloud(((now/32)%(W+220))-110,44,1.1,.20);
+    cloud(((now/47+150)%(W+260))-130,86,.85,.16);
+  }
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+  function panel(x,y,w,h){ roundRect(x,y,w,h,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.45)'; ctx.lineWidth=1.5; ctx.stroke(); }
+  function bar(x,y,w,label,value,max,color){
+    ctx.fillStyle='#f4e7c6'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(label,x,y+6);
+    ctx.fillStyle='rgba(255,255,255,.10)'; roundRect(x+24,y+2,w-24,8,4); ctx.fill();
+    const r=max>0?clamp(value/max,0,1):0;
+    if(r>0){ ctx.fillStyle=color; roundRect(x+24,y+2,Math.max(3,(w-24)*r),8,4); ctx.fill(); }
+    ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.fillText(Math.max(0,Math.round(value))+'/'+Math.max(0,Math.round(max)),x+w,y+6);
+  }
+  function drawSprite(src,x,y,size,scaleX,scaleY,bend,alpha){
+    const im=img(src); ctx.save();
+    ctx.globalAlpha=alpha==null?1:alpha;
+    ctx.translate(x,y); ctx.rotate(bend||0); ctx.transform(scaleX==null?1:scaleX,0,0,scaleY==null?1:scaleY,0,0);
+    if(im&&im.complete&&im.naturalWidth) ctx.drawImage(im,-size/2,-size,size,size);
+    else{ ctx.fillStyle='#9fb2ff'; ctx.beginPath(); ctx.ellipse(0,-size*.55,size*.22,size*.38,0,0,6.29); ctx.fill(); }
+    ctx.restore();
+  }
+  function drawHeroBack(x,y,size,now,lunge,bend){
+    const h=HEROES[game.heroIdx];
+    ctx.save(); ctx.globalAlpha=.38; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(x,y+4,size*.34,size*.08,0,0,6.29); ctx.fill(); ctx.restore();
+    // плащ/силуэт со спины — спрайт только двигаем, масштабируем и гнём
+    ctx.save(); ctx.translate(x,y); ctx.rotate(bend||0); ctx.fillStyle='rgba(20,24,50,.65)';
+    ctx.beginPath(); ctx.moveTo(-size*.24,-size*.78); ctx.quadraticCurveTo(0,-size*.92,size*.24,-size*.78);
+    ctx.lineTo(size*.30,-size*.10); ctx.quadraticCurveTo(0,size*.02,-size*.30,-size*.10); ctx.closePath(); ctx.fill(); ctx.restore();
+    drawSprite(h.sprite,x+lunge,y,size,1,1,bend,1);
+  }
+  function drawGround(horizon,base){
+    const g=ctx.createLinearGradient(0,horizon,0,H);
+    g.addColorStop(0,base[0]); g.addColorStop(1,base[1]); ctx.fillStyle=g; ctx.fillRect(0,horizon,W,H-horizon);
+  }
+  function arcadeGround(){
+    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.lineWidth=1;
+    for(let i=1;i<7;i++){ const y=190+i*i*4.2; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    for(let i=-8;i<=8;i++){ ctx.beginPath(); ctx.moveTo(W/2+i*18,190); ctx.lineTo(W/2+i*86,H); ctx.stroke(); }
+  }
+  function drawSmallRing(x,y,r){
+    const filled=Math.min(10,Math.min(5,progress.map)+Math.min(5,progress.skirmish));
+    ctx.save(); ctx.lineWidth=4; ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.beginPath(); ctx.arc(x,y,r,0,6.29); ctx.stroke();
+    ctx.strokeStyle=progress.achieved?'#7dffb2':'#fbbf24'; ctx.beginPath(); ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+6.29*filled/10); ctx.stroke(); ctx.restore();
+  }
+
+  /* ---------- КАРТА 10×10 ---------- */
+  const TILE=32, GRASS=0, ROAD=1, TREE=2, BUILDING=3, CAVE=4;
+  function makeMap(){
+    const g=[]; for(let y=0;y<10;y++){ g[y]=[]; for(let x=0;x<10;x++) g[y][x]=GRASS; }
+    for(let x=0;x<10;x++) g[5][x]=ROAD;
+    for(let y=0;y<10;y++) g[y][5]=ROAD;
+    g[1][8]=CAVE; g[7][2]=BUILDING; g[8][7]=BUILDING; g[2][2]=BUILDING;
+    const reserved=new Set(['1,8','7,2','8,7','2,2']);
+    for(let i=0;i<16;i++){ const x=rnd(0,9),y=rnd(0,9); if(g[y][x]===GRASS&&!reserved.has(x+','+y)) g[y][x]=TREE; }
+    return g;
+  }
+  function startMap(){
+    game.map=makeMap(); game.enemies=[];
+    const spots=[[3,5],[6,5],[5,3],[5,7],[2,8],[8,2]];
+    spots.forEach((s,i)=>{
+      const m=MONSTERS[(i+rnd(0,3))%MONSTERS.length];
+      game.enemies.push({x:s[0],y:s[1],def:m,hp:m.hp,maxHp:m.hp,alive:true,gold:rnd(2,5)});
+    });
+    game.msg='Враги на карте: '+game.enemies.length+'. Победи всех!';
+    toast('Карта 10×10 · лавка — клавиша S');
+  }
+  function enemyAt(x,y){ return game.enemies.find(e=>e.alive&&e.x===x&&e.y===y); }
+  function drawMiniMap(){
+    const x=W-166,y=14,s=15;
+    panel(x-6,y-6,158,158);
+    for(let yy=0;yy<10;yy++) for(let xx=0;xx<10;xx++){
+      const t=game.map[yy][xx], colors=['#2f5b38','#8a7a56','#1f6b3a','#c9b89a','#4b4a5c'];
+      ctx.fillStyle=colors[t]; ctx.fillRect(x+xx*s,y+yy*s,s-1,s-1);
+    }
+    game.enemies.forEach(e=>{ if(!e.alive)return; ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,4,0,6.29); ctx.fill(); });
+    ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.arc(x+Math.round(game.player.px)*s+s/2,y+Math.round(game.player.py)*s+s/2,4,0,6.29); ctx.fill();
+    ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.fillText('КАРТА 10×10',x,y+160);
+  }
+  function drawMap(now){
+    sky(now); drawGround(176,['#3a5b42','#1a2a20']); arcadeGround();
+    // впереди по курсу — пещеры/лес/здания как врата
+    const px=game.player.px, py=game.player.py;
+    for(let d=1;d<=4;d++){
+      const yy=Math.round(py)-d;
+      if(yy<0||yy>9) continue;
+      const xx=Math.round(px);
+      const t=game.map[yy][xx];
+      if(t===CAVE){
+        ctx.fillStyle='#161824'; ctx.beginPath(); ctx.ellipse(W/2,196,80-d*12,70-d*10,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-80+d*12,196,160-d*24,86-d*4);
+        ctx.fillStyle='#05060b'; ctx.beginPath(); ctx.ellipse(W/2,252,42-d*5,46-d*4,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-42+d*5,252,84-d*10,42); break;
+      }
+      if(t===BUILDING){
+        ctx.fillStyle='#c9b89a'; ctx.fillRect(W/2-60+d*10,176-d*8,120-d*20,100-d*6);
+        ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(W/2-66+d*10,176-d*8); ctx.lineTo(W/2,140-d*10); ctx.lineTo(W/2+66-d*10,176-d*8); ctx.closePath(); ctx.fill();
+        ctx.fillStyle='#ffe6a0'; ctx.fillRect(W/2-34+d*8,198-d*6,16,14); ctx.fillRect(W/2+18-d*8,198-d*6,16,14); break;
+      }
+      if(t===TREE){
+        ctx.fillStyle='#5b3b22'; ctx.fillRect(W/2-5,164-d*4,10,44);
+        ctx.fillStyle='#1f6b3a'; ctx.beginPath(); ctx.arc(W/2,150-d*8,36-d*4,0,6.29); ctx.fill();
+        ctx.fillStyle='#2f8d4d'; ctx.beginPath(); ctx.arc(W/2-14,142-d*8,22-d*3,0,6.29); ctx.fill(); break;
+      }
+    }
+    // враги впереди (вид из-за спины)
+    const sorted=game.enemies.filter(e=>e.alive).map(e=>({e,d:Math.round(py)-e.y,dx:e.x-Math.round(px)})).filter(o=>o.d>=-1&&o.d<=5).sort((a,b)=>b.d-a.d);
+    sorted.forEach(o=>{
+      const m=o.e, depth=clamp(o.d+1,1,6), sc=(150-depth*18)/150, ex=W/2+o.dx*(58-depth*6), ey=278-depth*14;
+      ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(ex,ey+4,30*sc,8*sc,0,0,6.29); ctx.fill(); ctx.restore();
+      drawSprite(m.def.sprite,ex,ey,100*sc,1,1,0,1);
+      ctx.fillStyle='#ef4444'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc,4); ctx.fillStyle='#fca5a5'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc*clamp(m.hp/m.maxHp,0,1),4);
+    });
+    drawHeroBack(W/2,344,152,now,0,Math.sin(now/460)*.008);
+
+    panel(12,12,206,62);
+    ctx.font='bold 11px sans-serif'; ctx.fillStyle='#ffe6a8'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,22,24);
+    bar(22,38,186,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
+    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Оружие: '+game.hero.weapons[game.hero.weaponLevel].name+' · ⚔ '+game.hero.weapons[game.hero.weaponLevel].dmg,22,56);
+    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold+'  💀 '+game.enemies.filter(e=>!e.alive).length+'/'+game.enemies.length,22,70);
+    drawMiniMap();
+    roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
+    ctx.fillStyle='#f3e8cf'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillText(game.msg,W/2,338);
+    drawSmallRing(36,H-36,14);
+  }
+  function tryMove(dx,dy){
+    if(phase!=='play'||!game||game.mode!=='map'||game.battle||game.shopOpen||game.player.moveT>0) return;
+    const p=game.player, nx=clamp(Math.round(p.x)+dx,0,9), ny=clamp(Math.round(p.y)+dy,0,9);
+    p.x=nx; p.y=ny; p.face=dx;
+    if(enemyAt(nx,ny)){ game.msg='Враг преградил путь!'; startBattle('map',enemyAt(nx,ny)); return; }
+    p.fromX=p.px; p.fromY=p.py; p.moveT=1; p.jump=0; beep(280,.04);
+    if(game.map[ny][nx]===TREE||game.map[ny][nx]===BUILDING){ p.x=Math.round(p.fromX); p.y=Math.round(p.fromY); game.msg='Там нельзя пройти.'; p.moveT=0; }
+    if(!game.enemies.some(e=>e.alive)) finishRun(true);
+  }
+
+  /* ---------- ЛАВКА ---------- */
+  function toggleShop(open){
+    if(!game||game.mode!=='map') return;
+    game.shopOpen=!!open; shop.classList.toggle('show',game.shopOpen);
+    if(!game.shopOpen) return;
+    const list=document.getElementById('shopList'); list.innerHTML='';
+    game.hero.weapons.forEach((w,i)=>{
+      const row=document.createElement('div'); row.className='shopItem';
+      const icon=document.createElement('img'); if(w.sprite) icon.src=w.sprite;
+      const info=document.createElement('div'); info.innerHTML='<b>'+w.name+'</b><small>Урон '+w.dmg+(i<game.hero.weaponLevel?' · куплено':'')+'</small>';
+      const btn=document.createElement('button');
+      if(i<=game.hero.weaponLevel){ btn.textContent=i===game.hero.weaponLevel?'Надето':'Есть'; btn.disabled=true; }
+      else{ btn.textContent='🪙 '+w.cost; btn.disabled=game.hero.gold<w.cost;
+        btn.onclick=()=>{ if(game.hero.gold<w.cost)return; game.hero.gold-=w.cost; game.hero.weaponLevel=i; beep(720,.12); toast('Куплено: '+w.name); toggleShop(true); };
+      }
+      row.appendChild(icon); row.appendChild(info); row.appendChild(btn); list.appendChild(row);
+    });
+    document.getElementById('shopGold').textContent=game.hero.gold;
+  }
+  document.getElementById('shopClose').onclick=()=>toggleShop(false);
+
+  /* ---------- БОЙ С ВИДОМ ИЗ-ЗА СПИНЫ ---------- */
+  function startBattle(source,enemy){
+    const h=HEROES[game.heroIdx];
+    const m=(enemy.def&&typeof enemy.def==='object')?enemy.def:enemy;
+    game.battle={
+      source, enemy:enemy, monster:{name:m.name,sprite:m.sprite,atk:m.atk,def:m.def,hp:enemy.hp||m.hp,maxHp:enemy.maxHp||m.hp,poison:m.poison},
+      turn:'hero', busy:false, end:null, anim:null, log:[], char:0,
+      theme:source==='skirmish'?game.theme:rnd(0,2)
+    };
+    if(source==='skirmish') game.hero.hp=h.hp, game.hero.mp=h.mp;
+    game.msg='Враг: '+m.name;
+    pushLog(m.name+' встаёт перед вами.');
+  }
+  function pushLog(text){
+    if(!game||!game.battle)return;
+    game.battle.log.push(text); if(game.battle.log.length>4)game.battle.log.shift(); game.battle.char=0;
+  }
+  function heroAttack(special){
+    const b=game&&game.battle; if(!b||b.busy||b.end||b.turn!=='hero')return;
+    if(special&&game.hero.mp<3){ toast('Не хватает маны'); return; }
+    b.busy=true;
+    const atk=game.hero.weapons[game.hero.weaponLevel].dmg+(special?8:0);
+    const dmg=Math.max(1,atk-b.monster.def)+rnd(0,2);
+    if(special)game.hero.mp=Math.max(0,game.hero.mp-3);
+    b.monster.hp=Math.max(0,b.monster.hp-dmg); if(b.enemy&&b.enemy.hp!=null)b.enemy.hp=b.monster.hp;
+    b.anim={who:'hero',t:1,jump:special?24:10};
+    pushLog((special?'ЗАРЯД! ':'Удар! ')+'Атака '+atk+' − Защита '+b.monster.def+' = '+dmg+' урона.');
+    beep(special?880:440,special?.15:.08);
+    setTimeout(()=>{
+      if(!game||game.battle!==b||b.end)return;
+      if(b.monster.hp<=0){ finishBattle(true); return; }
+      b.turn='enemy'; b.busy=false; setTimeout(()=>enemyTurn(b),420);
+    },620);
+  }
+  function enemyTurn(b){
+    if(!game||game.battle!==b||b.turn!=='enemy'||b.busy||b.end)return;
+    b.busy=true;
+    const dmg=Math.max(0,b.monster.atk-game.hero.weapons[game.hero.weaponLevel].dmg*0)+rnd(0,1);
+    game.hero.hp=Math.max(0,game.hero.hp-dmg); b.anim={who:'enemy',t:1,jump:8};
+    pushLog(b.monster.name+': атака '+b.monster.atk+' − защита 0 = '+dmg+' урона.');
+    if(b.monster.poison){ game.hero.poison=3; game.hero.poisonTurns=2; pushLog(b.monster.name+' наложил яд 3 ед на 2 хода.'); }
+    beep(180,.12);
+    setTimeout(()=>{
+      if(!game||game.battle!==b||b.end)return;
+      if(game.hero.poison>0){
+        const pd=Math.min(game.hero.poison,game.hero.hp); game.hero.poison=Math.max(0,game.hero.poison-1);
+        game.hero.hp-=pd; pushLog('Яд снимает '+pd+' HP.');
+        game.hero.poisonTurns=Math.max(0,(game.hero.poisonTurns||0)-1);
+        if(!game.hero.poisonTurns) game.hero.poison=0;
+      }
+      if(game.hero.hp<=0){ finishBattle(false); return; }
+      b.turn='hero'; b.busy=false;
+    },700);
+  }
+  function finishBattle(win){
+    const b=game&&game.battle; if(!b||b.end)return;
+    b.end=win?'win':'lose'; pushLog(win?'ПОБЕДА!':'Поражение.');
+    beep(win?980:120,.28);
+    setTimeout(()=>{
+      if(win){
+        game.hero.gold+=b.enemy.gold||rnd(2,5);
+        if(b.enemy&&b.enemy.alive!==undefined) b.enemy.alive=false;
+        let keepMap=false;
+        if(b.source==='skirmish') progress.skirmish=Math.min(5,progress.skirmish+1);
+        else{
+          const left=game.enemies.filter(e=>e.alive).length;
+          keepMap=left>0;
+          if(!keepMap) progress.map=Math.min(5,progress.map+1);
+        }
+        if(progress.map>=5&&progress.skirmish>=5&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы закрыт!'); }
+        else if(!keepMap) toast('Победа! '+(b.source==='map'?'Карта':'Схватка')+' '+Math.min(5,b.source==='map'?progress.map:progress.skirmish)+'/5');
+        saveProgress();
+        if(keepMap){
+          const left=game.enemies.filter(e=>e.alive).length;
+          game.battle=null; game.msg='Враг повержен! Осталось врагов: '+left+'.';
+          toast('Победа! Осталось врагов: '+left);
+          return;
+        }
+      }else toast('Поражение — круг не обновлён');
+      phase='start'; game=null; startScreen.classList.remove('hidden'); renderCards();
+    },1700);
+  }
+  function drawBackdrop(now,theme){
+    sky(now);
+    if(theme===0){
+      ctx.fillStyle='#222736'; ctx.fillRect(0,176,W,184);
+      ctx.fillStyle='#3c4356'; ctx.fillRect(0,176,W,18);
+      ctx.fillStyle='#151a26'; ctx.beginPath(); ctx.ellipse(W/2,208,170,90,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-170,208,340,88);
+      ctx.fillStyle='#05070c'; ctx.beginPath(); ctx.ellipse(W/2,268,78,60,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-78,268,156,40);
+      ctx.fillStyle='#8b7952'; ctx.fillRect(0,300,W,60); ctx.strokeStyle='rgba(255,255,255,.07)';
+      for(let x=-40;x<W+40;x+=64){ ctx.beginPath(); ctx.moveTo(x,300); ctx.lineTo(x+26,360); ctx.stroke(); }
+    }else if(theme===1){
+      // sky: clouds and distant floating islands ahead of the hero
+      ctx.save(); ctx.globalAlpha=.9;
+      [[90,206,52],[210,232,74],[430,214,60],[548,244,46]].forEach((c,i)=>{
+        ctx.fillStyle=i%2?'#4b4870':'#3c4b79';
+        ctx.beginPath(); ctx.ellipse(c[0],c[1],c[2],c[2]*.35,0,0,6.29); ctx.fill();
+        ctx.fillStyle='#263152'; ctx.beginPath(); ctx.ellipse(c[0],c[1]+c[2]*.24,c[2]*.72,c[2]*.24,0,0,6.29); ctx.fill();
+      });
+      cloud(120,120,1.2,.28); cloud(390,96,1.5,.22); cloud(552,150,.9,.3);
+      ctx.restore();
+    }else{
+      drawGround(176,['#4a4568','#1c1a2e']); arcadeGround();
+      ctx.fillStyle='#b9a374'; ctx.fillRect(W/2-170,80,340,120);
+      ctx.fillStyle='#8d7a56'; [0,1,2,3,4].forEach(i=>ctx.fillRect(W/2-164+i*68,86,10,110));
+      ctx.fillStyle='#c43c3c'; ctx.beginPath(); ctx.moveTo(W/2-184,82); ctx.lineTo(W/2,26); ctx.lineTo(W/2+184,82); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#ffe6a0'; ctx.fillRect(W/2-18,150,36,50);
+    }
+    const vig=ctx.createRadialGradient(W/2,H/2,80,W/2,H/2,380); vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,.55)'); ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
+  }
+  function drawBattle(now,dt){
+    const b=game.battle; drawBackdrop(now,b.theme);
+    let hl=0,el=0,hj=0,ej=0,hbend=0,ebend=0;
+    if(b.anim){
+      b.anim.t=Math.max(0,b.anim.t-dt/620); const p=1-b.anim.t, v=Math.sin(Math.PI*p);
+      if(b.anim.who==='hero'){ hj=v*b.anim.jump; hbend=-v*.10; }
+      else{ ej=v*b.anim.jump; ebend=v*.12; el=v*16; }
+      if(b.anim.t<=0)b.anim=null;
+    }
+    const m=b.monster, sc=clamp(180/(m.maxHp+80)+.55,.7,1.25);
+    ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(W/2,282,40*sc,10*sc,0,0,6.29); ctx.fill(); ctx.restore();
+    drawSprite(m.sprite,W/2+el,282,132*sc,1,1,ebend,1);
+    drawHeroBack(W/2,352,160,now,0,hbend);
+    panel(12,12,220,56);
+    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,22,24);
+    bar(22,38,200,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
+    bar(22,54,200,'MP',game.hero.mp,game.hero.maxMp,'#60a5fa');
+    panel(W-232,12,220,44); ctx.fillStyle='#ffb4b4'; ctx.font='bold 11px sans-serif'; ctx.fillText(m.name,W-222,25);
+    bar(W-222,38,200,'HP',m.hp,m.maxHp,'#ef4444');
+    roundRect(W/2-54,12,108,26,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
+    ctx.fillStyle=b.turn==='hero'?'#ffe6a8':'#fca5a5'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ'):(b.turn==='hero'?'ТВОЙ ХОД':'ХОД ВРАГА'),W/2,26);
+    b.char=Math.min(b.char+dt/24,b.log.length?b.log[b.log.length-1].length:0);
+    roundRect(74,310,492,36,7); ctx.fillStyle='rgba(5,7,15,.9)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.fillText('✦',86,328);
+    ctx.fillStyle='#f5f0e2'; ctx.font='bold 11px sans-serif'; ctx.fillText((b.log[b.log.length-1]||'').slice(0,Math.floor(b.char)),102,328);
+    roundRect(178,276,284,24,7); ctx.fillStyle='rgba(6,8,18,.72)'; ctx.fill();
+    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText('Пробел/клик — удар · F — заряд ('+game.hero.mp+' MP)',W/2,288);
+    drawSmallRing(W/2,H-18,11);
+  }
+
+  function loop(now){
+    requestAnimationFrame(loop);
+    const dt=Math.min(50,now-last); last=now;
+    if(phase!=='play'||!game)return;
+    if(game.battle) drawBattle(now,dt);
+    else if(game.mode==='map'){
+      const p=game.player;
+      if(p.moveT>0){
+        p.moveT=Math.max(0,p.moveT-dt/230); const t=ease(1-p.moveT);
+        p.px=lerp(p.fromX,p.x,t); p.py=lerp(p.fromY,p.y,t); p.jump=Math.sin(Math.PI*t)*16;
+      }
+      drawMap(now);
+    }else drawBattle(now,dt);
+  }
+  requestAnimationFrame(loop);
+
+  document.addEventListener('keydown',e=>{
+    if(phase==='start'){
+      const typing=e.target&&e.target.id==='heroName';
+      if(typing&&e.key!=='Enter')return;
+      if(e.key==='ArrowLeft'){e.preventDefault();selectHero(-1);}
+      else if(e.key==='ArrowRight'){e.preventDefault();selectHero(1);}
+      else if(e.key==='ArrowUp'){e.preventDefault();selectMode(-1);}
+      else if(e.key==='ArrowDown'){e.preventDefault();selectMode(1);}
+      else if(e.key==='Enter'){e.preventDefault();startGame();}
       return;
     }
-    if (e.key === ' ' || e.key === 'Spacebar') {
-      e.preventDefault();
-      tryHit();
-    }
-    if (e.key.toLowerCase() === 'm' || e.key === 'ь') {
-      location.href = '../../index.html';
-    }
-  });
-  cv.addEventListener('pointerdown', tryHit);
-
-  function tryHit() {
-    if (phase !== 'play') return;
-    const now = performance.now();
-    if (now - lastHit < MODES[modeIdx].hitDelay) return;
-    lastHit = now;
-    hitFx = 1;
-    combo = (now - comboTimer < 2000) ? combo + 1 : 1;
-    comboTimer = now;
-
-    // Урон первому живому
-    const alive = enemies.find(en => en.hp > 0);
-    if (alive) {
-      const h = HEROES[heroIdx];
-      const dmg = h.dmg[0] + Math.floor(Math.random() * (h.dmg[1] - h.dmg[0] + 1));
-      alive.hp = Math.max(0, alive.hp - dmg);
-      alive.lastDmg = dmg;
-      alive.dmgT = 1;
-    }
-  }
-
-  function renderHeroCarousel() {
-    const box = document.getElementById('hero-carousel');
-    box.innerHTML = '';
-    const total = HEROES.length;
-    for (let off = -1; off <= 1; off++) {
-      const idx = (heroIdx + off + total) % total;
-      const h = HEROES[idx];
-      const card = document.createElement('div');
-      card.className = 'hero-card ' + (off === 0 ? 'center' : 'side');
-      card.innerHTML = '<div class="c-emoji">' + h.emoji + '</div><div class="c-name">' + h.name + '</div>';
-      if (off !== 0) card.onclick = () => selectHero(idx);
-      box.appendChild(card);
-    }
-    document.getElementById('hero-desc').textContent = HEROES[heroIdx].name + ': ' + HEROES[heroIdx].desc;
-  }
-
-  function renderModeCarousel() {
-    const box = document.getElementById('mode-carousel');
-    box.innerHTML = '';
-    const total = MODES.length;
-    for (let off = -1; off <= 1; off++) {
-      const idx = (modeIdx + off + total) % total;
-      const m = MODES[idx];
-      const card = document.createElement('div');
-      card.className = 'mode-card ' + (off === 0 ? 'center' : 'side');
-      card.innerHTML = '<span class="m-icon">' + m.icon + '</span><span class="m-name">' + m.name + '</span>';
-      if (off !== 0) card.onclick = () => selectMode(idx);
-      box.appendChild(card);
-    }
-    document.getElementById('mode-desc').textContent = MODES[modeIdx].desc;
-  }
-
-  function selectHero(idx) {
-    heroIdx = (idx + HEROES.length) % HEROES.length;
-    renderHeroCarousel();
-  }
-
-  function selectMode(idx) {
-    modeIdx = (idx + MODES.length) % MODES.length;
-    renderModeCarousel();
-  }
-
-  function startGame() {
-    const typed = document.getElementById('hero-name-input').value.trim();
-    if (typed) heroName = typed.slice(0, 16);
-    activeHero = HEROES[heroIdx].id;
-    const m = MODES[modeIdx];
-    enemies = [{ name: m.enemy, hp: m.enemyHp, maxHp: m.enemyHp, color: '#2d1b4e', eyes: '#ff0000', yOff: 0 }];
-    lastHit = 0; hitFx = 0; combo = 0; comboTimer = 0;
-    phase = 'play';
-    document.getElementById('start-screen').style.display = 'none';
-  }
-
-  document.getElementById('prev-hero').onclick = () => selectHero(heroIdx - 1);
-  document.getElementById('next-hero').onclick = () => selectHero(heroIdx + 1);
-  document.getElementById('prev-mode').onclick = () => selectMode(modeIdx - 1);
-  document.getElementById('next-mode').onclick = () => selectMode(modeIdx + 1);
-  document.getElementById('start-btn').onclick = startGame;
-  document.getElementById('hero-name-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); startGame(); }
-  });
-  renderHeroCarousel();
-  renderModeCarousel();
-
-  // ===== РЕНДЕР =====
-  function draw(now) {
-    requestAnimationFrame(draw);
-    const t = now - t0;
-    const cx = W / 2;
-    const cy = H / 2;
-
-    // Очистка
-    ctx.fillStyle = '#0a0a14';
-    ctx.fillRect(0, 0, W, H);
-
-    // ===== КОРИДОР =====
-    // Дальняя стена
-    const farY = cy - 80;
-    const farW = 160;
-    ctx.fillStyle = '#1a1a24';
-    ctx.fillRect(cx - farW/2, farY - 60, farW, 120);
-
-    // Линии схода (потолок, пол, стены)
-    ctx.strokeStyle = 'rgba(100, 100, 150, 0.35)';
-    ctx.lineWidth = 2;
-
-    // Пол — горизонтальные плиты
-    for (let i = 1; i <= 6; i++) {
-      const p = Math.pow(i / 6, 1.6);
-      const y = cy + 60 + p * (H - cy - 60);
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
-
-    // Вертикальные линии схода
-    for (let i = -4; i <= 4; i++) {
-      ctx.beginPath();
-      ctx.moveTo(cx + i * (W / 6), H);
-      ctx.lineTo(cx + i * 28, farY + 60);
-      ctx.stroke();
-    }
-
-    // Потолок
-    for (let i = -3; i <= 3; i++) {
-      ctx.beginPath();
-      ctx.moveTo(cx + i * (W / 4), 0);
-      ctx.lineTo(cx + i * 20, farY - 60);
-      ctx.stroke();
-    }
-
-    // ===== ФАКТЕЛЫ =====
-    drawTorch(cx - W * 0.35, cy - 40, t, flamePhase);
-    drawTorch(cx + W * 0.35, cy - 40, t, flamePhase + 1.3);
-
-    // ===== ВРАГ =====
-    drawEnemies(t, cx, cy);
-
-    // ===== ГЕРОИ: активный выделен, второй остаётся в пати =====
-    const wy = cy + H * 0.18;
-    const wx = cx - W * 0.22, mx = cx + W * 0.22;
-    drawHeroRing(wx, wy, activeHero === 'warrior', '#f4d03f');
-    drawHeroRing(mx, wy, activeHero === 'mage', '#a78bfa');
-    ctx.save(); ctx.globalAlpha = activeHero === 'mage' ? 0.65 : 1;
-    drawWarrior(wx, wy, t, hitFx);
-    ctx.restore();
-    ctx.save(); ctx.globalAlpha = activeHero === 'warrior' ? 0.65 : 1;
-    drawMage(mx, wy, t);
-    ctx.restore();
-
-    // ===== ЭФФЕКТ УДАРА =====
-    if (hitFx > 0) {
-      ctx.save();
-      ctx.globalAlpha = hitFx * 0.6;
-      const grad = ctx.createRadialGradient(cx, cy - 20, 10, cx, cy - 20, 120);
-      grad.addColorStop(0, 'rgba(255,255,200,0.9)');
-      grad.addColorStop(1, 'rgba(255,200,50,0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(cx, cy - 20, 120, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-
-      hitFx = Math.max(0, hitFx - 0.06);
-    }
-
-    // ===== КОМБО и УРОН =====
-    if (combo >= 2) {
-      ctx.save();
-      const pulse = 1 + 0.05 * Math.sin(now / 80);
-      ctx.translate(cx, cy - 100);
-      ctx.scale(pulse, pulse);
-      ctx.font = 'bold 42px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 6;
-      ctx.strokeText('⚔️ КОМБО x' + combo + '!', 0, 0);
-      ctx.fillStyle = '#e8b64c';
-      ctx.fillText('⚔️ КОМБО x' + combo + '!', 0, 0);
-      ctx.restore();
-    }
-
-    // Урон на враге
-    const alive = enemies.find(en => en.hp > 0);
-    if (alive && alive.dmgT > 0) {
-      ctx.save();
-      ctx.globalAlpha = alive.dmgT;
-      ctx.font = 'bold 32px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth = 5;
-      const y = cy - 50 - (1 - alive.dmgT) * 40;
-      ctx.strokeText('-' + alive.lastDmg, cx, y);
-      ctx.fillStyle = '#ff5555';
-      ctx.fillText('-' + alive.lastDmg, cx, y);
-      ctx.restore();
-      alive.dmgT = Math.max(0, alive.dmgT - 0.02);
-    }
-
-    // ===== HUD СНИЗУ =====
-    drawBottomHud(cx, cy, H);
-
-    // ===== ИМЕНА =====
-    ctx.font = '16px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#7cc3ff';
-    ctx.fillText('ВОИН', cx - W * 0.22, cy + H * 0.18 + 140);
-    ctx.fillStyle = '#c084ff';
-    ctx.fillText('МАГ', cx + W * 0.22, cy + H * 0.18 + 140);
-  }
-
-  function drawTorch(x, y, t, phase) {
-    const flicker = 0.85 + 0.15 * Math.sin(t / 100 + phase) + 0.1 * Math.sin(t / 37 + phase * 2);
-    const r = 70 * flicker;
-
-    // Свечение
-    const grad = ctx.createRadialGradient(x, y, 4, x, y, r);
-    grad.addColorStop(0, 'rgba(255,200,80,0.75)');
-    grad.addColorStop(0.5, 'rgba(255,140,40,0.3)');
-    grad.addColorStop(1, 'rgba(255,100,0,0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Держатель
-    ctx.fillStyle = '#3a2410';
-    ctx.fillRect(x - 3, y + 6, 6, 20);
-
-    // Огонь
-    ctx.fillStyle = '#ff6600';
-    ctx.beginPath();
-    ctx.moveTo(x, y - 22 * flicker);
-    ctx.quadraticCurveTo(x + 12, y - 4, x, y + 8);
-    ctx.quadraticCurveTo(x - 12, y - 4, x, y - 22 * flicker);
-    ctx.fill();
-
-    ctx.fillStyle = '#ffcc00';
-    ctx.beginPath();
-    ctx.moveTo(x, y - 12 * flicker);
-    ctx.quadraticCurveTo(x + 6, y - 2, x, y + 5);
-    ctx.quadraticCurveTo(x - 6, y - 2, x, y - 12 * flicker);
-    ctx.fill();
-  }
-
-  function drawEnemies(t, cx, cy) {
-    const alive = enemies.find(en => en.hp > 0);
-    if (!alive) {
-      // Все мертвы — пишем
-      ctx.fillStyle = '#e8b64c';
-      ctx.font = 'bold 28px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('ПОБЕДА!', cx, cy - 40);
+    const k=e.key.toLowerCase();
+    if(k==='m'||k==='ь'||e.key==='Escape'){ e.preventDefault(); if(game&&game.shopOpen)toggleShop(false); else goHub(); return; }
+    if((k==='s'||k==='ы')&&!game.battle){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
+    if(game&&game.shopOpen)return;
+    if(game&&game.battle){
+      if(e.key===' '||e.key==='Enter'){e.preventDefault();heroAttack(false);}
+      else if(k==='f'||k==='а'){e.preventDefault();heroAttack(true);}
       return;
     }
-
-    const bob = Math.sin(t / 400) * 4;
-    const ey = cy - 20 + bob;
-
-    // Тень
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.ellipse(cx, ey + 60, 55, 14, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Тело (неровная тёмная масса)
-    ctx.fillStyle = '#2d1b4e';
-    ctx.beginPath();
-    ctx.moveTo(cx - 48, ey + 50);
-    ctx.quadraticCurveTo(cx - 60, ey - 20, cx - 25, ey - 50);
-    ctx.quadraticCurveTo(cx, ey - 60, cx + 25, ey - 50);
-    ctx.quadraticCurveTo(cx + 60, ey - 20, cx + 48, ey + 50);
-    ctx.closePath();
-    ctx.fill();
-
-    // Фиолетовые прожилки
-    ctx.strokeStyle = '#6b3fa0';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 3; i++) {
-      const yy = ey + 10 + i * 12;
-      ctx.beginPath();
-      ctx.moveTo(cx - 35, yy);
-      ctx.quadraticCurveTo(cx, yy - 5, cx + 35, yy + 2);
-      ctx.stroke();
+    if(game&&game.mode==='map'){
+      const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1],a:[-1,0],d:[1,0],w:[0,-1],s2:[0,1],ф:[-1,0],в:[1,0],ц:[0,-1],ы2:[0,1]};
+      const mv=moves[e.key]||moves[k]||(e.key==='s'?[0,1]:null);
+      if(mv){ e.preventDefault(); tryMove(mv[0],mv[1]); }
     }
+  });
+  cv.addEventListener('pointerdown',()=>{ if(game&&game.battle)heroAttack(false); });
 
-    // Рога
-    ctx.fillStyle = '#2d1b4e';
-    ctx.beginPath();
-    ctx.moveTo(cx - 25, ey - 45);
-    ctx.lineTo(cx - 40, ey - 80);
-    ctx.lineTo(cx - 10, ey - 55);
-    ctx.closePath();
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx + 25, ey - 45);
-    ctx.lineTo(cx + 40, ey - 80);
-    ctx.lineTo(cx + 10, ey - 55);
-    ctx.closePath();
-    ctx.fill();
-
-    // Глаза
-    const eyeGlow = 0.8 + 0.2 * Math.sin(t / 200);
-    ctx.fillStyle = '#ff0000';
-    ctx.shadowColor = '#ff0000';
-    ctx.shadowBlur = 10 * eyeGlow;
-    ctx.beginPath();
-    ctx.arc(cx - 14, ey - 20, 6, 0, Math.PI * 2);
-    ctx.arc(cx + 14, ey - 20, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Зрачки
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(cx - 14, ey - 20, 2, 0, Math.PI * 2);
-    ctx.arc(cx + 14, ey - 20, 2, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function drawHeroRing(x, y, active, color) {
-    ctx.save();
-    ctx.globalAlpha = active ? 0.85 : 0.2;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = active ? 3 : 1;
-    ctx.beginPath();
-    ctx.ellipse(x, y + 100, active ? 48 : 40, active ? 13 : 10, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    if (active) {
-      ctx.globalAlpha = 0.25;
-      ctx.fillStyle = color;
-      ctx.fill();
+  function finishRun(win){
+    if(!game)return;
+    if(win){
+      progress.map=Math.min(5,progress.map+1);
+      if(progress.map>=5&&progress.skirmish>=5&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы закрыт!'); }
+      else toast('Карта очищена! Карта '+progress.map+'/5');
+      saveProgress();
     }
-    ctx.restore();
+    phase='start'; game=null; startScreen.classList.remove('hidden'); renderCards();
   }
 
-  function drawWarrior(x, y, t, fx) {
-    const bob = Math.sin(t / 500) * 2;
-    const lunge = fx > 0 ? -fx * 20 : 0;
-
-    ctx.save();
-    ctx.translate(x + lunge, y + bob);
-
-    // Тень
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.beginPath();
-    ctx.ellipse(0, 100, 40, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Тело (синий плащ)
-    ctx.fillStyle = '#4a90e2';
-    ctx.beginPath();
-    ctx.moveTo(-30, 100);
-    ctx.lineTo(30, 100);
-    ctx.lineTo(18, -10);
-    ctx.lineTo(-18, -10);
-    ctx.closePath();
-    ctx.fill();
-
-    // Руки
-    ctx.fillStyle = '#4a90e2';
-    ctx.fillRect(-38, 0, 14, 60);
-    ctx.fillRect(24, 0, 14, 60);
-
-    // Голова
-    ctx.fillStyle = '#f5cba7';
-    ctx.beginPath();
-    ctx.arc(0, -28, 18, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Волосы
-    ctx.fillStyle = '#8b4513';
-    ctx.beginPath();
-    ctx.arc(0, -36, 19, Math.PI, 0);
-    ctx.fill();
-
-    // Глаза
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(-6, -30, 3, 4);
-    ctx.fillRect(3, -30, 3, 4);
-
-    // Меч
-    ctx.save();
-    ctx.rotate(-0.3 - fx * 0.5);
-    ctx.strokeStyle = '#dddddd';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(30, 20);
-    ctx.lineTo(80, -40);
-    ctx.stroke();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(30, 20);
-    ctx.lineTo(80, -40);
-    ctx.stroke();
-    // Рукоять
-    ctx.fillStyle = '#8b4513';
-    ctx.fillRect(24, 14, 10, 14);
-    ctx.restore();
-
-    ctx.restore();
+  function applyD28Data(d){
+    if(!d||!d.heroes||!d.monsters||!d.weapons)return;
+    const desc={}; HEROES.forEach(h=>desc[h.name]=h.desc);
+    HEROES.splice(0,HEROES.length,...d.heroes.slice(0,2).map(h=>({
+      name:h.name, set:h.set, hp:h.maxHp, mp:h.maxMp, atk:1, def:0, sprite:h.sprite,
+      desc:desc[h.name]||'Герой из Подземелья 28.',
+      weapons:d.weapons[h.set].map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,sprite:w.sprite}))
+    })));
+    MONSTERS.splice(0,MONSTERS.length,...d.monsters.map(m=>({
+      name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, poison:m.poison
+    })));
+    heroIdx=Math.min(heroIdx,HEROES.length-1);
+    imgCache.clear();
+    HEROES.forEach(h=>img(h.sprite)); MONSTERS.forEach(m=>img(m.sprite));
+    renderCards();
   }
+  window.addEventListener('d28-data',e=>applyD28Data(e.detail));
 
-  function drawMage(x, y, t) {
-    const bob = Math.sin(t / 600 + 1.5) * 2;
-
-    ctx.save();
-    ctx.translate(x, y + bob);
-
-    // Тень
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.beginPath();
-    ctx.ellipse(0, 100, 40, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Тело (фиолетовая мантия)
-    ctx.fillStyle = '#8e44ad';
-    ctx.beginPath();
-    ctx.moveTo(-30, 100);
-    ctx.lineTo(30, 100);
-    ctx.lineTo(18, -10);
-    ctx.lineTo(-18, -10);
-    ctx.closePath();
-    ctx.fill();
-
-    // Капюшон
-    ctx.fillStyle = '#6c2d8c';
-    ctx.beginPath();
-    ctx.arc(0, -25, 22, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Лицо (в тени капюшона)
-    ctx.fillStyle = '#f5cba7';
-    ctx.beginPath();
-    ctx.arc(0, -25, 14, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Глаза
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(-6, -27, 3, 4);
-    ctx.fillRect(3, -27, 3, 4);
-
-    // Борода
-    ctx.fillStyle = '#dddddd';
-    ctx.beginPath();
-    ctx.moveTo(-10, -14);
-    ctx.lineTo(10, -14);
-    ctx.lineTo(0, 10);
-    ctx.closePath();
-    ctx.fill();
-
-    // Посох
-    ctx.strokeStyle = '#8b4513';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(30, 100);
-    ctx.lineTo(30, -50);
-    ctx.stroke();
-
-    // Шар на посохе
-    const glow = 0.7 + 0.3 * Math.sin(t / 200);
-    const grad = ctx.createRadialGradient(30, -55, 2, 30, -55, 20);
-    grad.addColorStop(0, 'rgba(200,255,255,' + glow + ')');
-    grad.addColorStop(0.5, 'rgba(0,200,255,' + (glow * 0.7) + ')');
-    grad.addColorStop(1, 'rgba(0,100,200,0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(30, -55, 20, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#88eeff';
-    ctx.beginPath();
-    ctx.arc(30, -55, 8, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
-  }
-
-  function drawBottomHud(cx, cy, H) {
-    // HP воина
-    const hpY = H - 80;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(20, hpY, 200, 40);
-    ctx.strokeStyle = '#d4a017';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(20, hpY, 200, 40);
-
-    ctx.font = 'bold 14px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = '#f4d03f';
-    ctx.fillText((activeHero === 'warrior' ? '▶ ' : '') + (activeHero === 'warrior' ? heroName : HEROES[0].name), 30, hpY + 6);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('❤️ 85/100', 30, hpY + 22);
-
-    // MP мага
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(W - 220, hpY, 200, 40);
-    ctx.strokeStyle = '#d4a017';
-    ctx.strokeRect(W - 220, hpY, 200, 40);
-
-    ctx.fillStyle = '#f4d03f';
-    ctx.fillText((activeHero === 'mage' ? '▶ ' : '') + (activeHero === 'mage' ? heroName : HEROES[1].name), W - 210, hpY + 6);
-    ctx.fillStyle = '#fff';
-    ctx.fillText('❤️ 60/60', W - 210, hpY + 22);
-
-    // HP врага сверху
-    const alive = enemies.find(en => en.hp > 0);
-    if (alive) {
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(cx - 120, 20, 240, 40);
-      ctx.strokeStyle = '#d4a017';
-      ctx.strokeRect(cx - 120, 20, 240, 40);
-
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#f4d03f';
-      ctx.fillText(alive.name, cx, 26);
-
-      // Полоска
-      ctx.fillStyle = '#3a0a0a';
-      ctx.fillRect(cx - 100, 44, 200, 8);
-      ctx.fillStyle = '#ff3333';
-      ctx.fillRect(cx - 100, 44, 200 * (alive.hp / alive.maxHp), 8);
-
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'right';
-      ctx.fillText(alive.hp + '/' + alive.maxHp, cx + 105, 26);
-    }
-  }
-
-  t0 = performance.now();
-  requestAnimationFrame(draw);
+  renderCards();
 })();
+</script>
+<script type="module">
+import { D28_DATA } from '../dungeon28/shared-data.js';
+window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 </script>
 </body>
 </html>

@@ -243,13 +243,16 @@ function saveJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 /* ---------- настройки ---------- */
 const DEF={
  monsters:{
-  spider:{hp:20,atk:6,def:1,steps:2,radius:6,taste:'hero'},
-  ghost:{hp:15,atk:4,def:0,steps:1,radius:8,taste:'gem'},
-  skeleton:{hp:25,atk:5,def:2,steps:1,radius:7,taste:'hero'},
-  necro:{hp:30,atk:4,def:2,steps:1,radius:10,taste:'corpse',period:6},
-  zombie:{hp:25,atk:5,def:1,steps:1,radius:6,taste:'hero'},
-  turtle:{hp:40,atk:4,def:7,steps:1,radius:4,taste:'gem'},
-  mouse:{hp:10,atk:3,def:0,steps:2,radius:5,taste:'coin'},
+  skeleton:{hp:100,atk:5,def:0,speed:1,steps:1,radius:7,taste:'hero',interest1:'Герой',interest2:'Атака',special:'Вампиризм'},
+  ghost:{hp:75,atk:4,def:0,speed:1,steps:1,radius:8,taste:'gem',interest1:'Герой',interest2:'Мана',special:'Сжигание маны'},
+  mouse:{hp:50,atk:3,def:0,speed:2,steps:2,radius:5,taste:'coin',interest1:'Жизнь',interest2:'Герой',special:'Деление 1/3'},
+  spider:{hp:60,atk:4,def:0,speed:2,steps:2,radius:6,taste:'hero',interest1:'Герой',interest2:'-',special:'Замедление'},
+  orge:{hp:130,atk:6,def:1,speed:1,steps:1,radius:6,taste:'hero',interest1:'Герой',interest2:'Бонусы',special:'Съедание бонусов'},
+  zombie:{hp:150,atk:6,def:1,speed:1,steps:1,radius:6,taste:'hero',interest1:'Герой',interest2:'-',special:'Яд'},
+  turtle:{hp:200,atk:3,def:8,speed:1,steps:1,radius:4,taste:'gem',interest1:'Герой',interest2:'Защита',special:'Толстая защита'},
+  devil:{hp:85,atk:7,def:2,speed:1,steps:1,radius:6,taste:'hero',interest1:'Герой',interest2:'-',special:'Регенерация'},
+  necro:{hp:90,atk:5,def:2,speed:1,steps:1,radius:10,taste:'corpse',period:6,interest1:'Трупы',interest2:'-',special:'Поднятие'},
+  archer:{hp:85,atk:8,def:1,speed:1,steps:1,radius:8,taste:'hero',interest1:'Герой',interest2:'-',special:'Стрельба 2 + Вампиризм'},
  },
  bonuses:{heal:20,shield:3,boots:15,coin:10,potion:25,spellPow:1,spellCost:1},
  pause:{monPause:0,spiderStep:1},
@@ -260,7 +263,7 @@ const DEF={
 let S=null;
 function loadSettings(){
  S=JSON.parse(JSON.stringify(DEF));
- const s=loadJSON('lab32_set',null);
+ const s=loadJSON('lab32_set_v2',null);
  if(s){for(const k of ['monsters','bonuses','pause','anim','sound']){for(const m in DEF[k])Object.assign(S[k][m],(s[k]||{})[m]||{});}
   ['pal','palBright','flicker'].forEach(k=>{if(s[k]!=null)S[k]=s[k]});}
 }
@@ -268,31 +271,54 @@ loadSettings();
 
 /* ---------- монстры и герои ---------- */
 const MON={
- spider:{name:'Паук',emoji:'🕷️',color:'#c060e0',slow:1},
- ghost:{name:'Призрак',emoji:'👻',color:'#9fd0ff',slow:1},
  skeleton:{name:'Скелет',emoji:'💀',color:'#d8d8c0',slow:1},
- necro:{name:'Некромант',emoji:'🧙',color:'#b070ff',slow:1},
- zombie:{name:'Зомби',emoji:'🧟',color:'#7ce07c',slow:3},
- turtle:{name:'Черепаха',emoji:'🐢',color:'#5fd0a0',slow:3},
+ ghost:{name:'Призрак',emoji:'👻',color:'#9fd0ff',slow:1},
  mouse:{name:'Мышь',emoji:'🐭',color:'#e0a870',slow:1},
+ spider:{name:'Паук',emoji:'🕷️',color:'#c060e0',slow:1},
+ orge:{name:'Огр',emoji:'👺',color:'#e09050',slow:1},
+ zombie:{name:'Зомби',emoji:'🧟',color:'#7ce07c',slow:1},
+ turtle:{name:'Черепаха',emoji:'🐢',color:'#5fd0a0',slow:1},
+ devil:{name:'Черт',emoji:'😈',color:'#e05050',slow:1},
+ necro:{name:'Некромант',emoji:'🧙',color:'#b070ff',slow:1},
+ archer:{name:'Тёмный арбалетчик',emoji:'🦹',color:'#a090d0',slow:1},
 };
+/* Те же спрайты, что в Подземелье 28. */
+const MON_SPRITES={
+ skeleton:['skeleton_0'],
+ ghost:['ghost_0'],
+ mouse:['rat_0'],
+ spider:['spider_0'],
+ orge:['orge_0'],
+ zombie:['undead_0'],
+ turtle:['turtle_0'],
+ devil:['demon_0'],
+ necro:['necromancer_0'],
+ archer:['dark_archer_0']
+};
+const SPRITE_IMGS={};
+for(const k in MON_SPRITES)SPRITE_IMGS[k]=MON_SPRITES[k].map(n=>{const im=new Image();im.src='../dungeon28/assets/sprites/monsters/'+n+'.png';return im;});
+/* Те же пять героев, что и в Подземелье 28: параметры и спрайты из общей базы. */
 const HEROES={
- warrior:{name:'Воин',emoji:'🛡️',color:'#f09040',hp:85,atk:8,def:3,speed:150,mana:40,desc:'Крепкий боец. Ярость усиливает удары, Стража защищает спину.',
-  spells:[{k:'Z',icon:'⚔️',name:'Удар клинка',cost:6,desc:'Мощный удар по всем врагам на клетках впереди'},
-   {k:'X',icon:'🔥',name:'Ярость',cost:10,desc:'+50% к атаке на 8 ходов'},
-   {k:'C',icon:'🗿',name:'Стража',cost:14,desc:'Призывает каменного стража-союзника рядом'}]},
- mage:{name:'Маг',emoji:'🧙',color:'#5090ff',hp:60,atk:6,def:1,speed:165,mana:60,desc:'Хрупкий, но дальнобойный. Огненный шар бьёт на расстоянии, Чертёнок прикрывает.',
-  spells:[{k:'Z',icon:'☄️',name:'Огненный шар',cost:8,desc:'Снаряд летит вперёд и взрывается при попадании'},
-   {k:'X',icon:'🔵',name:'Магический щит',cost:10,desc:'Щит поглощает урон (сила — в настройках)'},
-   {k:'C',icon:'😈',name:'Чертёнок',cost:14,desc:'Призывает чертёнка — стреляет в монстров'}]},
- paladin:{name:'Паладин',emoji:'✝️',color:'#ffd860',hp:95,atk:7,def:4,speed:170,mana:50,desc:'Танк. Волна света бьёт вокруг, Исцеление лечит, Стража защищает.',
-  spells:[{k:'Z',icon:'🌟',name:'Волна света',cost:9,desc:'Золотая волна расходится вокруг, задевая всех врагов в радиусе 3'},
-   {k:'X',icon:'💚',name:'Исцеление',cost:12,desc:'Лечит героя искрами света'},
-   {k:'C',icon:'🗿',name:'Стража',cost:14,desc:'Призывает каменного стража-союзника рядом'}]},
- devil:{name:'Черт',emoji:'😈',color:'#e05050',hp:70,atk:9,def:2,speed:130,mana:55,desc:'Быстрый и злой. Адский пламень бьёт вокруг, Ритуал ворует жизни, Нежить поднимает трупы.',
-  spells:[{k:'Z',icon:'💥',name:'Адский пламень',cost:10,desc:'Огненное кольцо вокруг героя задевает всех врагов в радиусе 2'},
-   {k:'X',icon:'🩸',name:'Кровавый ритуал',cost:8,desc:'Крадёт жизни у врагов рядом и лечит героя'},
-   {k:'C',icon:'🧟',name:'Нежить',cost:12,desc:'Поднимает ближайший труп как союзника-зомби'}]},
+ warrior:{name:'Воин',emoji:'🛡️',color:'#f09040',hp:100,atk:8,def:3,speed:150,mana:3,sprite:'../dungeon28/assets/sprites/heroes/knight_0.png',desc:'Крепкий боец из Подземелья 28. Ярость усиливает удары, Стража защищает спину.',
+  spells:[{k:'Z',icon:'⚔️',name:'Удар клинка',cost:3,desc:'Мощный удар по всем врагам на клетках впереди'},
+   {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ mage:{name:'Маг',emoji:'🧙',color:'#5090ff',hp:80,atk:6,def:1,speed:165,mana:5,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Хрупкий, но дальнобойный. Огненный шар бьёт на расстоянии, Чертёнок прикрывает.',
+  spells:[{k:'Z',icon:'☄️',name:'Огненный шар',cost:3,desc:'Снаряд летит вперёд и взрывается при попадании'},
+   {k:'X',icon:'🔵',name:'Магический щит',cost:3,desc:'Щит поглощает урон'},
+   {k:'C',icon:'😈',name:'Чертёнок',cost:3,desc:'Призывает чертёнка — стреляет в монстров'}]},
+ paladin:{name:'Паладин',emoji:'✝️',color:'#ffd860',hp:95,atk:7,def:4,speed:170,mana:4,sprite:'../dungeon28/assets/sprites/heroes/paladin_0.png',desc:'Танк. Волна света бьёт вокруг, Исцеление лечит, Стража защищает.',
+  spells:[{k:'Z',icon:'🌟',name:'Волна света',cost:3,desc:'Золотая волна расходится вокруг, задевая всех врагов в радиусе 3'},
+   {k:'X',icon:'💚',name:'Исцеление',cost:3,desc:'Лечит героя искрами света'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ angel:{name:'Ангел',emoji:'👼',color:'#bfe8ff',hp:85,atk:19,def:4,speed:175,mana:6,sprite:'../dungeon28/assets/sprites/heroes/battle_angel_0.png',desc:'Небесный союзник. Свет бьёт вокруг, Исцеление лечит, Стража прикрывает.',
+  spells:[{k:'Z',icon:'🌟',name:'Свет Ангела',cost:3,desc:'Световая волна задевает врагов в радиусе 3'},
+   {k:'X',icon:'💚',name:'Исцеление',cost:3,desc:'Лечит героя'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ archer:{name:'Лучник',emoji:'🏹',color:'#a8e06a',hp:90,atk:20,def:3,speed:160,mana:3,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Точный выстрел из тени. Бьёт через клетку, Ярость усиливает стрелы.',
+  spells:[{k:'Z',icon:'🏹',name:'Точный выстрел',cost:3,desc:'Стрела летит вперёд и бьёт первое попавшееся существо'},
+   {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
 };
 const MODES=[
  {id:'classic',name:'Классика',icon:'🗺',desc:'Собери все самоцветы',walls:true},
@@ -412,20 +438,18 @@ function freeCells(g){ const r=[];for(let y=1;y<ROWS-1;y++)for(let x=1;x<COLS-1;
 
 /* ---------- монстры уровня ---------- */
 function monsterMix(lvl){
- const list=['spider','ghost','skeleton'];
- if(lvl>=2)list.push('mouse','turtle');
- if(lvl>=3)list.push('necro');
- const n=Math.min(4+lvl,10), out=[];
+ // Один и тот же набор монстров, что и в Подземелье 28.
+ const list=Object.keys(MON);
+ const n=Math.min(4+lvl,list.length), out=[];
  for(let i=0;i<n;i++)out.push(pick(list));
- if(lvl>=3&&!out.includes('necro'))out[0]='necro';
  return out;
 }
 function makeMonster(type,x,y,weak){
  const cfg=S.monsters[type],base=MON[type];
  const k=weak?0.55:1;
  return {type,x,y,hp:Math.max(1,Math.round(cfg.hp*k*(1+(G?G.lvl-1:0)*0.12))),maxHp:Math.round(cfg.hp*k*(1+(G?G.lvl-1:0)*0.12)),
-  atk:Math.max(1,Math.round(cfg.atk*k*(1+(G?G.lvl-1:0)*0.1))),def:cfg.def,steps:cfg.steps,radius:cfg.radius,
-  taste:cfg.taste,slow:base.slow||1,cnt:0,splitted:!!weak,
+  atk:Math.max(1,Math.round(cfg.atk*k*(1+(G?G.lvl-1:0)*0.1))),def:cfg.def,speed:cfg.speed||1,steps:cfg.steps,radius:cfg.radius,
+  taste:cfg.taste,slow:base.slow||1,interest1:cfg.interest1,interest2:cfg.interest2,special:cfg.special,cnt:0,splitted:!!weak,
   flash:0,spawnT:0,path:[],px:0,py:0,animOff:Math.random()*6.28,dying:0,stand:0};
 }
 function newGame(){
@@ -610,49 +634,31 @@ function castSpell(i){
    if(dist(m.x,m.y,h.x,h.y)<=3){const dmg=Math.max(1,Math.round(h.atk*1.2*pow-m.def));damageMonster(m,dmg,'#ffd860');}}
   doShake(3);
  }
- if(H==='devil'&&i===0){ // адский пламень
-  addRing((h.x+0.5)*TS,(h.y+0.5)*TS,TS*2.4,'#ff6030');
-  for(const m of G.monsters){if(m.dying)continue;
-   if(dist(m.x,m.y,h.x,h.y)<=2){const dmg=Math.max(1,Math.round(h.atk*1.5*pow-m.def));damageMonster(m,dmg,'#ff7030');}}
-  doShake(4);
- }
- if(H==='warrior'&&i===1){h.rage=8;addText((h.x+0.5)*TS,(h.y-0.3)*TS,'ЯРОСТЬ!','#ff8040');addParts((h.x+0.5)*TS,(h.y+0.5)*TS,'#ff8040',18,70);}
+ if(H==='angel'&&i===0){ // свет Ангела
+   addRing((h.x+0.5)*TS,(h.y+0.5)*TS,TS*3.2,'#cfeaff');
+   for(const m of G.monsters){if(m.dying)continue;
+    if(dist(m.x,m.y,h.x,h.y)<=3){const dmg=Math.max(1,Math.round(h.atk*1.2*pow-m.def));damageMonster(m,dmg,'#d8f0ff');}}
+   doShake(3);
+  }
+ if(H==='archer'&&i===0){ const [dx,dy]=h.face; G.projs.push({x:h.x,y:h.y,dx,dy,dmg:Math.round(h.atk*0.9*pow),kind:'arrow',owner:'hero',t:0}); }
+  if(H==='warrior'&&i===1){h.rage=8;addText((h.x+0.5)*TS,(h.y-0.3)*TS,'ЯРОСТЬ!','#ff8040');addParts((h.x+0.5)*TS,(h.y+0.5)*TS,'#ff8040',18,70);}
  if(H==='mage'&&i===1){h.shield+=Math.round(4*pow);addText((h.x+0.5)*TS,(h.y-0.3)*TS,'ЩИТ','#70c0ff');}
  if(H==='paladin'&&i===1){h.hp=Math.min(h.maxHp,h.hp+Math.round(18*pow));addText((h.x+0.5)*TS,(h.y-0.3)*TS,'+'+Math.round(18*pow),'#70ff90');addParts((h.x+0.5)*TS,(h.y+0.5)*TS,'#70ff90',16,60);SFX.heal();}
- if(H==='devil'&&i===1){ // кровавый ритуал
-  let stole=0;
-  for(const m of G.monsters){if(m.dying)continue;
-   if(dist(m.x,m.y,h.x,h.y)<=1){const dmg=Math.max(1,Math.round(6*pow));stole+=Math.round(dmg*0.7);damageMonster(m,dmg,'#e05050');}}
-  if(stole){h.hp=Math.min(h.maxHp,h.hp+stole);addText((h.x+0.5)*TS,(h.y-0.3)*TS,'+'+stole,'#ff7070');SFX.heal();}
-  else addText((h.x+0.5)*TS,(h.y-0.3)*TS,'никого рядом','#a0a0b8');
- }
- if(i===2){ // призыв
-  if(H==='devil'){
-   // нежить: поднять труп
-   let best=null,bd=99;
-   for(const c of G.corpses){const d=dist(c.x,c.y,h.x,h.y);if(d<bd&&d<=6){bd=d;best=c;}}
-   if(best){
-    G.corpses.splice(G.corpses.indexOf(best),1);
-    G.allies.push({kind:'zomb',x:best.x,y:best.y,hp:25,maxHp:25,atk:6,steps:1,slow:2,cnt:0,flash:0,spawnT:0,dying:0,emoji:'🧟',color:'#7ce07c',px:0,py:0});
-    addParts((best.x+0.5)*TS,(best.y+0.5)*TS,'#60ff90',18,60);
-    addText((best.x+0.5)*TS,(best.y+0.2)*TS,'ВСТАЛ!','#60ff90');
-    SFX.raise();
-   } else {toast('Трупов рядом нет — нежить не поднять');h.mana+=cost;}
-  } else {
+  if(H==='angel'&&i===1){h.hp=Math.min(h.maxHp,h.hp+Math.round(18*pow));addText((h.x+0.5)*TS,(h.y-0.3)*TS,'+'+Math.round(18*pow),'#70ff90');addParts((h.x+0.5)*TS,(h.y+0.5)*TS,'#70ff90',16,60);SFX.heal();}
+ if(H==='archer'&&i===1){h.rage=8;addText((h.x+0.5)*TS,(h.y-0.3)*TS,'ЯРОСТЬ!','#ff8040');addParts((h.x+0.5)*TS,(h.y+0.5)*TS,'#ff8040',18,70);}
+ if(i===2){ // стража
    const spots=[[1,0],[-1,0],[0,1],[0,-1]];
    let pos=null;
    for(const [dx,dy] of spots){const x=h.x+dx,y=h.y+dy;if(inGrid(x,y)&&!G.grid[y][x]&&!G.monsters.some(m=>!m.dying&&m.x===x&&m.y===y)){pos=[x,y];break;}}
    if(!pos){toast('Рядом нет места');h.mana+=cost;}
    else{
-    const kind=H==='mage'?'imp':'guard';
-    G.allies.push({kind,x:pos[0],y:pos[1],hp:kind==='imp'?16:30,maxHp:kind==='imp'?16:30,atk:kind==='imp'?5:6,steps:1,slow:1,cnt:0,flash:0,spawnT:0,dying:0,
-     emoji:kind==='imp'?'😈':'🗿',color:kind==='imp'?'#e0a060':'#b0b0c0',px:0,py:0,cool:0});
+    G.allies.push({kind:'guard',x:pos[0],y:pos[1],hp:30,maxHp:30,atk:6,steps:1,slow:1,cnt:0,flash:0,spawnT:0,dying:0,
+     emoji:'🗿',color:'#b0b0c0',px:0,py:0,cool:0});
     addParts((pos[0]+0.5)*TS,(pos[1]+0.5)*TS,'#ffe060',16,60);
     SFX.raise();
    }
   }
- }
- updateHUD();
+  updateHUD();
 }
 
 /* ---------- монстры: ИИ ---------- */
@@ -700,29 +706,31 @@ function monsterTick(){
   if(slow>1&&m.cnt%slow!==0)continue; // медленные: шаг, потом стоят
   let steps=m.steps;
   if(m.type==='spider')steps*=Math.max(1,S.pause.spiderStep);
-  const tgt=monsterTarget(m);
-  let nx=m.x,ny=m.y,moved=false;
-  for(let s=0;s<steps;s++){
-   let step=null;
-   if(tgt)step=bfsStep(m.x,m.y,tgt[0],tgt[1],99);
-   if(!step){ // блуждание
-    const dirs=pick([[1,0],[-1,0],[0,1],[0,-1]]);
-    const wx=m.x+dirs[0],wy=m.y+dirs[1];
-    if(inGrid(wx,wy)&&!G.grid[wy][wx])step=[wx,wy];
-   }
-   if(step){
-    const blocked=G.monsters.some(o=>o!==m&&!o.dying&&o.x===step[0]&&o.y===step[1]);
-    const blockedAlly=G.allies.some(a=>!a.dying&&a.x===step[0]&&a.y===step[1]);
-    if(!blocked&&!blockedAlly&&!(G.hero.x===step[0]&&G.hero.y===step[1])){
-     m.x=step[0];m.y=step[1];moved=true;
+  const md0=dist(m.x,m.y,G.hero.x,G.hero.y);
+  const engaged=(md0===1||(m.type==='archer'&&md0===2));
+  if(!engaged){
+   const tgt=monsterTarget(m);
+   let nx=m.x,ny=m.y,moved=false;
+   for(let s=0;s<steps;s++){
+    let step=null;
+    if(tgt)step=bfsStep(m.x,m.y,tgt[0],tgt[1],99);
+    if(!step){ // блуждание
+     const dirs=pick([[1,0],[-1,0],[0,1],[0,-1]]);
+     const wx=m.x+dirs[0],wy=m.y+dirs[1];
+     if(inGrid(wx,wy)&&!G.grid[wy][wx])step=[wx,wy];
+    }
+    if(step){
+     const blocked=G.monsters.some(o=>o!==m&&!o.dying&&o.x===step[0]&&o.y===step[1]);
+     const blockedAlly=G.allies.some(a=>!a.dying&&a.x===step[0]&&a.y===step[1]);
+     if(!blocked&&!blockedAlly&&!(G.hero.x===step[0]&&G.hero.y===step[1])){
+      m.x=step[0];m.y=step[1];moved=true;
+     }
     }
    }
+   if(moved)m.animOff=Math.random()*6.28;
   }
-  if(dist(m.x,m.y,G.hero.x,G.hero.y)===1&&m.type!=='ghost'){
-   const tk=(S.monsters[m.type]||{}).taste||m.taste;
-   if(tk==='hero'||Math.random()<0.5)monsterAttack(m);
-  }
-  if(moved)m.animOff=Math.random()*6.28;
+  const md=dist(m.x,m.y,G.hero.x,G.hero.y);
+  if(md===1||(m.type==='archer'&&md===2))monsterAttack(m);
  }
  // некромант оживляет
  for(const m of G.monsters){
@@ -922,6 +930,19 @@ function drawSprite(emoji,x,y,size,color,alpha,flash,scale){
  ctx.fillText(emoji,px,py+size*0.04);
  ctx.restore();
 }
+function drawMonsterSprite(type,x,y,size,color,alpha,flash,scale){
+ const imgs=SPRITE_IMGS[type];
+ const base=MON[type]||{emoji:'❓'};
+ if(!imgs||!imgs.length){drawSprite(base.emoji,x,y,size,color,alpha,flash,scale);return;}
+ const img=imgs[0];
+ const px=OFFX+x*TS+TS/2, py=OFFY+y*TS+TS/2+Math.sin(performance.now()/260+(type.length*1.7))*1.5;
+ ctx.save();
+ ctx.globalAlpha=clamp(alpha,0,1);
+ if(flash>0){ctx.globalAlpha=alpha*flash*0.7;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,size*0.46*scale,0,6.29);ctx.fill();ctx.globalAlpha=clamp(alpha,0,1);}
+ if(img.complete&&img.naturalWidth){const s=size*scale;ctx.drawImage(img,px-s/2,py-s/2,s,s);}
+ else drawSprite(base.emoji,x,y,size,color,alpha,flash,scale);
+ ctx.restore();
+}
 function drawHero(t){
  const h=G.hero;
  const bob=(h.moveT>0)?Math.sin(t/40)*2:Math.sin(t/500+h.animOff||0)*1.2;
@@ -954,7 +975,11 @@ function drawHero(t){
  // сам герой
  ctx.font=Math.round(TS*0.72)+'px serif';
  ctx.textAlign='center';ctx.textBaseline='middle';
- ctx.fillText(HEROES[curHero].emoji,px,py);
+ const hs=HEROES[curHero].sprite;
+  if(hs){ const im=SPRITE_IMGS.hero||(SPRITE_IMGS.hero=new Image()); if(im.src!==hs)im.src=hs;
+   if(im.complete&&im.naturalWidth)ctx.drawImage(im,px-TS*0.42,py-TS*0.42,TS*0.84,TS*0.84);
+   else ctx.fillText(HEROES[curHero].emoji,px,py);
+  } else ctx.fillText(HEROES[curHero].emoji,px,py);
  if(h.flash>0){
   ctx.globalAlpha=h.flash*0.5;ctx.fillStyle='#ff3030';
   ctx.beginPath();ctx.arc(px,py,TS*0.4,0,6.29);ctx.fill();
@@ -981,7 +1006,7 @@ function drawMonsters(t){
   ctx.globalAlpha=alpha*0.3;ctx.fillStyle='#000';
   ctx.beginPath();ctx.ellipse(OFFX+m.x*TS+TS/2,OFFY+m.y*TS+TS*0.85,TS*0.24*scale,TS*0.09,0,0,6.29);ctx.fill();
   ctx.restore();
-  drawSprite(base.emoji,m.x,m.y,TS*0.7,base.color,alpha*(base.type==='ghost'?0.85:1)*1,0,scale);
+  drawMonsterSprite(m.type,m.x,m.y,TS*0.7,base.color,alpha*(m.type==='ghost'?0.85:1),0,scale);
   // вспышка урона
   if(m.flash>0){
    ctx.save();ctx.globalAlpha=m.flash*0.45;ctx.fillStyle='#fff';
@@ -1150,7 +1175,7 @@ function renderMenuCarousels(){
   const id=HERO_IDS[idx],H=HEROES[id];
   const card=document.createElement('div');
   card.className='hero-card '+(off===0?'center':'side');
-  card.innerHTML='<div class="c-emoji">'+H.emoji+'</div><div class="c-name">'+H.name+'</div>';
+  card.innerHTML='<div class="c-emoji"><img src="'+H.sprite+'" alt="" style="width:100%;height:100%;object-fit:contain"></div><div class="c-name">'+H.name+'</div>';
   if(off!==0)card.onclick=()=>selectHeroIdx(idx);
   hb.appendChild(card);
  }
@@ -1207,11 +1232,11 @@ function startGame(){
  toast('Игра началась! Собери все 💎');
 }
 /* ---------- настройки ---------- */
-const MSL=[['hp','Жизни',3,70,1],['atk','Атака',1,15,1],['def','Защита',0,12,1],['steps','Шагов за ход',1,4,1],['radius','Радиус погони',0,14,1]];
+const MSL=[['hp','Жизни',1,250,1],['atk','Атака',1,12,1],['def','Защита',0,10,1],['steps','Шагов за ход',1,4,1],['radius','Радиус погони',0,14,1]];
 const MEX={necro:[['period','Оживление каждые N ходов',3,15,1]]};
 const TABS=[
- ['spider','🕷 Паук'],['ghost','👻 Призрак'],['skeleton','💀 Скелет'],['necro','🧙 Некромант'],
- ['zombie','🧟 Зомби'],['turtle','🐢 Черепаха'],['mouse','🐭 Мышь'],
+ ['skeleton','💀 Скелет'],['ghost','👻 Призрак'],['mouse','🐭 Мышь'],['spider','🕷 Паук'],
+ ['orge','👺 Огр'],['zombie','🧟 Зомби'],['turtle','🐢 Черепаха'],['devil','😈 Черт'],['necro','🧙 Некромант'],['archer','🦹 Арбалетчик'],
  ['bonuses','Бонусы и магия'],['pause','Пауза'],['anim','Анимация'],['pal','Палитры'],['sound','Звук'],
 ];
 let curTab='spider';
@@ -1219,13 +1244,13 @@ function slider(line,label,get,set,min,max,step){
  const l=document.createElement('label');l.textContent=label;line.appendChild(l);
  const r=document.createElement('input');r.type='range';r.min=min;r.max=max;r.step=step||1;r.value=get();
  const v=document.createElement('span');v.className='val';v.textContent=get()+(max<=100&&min>=50?'%':'');
- r.oninput=()=>{set(+r.value);v.textContent=r.value+(max<=100&&min>=50?'%':'');saveJSON('lab32_set',S);if(G)updateHUD();};
+ r.oninput=()=>{set(+r.value);v.textContent=r.value+(max<=100&&min>=50?'%':'');saveJSON('lab32_set_v2',S);if(G)updateHUD();};
  line.appendChild(r);line.appendChild(v);
 }
 function toggle(line,label,get,set){
  const lab=document.createElement('label');lab.className='tgl';
  const c=document.createElement('input');c.type='checkbox';c.checked=get();
- c.onchange=()=>{set(c.checked);saveJSON('lab32_set',S);};
+ c.onchange=()=>{set(c.checked);saveJSON('lab32_set_v2',S);};
  lab.appendChild(c);lab.appendChild(document.createTextNode(label));
  line.appendChild(lab);
 }
@@ -1250,15 +1275,16 @@ function buildSettings(){
    slider(mkLine(),label,()=>cfg[key],v=>cfg[key]=v,mn,mx,st);
   }
   if(MEX[curTab])for(const [key,label,mn,mx,st] of MEX[curTab])slider(mkLine(),label,()=>cfg[key],v=>cfg[key]=v,mn,mx,st);
+  const info=document.createElement('div');info.style.cssText='font-size:12px;color:#b9b9d6;margin:6px 0 10px;line-height:1.5';info.textContent='Как в Подземелье 28 · интерес 1: '+cfg.interest1+' · интерес 2: '+cfg.interest2+' · особенность: '+cfg.special;body.appendChild(info);
   const ln=mkLine();
   const lab=document.createElement('label');lab.textContent='Вкус (за чем охотится)';ln.appendChild(lab);
   const sel=document.createElement('select');
   for(const t in TASTES){const o=document.createElement('option');o.value=t;o.textContent=TASTES[t];if(cfg.taste===t)o.selected=true;sel.appendChild(o);}
-  sel.onchange=()=>{cfg.taste=sel.value;saveJSON('lab32_set',S);};
+  sel.onchange=()=>{cfg.taste=sel.value;saveJSON('lab32_set_v2',S);};
   ln.appendChild(sel);
-  if(curTab==='turtle'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐢 Черепаха делает шаг, затем два хода стоит — и вся в броне.';body.appendChild(note);}
+  if(curTab==='turtle'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐢 Толстая броня — 8 защиты, как в Подземелье 28.';body.appendChild(note);}
   if(curTab==='mouse'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐭 При первом убийстве мышь делится на двух мышей послабее (делятся один раз).';body.appendChild(note);}
-  if(curTab==='zombie'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🧟 Зомби ходит так же медленно, как черепаха, но ориентир у него — герой.';body.appendChild(note);}
+  if(curTab==='zombie'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🧟 Зомби опасен ядом и охотится за героем — как в Подземелье 28.';body.appendChild(note);}
  }
  if(curTab==='bonuses'){
   const b=S.bonuses;
@@ -1285,7 +1311,7 @@ function buildSettings(){
   const ln=mkLine();const lab=document.createElement('label');lab.textContent='Палитра этажа';ln.appendChild(lab);
   const sel=document.createElement('select');
   PAL.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.name;if(S.pal===i)o.selected=true;sel.appendChild(o);});
-  sel.onchange=()=>{S.pal=+sel.value;saveJSON('lab32_set',S);};
+  sel.onchange=()=>{S.pal=+sel.value;saveJSON('lab32_set_v2',S);};
   ln.appendChild(sel);
   slider(mkLine(),'Яркость %',()=>S.palBright,v=>S.palBright=v,50,150,5);
   slider(mkLine(),'Мерцание факелов %',()=>S.flicker,v=>S.flicker=v,0,100,5);
@@ -1370,7 +1396,7 @@ $('pToMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');};
 $('btnRun').onclick=null;
 $('bBtnSet').onclick=$('mBtnSet').onclick=()=>{if(G&&G.running)G.paused=true;buildSettings();show('setOv');};
 $('setDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
-$('setReset').onclick=()=>{localStorage.removeItem('lab32_set');loadSettings();buildSettings();if(G)buildSpellbar();};
+$('setReset').onclick=()=>{localStorage.removeItem('lab32_set_v2');loadSettings();buildSettings();if(G)buildSpellbar();};
 $('bBtnRec').onclick=$('mBtnRec').onclick=()=>{if(G&&G.running)G.paused=true;buildRecords();show('recOv');};
 $('recDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
 $('recClear').onclick=()=>{localStorage.removeItem('lab32_rec');buildRecords();};
@@ -1391,11 +1417,44 @@ $('oSave').onclick=()=>{
 $('oAgain').onclick=()=>{hideAll();newGame();buildSpellbar();resize();};
 $('oMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');};
 $('wallsChk').onchange=buildMenu;
+/* ---------- общая база Подземелья 28 ---------- */
+const D28_MONSTER_KEYS=['skeleton','ghost','mouse','spider','orge','zombie','turtle','devil','necro','archer'];
+const D28_HERO_KEYS=['warrior','mage','paladin','angel','archer'];
+function applyD28Data(d){
+ if(!d||!d.heroes||!d.monsters)return;
+ d.monsters.forEach((m,i)=>{
+  const cfg=DEF.monsters[D28_MONSTER_KEYS[i]]; if(!cfg)return;
+  cfg.hp=m.hp; cfg.atk=m.atk; cfg.def=m.def; cfg.speed=m.speed;
+  if(m.special)cfg.special=m.special;
+ });
+ loadSettings();
+ const heroes={};
+ d.heroes.forEach((h,i)=>{
+  const id=D28_HERO_KEYS[i]; if(!id)return;
+  const old=HEROES[id]||{};
+  heroes[id]={...old,name:h.name,hp:h.maxHp,mana:h.maxMp,sprite:h.sprite};
+ });
+ Object.keys(HEROES).forEach(k=>delete HEROES[k]);
+ Object.assign(HEROES,heroes);
+ HERO_IDS.splice(0,HERO_IDS.length,...Object.keys(HEROES));
+ if(heroIdx>=HERO_IDS.length)heroIdx=0;
+ Object.keys(SPRITE_IMGS).forEach(k=>delete SPRITE_IMGS[k]);
+ d.monsters.forEach((m,i)=>{
+  const key=D28_MONSTER_KEYS[i]; if(!key)return;
+  const im=new Image(); im.src=m.sprite; SPRITE_IMGS[key]=[im];
+ });
+ buildMenu();
+}
+window.addEventListener('d28-data',e=>applyD28Data(e.detail));
 /* ---------- запуск ---------- */
 buildMenu();
 resize();
 requestAnimationFrame(loop);
 show('menuOv');
+</script>
+<script type="module">
+import { D28_DATA } from '../dungeon28/shared-data.js';
+window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 </script>
 </body>
 </html>

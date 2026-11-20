@@ -262,6 +262,7 @@ const IS_MOBILE = ('ontouchstart' in window) || /Android|iPhone|iPad|Mobi/i.test
 const THIN_SCALE = IS_MOBILE ? 0.5 : 1;
 
 let goldCount = 0;
+let poisonTurns = 0, poisonDmg = 0;
 let playerHp = 100;
 let starBonus = 0;
 let shieldBonus = 0;
@@ -290,12 +291,13 @@ let modeIdx = 1;
 let shopOpen = false;
 let settingsOpen = false;
 
+/* Ниже — база Подземелья 28: те же пять героев, параметры и спрайты. */
 const HEROES = [
-{name:"Воин", emoji:"⚔️", set:"warrior", maxHp:100, melMod:0, lightRange:64},
-{name:"Маг", emoji:"🔮", set:"mage", maxHp:80, melMod:-1, lightRange:96},
-{name:"Паладин", emoji:"✝️", set:"warrior", maxHp:95, melMod:0, lightRange:80},
-{name:"Ангел", emoji:"👼", set:"mage", maxHp:85, melMod:0, lightRange:96},
-{name:"Лучник", emoji:"🏹", set:"archer", maxHp:90, melMod:0, lightRange:80}
+{name:"Воин", emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3, melMod:0, lightRange:64, sprite:"../dungeon28/assets/sprites/heroes/knight_0.png"},
+{name:"Маг", emoji:"🔮", set:"mage", maxHp:80, maxMp:5, melMod:-1, lightRange:96, sprite:"../dungeon28/assets/sprites/heroes/wizard_0.png"},
+{name:"Паладин", emoji:"✝️", set:"warrior", maxHp:95, maxMp:4, melMod:0, lightRange:80, sprite:"../dungeon28/assets/sprites/heroes/paladin_0.png"},
+{name:"Ангел", emoji:"👼", set:"mage", maxHp:85, maxMp:6, melMod:0, lightRange:96, sprite:"../dungeon28/assets/sprites/heroes/battle_angel_0.png"},
+{name:"Лучник", emoji:"🏹", set:"archer", maxHp:90, maxMp:3, melMod:0, lightRange:80, sprite:"../dungeon28/assets/sprites/heroes/elf_archer_0.png"}
 ];
 let heroIdx = 0;
 
@@ -742,7 +744,7 @@ const idx = (heroIdx + off + total) % total;
 const h = HEROES[idx];
 const card = document.createElement('div');
 card.className = 'hero-card ' + (off === 0 ? 'center' : 'side');
-card.innerHTML = '<div class="c-emoji">' + h.emoji + '</div><div class="c-name">' + h.name + '</div>';
+card.innerHTML = '<div class="c-emoji"><img src="' + h.sprite + '" alt="" style="width:100%;height:100%;object-fit:contain"></div><div class="c-name">' + h.name + '</div>';
 if (off !== 0) card.onclick = () => selectHero(idx);
 box.appendChild(card);
 }
@@ -787,6 +789,7 @@ menuActive = false;
 startScreen.style.display = 'none';
 gameActive = true;
 goldCount = 0; playerHp = HEROES[heroIdx].maxHp; starBonus = 0; shieldBonus = 0;
+poisonTurns = 0; poisonDmg = 0;
 energy = 0; weaponLevel = 0; totalTurns = 0; currentFloor = 1;
 weapons = getWeaponsBySet(HEROES[heroIdx].set);
 startAmbient();
@@ -853,10 +856,20 @@ settingsPanel.style.display = open ? 'block' : 'none';
 if (open) { playSound('menu'); refreshSettingsLabels(); }
 }
 
-const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺"];
+/* Все монстры и их параметры — из базы Подземелья 28. */
+const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🐢","😈","🧙‍♂️","🦹"];
+const ENEMY_NAMES = {
+"💀":"Скелет","👻":"Призрак","🐭":"Мышь","🕷":"Паук","👺":"Огр",
+"🧟":"Зомби","🐢":"Черепаха","😈":"Черт","🧙‍♂️":"Некромант","🦹":"Тёмный арбалетчик"
+};
 const ENEMY_BASE = {
-"💀": {hp:100, atk:5}, "👻": {hp:75, atk:4}, "🐭": {hp:50, atk:3},
-"🕷": {hp:60, atk:4}, "👺": {hp:130, atk:6}
+"💀":{hp:100,atk:5,def:0},"👻":{hp:75,atk:4,def:0},"🐭":{hp:50,atk:3,def:0},
+"🕷":{hp:60,atk:4,def:0},"👺":{hp:130,atk:6,def:1},"🧟":{hp:150,atk:6,def:1},
+"🐢":{hp:200,atk:3,def:8},"😈":{hp:85,atk:7,def:2},"🧙‍♂️":{hp:90,atk:5,def:2},"🦹":{hp:85,atk:8,def:1}
+};
+const ENEMY_SPRITE = {
+"💀":"skeleton_0","👻":"ghost_0","🐭":"rat_0","🕷":"spider_0","👺":"orge_0",
+"🧟":"undead_0","🐢":"turtle_0","😈":"demon_0","🧙‍♂️":"necromancer_0","🦹":"dark_archer_0"
 };
 function monsterLikes(monType, itemType) {
 if (monType === "💀") return itemType === 'heart' || itemType === 'star' || itemType === 'blackHeart';
@@ -910,7 +923,7 @@ if (cellFree(mx, my, monsters)) ok = true;
 if (!ok) return;
 monsters.push({
 x: mx, y: my, hp: hp, maxHp: hp, atk: dmg,
-def: (type === "👺" ? 1 : 0),
+def: ENEMY_BASE[type].def,
 isStunned: false, stunTimer: 0,
 type: type, behavior: behavior
 });
@@ -1065,7 +1078,7 @@ if (totalTurns > highScore) {
 highScore = totalTurns; highScoreEl.innerText = highScore;
 try { localStorage.setItem('sf2_highscore', String(highScore)); } catch (e) {}
 }
-goldCount = 0; playerHp = HEROES[heroIdx].maxHp; clearBonuses();
+goldCount = 0; playerHp = HEROES[heroIdx].maxHp; clearBonuses(); poisonTurns = 0; poisonDmg = 0;
 energy = 0; weaponLevel = 0; currentFloor = 1; totalTurns = 0;
 showMenu();
 }
@@ -1163,6 +1176,13 @@ else if (mon.type === "👺") { items.splice(i, 1); playSound('eat'); }
 function afterTurn() {
 if (!gameActive) return;
 totalTurns++;
+if (poisonTurns > 0) {
+playerHp -= poisonDmg;
+playSound('bad');
+poisonDmg = Math.max(0, poisonDmg - 1);
+poisonTurns--;
+if (playerHp <= 0) { endGame(false); return; }
+}
 spawnItems();
 let pickupIdx = items.findIndex(i => i.x === player.x && i.y === player.y);
 if (pickupIdx !== -1) {
@@ -1238,7 +1258,25 @@ monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; });
 updateHud(); draw();
 }
 
+const SPRITE_BASE = "../dungeon28/assets/sprites/";
+const boardImgs = {};
+function boardImg(src) {
+if (!src) return null;
+if (!boardImgs[src]) { const im = new Image(); im.src = src; boardImgs[src] = im; }
+return boardImgs[src];
+}
+function spriteFor(emoji) {
+const h = HEROES.find(x => x.emoji === emoji);
+if (h && h.sprite) return h.sprite;
+if (ENEMY_SPRITE[emoji]) return SPRITE_BASE + "monsters/" + ENEMY_SPRITE[emoji] + ".png";
+return null;
+}
 function drawCell(x, y, emoji, size) {
+const src = spriteFor(emoji), im = boardImg(src);
+if (im && im.complete && im.naturalWidth) {
+ctx.drawImage(im, x + 16 - (size || 22) / 2, y + 17 - (size || 22), size || 22, size || 22);
+return;
+}
 ctx.font = (size || 20) + "px sans-serif";
 ctx.textAlign = "center"; ctx.textBaseline = "middle";
 ctx.fillText(emoji, x + 16, y + 17);
@@ -1371,599 +1409,295 @@ renderStart();
 </script>
 
 <script>
-/* ===== ВРЕЗКА БОЯ В СТИЛЕ SHINING FORCE 2 (доработано) ===== */
+/* ===== ВРЕЗКА БОЯ SHINING FORCE: ДВА ГЕРОЯ, ОДИН МОНСТР ===== */
 (function () {
 'use strict';
 if (window.startBattleCutscene) return;
 
-var W = 320, H = 224;
-var overlay = null, cv = null, cx = null, bg = null;
-var raf = null, t0 = 0, active = false, cfg = null, fired = {};
-var heroX = 232, heroY = 138, enemyX = 88, enemyY = 138;
+var W = 480, H = 270;
+var overlay = null, cv = null, cx = null, bg = null, raf = 0, t0 = 0, active = false, cfg = null, fired = {};
+var T_PLATFORM = 220, T_ENEMY = 560, T_H1 = 1250, T_H1_HIT = 1470, T_H2 = 1980, T_H2_HIT = 2200;
+var T_ENEMY_ATK = 2700, T_ENEMY_HIT = 2920, T_POISON = 3180, T_END = 3900;
+var imgs = {};
 
-// Тайминги (мс) — ближе к SF2: быстрее, чем в старой версии
-var T_PLATFORM = 500;
-var T_ENEMY_APPEAR = 1000;
-var T_HERO_ATTACK = 1850;
-var T_IMPACT = 2050; // момент удара (вспышка + цифра)
-var T_KILL_START = 2100; // начало растворения
-var T_KILL_END = 2750; // конец растворения
-var T_COUNTER_START = 2400;
-var T_COUNTER_HIT = 2600;
-var T_FADE_START_KILL = 2750;
-var T_FADE_START_COUNTER = 3150;
-var FADE = 500;
-
-function ac() { try { return window.AudioContext || window.webkitAudioContext; } catch (e) { return null; } }
-function beep(f1, f2, dur, type, vol) {
-try {
-var Ctor = ac(); if (!Ctor) return;
-if (!beep.ctx) beep.ctx = new Ctor();
-var a = beep.ctx, o = a.createOscillator(), g = a.createGain();
-o.type = type || 'square';
-o.frequency.setValueAtTime(f1, a.currentTime);
-if (f2) o.frequency.exponentialRampToValueAtTime(Math.max(1, f2), a.currentTime + dur);
-g.gain.setValueAtTime(vol || 0.07, a.currentTime);
-g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
-o.connect(g); g.connect(a.destination);
-o.start(); o.stop(a.currentTime + dur + 0.03);
-} catch (e) {}
+function image(src) {
+if (!src) return null;
+if (!imgs[src]) { var im = new Image(); im.src = src; imgs[src] = im; }
+return imgs[src];
 }
-function noiseBurst(dur, vol) {
-try {
-var Ctor = ac(); if (!Ctor) return;
-if (!noiseBurst.ctx) noiseBurst.ctx = new Ctor();
-var a = noiseBurst.ctx;
-var size = Math.floor(a.sampleRate * dur);
-var buf = a.createBuffer(1, size, a.sampleRate);
-var d = buf.getChannelData(0);
-for (var i = 0; i < size; i++) d[i] = (Math.random()*2 - 1) * (1 - i/size);
-var src = a.createBufferSource(); src.buffer = buf;
-var g = a.createGain(); g.gain.value = vol || 0.06;
-var f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900;
-src.connect(f); f.connect(g); g.connect(a.destination);
-src.start();
-} catch (e) {}
-}
+function ease(t) { t = Math.max(0, Math.min(1, t)); return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+function cue(name, time, fn) { if (t >= time && !fired[name]) { fired[name] = 1; fn(); } }
 
-/* ===== ФОН: каменная стена, колонны, статуи, плиты — ближе к скриншоту ===== */
 function buildBg() {
 bg = document.createElement('canvas'); bg.width = W; bg.height = H;
 var g = bg.getContext('2d');
-var bx = 24, bw = 272, by = 36, fy = 104, fb = 168;
-
-g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
-
-// Каменная кладка стены
-g.fillStyle = '#3a2c1c'; g.fillRect(bx, by, bw, fy - by);
-var rowH = 8;
-for (var ry = by, row = 0; ry < fy; ry += rowH, row++) {
-var off = (row % 2) * 12;
-for (var rx = bx - 24 + off; rx < bx + bw; rx += 24) {
-var x1 = Math.max(bx, rx), x2 = Math.min(rx + 23, bx + bw);
-if (x2 <= x1) continue;
-var shade = 40 + Math.floor(Math.random()*18);
-g.fillStyle = 'rgb(' + shade + ',' + (shade-8) + ',' + (shade-18) + ')';
-g.fillRect(x1 + 1, ry + 1, x2 - x1 - 2, rowH - 2);
-g.fillStyle = 'rgba(0,0,0,0.35)';
-g.fillRect(x1 + 1, ry + rowH - 2, x2 - x1 - 2, 1);
-}
-}
-
-// Колонны
-[48, 272].forEach(function (c) {
-g.fillStyle = '#5a4630'; g.fillRect(c - 8, by, 16, fy - by);
-g.fillStyle = '#7a6242'; g.fillRect(c - 8, by, 5, fy - by);
-g.fillStyle = '#2b2115'; g.fillRect(c + 4, by, 4, fy - by);
-// капитель
-g.fillStyle = '#6b5539'; g.fillRect(c - 11, by, 22, 4);
-g.fillStyle = '#4a3824'; g.fillRect(c - 11, fy - 4, 22, 4);
+var sky = g.createLinearGradient(0, 0, 0, H);
+sky.addColorStop(0, '#151b3d'); sky.addColorStop(.55, '#3b477c'); sky.addColorStop(1, '#4a3c52');
+g.fillStyle = sky; g.fillRect(0, 0, W, H);
+g.fillStyle = '#dfe8ff';
+[[70, 40, 1], [250, 28, .7], [410, 52, 1.2]].forEach(function (c) {
+g.globalAlpha = .22; g.beginPath(); g.ellipse(c[0], c[1], 38 * c[2], 11 * c[2], 0, 0, 6.29);
+g.ellipse(c[0] - 22 * c[2], c[1] + 3, 23 * c[2], 8 * c[2], 0, 0, 6.29);
+g.ellipse(c[0] + 20 * c[2], c[1] + 4, 26 * c[2], 8 * c[2], 0, 0, 6.29); g.fill();
 });
-
-// Статуи-надгробия
-function statue(x, y) {
-g.fillStyle = '#4a3824'; g.fillRect(x - 6, y - 12, 12, 14);
-g.beginPath(); g.arc(x, y - 15, 6, 0, Math.PI * 2); g.fill();
-g.fillStyle = '#3a2c1c'; g.fillRect(x - 3, y - 11, 2, 10);
-g.fillStyle = '#2a2014'; g.fillRect(x - 10, y + 2, 20, 4);
-}
-statue(72, fy - 2); statue(148, fy - 2); statue(240, fy - 2);
-
-// Факелы
-[[64, 58], [256, 58]].forEach(function (p) {
-g.fillStyle = '#2a1a0a'; g.fillRect(p[0] - 2, p[1] - 2, 4, 10);
-g.fillStyle = '#7f1d1d'; g.fillRect(p[0] - 2, p[1] - 4, 4, 4);
-g.fillStyle = '#ef4444'; g.fillRect(p[0] - 1, p[1] - 5, 2, 2);
-g.fillStyle = '#fbbf24'; g.fillRect(p[0] - 1, p[1] - 6, 2, 1);
-});
-
-// Пол: каменные плиты в перспективе
-g.fillStyle = '#1b2033'; g.fillRect(bx, fy, bw, fb - fy);
-// плиты
-for (var r = 0; r < 6; r++) {
-var y1 = fy + Math.pow(r/6, 1.6) * (fb - fy);
-var y2 = fy + Math.pow((r+1)/6, 1.6) * (fb - fy);
-var step = 18 + r * 4;
-for (var sx = bx - 20; sx < bx + bw + 20; sx += step) {
-g.fillStyle = (r % 2 === 0) ? 'rgba(70,80,120,0.35)' : 'rgba(50,60,95,0.35)';
-g.fillRect(sx, y1, step - 1, y2 - y1 - 1);
-}
-}
-// швы
-g.strokeStyle = '#0f1322'; g.lineWidth = 1;
-for (var k = 0; k <= 6; k++) {
-var yy = fy + Math.pow(k/6, 1.6) * (fb - fy);
-g.beginPath(); g.moveTo(bx, yy); g.lineTo(bx + bw, yy); g.stroke();
+g.globalAlpha = 1;
+g.fillStyle = '#1b2030'; g.fillRect(0, 168, W, 102);
+g.fillStyle = '#2b3348'; g.fillRect(0, 168, W, 10);
+g.fillStyle = '#111622';
+g.beginPath(); g.ellipse(390, 178, 92, 76, 0, Math.PI, 0); g.fill(); g.fillRect(298, 178, 184, 72);
+g.fillStyle = '#080a10'; g.beginPath(); g.ellipse(390, 226, 48, 52, 0, Math.PI, 0); g.fill(); g.fillRect(342, 226, 96, 42);
+g.fillStyle = '#6e6249'; g.fillRect(0, 262, W, 8);
+g.fillStyle = '#827651'; g.fillRect(0, 270, W, H - 270);
+g.strokeStyle = 'rgba(255,255,255,.07)';
+for (var x = -40; x < W + 60; x += 56) { g.beginPath(); g.moveTo(x, 270); g.lineTo(x + 28, H); g.stroke(); }
+var v = g.createRadialGradient(W / 2, H / 2, 70, W / 2, H / 2, 300);
+v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.58)');
+g.fillStyle = v; g.fillRect(0, 0, W, H);
 }
 
-// Затемнение по краям
-var vg = g.createRadialGradient(160, 100, 60, 160, 100, 200);
-vg.addColorStop(0, 'rgba(0,0,0,0)');
-vg.addColorStop(1, 'rgba(0,0,0,0.6)');
-g.fillStyle = vg; g.fillRect(0, 0, W, H);
+function still(src, x, y, size, scaleX, scaleY, bend, alpha) {
+var im = image(src);
+cx.save(); cx.globalAlpha = alpha == null ? 1 : alpha;
+cx.translate(x, y); cx.rotate(bend || 0); cx.transform(scaleX || 1, 0, 0, scaleY || 1, 0, 0);
+if (im && im.complete && im.naturalWidth) cx.drawImage(im, -size / 2, -size, size, size);
+else { cx.fillStyle = '#9fb2ff'; cx.beginPath(); cx.ellipse(0, -size * .55, size * .22, size * .38, 0, 0, 6.29); cx.fill(); }
+cx.restore();
 }
-
 function platform(x, y, r, a) {
 cx.save(); cx.globalAlpha = a == null ? 1 : a;
-cx.fillStyle = 'rgba(0,0,0,0.5)';
-cx.beginPath(); cx.ellipse(x, y + 2, r, r * 0.3, 0, 0, Math.PI * 2); cx.fill();
-cx.fillStyle = '#4a4a52'; cx.beginPath(); cx.ellipse(x, y, r, r * 0.32, 0, 0, Math.PI * 2); cx.fill();
-cx.fillStyle = '#6d6d78'; cx.beginPath(); cx.ellipse(x, y - 2, r - 3, r * 0.28, 0, 0, Math.PI * 2); cx.fill();
-cx.strokeStyle = '#2f2f36'; cx.lineWidth = 1;
-cx.beginPath(); cx.ellipse(x, y - 2, (r - 3) * 0.55, (r - 3) * 0.15, 0, 0, Math.PI * 2); cx.stroke();
+cx.fillStyle = 'rgba(0,0,0,.45)'; cx.beginPath(); cx.ellipse(x, y + 3, r, r * .28, 0, 0, 6.29); cx.fill();
+cx.fillStyle = '#454b5c'; cx.beginPath(); cx.ellipse(x, y, r, r * .26, 0, 0, 6.29); cx.fill();
+cx.fillStyle = '#646b80'; cx.beginPath(); cx.ellipse(x, y - 2, r - 3, r * .22, 0, 0, 6.29); cx.fill();
 cx.restore();
 }
-
-/* ===== Герой: Bowie-подобный силуэт с зелёным плащом и мечом ===== */
-function drawHero(x, y, lunge, swordFlash, a) {
-cx.save(); cx.globalAlpha = a == null ? 1 : a;
-var s = lunge || 0;
-
-// Тень
-cx.fillStyle = 'rgba(0,0,0,0.45)';
-cx.beginPath(); cx.ellipse(x, y + 2, 13, 4, 0, 0, Math.PI * 2); cx.fill();
-
-// Ноги (синие штаны)
-cx.fillStyle = '#283593';
-cx.fillRect(x - 6, y - 10, 5, 11);
-cx.fillRect(x + 1, y - 10, 5, 11);
-// Ботинки
-cx.fillStyle = '#c9a227';
-cx.fillRect(x - 7, y, 6, 2);
-cx.fillRect(x + 1, y, 6, 2);
-
-// Туловище (зелёная туника)
-cx.fillStyle = '#1f7a2e'; cx.fillRect(x - 8, y - 22, 12, 13);
-cx.fillStyle = '#166527'; cx.fillRect(x + 2, y - 21, 3, 12);
-// Пояс
-cx.fillStyle = '#5a3a1a'; cx.fillRect(x - 8, y - 12, 12, 3);
-
-// Плащ (зелёный, развевается вправо)
-cx.fillStyle = '#2e9e3f';
-cx.beginPath();
-cx.moveTo(x - 2, y - 22);
-cx.lineTo(x + 14, y - 18);
-cx.lineTo(x + 18, y - 6);
-cx.lineTo(x + 12, y - 2);
-cx.lineTo(x + 8, y - 12);
-cx.closePath(); cx.fill();
-cx.fillStyle = '#1f7a2e';
-cx.beginPath();
-cx.moveTo(x - 2, y - 22);
-cx.lineTo(x + 8, y - 14);
-cx.lineTo(x + 6, y - 8);
-cx.closePath(); cx.fill();
-
-// Голова
-cx.fillStyle = '#f2c69b'; cx.fillRect(x - 5, y - 29, 8, 7);
-// Волосы (светлые)
-cx.fillStyle = '#e8c060'; cx.fillRect(x - 6, y - 32, 10, 4);
-cx.fillRect(x - 7, y - 30, 3, 6);
-// Глаз
-cx.fillStyle = '#1e1e24'; cx.fillRect(x + 1, y - 26, 2, 2);
-
-// Рука с мечом
-cx.fillStyle = '#f2c69b'; cx.fillRect(x - 10, y - 20, 3, 5);
-// Меч
+function box(x, y, w, h, title, hp, max, mp, maxMp) {
 cx.save();
-cx.translate(x - 10 + s, y - 18);
-cx.rotate(-0.35);
-cx.strokeStyle = '#e0e0e0'; cx.lineWidth = 2;
-cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(0, -16); cx.stroke();
-cx.strokeStyle = '#ffffff'; cx.lineWidth = 1;
-cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(0, -16); cx.stroke();
-cx.fillStyle = '#8d6e63'; cx.fillRect(-2, 0, 4, 3);
-cx.fillStyle = '#c9a227'; cx.fillRect(-3, -1, 6, 2);
-cx.restore();
-
-// Вспышка клинка
-if (swordFlash) {
-cx.save();
-cx.globalAlpha = swordFlash;
-cx.strokeStyle = '#fff'; cx.lineWidth = 3;
-cx.beginPath(); cx.moveTo(x - 30, y - 30); cx.lineTo(x - 18, y - 10); cx.stroke();
+cx.fillStyle = 'rgba(6,10,26,.92)'; cx.fillRect(x, y, w, h);
+cx.strokeStyle = '#c8a34a'; cx.lineWidth = 2; cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+cx.strokeStyle = 'rgba(120,170,255,.5)'; cx.lineWidth = 1; cx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+cx.fillStyle = '#ffe6a8'; cx.font = 'bold 11px sans-serif'; cx.textAlign = 'left'; cx.textBaseline = 'middle';
+cx.fillText(title, x + 9, y + 13);
+function mini(label, val, top, color) {
+cx.fillStyle = '#d7dcf0'; cx.font = '9px sans-serif'; cx.fillText(label, x + 9, top);
+cx.fillStyle = 'rgba(255,255,255,.13)'; cx.fillRect(x + 28, top - 4, w - 38, 7);
+var ratio = max > 0 ? Math.max(0, Math.min(1, val / max)) : 0;
+cx.fillStyle = color; cx.fillRect(x + 28, top - 4, Math.max(2, (w - 38) * ratio), 7);
+cx.fillStyle = '#fff'; cx.textAlign = 'right'; cx.fillText(val + '/' + max, x + w - 9, top); cx.textAlign = 'left';
+}
+mini('HP', Math.max(0, Math.round(hp)), y + 28, '#ef5350');
+if (mp != null) mini('MP', Math.max(0, Math.round(mp)), y + 42, '#60a5fa');
 cx.restore();
 }
-
-cx.restore();
+function currentMessage() {
+var list = cfg.messages || [], msg = null;
+for (var i = 0; i < list.length; i++) if (t >= list[i].at) msg = list[i];
+return msg;
 }
-
-/* ===== Враг: растворяющееся существо, как Gizmo ===== */
-function drawEnemyShape(g, x, y, t, kind, alpha) {
-g.save();
-g.globalAlpha = alpha == null ? 1 : alpha;
-
-if (kind === 'flying') {
-var bob = Math.sin(t / 300) * 3, ey = y - 34 + bob;
-g.fillStyle = 'rgba(0,0,0,0.35)';
-g.beginPath(); g.ellipse(x, y + 2, 10, 3.5, 0, 0, Math.PI * 2); g.fill();
-var fl = Math.sin(t / 120) * 6;
-g.fillStyle = '#3a3a46';
-g.beginPath(); g.moveTo(x, ey); g.lineTo(x - 16, ey - 8 + fl); g.lineTo(x - 4, ey + 4); g.fill();
-g.beginPath(); g.moveTo(x, ey); g.lineTo(x + 16, ey - 8 + fl); g.lineTo(x + 4, ey + 4); g.fill();
-g.fillStyle = '#20202a';
-g.beginPath(); g.ellipse(x, ey + 4, 9, 11, 0, 0, Math.PI * 2); g.fill();
-g.fillStyle = '#ff2d2d';
-g.fillRect(x - 4, ey + 1, 3, 3); g.fillRect(x + 2, ey + 1, 3, 3);
-} else if (kind === 'water') {
-g.fillStyle = '#1b3a6b';
-g.beginPath(); g.ellipse(x, y, 26, 8, 0, 0, Math.PI * 2); g.fill();
-g.strokeStyle = '#7db4e8'; g.lineWidth = 1;
-var rp = (t / 500) % 1;
-g.beginPath(); g.ellipse(x, y, 26 - rp * 10, 8 - rp * 3, 0, 0, Math.PI * 2); g.stroke();
-g.fillStyle = '#20202a';
-g.beginPath(); g.ellipse(x, y - 4, 8, 10, 0, 0, Math.PI * 2); g.fill();
-g.fillStyle = '#ff2d2d';
-g.fillRect(x - 4, y - 8, 3, 3); g.fillRect(x + 2, y - 8, 3, 3);
-} else {
-// Gizmo-подобное существо: тёмная масса с красными глазами
-g.fillStyle = 'rgba(0,0,0,0.4)';
-g.beginPath(); g.ellipse(x, y + 2, 11, 4, 0, 0, Math.PI * 2); g.fill();
-
-// Тело — неровная масса
-g.fillStyle = '#20202a';
-g.beginPath();
-g.ellipse(x, y - 11, 10, 12, 0, 0, Math.PI * 2);
-g.fill();
-// Рваные края
-g.fillStyle = '#181822';
-g.beginPath();
-g.moveTo(x - 10, y - 6);
-g.lineTo(x - 13, y - 2);
-g.lineTo(x - 8, y - 1);
-g.lineTo(x - 11, y + 3);
-g.lineTo(x - 4, y + 2);
-g.closePath(); g.fill();
-g.beginPath();
-g.moveTo(x + 10, y - 6);
-g.lineTo(x + 13, y - 1);
-g.lineTo(x + 8, y);
-g.lineTo(x + 11, y + 4);
-g.lineTo(x + 4, y + 3);
-g.closePath(); g.fill();
-
-// Красные глаза
-g.fillStyle = '#ff2d2d';
-g.fillRect(x - 5, y - 14, 3, 3);
-g.fillRect(x + 2, y - 14, 3, 3);
-g.fillStyle = '#ff8888';
-g.fillRect(x - 4, y - 13, 1, 1);
-g.fillRect(x + 3, y - 13, 1, 1);
-
-// Рот
-g.strokeStyle = '#ff5555'; g.lineWidth = 1;
-g.beginPath(); g.moveTo(x - 3, y - 7); g.lineTo(x + 3, y - 7); g.stroke();
-}
-g.restore();
-}
-
-// Пиксельное растворение: рисуем спрайт врага в offscreen и гасим пиксели
-function drawDissolveEnemy(x, y, t, kind, progress) {
-if (progress <= 0) { drawEnemyShape(cx, x, y, t, kind, 1); return; }
-if (progress >= 1) return;
-
-var size = 44;
-var off = document.createElement('canvas');
-off.width = size; off.height = size;
-var g = off.getContext('2d');
-// Рисуем врага в offscreen с центром
-drawEnemyShape(g, size/2, size/2 + 14, t, kind, 1);
-
-var img = g.getImageData(0, 0, size, size);
-var data = img.data;
-var px = 2; // размер пиксельного блока
-var prng = function (a, b) { return ((a * 928371 + b * 123457) % 997) / 997; };
-
-for (var by = 0; by < size; by += px) {
-for (var bx = 0; bx < size; bx += px) {
-var threshold = prng(bx, by);
-if (progress > threshold) {
-for (var yy = 0; yy < px; yy++) {
-for (var xx = 0; xx < px; xx++) {
-var idx = ((by + yy) * size + (bx + xx)) * 4;
-if (idx >= 0 && idx < data.length) data[idx + 3] = 0;
-}
-}
-}
-}
-}
-g.putImageData(img, 0, 0);
-cx.drawImage(off, x - size/2, y - size/2 - 14);
-}
-
-function bar(x, y, w, h, frac, col) {
-cx.fillStyle = '#000'; cx.fillRect(x - 1, y - 1, w + 2, h + 2);
-cx.fillStyle = '#3a3a3a'; cx.fillRect(x, y, w, h);
-cx.fillStyle = col; cx.fillRect(x, y, w * Math.max(0, Math.min(1, frac)), h);
-}
-
-/* ===== Окно статуса в стиле SF2: синий фон, двойная золотая рамка ===== */
-function windowBox(x, y, w, h, name, hp, max, mp, mpMax) {
-// Внешняя тень
-cx.fillStyle = 'rgba(0,0,0,0.6)'; cx.fillRect(x + 2, y + 2, w, h);
-// Синий фон
-cx.fillStyle = '#14225a'; cx.fillRect(x, y, w, h);
-// Внутренняя светлая полоса
-cx.fillStyle = '#1e3a8a'; cx.fillRect(x + 3, y + 3, w - 6, h - 6);
-// Двойная рамка: золото + тёмно-синий
-cx.strokeStyle = '#d4a017'; cx.lineWidth = 2; cx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-cx.strokeStyle = '#8a6a10'; cx.lineWidth = 1; cx.strokeRect(x + 3.5, y + 3.5, w - 7, h - 7);
-
-cx.textBaseline = 'top'; cx.textAlign = 'left';
-cx.font = 'bold 9px "Courier New", monospace'; cx.fillStyle = '#f4d03f';
-cx.fillText(name, x + 7, y + 5);
-
-bar(x + 42, y + 16, 52, 6, max > 0 ? hp / max : 0, '#e03131');
-cx.font = '8px "Courier New", monospace'; cx.fillStyle = '#fff';
-cx.fillText(hp + '/' + max, x + 98, y + 15);
-
-cx.font = 'bold 8px "Courier New", monospace'; cx.fillStyle = '#f4d03f';
-cx.fillText('MP', x + 7, y + 27);
-bar(x + 26, y + 28, 30, 5, mpMax > 0 ? mp / mpMax : 0, '#e8c027');
-cx.font = '8px "Courier New", monospace'; cx.fillStyle = '#fff';
-cx.fillText(mp + '/' + mpMax, x + 60, y + 27);
-}
-
-function floatText(x, y, txt, col, a) {
-cx.save(); cx.globalAlpha = a == null ? 1 : a;
-cx.font = 'bold 13px "Courier New", monospace';
-cx.textAlign = 'center'; cx.textBaseline = 'middle';
-cx.strokeStyle = '#000'; cx.lineWidth = 4; cx.strokeText(txt, x, y);
-cx.strokeStyle = '#fff'; cx.lineWidth = 2; cx.strokeText(txt, x, y);
-cx.fillStyle = col; cx.fillText(txt, x, y);
-cx.restore();
-}
-
-function ease(p) { p = Math.max(0, Math.min(1, p)); return p * p * (3 - 2 * p); }
-
 function finish() {
-if (raf) cancelAnimationFrame(raf); raf = null;
+if (!active) return;
 active = false;
+if (raf) cancelAnimationFrame(raf);
 if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-overlay = cv = cx = null;
-if (cfg && cfg.onEnd) { var f = cfg.onEnd; cfg = null; f(); }
+overlay = cv = cx = bg = cfg = null;
+if (window._sfBattleDone) { var fn = window._sfBattleDone; window._sfBattleDone = null; fn(); }
 }
 
+var t = 0;
 function draw(now) {
-var t = now - t0;
-var e = cfg.enemies[0];
-var killed = e.killed;
-var counter = cfg.counterDamage > 0;
-
-var fadeStart = killed ? T_FADE_START_KILL : (counter ? T_FADE_START_COUNTER : T_FADE_START_KILL);
-if (t >= fadeStart + FADE) { finish(); return; }
-
-var cue = function (n, tm, fn) { if (t >= tm && !fired[n]) { fired[n] = 1; fn(); } };
-
+if (!active) return;
+t = now - t0;
+raf = requestAnimationFrame(draw);
 cx.setTransform(1, 0, 0, 1, 0, 0);
-cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H);
+cx.clearRect(0, 0, W, H);
+cx.drawImage(bg, 0, 0);
 
-// Тряска экрана
 var shX = 0, shY = 0;
-if (t >= T_IMPACT - 40 && t < T_IMPACT + 160) {
-var s1 = 3 * (1 - (t - (T_IMPACT - 40)) / 200);
-shX = (Math.random() * 2 - 1) * s1; shY = (Math.random() * 2 - 1) * s1;
-}
-if (counter && t >= T_COUNTER_HIT - 40 && t < T_COUNTER_HIT + 160) {
-var s2 = 2.5 * (1 - (t - (T_COUNTER_HIT - 40)) / 200);
-shX = (Math.random() * 2 - 1) * s2; shY = (Math.random() * 2 - 1) * s2;
-}
-
+if (t >= T_H1_HIT && t < T_H1_HIT + 140) shX = (Math.random() * 2 - 1) * 3;
+if (t >= T_ENEMY_HIT && t < T_ENEMY_HIT + 140) shY = (Math.random() * 2 - 1) * 3;
 cx.save(); cx.translate(shX, shY);
 
-// Фон с появлением
-cx.globalAlpha = ease(t / 500);
-cx.drawImage(bg, 0, 0);
-cx.globalAlpha = 1;
+var appear = ease((t - T_PLATFORM) / 380), enemyIn = ease((t - T_ENEMY) / 420);
+var h1 = cfg.heroes[0], h2 = cfg.heroes[1], e = cfg.enemies[0];
+var h1x = 142, h2x = 236, ey = 226, h1y = 236, h2y = 228, bend1 = 0, bend2 = 0, ebend = 0, lunge1 = 0, lunge2 = 0, elunge = 0;
 
-// Звуковые маркеры
-cue('platform', T_PLATFORM, function () { beep(90, 50, 0.15, 'sine', 0.1); });
-cue('enemy', T_ENEMY_APPEAR, function () { beep(160, 220, 0.12, 'triangle', 0.06); });
-cue('swing', T_HERO_ATTACK, function () { beep(900, 400, 0.08, 'sawtooth', 0.07); });
-cue('impact', T_IMPACT, function () { beep(180, 60, 0.18, 'square', 0.1); noiseBurst(0.12, 0.05); });
-cue('kill', T_KILL_START, function () { if (killed) { beep(300, 40, 0.35, 'triangle', 0.08); noiseBurst(0.3, 0.04); } });
-cue('counter', T_COUNTER_HIT, function () { if (counter) { beep(260, 90, 0.2, 'square', 0.09); noiseBurst(0.1, 0.04); } });
+function attackWindow(start, hit, who) {
+var d = t - start;
+if (d > 0 && d < 520) {
+var v = Math.sin(Math.PI * Math.min(1, d / 520));
+if (who === 1) { lunge1 = v * 58; bend1 = -v * .12; }
+else if (who === 2) { lunge2 = v * 54; bend2 = -v * .1; }
+else { elunge = -v * 54; ebend = v * .13; }
+}
+}
+attackWindow(T_H1, T_H1_HIT, 1);
+attackWindow(T_H2, T_H2_HIT, 2);
+attackWindow(T_ENEMY_ATK, T_ENEMY_HIT, 0);
 
-// ===== Платформа героя =====
-var hpP = ease((t - T_PLATFORM) / 500);
-if (hpP > 0) {
-var py = heroY + (1 - hpP) * 90;
-platform(heroX, py + 8, 26, hpP);
+if (appear > 0) {
+platform(h1x, h1y + 6, 30, appear); platform(h2x, h2y + 6, 27, appear);
+still(h1.sprite, h1x + lunge1, h1y, 122, 1, 1, bend1, 1);
+still(h2.sprite, h2x + lunge2, h2y, 108, 1, 1, bend2, 1);
+}
+if (enemyIn > 0) {
+platform(372, ey + 7, 34, enemyIn);
+var dead = cfg.killed && t >= T_H2_HIT;
+var eAlpha = dead ? Math.max(0, 1 - (t - T_H2_HIT) / 600) : 1;
+still(e.sprite, 372 + elunge, ey, 138, 1 + (1 - enemyIn) * .25, 1, ebend, eAlpha);
+if (eAlpha < 1) {
+cx.save(); cx.globalAlpha = eAlpha; cx.fillStyle = '#ffd54f';
+cx.beginPath(); cx.arc(372, ey - 60, 20 + (1 - eAlpha) * 24, 0, 6.29); cx.fill(); cx.restore();
+}
+}
 
-// Анимация атаки героя
-var at = t - T_HERO_ATTACK;
-var hx = heroX;
-var swordFlash = 0;
-if (at > 0 && at < 300) hx = heroX - ease(at / 300) * 70;
-else if (at >= 300 && at < 500) { hx = heroX - 70; swordFlash = 1; }
-else if (at >= 500 && at < 800) hx = heroX - 70 + ease((at - 500) / 300) * 70;
+if (t >= T_H1_HIT && t < T_H1_HIT + 420) floatDamage(372, 118, '-' + cfg.damage1, '#ffd54f', t - T_H1_HIT);
+if (t >= T_H2_HIT && t < T_H2_HIT + 420) floatDamage(372, 118, '-' + cfg.damage2, '#ffd54f', t - T_H2_HIT);
+if (t >= T_ENEMY_HIT && t < T_ENEMY_HIT + 420) floatDamage(cfg.defenderX, 128, '-' + cfg.counterDamage, '#ff5252', t - T_ENEMY_HIT);
 
-drawHero(hx, py, (at > 0 && at < 500) ? -8 : 0, swordFlash, 1);
+if (t >= T_PLATFORM) box(6, 6, 144, 46, h1.name, h1.hp, h1.max, h1.mp, h1.mpMax);
+if (t >= T_PLATFORM) box(158, 6, 144, 46, h2.name, h2.hp, h2.max, h2.mp, h2.mpMax);
+if (t >= T_ENEMY) box(W - 150, 6, 144, 38, e.name, e.hp, e.max, null, null);
 
-// Красная вспышка на герое при контрударе
-if (counter && t >= T_COUNTER_HIT && t < T_COUNTER_HIT + 200) {
+cx.restore();
+
+var visible = (cfg.messages || []).filter(function (m) { return t >= m.at; }).slice(-3);
 cx.save();
-cx.globalAlpha = 0.55 * (1 - (t - T_COUNTER_HIT) / 200);
-cx.fillStyle = '#ff2222';
-cx.fillRect(hx - 14, py - 34, 30, 38);
+cx.fillStyle = 'rgba(4,6,14,.94)'; cx.fillRect(12, H - 70, W - 24, 58);
+cx.strokeStyle = 'rgba(251,191,36,.65)'; cx.lineWidth = 1.5; cx.strokeRect(12, H - 70, W - 24, 58);
+cx.fillStyle = '#fbbf24'; cx.font = 'bold 15px sans-serif'; cx.textBaseline = 'middle';
+cx.fillText('✦', 22, H - 41);
+cx.fillStyle = '#f5f0e2'; cx.font = 'bold 12px sans-serif'; cx.textAlign = 'left';
+for (var i = 0; i < visible.length; i++) cx.fillText(visible[i].text, 38, H - 57 + i * 16);
 cx.restore();
-}
-}
-
-// ===== Враг =====
-var ea = ease((t - T_ENEMY_APPEAR) / 500);
-if (ea > 0) {
-var eAlpha = 1, ex = enemyX, eyy = enemyY;
-if (e.type === 'flying' && ea < 1) { eAlpha = ea; eyy = enemyY - (1 - ea) * 50; }
-else if (e.type === 'ground' && ea < 1) { ex = enemyX - (1 - ea) * 60; }
-else if (e.type === 'water') { eAlpha = ea; }
-
-// Контрудар врага
-var cAt = t - T_COUNTER_START;
-if (counter && cAt > 0 && cAt < 280) ex = enemyX + ease(cAt / 280) * 100;
-else if (counter && cAt >= 280 && cAt < 500) ex = enemyX + 100;
-else if (counter && cAt >= 500 && cAt < 780) ex = enemyX + 100 - ease((cAt - 500) / 280) * 100;
-
-if (e.type === 'ground' && ea < 1) platform(ex, eyy + 8, 24, ea);
-else if (e.type === 'ground' && !killed) platform(ex, eyy + 8, 24, 1);
-
-// Растворение
-if (killed && t >= T_KILL_START) {
-var progress = Math.min(1, (t - T_KILL_START) / (T_KILL_END - T_KILL_START));
-drawDissolveEnemy(ex, eyy, t, e.type, progress);
-
-// Частицы
-cx.save();
-var partAlpha = 1 - progress;
-cx.globalAlpha = partAlpha;
-for (var pi = 0; pi < 12; pi++) {
-var pa = (pi / 12) * Math.PI * 2 + t / 300;
-var pr = progress * 30;
-cx.fillStyle = pi % 2 === 0 ? '#20202a' : '#ff2d2d';
-cx.fillRect(ex + Math.cos(pa) * pr - 1, eyy - 11 + Math.sin(pa) * pr - 1, 2, 2);
-}
-cx.restore();
-} else if (ea > 0) {
-drawEnemyShape(cx, ex, eyy, t, e.type, eAlpha);
-}
-
-// Белая вспышка в момент удара
-if (t >= T_IMPACT && t < T_IMPACT + 90) {
-var flashA = 1 - (t - T_IMPACT) / 90;
-cx.save();
-cx.globalAlpha = flashA * 0.85;
-cx.fillStyle = '#fff';
-cx.beginPath();
-cx.arc(enemyX, enemyY - 11, 22 + (1 - flashA) * 10, 0, Math.PI * 2);
-cx.fill();
-// лучи
-cx.strokeStyle = '#fff'; cx.lineWidth = 3;
-for (var ri = 0; ri < 6; ri++) {
-var ra = (ri / 6) * Math.PI * 2 + t / 200;
-cx.beginPath();
-cx.moveTo(enemyX + Math.cos(ra) * 12, enemyY - 11 + Math.sin(ra) * 12);
-cx.lineTo(enemyX + Math.cos(ra) * (24 + (1 - flashA) * 16), enemyY - 11 + Math.sin(ra) * (24 + (1 - flashA) * 16));
-cx.stroke();
-}
-cx.restore();
-}
-
-// Цифра урона
-if (t >= T_IMPACT && t < T_IMPACT + 750) {
-var dp = (t - T_IMPACT) / 750;
-floatText(enemyX, 92 - dp * 24, '-' + e.damage, '#ffd54f', 1 - dp * 0.7);
-}
-if (counter && t >= T_COUNTER_HIT && t < T_COUNTER_HIT + 750) {
-var dp2 = (t - T_COUNTER_HIT) / 750;
-floatText(heroX, 96 - dp2 * 22, '-' + cfg.counterDamage, '#ff5252', 1 - dp2 * 0.7);
-}
-}
-
-// ===== Окна статуса =====
-if (t >= T_PLATFORM) {
-var shownHeroHp = (counter && t >= T_COUNTER_HIT) ? Math.max(0, cfg.heroHp - cfg.counterDamage) : cfg.heroHp;
-windowBox(168, 4, 148, 42, String(cfg.hero || 'ГЕРОЙ'), shownHeroHp, cfg.heroMax, cfg.heroMp == null ? 0 : cfg.heroMp, cfg.heroMpMax == null ? 10 : cfg.heroMpMax);
-}
-if (t >= T_ENEMY_APPEAR) {
-var shownHp = t < T_IMPACT ? e.hp : (killed ? 0 : Math.max(0, e.hp - e.damage));
-windowBox(6, 174, 130, 44, String(e.name || 'ВРАГ'), shownHp, e.max == null ? e.hp : e.max, 0, 0);
-}
 
 cx.restore();
 
-// Затемнение в конце
-if (t >= fadeStart) {
-cx.setTransform(1, 0, 0, 1, 0, 0);
-cx.fillStyle = 'rgba(0,0,0,' + Math.min(1, (t - fadeStart) / FADE) + ')';
-cx.fillRect(0, 0, W, H);
+if (t >= (cfg.poison ? T_POISON + 700 : T_END)) { finish(); return; }
 }
-raf = requestAnimationFrame(draw);
+function floatDamage(x, y, text, color, dt) {
+cx.save(); cx.globalAlpha = 1 - dt / 420;
+cx.fillStyle = color; cx.font = 'bold 20px sans-serif'; cx.textAlign = 'center';
+cx.fillText(text, x, y - dt * .05); cx.restore();
 }
 
 function start(o) {
 if (!o || !o.enemies || !o.enemies.length) { if (o && o.onEnd) o.onEnd(); return; }
-if (active) { if (o.onEnd) o.onEnd(); return; }
-cfg = o; fired = {};
+cfg = o; fired = {}; t = 0; t0 = performance.now(); active = true;
 buildBg();
 overlay = document.createElement('div');
-overlay.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:9000;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;cursor:pointer;';
-var wrapEl = document.createElement('div');
-wrapEl.style.cssText = 'width:min(100vw,142.8vh);aspect-ratio:320/224;position:relative;';
-cv = document.createElement('canvas');
-cv.width = W; cv.height = H;
-cv.style.cssText = 'width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;';
-wrapEl.appendChild(cv);
-overlay.appendChild(wrapEl);
+overlay.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:9000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;';
+var wrap = document.createElement('div');
+wrap.style.cssText = 'width:min(100vw,177.7vh);aspect-ratio:16/9;position:relative;';
+cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+cv.style.cssText = 'width:100%;height:100%;display:block;image-rendering:auto;';
+wrap.appendChild(cv); overlay.appendChild(wrap);
 var hint = document.createElement('div');
-hint.style.cssText = 'position:absolute;bottom:6px;left:0;width:100%;text-align:center;color:#777;font:11px sans-serif;';
-hint.textContent = 'тап — пропустить';
-overlay.appendChild(hint);
+hint.style.cssText = 'position:absolute;bottom:4px;left:0;width:100%;text-align:center;color:#7a7f98;font:11px sans-serif;';
+hint.textContent = 'тап — пропустить'; overlay.appendChild(hint);
 document.body.appendChild(overlay);
 overlay.addEventListener('pointerdown', function (ev) {
-ev.stopPropagation();
-// Пропуск: сразу к концу
-t0 = performance.now() - (T_FADE_START_KILL + FADE - 10);
+ev.stopPropagation(); t0 = performance.now() - (cfg.poison ? T_POISON + 680 : T_END - 20);
 for (var k in fired) fired[k] = 1;
-fired._all = 1;
 });
 cx = cv.getContext('2d');
-t0 = performance.now();
-active = true;
 raf = requestAnimationFrame(draw);
 }
-
 window.startBattleCutscene = start;
 })();
 </script>
 <script>
-/* ===== ОБОЛОЧКА: бой через врезку ===== */
+/* ===== ОБОЛОЧКА: база Подземелья 28 + бой на двоих ===== */
 (function () {
 'use strict';
 var origFight = fight;
-fight = function (m, index) {
-var pDmg = (weapons[weaponLevel].dmg + starBonus) - m.def;
-if (pDmg < 1) pDmg = 1;
-var killed = (m.hp - pDmg) <= 0;
-var counter = (!killed && !m.isStunned) ? Math.max(0, m.atk - shieldBonus) : 0;
-startBattleCutscene({
-hero: (typeof HEROES !== 'undefined' && HEROES[heroIdx]) ? HEROES[heroIdx].name : 'ГЕРОЙ',
-heroHp: playerHp,
-heroMax: heroMaxHp(),
-heroMp: (typeof energy !== 'undefined') ? energy : 0,
-heroMpMax: Math.max(10, (typeof energy !== 'undefined') ? energy : 0),
-counterDamage: counter,
-enemies: [{
-name: m.type,
-type: m.type === '👻' ? 'flying' : 'ground',
-hp: m.hp, max: m.maxHp,
-damage: pDmg,
-killed: killed
-}],
-onEnd: function () { origFight(m, index); }
+var BUSY = '_sfBattleBusy';
+var DONE = '_sfBattleDone';
+
+function applyD28Data(d) {
+if (!d || !d.heroes || !d.monsters || !d.weapons) return;
+var melMods = [0, -1, 0, 0, 0];
+HEROES.splice(0, HEROES.length, ...d.heroes.map(function (h, i) {
+return { name: h.name, emoji: h.emoji, set: h.set, maxHp: h.maxHp, maxMp: h.maxMp,
+melMod: melMods[i] || 0, lightRange: h.lightRange, sprite: h.sprite };
+}));
+WARRIOR_WEAPONS.splice(0, WARRIOR_WEAPONS.length, ...d.weapons.warrior);
+MAGE_WEAPONS.splice(0, MAGE_WEAPONS.length, ...d.weapons.mage);
+ARCHER_WEAPONS.splice(0, ARCHER_WEAPONS.length, ...d.weapons.archer);
+ENEMY_TYPES.splice(0, ENEMY_TYPES.length, ...d.monsters.map(function (m) { return m.emoji; }));
+d.monsters.forEach(function (m) {
+ENEMY_NAMES[m.emoji] = m.name;
+ENEMY_BASE[m.emoji] = { hp: m.hp, atk: m.atk, def: m.def };
+ENEMY_SPRITE[m.emoji] = m.sprite.split('/').pop().replace(/\.png$/, '');
 });
+weapons = getWeaponsBySet(HEROES[heroIdx].set);
+renderStart();
+}
+window.addEventListener('d28-data', function (e) { applyD28Data(e.detail); });
+
+fight = function (m, index) {
+if (window[BUSY]) return;
+if (window.startBattleCutscene) {
+window[BUSY] = true;
+var h1 = HEROES[heroIdx];
+var h2 = HEROES[(heroIdx + 1) % HEROES.length];
+var atk = weapons[weaponLevel].dmg + starBonus;
+var dmg1 = Math.max(1, atk - m.def);
+var dmg2 = Math.max(1, Math.floor(atk * .8) - m.def);
+var killed = (m.hp - dmg1 - dmg2) <= 0;
+var counter = (!killed && !m.isStunned) ? Math.max(0, m.atk - shieldBonus) : 0;
+var defender = Math.random() < .5 ? h1 : h2;
+var defense = shieldBonus;
+var poison = m.type === '🧟';
+var eName = ENEMY_NAMES[m.type] || m.type;
+var messages = [
+{at: 560, text: eName + ' появился.'},
+{at: 1470, text: h1.name + ' атаковал на ' + dmg1 + ' ед.'},
+{at: 1600, text: eName + ' защитился на ' + m.def + ' ед.'},
+{at: 1730, text: 'Получен урон ' + dmg1 + ' ед.'},
+{at: 2200, text: h2.name + ' атаковал на ' + dmg2 + ' ед.'},
+{at: 2330, text: eName + ' защитился на ' + m.def + ' ед.'},
+{at: 2460, text: 'Получен урон ' + dmg2 + ' ед.'}
+];
+if (counter > 0) messages.push(
+{at: 2920, text: eName + ' атаковал на ' + m.atk + ' ед.'},
+{at: 3050, text: defender.name + ' защитился на ' + defense + ' ед.'},
+{at: 3180, text: 'Получил урон ' + counter + ' ед.'}
+);
+if (poison) messages.push({at: 3360, text: 'Зомби наложил яд 3 ед на 2 хода.'});
+if (killed) messages.push({at: poison ? 3560 : 3300, text: eName + ' повержен!'});
+window[DONE] = function () {
+m.hp -= dmg1 + dmg2;
+if (m.hp <= 0) {
+monsters.splice(index, 1); goldCount += 2; energy += 1; playSound('kill'); openStairs();
+} else if (!m.isStunned) {
+if (counter > 0) playerHp -= counter;
+if (m.type === '👺' && goldCount > 0) { goldCount--; playSound('steal'); }
+if (poison) { poisonTurns = 2; poisonDmg = 3; }
+if (playerHp <= 0) endGame(false);
+} else {
+m.stunTimer--;
+if (m.stunTimer <= 0) m.isStunned = false;
+}
+window[BUSY] = false;
+updateHud(); draw();
+};
+startBattleCutscene({
+heroes: [
+{name: h1.name, sprite: h1.sprite, hp: playerHp, max: heroMaxHp(), mp: energy, mpMax: Math.max(10, energy)},
+{name: h2.name, sprite: h2.sprite, hp: playerHp, max: h2.maxHp, mp: energy, mpMax: Math.max(10, energy)}
+],
+enemies: [{name: eName, sprite: '../dungeon28/assets/sprites/monsters/' + (ENEMY_SPRITE[m.type] || 'skeleton_0') + '.png', hp: m.hp, max: m.maxHp}],
+damage1: dmg1, damage2: dmg2, counterDamage: counter, defenderX: defender === h1 ? 142 : 236,
+poison: poison, killed: killed, messages: messages
+});
+return;
+}
+origFight(m, index);
 };
 })();
 </script>
-
+<script type="module">
+import { D28_DATA } from '../dungeon28/shared-data.js';
+window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
+</script>
 </body>
 </html>
