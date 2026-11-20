@@ -48,10 +48,15 @@
   #playBtn:active { transform:translateY(2px); box-shadow:0 2px 0 #8a5b0c; }
   .hint { margin-top:10px; text-align:center; color:#6f7898; font-size:10px; line-height:1.5; }
 
-  #turnPad { position:fixed; left:50%; bottom:12px; z-index:10; transform:translateX(-50%); display:none; gap:12px; }
-  #turnPad.show { display:flex; }
-  #turnPad button { width:96px; height:46px; border-radius:10px; border:1px solid rgba(251,191,36,.45); color:#ffe9b0; background:rgba(12,14,28,.86); cursor:pointer; font-size:12px; font-weight:700; }
-  #turnPad button:active { transform:translateY(2px); }
+  #turnPad, #buildPad { position:fixed; bottom:12px; z-index:10; display:none; gap:8px; }
+  #turnPad { left:50%; transform:translateX(-50%); }
+  #buildPad { left:12px; }
+  #turnPad.show, #buildPad.show { display:flex; }
+  #turnPad button, #buildPad button { height:46px; padding:0 12px; border-radius:10px; border:1px solid rgba(251,191,36,.45); color:#ffe9b0; background:rgba(12,14,28,.86); cursor:pointer; font-size:11px; font-weight:700; white-space:nowrap; }
+  #turnPad button:active, #buildPad button:active { transform:translateY(2px); }
+  #fleeBtn { position:fixed; right:12px; bottom:12px; z-index:12; display:none; padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.6); color:#ffd5d5; background:rgba(58,12,20,.92); cursor:pointer; font-size:12px; font-weight:800; }
+  #fleeBtn.show { display:block; }
+  #fleeBtn:active { transform:translateY(2px); }
 
   #shop { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(3,4,10,.82); }
   #shop.show { display:flex; }
@@ -115,9 +120,14 @@
 </div>
 
 <div id="turnPad">
-  <button id="turnLeft" aria-label="Поворот влево">⟲ Q / й</button>
-  <button id="turnRight" aria-label="Поворот вправо">⟳ E / у</button>
+  <button id="turnLeft" aria-label="Поворот влево">⟲ Повернуть влево</button>
+  <button id="turnRight" aria-label="Поворот вправо">⟳ Повернуть вправо</button>
 </div>
+<div id="buildPad">
+  <button id="buildShop" aria-label="Открыть лавку">🛒 Лавка [Enter]</button>
+  <button id="buildExit" aria-label="Выйти из здания">🚪 Выйти из здания</button>
+</div>
+<button id="fleeBtn" aria-label="Побег из боя">🏃 Бегство [R]</button>
 
 <div id="shop">
   <div class="shopPanel">
@@ -137,8 +147,14 @@
   const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
   const W = 640, H = 360, ASSET = '../dungeon28/assets/sprites/';
   const startScreen = document.getElementById('start'), shop = document.getElementById('shop'), toastEl = document.getElementById('toast');
-  const turnPad = document.getElementById('turnPad');
+  const turnPad = document.getElementById('turnPad'), buildPad = document.getElementById('buildPad'), fleeBtn = document.getElementById('fleeBtn');
   let toastTimer = 0;
+  function updatePads(){
+    const active=!!game, inBattle=!!(game&&game.battle&&!game.battle.end), inMap=!!(game&&game.mode==='map'), inShop=!!(game&&game.shopOpen);
+    turnPad.classList.toggle('show',active&&inMap&&!inBattle&&!inShop);
+    buildPad.classList.toggle('show',active&&inMap&&!!game.interior&&!inBattle&&!inShop);
+    fleeBtn.classList.toggle('show',active&&inBattle);
+  }
 
   function fit(){
     const s = Math.min(innerWidth / W, innerHeight / H);
@@ -220,6 +236,7 @@
   const DIR_NAMES = ['север','восток','юг','запад'];
   const TILE=32, GRASS=0, ROAD=1, TREE=2, SHOP=3, CAVE=4, WALL=5, FLOOR=6, COUNTER=7, EXIT=8;
   const REGIONS=3;
+  const C_HERO='#86efac', C_ENEMY='#fca5a5', C_NEUTRAL='#fde68a';
 
   const imgCache = new Map();
   function img(src){
@@ -307,6 +324,9 @@
   document.getElementById('homeBtn').onclick=goHub;
   document.getElementById('turnLeft').onclick=()=>turnPlayer(-1);
   document.getElementById('turnRight').onclick=()=>turnPlayer(1);
+  document.getElementById('buildShop').onclick=()=>toggleShop(true);
+  document.getElementById('buildExit').onclick=exitBuilding;
+  fleeBtn.onclick=fleeBattle;
   document.getElementById('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();startGame();} });
 
   function goHub(){ location.href='../../index.html'; }
@@ -322,8 +342,9 @@
       player:{ x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,dir:0,face:1 },
       map:null, buildings:{}, enemies:[], pickups:[], battle:null, theme:rnd(0,2), msg:'', shopOpen:false
     };
-    phase='play'; startScreen.classList.add('hidden'); turnPad.classList.toggle('show',game.mode==='map');
+    phase='play'; startScreen.classList.add('hidden');
     if(game.mode==='map') startRegion(); else startBattle('skirmish', MONSTERS[rnd(0,MONSTERS.length-1)]);
+    updatePads();
   }
 
   /* ---------- общая отрисовка ---------- */
@@ -457,7 +478,7 @@
   function startRegion(){
     game.interior=null; game.buildings={};
     game.map=makeMap(game.region); game.enemies=[];
-    const spots=[[3,5],[6,5],[5,3],[5,7],[2,8],[8,2]];
+    const spots=[[3,5],[6,5],[5,3],[5,7],[3,8],[8,2]];
     spots.forEach((s,i)=>{
       const m=MONSTERS[(i+rnd(0,3)+game.region)%MONSTERS.length];
       game.enemies.push({x:s[0],y:s[1],def:m,hp:m.hp,maxHp:m.hp,alive:true,gold:rnd(2,5)});
@@ -509,7 +530,7 @@
       return;
     }
     const e=enemyAt(nx,ny);
-    if(e){ game.msg='Враг преградил путь!'; startBattle('map',e); return; }
+    if(e){ startBattle('map',e); game.msg='⚠ Враг преградил путь: '+e.def.name+'. Пробел — атака · R — бегство.'; return; }
     const tile=game.map[ny][nx];
     if(tile===TREE){ game.msg='Дерево мешает пройти.'; beep(120,.05); return; }
     p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; p.jump=0; beep(280,.04);
@@ -521,8 +542,9 @@
     if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
     const p=game.player, d=DIRS[p.dir], nx=Math.round(p.x)+d[0], ny=Math.round(p.y)+d[1];
     if(game.interior){
-      if(game.interior.grid[ny]&&game.interior.grid[ny][nx]===COUNTER){ toggleShop(true); return; }
       if(game.interior.grid[ny]&&game.interior.grid[ny][nx]===EXIT){ exitBuilding(); return; }
+      if(game.shopOpen){ toggleShop(false); return; }
+      toggleShop(true); return;
     }else if(nx>=0&&ny>=0&&nx<10&&ny<10&&game.map[ny][nx]===SHOP){ enterBuilding(nx,ny); }
     else game.msg='Здесь не с чем взаимодействовать.';
   }
@@ -539,14 +561,14 @@
     ];
     game.interior={kind,grid,returnTo:{x,y},counter:{x:3,y:1},exit:{x:1,y:5}};
     Object.assign(game.player,{x:2,y:4,px:2,py:4,fromX:2,fromY:4,moveT:0,dir:0,face:1});
-    game.msg='Вы вошли: '+(BUILDINGS[kind]||BUILDINGS.market).title+'. Пройдите к прилавку.';
-    toast(game.msg); beep(520,.1);
+    game.msg='Вы вошли: '+(BUILDINGS[kind]||BUILDINGS.market).title+'. Кнопка «Лавка» или Enter — открыть магазин.';
+    toast(game.msg); beep(520,.1); updatePads();
   }
   function exitBuilding(){
     const back=game.interior.returnTo;
     game.interior=null;
     Object.assign(game.player,{x:back.x,y:back.y,px:back.x,py:back.y,fromX:back.x,fromY:back.y,moveT:0});
-    game.msg='Вы вышли на карту.'; toast(game.msg); beep(360,.08);
+    game.msg='Вы вышли на карту.'; toast(game.msg); beep(360,.08); updatePads();
   }
   function drawMiniMap(){
     const x=W-166,y=14,s=15;
@@ -604,6 +626,13 @@
     ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold+'  🛡 '+game.hero.armor+'  💀 '+game.enemies.filter(e=>!e.alive).length+'/'+game.enemies.length,22,70);
     ctx.fillStyle='#9fb0d8'; ctx.fillText('Регион '+(game.region+1)+'/'+REGIONS+' · '+(game.interior?'внутри здания':DIR_NAMES[p.dir]),22,83);
     drawMiniMap();
+    const hx=Math.round(p.x), hy=Math.round(p.y);
+    const near=game.enemies.filter(e=>e.alive&&Math.abs(e.x-hx)+Math.abs(e.y-hy)===1)
+      .map(e=>{ const di=DIRS.findIndex(d=>d[0]===e.x-hx&&d[1]===e.y-hy); return DIR_NAMES[di]||'рядом'; });
+    if(near.length){
+      roundRect(146,298,348,20,6); ctx.fillStyle='rgba(58,12,20,.9)'; ctx.fill(); ctx.strokeStyle='rgba(248,113,113,.65)'; ctx.stroke();
+      fitText('⚠ Враг рядом: '+near.join(', ')+' — не входите в клетку',320,10,'#fca5a5',154,308);
+    }
     roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
     fitText(game.msg,368,11,'#f3e8cf',W/2-184,338);
     drawSmallRing(36,H-36,14);
@@ -637,7 +666,7 @@
   /* ---------- ЛАВКА: покупка оружия по ценам d28 + свободная продажа прочего ---------- */
   function toggleShop(open){
     if(!game||game.mode!=='map') return;
-    game.shopOpen=!!open; shop.classList.toggle('show',game.shopOpen);
+    game.shopOpen=!!open; shop.classList.toggle('show',game.shopOpen); updatePads();
     if(!game.shopOpen) return;
     const list=document.getElementById('shopList'); list.innerHTML='';
     const kind=game.interior?game.interior.kind:'market';
@@ -706,17 +735,20 @@
     const m=(enemy&&enemy.def&&typeof enemy.def==='object')?enemy.def:enemy;
     game.battle={
       source, enemy:enemy, monster:{name:m.name,sprite:m.sprite,atk:m.atk,def:m.def,hp:(enemy&&enemy.hp)||m.hp,maxHp:(enemy&&enemy.maxHp)||m.hp,poison:m.poison},
-      turn:'hero', busy:false, end:null, anim:null, log:[], char:0,
+      turn:'hero', busy:false, end:null, anim:null, log:[], logColor:[], char:0,
       theme:source==='skirmish'?game.theme:rnd(0,2)
     };
     if(source==='skirmish'){ game.hero.hp=h.hp; game.hero.mp=h.mp; }
-    game.msg='Враг: '+m.name;
-    pushLog(m.name+' встаёт перед вами.');
+    game.msg='Враг: '+m.name+'. Пробел — атака · R — бегство.';
+    pushLog(m.name+' встаёт перед вами.', C_ENEMY);
+    updatePads();
   }
-  function pushLog(text){
+  function pushLog(text,color){
     if(!game||!game.battle)return;
     const b=game.battle;
-    b.log.push(text); if(b.log.length>4)b.log.shift(); b.char=b.log[b.log.length-1].length;
+    b.log.push(text); b.logColor.push(color||C_NEUTRAL);
+    if(b.log.length>5){ b.log.shift(); b.logColor.shift(); }
+    b.char=b.log[b.log.length-1].length;
   }
   function heroAttack(special){
     const b=game&&game.battle; if(!b||b.busy||b.end||b.turn!=='hero')return;
@@ -727,7 +759,7 @@
     if(special)game.hero.mp=Math.max(0,game.hero.mp-3);
     b.monster.hp=Math.max(0,b.monster.hp-dmg); if(b.enemy&&b.enemy.hp!=null)b.enemy.hp=b.monster.hp;
     b.anim={who:'hero',t:1,jump:special?24:10};
-    pushLog((special?'ЗАРЯД! ':'Удар! ')+'Атака '+atk+' − Защита '+b.monster.def+' = '+dmg+' урона.');
+    pushLog((special?'ЗАРЯД! ':'Удар! ')+'Атака '+atk+' − Защита '+b.monster.def+' = '+dmg+' урона.', C_HERO);
     beep(special?880:440,special?.15:.08);
     setTimeout(()=>{
       if(!game||game.battle!==b||b.end)return;
@@ -740,14 +772,14 @@
     b.busy=true;
     const dmg=Math.max(0,b.monster.atk-game.hero.armor)+rnd(0,1);
     game.hero.hp=Math.max(0,game.hero.hp-dmg); b.anim={who:'enemy',t:1,jump:8};
-    pushLog(b.monster.name+': атака '+b.monster.atk+' − броня '+game.hero.armor+' = '+dmg+' урона.');
-    if(b.monster.poison){ game.hero.poison=3; game.hero.poisonTurns=2; pushLog(b.monster.name+' наложил яд 3 ед на 2 хода.'); }
+    pushLog(b.monster.name+': атака '+b.monster.atk+' − броня '+game.hero.armor+' = '+dmg+' урона.', C_ENEMY);
+    if(b.monster.poison){ game.hero.poison=3; game.hero.poisonTurns=2; pushLog(b.monster.name+' наложил яд 3 ед на 2 хода.', C_ENEMY); }
     beep(180,.12);
     setTimeout(()=>{
       if(!game||game.battle!==b||b.end)return;
       if(game.hero.poison>0){
         const pd=Math.min(game.hero.poison,game.hero.hp); game.hero.poison=Math.max(0,game.hero.poison-1);
-        game.hero.hp-=pd; pushLog('Яд снимает '+pd+' HP.');
+        game.hero.hp-=pd; pushLog('Яд снимает '+pd+' HP.', C_ENEMY);
         game.hero.poisonTurns=Math.max(0,(game.hero.poisonTurns||0)-1);
         if(!game.hero.poisonTurns) game.hero.poison=0;
       }
@@ -757,8 +789,8 @@
   }
   function finishBattle(win){
     const b=game&&game.battle; if(!b||b.end)return;
-    b.end=win?'win':'lose'; pushLog(win?'ПОБЕДА!':'Поражение.');
-    beep(win?980:120,.28);
+    b.end=win?'win':'lose'; pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY);
+    beep(win?980:120,.28); updatePads();
     setTimeout(()=>{
       if(win){
         game.hero.gold+=b.enemy&&b.enemy.gold?b.enemy.gold:rnd(2,5);
@@ -768,13 +800,41 @@
         else if(game.enemies.some(e=>e.alive)){
           const left=game.enemies.filter(e=>e.alive).length;
           game.battle=null; game.msg='Враг повержен! Осталось врагов: '+left+'.';
-          toast('Победа! Осталось врагов: '+left); saveProgress(); return;
+          toast('Победа! Осталось врагов: '+left); saveProgress(); updatePads(); return;
         }
         saveProgress();
       }else toast('Поражение — круг не обновлён');
       if(win&&b.source==='map'){ nextRegion(); return; }
-      phase='start'; game=null; startScreen.classList.remove('hidden'); turnPad.classList.remove('show'); renderCards();
+      phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
     },1700);
+  }
+  function fleeBattle(){
+    const b=game&&game.battle;
+    if(!b||b.busy||b.end)return;
+    b.busy=true;
+    beep(320,.08);
+    if(Math.random()<0.5){
+      const penalty=Math.max(2,Math.ceil(game.hero.maxHp*0.05));
+      game.hero.hp=Math.max(1,game.hero.hp-penalty);
+      pushLog('Побег удался! Потеряно '+penalty+' HP.',C_HERO);
+      beep(680,.14);
+      setTimeout(()=>{
+        if(!game||game.battle!==b)return;
+        if(b.source==='map'){
+          game.battle=null; game.msg='Вы отступили. Потеряно '+penalty+' HP. Враг остался на карте.';
+          toast(game.msg); updatePads();
+        }else{
+          phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
+          toast('Побег из схватки: −'+penalty+' HP');
+        }
+      },850);
+    }else{
+      pushLog('Побег не удался! Враг атакует.',C_ENEMY);
+      setTimeout(()=>{
+        if(!game||game.battle!==b||b.end)return;
+        b.busy=false; b.turn='enemy'; enemyTurn(b);
+      },450);
+    }
   }
   function drawBackdrop(now,theme){
     sky(now);
@@ -825,11 +885,13 @@
     ctx.fillStyle=b.turn==='hero'?'#ffe6a8':'#fca5a5'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ'):(b.turn==='hero'?'ТВОЙ ХОД':'ХОД ВРАГА'),W/2,26);
 
     b.char=b.log.length?b.log[b.log.length-1].length:0;
-    roundRect(30,312,580,28,7); ctx.fillStyle='rgba(5,7,15,.92)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
-    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('✦',42,326);
-    fitText(b.log[b.log.length-1]||'',548,11,'#f5f0e2',60,326);
-    roundRect(178,276,284,24,7); ctx.fillStyle='rgba(6,8,18,.72)'; ctx.fill();
-    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText('Пробел/клик — удар · F — заряд ('+game.hero.mp+' MP)',W/2,288);
+    const lines=b.log.slice(-5), colors=(b.logColor||[]).slice(-5);
+    roundRect(30,244,580,88,8); ctx.fillStyle='rgba(5,7,15,.94)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.stroke();
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('✦',42,258);
+    for(let i=0;i<5;i++) fitText(lines[i]||'',548,11,colors[i]||C_NEUTRAL,60,258+i*16);
+    roundRect(150,218,340,22,7); ctx.fillStyle='rgba(6,8,18,.78)'; ctx.fill();
+    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('Пробел/клик — удар · F — заряд ('+game.hero.mp+' MP) · R — бегство',W/2,229);
     drawSmallRing(W/2,H-18,11);
   }
 
@@ -865,8 +927,9 @@
     if((k==='b'||k==='б')&&!game.battle){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
     if(game&&game.shopOpen)return;
     if(game&&game.battle){
-      if(e.key===' '||e.key==='Enter'){e.preventDefault();heroAttack(false);}
-      else if(k==='f'||k==='а'){e.preventDefault();heroAttack(true);}
+      if(!game.battle.end&&(e.key===' '||e.key==='Enter')){e.preventDefault();heroAttack(false);}
+      else if(!game.battle.end&&(k==='f'||k==='а')){e.preventDefault();heroAttack(true);}
+      else if(!game.battle.end&&(k==='r'||k==='к')){e.preventDefault();fleeBattle();}
       return;
     }
     if(game&&game.mode==='map'){
@@ -888,7 +951,7 @@
       else toast('Все регионы очищены! Карта '+progress.map+'/5');
       saveProgress();
     }
-    phase='start'; game=null; turnPad.classList.remove('show'); startScreen.classList.remove('hidden'); renderCards();
+    phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
   }
 
   function applyD28Data(d){
