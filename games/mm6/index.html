@@ -46,18 +46,26 @@
   .row input:focus { border-color:#fbbf24; }
   #playBtn { padding:10px 18px; border:0; border-radius:9px; cursor:pointer; font-weight:800; color:#241704; background:linear-gradient(180deg,#ffe9a8,#f5b92c); box-shadow:0 4px 0 #8a5b0c,0 0 20px rgba(251,191,36,.35); }
   #playBtn:active { transform:translateY(2px); box-shadow:0 2px 0 #8a5b0c; }
-  .hint { margin-top:10px; text-align:center; color:#6f7898; font-size:10px; }
+  .hint { margin-top:10px; text-align:center; color:#6f7898; font-size:10px; line-height:1.5; }
+
+  #turnPad { position:fixed; left:50%; bottom:12px; z-index:10; transform:translateX(-50%); display:none; gap:12px; }
+  #turnPad.show { display:flex; }
+  #turnPad button { width:96px; height:46px; border-radius:10px; border:1px solid rgba(251,191,36,.45); color:#ffe9b0; background:rgba(12,14,28,.86); cursor:pointer; font-size:12px; font-weight:700; }
+  #turnPad button:active { transform:translateY(2px); }
 
   #shop { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(3,4,10,.82); }
   #shop.show { display:flex; }
-  .shopPanel { width:min(560px,94vw); max-height:86vh; overflow:auto; padding:18px; border:1px solid rgba(251,191,36,.5); border-radius:14px; background:linear-gradient(160deg,#171a34,#080a18); box-shadow:0 0 50px rgba(0,0,0,.8); }
+  .shopPanel { width:min(640px,94vw); max-height:86vh; overflow:auto; padding:18px; border:1px solid rgba(251,191,36,.5); border-radius:14px; background:linear-gradient(160deg,#171a34,#080a18); box-shadow:0 0 50px rgba(0,0,0,.8); }
   .shopHead { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
   .shopHead h2 { margin:0; font-size:17px; color:#ffe09a; }
-  .shopItem { display:flex; align-items:center; gap:10px; padding:8px 10px; margin:5px 0; border:1px solid rgba(255,255,255,.10); border-radius:9px; background:rgba(255,255,255,.035); }
-  .shopItem img { width:36px; height:36px; object-fit:contain; }
+  .shopSec { margin:10px 0 4px; color:#9fb0d8; font-size:10px; letter-spacing:2px; text-transform:uppercase; }
+  .shopItem { display:flex; align-items:center; gap:8px; padding:7px 9px; margin:4px 0; border:1px solid rgba(255,255,255,.10); border-radius:9px; background:rgba(255,255,255,.035); }
+  .shopItem img { width:32px; height:32px; object-fit:contain; }
   .shopItem div { flex:1; font-size:12px; }
   .shopItem small { display:block; color:#9aa4c2; font-size:10px; }
-  .shopItem button { border:0; border-radius:7px; padding:7px 10px; cursor:pointer; background:#fbbf24; color:#241704; font-weight:800; font-size:11px; }
+  .shopItem button { border:0; border-radius:7px; padding:7px 9px; cursor:pointer; background:#fbbf24; color:#241704; font-weight:800; font-size:10px; }
+  .shopItem button.sell { background:#4b6b8a; color:#eaf4ff; }
+  .shopItem button.use { background:#547a4a; color:#efffe9; }
   .shopItem button:disabled { background:#3a3d52; color:#838aa4; cursor:default; }
   .shopFoot { margin-top:10px; text-align:right; font-size:11px; color:#fbbf24; }
 
@@ -102,15 +110,20 @@
       <input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя">
       <button id="playBtn">▶ Играть</button>
     </div>
-    <div class="hint">◀ ▶ — герой · ▲ ▼ — режим · Enter — старт · S — лавка в карте · M — главное меню</div>
+    <div class="hint">◀ ▶ — герой · ▲ ▼ — режим · Enter — старт<br>WASD/стрелки — движение · Q/E (й/у) — поворот · Enter — вход в здание · B — лавка · M — меню</div>
   </div>
+</div>
+
+<div id="turnPad">
+  <button id="turnLeft" aria-label="Поворот влево">⟲ Q / й</button>
+  <button id="turnRight" aria-label="Поворот вправо">⟳ E / у</button>
 </div>
 
 <div id="shop">
   <div class="shopPanel">
-    <div class="shopHead"><h2>🛒 Лавка оружия</h2><button class="linkbtn" id="shopClose">Закрыть [S]</button></div>
+    <div class="shopHead"><h2 id="shopTitle">🛒 Лавка</h2><button class="linkbtn" id="shopClose">Закрыть [B]</button></div>
     <div id="shopList"></div>
-    <div class="shopFoot">Золото: <b id="shopGold">0</b></div>
+    <div class="shopFoot">Золото: <b id="shopGold">0</b> · Кристаллы: <b id="shopCrystals">0</b></div>
   </div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -124,6 +137,7 @@
   const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
   const W = 640, H = 360, ASSET = '../dungeon28/assets/sprites/';
   const startScreen = document.getElementById('start'), shop = document.getElementById('shop'), toastEl = document.getElementById('toast');
+  const turnPad = document.getElementById('turnPad');
   let toastTimer = 0;
 
   function fit(){
@@ -138,7 +152,7 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
   }
 
-  /* База Подземелья 28: герои и монстры с теми же параметрами и спрайтами. */
+  /* База Подземелья 28: герои, монстры, оружие и цены покупки не меняются. */
   const HEROES = [
     { name:'Воин', set:'warrior', hp:100, mp:3, atk:1, def:0, sprite:ASSET+'heroes/knight_0.png',
       desc:'Крепкий боец из Подземелья 28. Держит строй и бьёт наверняка.',
@@ -178,9 +192,34 @@
   ];
 
   const MODES = [
-    {id:'map', name:'Карта', icon:'🗺', desc:'Старый мир 10×10. Враги на карте, лавка оружия и древние пещеры. Победи всех врагов.'},
-    {id:'skirmish', name:'Быстрая схватка', icon:'⚔', desc:'Короткий пошаговый бой с видом из-за спины: пещера, небо или замок.'}
+    {id:'map', name:'Карта', icon:'🗺', desc:'Три региона 10×10: враги, здания, бонусы и лавки. Победи всех врагов всех регионов.'},
+    {id:'skirmish', name:'Быстрая схватка', icon:'⚔', desc:'Короткий пошаговый бой с видом из-за спины: чужак слева, герой справа.'}
   ];
+
+  /* Новые товары. Цены покупки оружия остаются из d28; цены продажи новых вещей можно подгонять свободно. */
+  const GOODS = [
+    {id:'leather', name:'Кожаная броня', kind:'armor', armor:1, buy:4, sell:3, desc:'Защита +1'},
+    {id:'iron', name:'Железная броня', kind:'armor', armor:2, buy:8, sell:6, desc:'Защита +2'},
+    {id:'potion', name:'Зелье здоровья', kind:'item', heal:25, buy:5, sell:4, desc:'Лечит 25 HP'},
+    {id:'charm', name:'Оберег маны', kind:'item', mp:3, buy:6, sell:5, desc:'Восстанавливает 3 MP'},
+    {id:'crystal', name:'Кристалл', kind:'item', crystal:1, buy:7, sell:6, desc:'Редкий товар'},
+    {id:'coin', name:'Древняя монета', kind:'item', gold:3, buy:0, sell:3, desc:'Находка на карте'}
+  ];
+  const BUILDINGS = {
+    smith:{title:'Оружейная', accent:'#d9a441'},
+    market:{title:'Рынок', accent:'#7ec8a1'},
+    alchemy:{title:'Алхимическая лавка', accent:'#a58cff'}
+  };
+  const PICKUPS = {
+    coin:{icon:'🪙', color:'#ffd76a', label:'монеты'},
+    mana:{icon:'💧', color:'#7dd3fc', label:'ману'},
+    crystal:{icon:'🔷', color:'#a5b4fc', label:'кристалл'},
+    armor:{icon:'🛡', color:'#bde0b5', label:'броню'}
+  };
+  const DIRS = [[0,-1],[1,0],[0,1],[-1,0]];
+  const DIR_NAMES = ['север','восток','юг','запад'];
+  const TILE=32, GRASS=0, ROAD=1, TREE=2, SHOP=3, CAVE=4, WALL=5, FLOOR=6, COUNTER=7, EXIT=8;
+  const REGIONS=3;
 
   const imgCache = new Map();
   function img(src){
@@ -206,6 +245,7 @@
   function beep(freq,dur){
     try{
       if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended') audioCtx.resume();
       const o=audioCtx.createOscillator(), g=audioCtx.createGain();
       o.type='triangle'; o.frequency.value=freq;
       g.gain.setValueAtTime(.06,audioCtx.currentTime);
@@ -217,6 +257,8 @@
   function lerp(a,b,t){ return a+(b-a)*t; }
   function ease(t){ return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
   function rnd(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
+  function key(x,y){ return x+','+y; }
+  function good(id){ return GOODS.find(g=>g.id===id); }
 
   function updateProgressUI(){
     const mw=Math.min(5,progress.map), sw=Math.min(5,progress.skirmish), filled=Math.min(10,mw+sw);
@@ -263,6 +305,8 @@
   document.getElementById('modeNext').onclick=()=>selectMode(1);
   document.getElementById('playBtn').onclick=startGame;
   document.getElementById('homeBtn').onclick=goHub;
+  document.getElementById('turnLeft').onclick=()=>turnPlayer(-1);
+  document.getElementById('turnRight').onclick=()=>turnPlayer(1);
   document.getElementById('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();startGame();} });
 
   function goHub(){ location.href='../../index.html'; }
@@ -271,13 +315,15 @@
     heroName=(document.getElementById('heroName').value||'').trim().slice(0,14)||'Герой';
     const h=HEROES[heroIdx];
     game={
-      mode:MODES[modeIdx].id, heroIdx, heroName,
-      hero:{ hp:h.hp, maxHp:h.hp, mp:h.mp, maxMp:h.mp, weaponLevel:0, gold:0, weapons:h.weapons },
-      player:{ x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,face:1 },
-      map:null, enemies:[], battle:null, theme:rnd(0,2), msg:'', shopOpen:false
+      mode:MODES[modeIdx].id, heroIdx, heroName, region:0, interior:null,
+      hero:{ hp:h.hp, maxHp:h.hp, mp:h.mp, maxMp:h.mp, weaponLevel:0, gold:0, armor:0,
+             weapons:h.weapons.map(w=>({...w,sell:Math.max(1,Math.floor((w.cost||0)*.75))})),
+             soldWeapons:[], inventory:[] },
+      player:{ x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,dir:0,face:1 },
+      map:null, buildings:{}, enemies:[], pickups:[], battle:null, theme:rnd(0,2), msg:'', shopOpen:false
     };
-    phase='play'; startScreen.classList.add('hidden');
-    if(game.mode==='map') startMap(); else startBattle('skirmish', MONSTERS[rnd(0,MONSTERS.length-1)]);
+    phase='play'; startScreen.classList.add('hidden'); turnPad.classList.toggle('show',game.mode==='map');
+    if(game.mode==='map') startRegion(); else startBattle('skirmish', MONSTERS[rnd(0,MONSTERS.length-1)]);
   }
 
   /* ---------- общая отрисовка ---------- */
@@ -318,7 +364,6 @@
   function drawHeroBack(x,y,size,now,lunge,bend){
     const h=HEROES[game.heroIdx];
     ctx.save(); ctx.globalAlpha=.38; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(x,y+4,size*.34,size*.08,0,0,6.29); ctx.fill(); ctx.restore();
-    // плащ/силуэт со спины — спрайт только двигаем, масштабируем и гнём
     ctx.save(); ctx.translate(x,y); ctx.rotate(bend||0); ctx.fillStyle='rgba(20,24,50,.65)';
     ctx.beginPath(); ctx.moveTo(-size*.24,-size*.78); ctx.quadraticCurveTo(0,-size*.92,size*.24,-size*.78);
     ctx.lineTo(size*.30,-size*.10); ctx.quadraticCurveTo(0,size*.02,-size*.30,-size*.10); ctx.closePath(); ctx.fill(); ctx.restore();
@@ -328,141 +373,350 @@
     const g=ctx.createLinearGradient(0,horizon,0,H);
     g.addColorStop(0,base[0]); g.addColorStop(1,base[1]); ctx.fillStyle=g; ctx.fillRect(0,horizon,W,H-horizon);
   }
-  function arcadeGround(){
-    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.lineWidth=1;
-    for(let i=1;i<7;i++){ const y=190+i*i*4.2; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-    for(let i=-8;i<=8;i++){ ctx.beginPath(); ctx.moveTo(W/2+i*18,190); ctx.lineTo(W/2+i*86,H); ctx.stroke(); }
+  function drawRoad(horizon,topW,bottomW,c1,c2){
+    ctx.save();
+    const g=ctx.createLinearGradient(0,horizon,0,H); g.addColorStop(0,c1); g.addColorStop(1,c2);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(W/2-topW/2,horizon); ctx.lineTo(W/2+topW/2,horizon);
+    ctx.lineTo(W/2+bottomW/2,H); ctx.lineTo(W/2-bottomW/2,H); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.16)'; ctx.lineWidth=2; ctx.setLineDash([14,16]);
+    for(let y=horizon+18;y<H;y+=34){ const t=(y-horizon)/(H-horizon), w=topW+(bottomW-topW)*t;
+      ctx.beginPath(); ctx.moveTo(W/2,y); ctx.lineTo(W/2,y+8); ctx.stroke(); }
+    ctx.setLineDash([]); ctx.restore();
+  }
+  function drawGrassTufts(now,count){
+    ctx.save(); ctx.strokeStyle='rgba(120,190,110,.5)'; ctx.lineWidth=1;
+    for(let i=0;i<count;i++){
+      const x=(i*97+Math.sin(now/900+i)*9)%W, y=196+((i*i*37)%158);
+      for(let k=-1;k<=1;k++){ ctx.beginPath(); ctx.moveTo(x+k*3,y); ctx.lineTo(x+k*5,y-7-Math.abs(k)*2); ctx.stroke(); }
+    }
+    ctx.restore();
+  }
+  function drawTree(x,y,s){
+    ctx.save(); ctx.fillStyle='#5b3b22'; ctx.fillRect(x-5*s,y-48*s,10*s,50*s);
+    ctx.fillStyle='#175a34'; ctx.beginPath(); ctx.arc(x,y-64*s,30*s,0,6.29); ctx.fill();
+    ctx.fillStyle='#2f8d4d'; ctx.beginPath(); ctx.arc(x-10*s,y-72*s,20*s,0,6.29); ctx.fill();
+    ctx.fillStyle='#43a85e'; ctx.beginPath(); ctx.arc(x+11*s,y-67*s,17*s,0,6.29); ctx.fill(); ctx.restore();
+  }
+  function drawOrnamentWall(x,y,w,h,base,accent){
+    ctx.save(); ctx.fillStyle=base; ctx.fillRect(x,y,w,h);
+    ctx.strokeStyle=accent; ctx.lineWidth=1; ctx.globalAlpha=.55;
+    for(let yy=y+8;yy<y+h;yy+=14){ ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke(); }
+    for(let xx=x+10;xx<x+w;xx+=22){ ctx.beginPath(); ctx.moveTo(xx,y); ctx.lineTo(xx,y+h); ctx.stroke(); }
+    ctx.globalAlpha=.8; ctx.strokeStyle=accent;
+    for(let xx=x+16;xx<x+w-8;xx+=44){ ctx.beginPath(); ctx.arc(xx,y+h-10,6,Math.PI,0); ctx.stroke(); }
+    ctx.restore();
+  }
+  function drawBuilding(x,y,s,kind){
+    const info=BUILDINGS[kind]||BUILDINGS.market, w=104*s, h=82*s;
+    drawOrnamentWall(x-w/2,y-h,w,h,'#c9b89a',info.accent);
+    ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(x-w/2-8*s,y-h); ctx.lineTo(x,y-h-34*s); ctx.lineTo(x+w/2+8*s,y-h); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#ffe6a0'; ctx.fillRect(x-30*s,y-h+18*s,20*s,18*s); ctx.fillRect(x+10*s,y-h+18*s,20*s,18*s);
+    ctx.fillStyle='#241704'; ctx.fillRect(x-12*s,y-30*s,24*s,30*s);
+    ctx.fillStyle=info.accent; ctx.font='bold '+Math.max(8,10*s)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText(info.title,x,y-h-40*s);
   }
   function drawSmallRing(x,y,r){
     const filled=Math.min(10,Math.min(5,progress.map)+Math.min(5,progress.skirmish));
     ctx.save(); ctx.lineWidth=4; ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.beginPath(); ctx.arc(x,y,r,0,6.29); ctx.stroke();
     ctx.strokeStyle=progress.achieved?'#7dffb2':'#fbbf24'; ctx.beginPath(); ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+6.29*filled/10); ctx.stroke(); ctx.restore();
   }
+  function fitText(text,maxW,size,color,x,y){
+    let s=size; ctx.font='bold '+s+'px sans-serif';
+    while(ctx.measureText(text).width>maxW&&s>8){ s--; ctx.font='bold '+s+'px sans-serif'; }
+    ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
+  }
 
-  /* ---------- КАРТА 10×10 ---------- */
-  const TILE=32, GRASS=0, ROAD=1, TREE=2, BUILDING=3, CAVE=4;
-  function makeMap(){
+  /* ---------- КАРТА И РЕГИОНЫ ---------- */
+  function makeMap(region){
     const g=[]; for(let y=0;y<10;y++){ g[y]=[]; for(let x=0;x<10;x++) g[y][x]=GRASS; }
-    for(let x=0;x<10;x++) g[5][x]=ROAD;
-    for(let y=0;y<10;y++) g[y][5]=ROAD;
-    g[1][8]=CAVE; g[7][2]=BUILDING; g[8][7]=BUILDING; g[2][2]=BUILDING;
-    const reserved=new Set(['1,8','7,2','8,7','2,2']);
-    for(let i=0;i<16;i++){ const x=rnd(0,9),y=rnd(0,9); if(g[y][x]===GRASS&&!reserved.has(x+','+y)) g[y][x]=TREE; }
+    for(let x=0;x<10;x++){ g[5][x]=ROAD; if(region>0) g[2][x]=ROAD; }
+    for(let y=0;y<10;y++) g[4+(region%2)][y]===undefined ? null : (g[y][4+(region%2)]=ROAD);
+    for(let y=0;y<10;y++) g[y][4+(region%2)]=ROAD;
+    const cave={x:8,y:8}, buildings=[{x:2,y:2,kind:'smith'},{x:7,y:2,kind:'alchemy'},{x:8,y:6,kind:'market'}];
+    g[cave.y][cave.x]=CAVE;
+    buildings.forEach(b=>{ g[b.y][b.x]=SHOP; game.buildings[key(b.x,b.y)]=b.kind; });
+    const reserved=new Set([key(cave.x,cave.y),...buildings.map(b=>key(b.x,b.y)),'1,8']);
+    for(let i=0;i<22;i++){ const x=rnd(0,9),y=rnd(0,9); if(g[y][x]===GRASS&&!reserved.has(key(x,y))) g[y][x]=TREE; }
+    game.cave=cave;
     return g;
   }
-  function startMap(){
-    game.map=makeMap(); game.enemies=[];
+  function makePickups(){
+    game.pickups=[];
+    const types=['coin','coin','mana','crystal','armor'];
+    for(let i=0;i<7;i++){
+      const type=types[rnd(0,types.length-1)];
+      for(let tries=0;tries<20;tries++){
+        const x=rnd(0,9), y=rnd(0,9);
+        if(game.map[y][x]===TREE||game.map[y][x]===SHOP||game.map[y][x]===CAVE) continue;
+        if(game.enemies.some(e=>e.alive&&e.x===x&&e.y===y)) continue;
+        if(game.pickups.some(p=>p.x===x&&p.y===y)) continue;
+        if(x===1&&y===8) continue;
+        game.pickups.push({x,y,type,got:false}); break;
+      }
+    }
+  }
+  function startRegion(){
+    game.interior=null; game.buildings={};
+    game.map=makeMap(game.region); game.enemies=[];
     const spots=[[3,5],[6,5],[5,3],[5,7],[2,8],[8,2]];
     spots.forEach((s,i)=>{
-      const m=MONSTERS[(i+rnd(0,3))%MONSTERS.length];
+      const m=MONSTERS[(i+rnd(0,3)+game.region)%MONSTERS.length];
       game.enemies.push({x:s[0],y:s[1],def:m,hp:m.hp,maxHp:m.hp,alive:true,gold:rnd(2,5)});
     });
-    game.msg='Враги на карте: '+game.enemies.length+'. Победи всех!';
-    toast('Карта 10×10 · лавка — клавиша S');
+    Object.assign(game.player,{x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,dir:0,face:1});
+    makePickups();
+    game.msg='Регион '+(game.region+1)+'/'+REGIONS+' · врагов: '+game.enemies.length+'. Победи всех!';
+    toast('Регион '+(game.region+1)+'/'+REGIONS+' · вход в здание — Enter');
+  }
+  function nextRegion(){
+    if(game.region>=REGIONS-1){ finishRun(true); return; }
+    game.region++; game.battle=null; startRegion();
+    game.hero.hp=Math.min(game.hero.maxHp,game.hero.hp+20);
+    toast('Переход в регион '+(game.region+1)+' · +20 HP');
   }
   function enemyAt(x,y){ return game.enemies.find(e=>e.alive&&e.x===x&&e.y===y); }
+  function pickupAt(x,y){ return game.pickups.find(p=>!p.got&&p.x===x&&p.y===y); }
+  function addItem(id){
+    const it=game.hero.inventory.find(i=>i.id===id);
+    if(it) it.count++; else game.hero.inventory.push({id,count:1});
+  }
+  function collectPickup(p){
+    p.got=true; const info=PICKUPS[p.type];
+    if(p.type==='coin'){ const n=rnd(2,4); game.hero.gold+=n; game.msg='Находка: 🪙 '+n+'.'; }
+    else if(p.type==='mana'){ const n=rnd(2,4); game.hero.mp=Math.min(game.hero.maxMp,game.hero.mp+n); game.msg='Находка: 💧 +'+n+' MP.'; }
+    else if(p.type==='crystal'){ addItem('crystal'); game.msg='Находка: 🔷 кристалл.'; }
+    else{ addItem(rnd(0,1)?'leather':'iron'); game.msg='Находка: 🛡 броня.'; }
+    toast(game.msg); beep(720,.08);
+  }
+  function turnPlayer(d){
+    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
+    game.player.dir=(game.player.dir+d+4)%4; game.player.face=DIRS[game.player.dir][0]||1;
+    game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; beep(330,.05);
+  }
+  function relativeMove(forward,side){
+    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
+    const f=DIRS[game.player.dir], r=DIRS[(game.player.dir+1)%4];
+    tryMove(f[0]*forward+r[0]*side,f[1]*forward+r[1]*side);
+  }
+  function tryMove(dx,dy){
+    if(phase!=='play'||!game||game.mode!=='map'||game.battle||game.shopOpen||game.player.moveT>0) return;
+    const p=game.player, nx=clamp(Math.round(p.x)+dx,0,9), ny=clamp(Math.round(p.y)+dy,0,9);
+    if(game.interior){
+      const t=game.interior.grid[ny][nx];
+      if(t===COUNTER){ toggleShop(true); return; }
+      if(t===WALL){ game.msg='Стена.'; beep(120,.05); return; }
+      if(t===EXIT){ exitBuilding(); return; }
+      p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
+      return;
+    }
+    const e=enemyAt(nx,ny);
+    if(e){ game.msg='Враг преградил путь!'; startBattle('map',e); return; }
+    const tile=game.map[ny][nx];
+    if(tile===TREE){ game.msg='Дерево мешает пройти.'; beep(120,.05); return; }
+    p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; p.jump=0; beep(280,.04);
+    if(tile===SHOP){ enterBuilding(nx,ny); return; }
+    if(tile===CAVE){ game.msg='Пещера ведёт в следующий регион. Очистите текущий!'; }
+    const pk=pickupAt(nx,ny); if(pk) collectPickup(pk);
+  }
+  function tryInteract(){
+    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
+    const p=game.player, d=DIRS[p.dir], nx=Math.round(p.x)+d[0], ny=Math.round(p.y)+d[1];
+    if(game.interior){
+      if(game.interior.grid[ny]&&game.interior.grid[ny][nx]===COUNTER){ toggleShop(true); return; }
+      if(game.interior.grid[ny]&&game.interior.grid[ny][nx]===EXIT){ exitBuilding(); return; }
+    }else if(nx>=0&&ny>=0&&nx<10&&ny<10&&game.map[ny][nx]===SHOP){ enterBuilding(nx,ny); }
+    else game.msg='Здесь не с чем взаимодействовать.';
+  }
+  function enterBuilding(x,y){
+    const kind=game.buildings[key(x,y)]||'market';
+    const grid=[
+      [WALL,WALL,WALL,WALL,WALL,WALL,WALL],
+      [WALL,FLOOR,FLOOR,COUNTER,FLOOR,FLOOR,WALL],
+      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
+      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
+      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
+      [WALL,EXIT,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
+      [WALL,WALL,WALL,WALL,WALL,WALL,WALL]
+    ];
+    game.interior={kind,grid,returnTo:{x,y},counter:{x:3,y:1},exit:{x:1,y:5}};
+    Object.assign(game.player,{x:2,y:4,px:2,py:4,fromX:2,fromY:4,moveT:0,dir:0,face:1});
+    game.msg='Вы вошли: '+(BUILDINGS[kind]||BUILDINGS.market).title+'. Пройдите к прилавку.';
+    toast(game.msg); beep(520,.1);
+  }
+  function exitBuilding(){
+    const back=game.interior.returnTo;
+    game.interior=null;
+    Object.assign(game.player,{x:back.x,y:back.y,px:back.x,py:back.y,fromX:back.x,fromY:back.y,moveT:0});
+    game.msg='Вы вышли на карту.'; toast(game.msg); beep(360,.08);
+  }
   function drawMiniMap(){
     const x=W-166,y=14,s=15;
     panel(x-6,y-6,158,158);
+    const colors=['#2f5b38','#8a7a56','#1f6b3a','#d6b06a','#4b4a5c'];
     for(let yy=0;yy<10;yy++) for(let xx=0;xx<10;xx++){
-      const t=game.map[yy][xx], colors=['#2f5b38','#8a7a56','#1f6b3a','#c9b89a','#4b4a5c'];
-      ctx.fillStyle=colors[t]; ctx.fillRect(x+xx*s,y+yy*s,s-1,s-1);
+      ctx.fillStyle=colors[game.map[yy][xx]]||'#2f5b38'; ctx.fillRect(x+xx*s,y+yy*s,s-1,s-1);
     }
+    game.pickups.forEach(p=>{ if(p.got)return; ctx.fillStyle=PICKUPS[p.type].color; ctx.fillRect(x+p.x*s+5,y+p.y*s+5,5,5); });
     game.enemies.forEach(e=>{ if(!e.alive)return; ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,4,0,6.29); ctx.fill(); });
-    ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.arc(x+Math.round(game.player.px)*s+s/2,y+Math.round(game.player.py)*s+s/2,4,0,6.29); ctx.fill();
-    ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.fillText('КАРТА 10×10',x,y+160);
+    ctx.save(); ctx.translate(x+Math.round(game.player.px)*s+s/2,y+Math.round(game.player.py)*s+s/2); ctx.rotate(game.player.dir*Math.PI/2);
+    ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(5,5); ctx.lineTo(-5,5); ctx.closePath(); ctx.fill(); ctx.restore();
+    ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.fillText('КАРТА '+(game.region+1)+'/'+REGIONS,x,y+160);
   }
   function drawMap(now){
-    sky(now); drawGround(176,['#3a5b42','#1a2a20']); arcadeGround();
-    // впереди по курсу — пещеры/лес/здания как врата
-    const px=game.player.px, py=game.player.py;
-    for(let d=1;d<=4;d++){
-      const yy=Math.round(py)-d;
-      if(yy<0||yy>9) continue;
-      const xx=Math.round(px);
-      const t=game.map[yy][xx];
-      if(t===CAVE){
-        ctx.fillStyle='#161824'; ctx.beginPath(); ctx.ellipse(W/2,196,80-d*12,70-d*10,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-80+d*12,196,160-d*24,86-d*4);
-        ctx.fillStyle='#05060b'; ctx.beginPath(); ctx.ellipse(W/2,252,42-d*5,46-d*4,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-42+d*5,252,84-d*10,42); break;
-      }
-      if(t===BUILDING){
-        ctx.fillStyle='#c9b89a'; ctx.fillRect(W/2-60+d*10,176-d*8,120-d*20,100-d*6);
-        ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(W/2-66+d*10,176-d*8); ctx.lineTo(W/2,140-d*10); ctx.lineTo(W/2+66-d*10,176-d*8); ctx.closePath(); ctx.fill();
-        ctx.fillStyle='#ffe6a0'; ctx.fillRect(W/2-34+d*8,198-d*6,16,14); ctx.fillRect(W/2+18-d*8,198-d*6,16,14); break;
-      }
-      if(t===TREE){
-        ctx.fillStyle='#5b3b22'; ctx.fillRect(W/2-5,164-d*4,10,44);
-        ctx.fillStyle='#1f6b3a'; ctx.beginPath(); ctx.arc(W/2,150-d*8,36-d*4,0,6.29); ctx.fill();
-        ctx.fillStyle='#2f8d4d'; ctx.beginPath(); ctx.arc(W/2-14,142-d*8,22-d*3,0,6.29); ctx.fill(); break;
+    sky(now); drawGround(176,['#3a5b42','#1a2a20']); drawRoad(176,18,540,'#6d6244','#3d3829'); drawGrassTufts(now,44);
+    const p=game.player, f=DIRS[p.dir], r=DIRS[(p.dir+1)%4], px=p.px, py=p.py;
+    for(let d=4;d>=1;d--){
+      for(let off=-2;off<=2;off++){
+        const tx=Math.round(px)+f[0]*d+r[0]*off, ty=Math.round(py)+f[1]*d+r[1]*off;
+        if(tx<0||ty<0||tx>9||ty>9) continue;
+        const t=game.map[ty][tx], sc=1-d*.16, sx=W/2+off*(74-d*10), sy=206+(4-d)*13;
+        if(t===ROAD){ ctx.fillStyle='rgba(150,136,92,.75)'; ctx.fillRect(sx-20*sc,sy-8*sc,40*sc,26*sc); }
+        if(t===CAVE){
+          ctx.fillStyle='#161824'; ctx.beginPath(); ctx.ellipse(sx,sy,58*sc,48*sc,0,Math.PI,0); ctx.fill(); ctx.fillRect(sx-58*sc,sy,116*sc,62*sc);
+          ctx.fillStyle='#05060b'; ctx.beginPath(); ctx.ellipse(sx,sy+22*sc,28*sc,32*sc,0,Math.PI,0); ctx.fill(); ctx.fillRect(sx-28*sc,sy+22*sc,56*sc,30*sc);
+        }
+        if(t===SHOP) drawBuilding(sx,sy,sc,game.buildings[key(tx,ty)]||'market');
+        if(t===TREE) drawTree(sx,sy,sc);
       }
     }
-    // враги впереди (вид из-за спины)
-    const sorted=game.enemies.filter(e=>e.alive).map(e=>({e,d:Math.round(py)-e.y,dx:e.x-Math.round(px)})).filter(o=>o.d>=-1&&o.d<=5).sort((a,b)=>b.d-a.d);
+    game.pickups.forEach(pk=>{
+      if(pk.got)return;
+      const dx=pk.x-px,dy=pk.y-py, forward=dx*f[0]+dy*f[1], side=dx*r[0]+dy*r[1];
+      if(forward<0||forward>5||Math.abs(side)>2)return;
+      const sc=1-forward*.13, x=W/2+side*(72-forward*10), y=272-forward*16;
+      ctx.save(); ctx.globalAlpha=.9; ctx.font=Math.round(22*sc)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText(PICKUPS[pk.type].icon,x,y); ctx.restore();
+    });
+    const sorted=game.enemies.filter(e=>e.alive).map(e=>{
+      const dx=e.x-px,dy=e.y-py; return {e,forward:dx*f[0]+dy*f[1],side:dx*r[0]+dy*r[1]};
+    }).filter(o=>o.forward>=-1&&o.forward<=5&&Math.abs(o.side)<=2).sort((a,b)=>b.forward-a.forward);
     sorted.forEach(o=>{
-      const m=o.e, depth=clamp(o.d+1,1,6), sc=(150-depth*18)/150, ex=W/2+o.dx*(58-depth*6), ey=278-depth*14;
+      const m=o.e, depth=clamp(o.forward+1,1,6), sc=(150-depth*18)/150;
+      const ex=W/2+o.side*(74-depth*8), ey=278-depth*14;
       ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(ex,ey+4,30*sc,8*sc,0,0,6.29); ctx.fill(); ctx.restore();
       drawSprite(m.def.sprite,ex,ey,100*sc,1,1,0,1);
       ctx.fillStyle='#ef4444'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc,4); ctx.fillStyle='#fca5a5'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc*clamp(m.hp/m.maxHp,0,1),4);
     });
     drawHeroBack(W/2,344,152,now,0,Math.sin(now/460)*.008);
 
-    panel(12,12,206,62);
+    panel(12,12,206,76);
     ctx.font='bold 11px sans-serif'; ctx.fillStyle='#ffe6a8'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,22,24);
     bar(22,38,186,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
-    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Оружие: '+game.hero.weapons[game.hero.weaponLevel].name+' · ⚔ '+game.hero.weapons[game.hero.weaponLevel].dmg,22,56);
-    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold+'  💀 '+game.enemies.filter(e=>!e.alive).length+'/'+game.enemies.length,22,70);
+    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Оружие: '+game.hero.weapons[game.hero.weaponLevel].name,22,56);
+    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold+'  🛡 '+game.hero.armor+'  💀 '+game.enemies.filter(e=>!e.alive).length+'/'+game.enemies.length,22,70);
+    ctx.fillStyle='#9fb0d8'; ctx.fillText('Регион '+(game.region+1)+'/'+REGIONS+' · '+(game.interior?'внутри здания':DIR_NAMES[p.dir]),22,83);
     drawMiniMap();
     roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
-    ctx.fillStyle='#f3e8cf'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillText(game.msg,W/2,338);
+    fitText(game.msg,368,11,'#f3e8cf',W/2-184,338);
     drawSmallRing(36,H-36,14);
   }
-  function tryMove(dx,dy){
-    if(phase!=='play'||!game||game.mode!=='map'||game.battle||game.shopOpen||game.player.moveT>0) return;
-    const p=game.player, nx=clamp(Math.round(p.x)+dx,0,9), ny=clamp(Math.round(p.y)+dy,0,9);
-    p.x=nx; p.y=ny; p.face=dx;
-    if(enemyAt(nx,ny)){ game.msg='Враг преградил путь!'; startBattle('map',enemyAt(nx,ny)); return; }
-    p.fromX=p.px; p.fromY=p.py; p.moveT=1; p.jump=0; beep(280,.04);
-    if(game.map[ny][nx]===TREE||game.map[ny][nx]===BUILDING){ p.x=Math.round(p.fromX); p.y=Math.round(p.fromY); game.msg='Там нельзя пройти.'; p.moveT=0; }
-    if(!game.enemies.some(e=>e.alive)) finishRun(true);
+  function drawInterior(now){
+    sky(now); drawGround(176,['#4a3f56','#1b1727']); drawRoad(176,90,330,'#8f7b52','#4f4330'); drawGrassTufts(now,12);
+    const i=game.interior, accent=(BUILDINGS[i.kind]||BUILDINGS.market).accent;
+    drawOrnamentWall(0,70,W,120,'#b9a374',accent);
+    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(0,176,W,184);
+    for(let d=4;d>=1;d--){
+      const sc=1-d*.14, y=180+(4-d)*14;
+      ctx.save(); ctx.globalAlpha=.28; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(W/2,y+20,70*sc,14*sc,0,0,6.29); ctx.fill(); ctx.restore();
+      if(d===1){
+        ctx.fillStyle='#7a5433'; ctx.fillRect(W/2-62,y-48,124,48);
+        ctx.fillStyle=accent; ctx.fillRect(W/2-62,y-50,124,5);
+        ctx.fillStyle='#d9c49a'; ctx.beginPath(); ctx.ellipse(W/2,y-64,17,21,0,0,6.29); ctx.fill();
+        ctx.fillStyle='#241704'; ctx.fillRect(W/2-10,y-54,20,6);
+        ctx.fillStyle='#ffe6a0'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText('ПРИЛАВОК',W/2,y+16);
+      }
+    }
+    ctx.fillStyle='#7dffb2'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('ВЫХОД ↓',74,290);
+    drawHeroBack(W/2,344,150,now,0,Math.sin(now/460)*.008);
+    panel(12,12,220,62);
+    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.fillText((BUILDINGS[i.kind]||BUILDINGS.market).title,22,25);
+    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Подойдите к прилавку — Enter',22,43);
+    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold,22,59);
+    roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
+    fitText(game.msg,368,11,'#f3e8cf',W/2-184,338);
   }
 
-  /* ---------- ЛАВКА ---------- */
+  /* ---------- ЛАВКА: покупка оружия по ценам d28 + свободная продажа прочего ---------- */
   function toggleShop(open){
     if(!game||game.mode!=='map') return;
     game.shopOpen=!!open; shop.classList.toggle('show',game.shopOpen);
     if(!game.shopOpen) return;
     const list=document.getElementById('shopList'); list.innerHTML='';
+    const kind=game.interior?game.interior.kind:'market';
+    document.getElementById('shopTitle').textContent='🛒 '+(BUILDINGS[kind]||BUILDINGS.market).title;
+    function sec(title){
+      const h=document.createElement('div'); h.className='shopSec'; h.textContent=title; list.appendChild(h);
+    }
+    function row(name,sub,src,buttons){
+      const r=document.createElement('div'); r.className='shopItem';
+      const im=document.createElement('img'); if(src) im.src=src;
+      const info=document.createElement('div'); info.innerHTML='<b>'+name+'</b><small>'+sub+'</small>';
+      r.appendChild(im); r.appendChild(info); buttons.forEach(b=>r.appendChild(b)); list.appendChild(r);
+    }
+    function button(text,cls,onClick,disabled){
+      const b=document.createElement('button'); b.textContent=text; if(cls)b.className=cls;
+      if(disabled)b.disabled=true; else b.onclick=onClick; return b;
+    }
+    sec('Оружие — цены Подземелья 28');
     game.hero.weapons.forEach((w,i)=>{
-      const row=document.createElement('div'); row.className='shopItem';
-      const icon=document.createElement('img'); if(w.sprite) icon.src=w.sprite;
-      const info=document.createElement('div'); info.innerHTML='<b>'+w.name+'</b><small>Урон '+w.dmg+(i<game.hero.weaponLevel?' · куплено':'')+'</small>';
-      const btn=document.createElement('button');
-      if(i<=game.hero.weaponLevel){ btn.textContent=i===game.hero.weaponLevel?'Надето':'Есть'; btn.disabled=true; }
-      else{ btn.textContent='🪙 '+w.cost; btn.disabled=game.hero.gold<w.cost;
-        btn.onclick=()=>{ if(game.hero.gold<w.cost)return; game.hero.gold-=w.cost; game.hero.weaponLevel=i; beep(720,.12); toast('Куплено: '+w.name); toggleShop(true); };
-      }
-      row.appendChild(icon); row.appendChild(info); row.appendChild(btn); list.appendChild(row);
+      const owned=i<=game.hero.weaponLevel, equipped=i===game.hero.weaponLevel, sold=game.hero.soldWeapons.indexOf(i)>=0;
+      const sub='Урон '+w.dmg+(equipped?' · надето':owned?' · есть':'')+(owned&&!equipped&&!sold?' · продажа '+w.sell:'');
+      const btns=[];
+      if(owned&&!equipped&&!sold) btns.push(button('Продать '+w.sell,'sell',()=>{
+        game.hero.gold+=w.sell; game.hero.soldWeapons.push(i); beep(560,.09); toast('Продано: '+w.name); toggleShop(true);
+      }));
+      else if(!owned) btns.push(button('🪙 '+w.cost,'',()=>{
+        if(game.hero.gold<w.cost)return; game.hero.gold-=w.cost; game.hero.weaponLevel=i; beep(720,.12); toast('Куплено: '+w.name); toggleShop(true);
+      },game.hero.gold<w.cost));
+      else btns.push(button(equipped?'Надето':sold?'Продано':'Есть','',null,true));
+      row(w.name,sub,w.sprite,btns);
+    });
+    sec('Броня и предметы — покупка');
+    GOODS.filter(g=>g.buy>0).forEach(g=>{
+      row(g.name,g.desc,'',[button('🪙 '+g.buy,'',()=>{
+        if(game.hero.gold<g.buy)return;
+        game.hero.gold-=g.buy;
+        if(g.kind==='armor'){ game.hero.armor=Math.max(game.hero.armor,g.armor); toast('Надето: '+g.name); }
+        else{ addItem(g.id); toast('Куплено: '+g.name); }
+        beep(720,.12); toggleShop(true);
+      },game.hero.gold<g.buy)]);
+    });
+    sec('Продажа и использование');
+    if(!game.hero.inventory.length) row('Пока пусто','Находите бонусы на карте','',[button('—','',null,true)]);
+    game.hero.inventory.forEach(it=>{
+      const g=good(it.id); if(!g)return;
+      const btns=[button('Продать '+g.sell,'sell',()=>{
+        it.count--; if(it.count<=0) game.hero.inventory.splice(game.hero.inventory.indexOf(it),1);
+        game.hero.gold+=g.sell; beep(560,.09); toast('Продано: '+g.name); toggleShop(true);
+      })];
+      if(g.heal||g.mp) btns.push(button('Использовать','use',()=>{
+        if(g.heal) game.hero.hp=Math.min(game.hero.maxHp,game.hero.hp+g.heal);
+        if(g.mp) game.hero.mp=Math.min(game.hero.maxMp,game.hero.mp+g.mp);
+        it.count--; if(it.count<=0) game.hero.inventory.splice(game.hero.inventory.indexOf(it),1);
+        beep(880,.12); toast('Использовано: '+g.name); toggleShop(true);
+      }));
+      row(g.name+' ×'+it.count,g.desc,'',btns);
     });
     document.getElementById('shopGold').textContent=game.hero.gold;
+    document.getElementById('shopCrystals').textContent=(game.hero.inventory.find(i=>i.id==='crystal')||{count:0}).count;
   }
   document.getElementById('shopClose').onclick=()=>toggleShop(false);
 
   /* ---------- БОЙ С ВИДОМ ИЗ-ЗА СПИНЫ ---------- */
   function startBattle(source,enemy){
     const h=HEROES[game.heroIdx];
-    const m=(enemy.def&&typeof enemy.def==='object')?enemy.def:enemy;
+    const m=(enemy&&enemy.def&&typeof enemy.def==='object')?enemy.def:enemy;
     game.battle={
-      source, enemy:enemy, monster:{name:m.name,sprite:m.sprite,atk:m.atk,def:m.def,hp:enemy.hp||m.hp,maxHp:enemy.maxHp||m.hp,poison:m.poison},
+      source, enemy:enemy, monster:{name:m.name,sprite:m.sprite,atk:m.atk,def:m.def,hp:(enemy&&enemy.hp)||m.hp,maxHp:(enemy&&enemy.maxHp)||m.hp,poison:m.poison},
       turn:'hero', busy:false, end:null, anim:null, log:[], char:0,
       theme:source==='skirmish'?game.theme:rnd(0,2)
     };
-    if(source==='skirmish') game.hero.hp=h.hp, game.hero.mp=h.mp;
+    if(source==='skirmish'){ game.hero.hp=h.hp; game.hero.mp=h.mp; }
     game.msg='Враг: '+m.name;
     pushLog(m.name+' встаёт перед вами.');
   }
   function pushLog(text){
     if(!game||!game.battle)return;
-    game.battle.log.push(text); if(game.battle.log.length>4)game.battle.log.shift(); game.battle.char=0;
+    const b=game.battle;
+    b.log.push(text); if(b.log.length>4)b.log.shift(); b.char=b.log[b.log.length-1].length;
   }
   function heroAttack(special){
     const b=game&&game.battle; if(!b||b.busy||b.end||b.turn!=='hero')return;
@@ -484,9 +738,9 @@
   function enemyTurn(b){
     if(!game||game.battle!==b||b.turn!=='enemy'||b.busy||b.end)return;
     b.busy=true;
-    const dmg=Math.max(0,b.monster.atk-game.hero.weapons[game.hero.weaponLevel].dmg*0)+rnd(0,1);
+    const dmg=Math.max(0,b.monster.atk-game.hero.armor)+rnd(0,1);
     game.hero.hp=Math.max(0,game.hero.hp-dmg); b.anim={who:'enemy',t:1,jump:8};
-    pushLog(b.monster.name+': атака '+b.monster.atk+' − защита 0 = '+dmg+' урона.');
+    pushLog(b.monster.name+': атака '+b.monster.atk+' − броня '+game.hero.armor+' = '+dmg+' урона.');
     if(b.monster.poison){ game.hero.poison=3; game.hero.poisonTurns=2; pushLog(b.monster.name+' наложил яд 3 ед на 2 хода.'); }
     beep(180,.12);
     setTimeout(()=>{
@@ -507,53 +761,43 @@
     beep(win?980:120,.28);
     setTimeout(()=>{
       if(win){
-        game.hero.gold+=b.enemy.gold||rnd(2,5);
+        game.hero.gold+=b.enemy&&b.enemy.gold?b.enemy.gold:rnd(2,5);
         if(b.enemy&&b.enemy.alive!==undefined) b.enemy.alive=false;
-        let keepMap=false;
+        if(rnd(0,3)===0){ addItem(rnd(0,2)?'crystal':'coin'); toast('С врага: ценная находка!'); }
         if(b.source==='skirmish') progress.skirmish=Math.min(5,progress.skirmish+1);
-        else{
-          const left=game.enemies.filter(e=>e.alive).length;
-          keepMap=left>0;
-          if(!keepMap) progress.map=Math.min(5,progress.map+1);
-        }
-        if(progress.map>=5&&progress.skirmish>=5&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы закрыт!'); }
-        else if(!keepMap) toast('Победа! '+(b.source==='map'?'Карта':'Схватка')+' '+Math.min(5,b.source==='map'?progress.map:progress.skirmish)+'/5');
-        saveProgress();
-        if(keepMap){
+        else if(game.enemies.some(e=>e.alive)){
           const left=game.enemies.filter(e=>e.alive).length;
           game.battle=null; game.msg='Враг повержен! Осталось врагов: '+left+'.';
-          toast('Победа! Осталось врагов: '+left);
-          return;
+          toast('Победа! Осталось врагов: '+left); saveProgress(); return;
         }
+        saveProgress();
       }else toast('Поражение — круг не обновлён');
-      phase='start'; game=null; startScreen.classList.remove('hidden'); renderCards();
+      if(win&&b.source==='map'){ nextRegion(); return; }
+      phase='start'; game=null; startScreen.classList.remove('hidden'); turnPad.classList.remove('show'); renderCards();
     },1700);
   }
   function drawBackdrop(now,theme){
     sky(now);
     if(theme===0){
       ctx.fillStyle='#222736'; ctx.fillRect(0,176,W,184);
-      ctx.fillStyle='#3c4356'; ctx.fillRect(0,176,W,18);
+      drawOrnamentWall(0,70,W,132,'#3c4356','#6b7288');
       ctx.fillStyle='#151a26'; ctx.beginPath(); ctx.ellipse(W/2,208,170,90,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-170,208,340,88);
       ctx.fillStyle='#05070c'; ctx.beginPath(); ctx.ellipse(W/2,268,78,60,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-78,268,156,40);
-      ctx.fillStyle='#8b7952'; ctx.fillRect(0,300,W,60); ctx.strokeStyle='rgba(255,255,255,.07)';
-      for(let x=-40;x<W+40;x+=64){ ctx.beginPath(); ctx.moveTo(x,300); ctx.lineTo(x+26,360); ctx.stroke(); }
+      drawRoad(238,60,330,'#8b7952','#5b4d34'); drawGrassTufts(now,14);
     }else if(theme===1){
-      // sky: clouds and distant floating islands ahead of the hero
-      ctx.save(); ctx.globalAlpha=.9;
       [[90,206,52],[210,232,74],[430,214,60],[548,244,46]].forEach((c,i)=>{
-        ctx.fillStyle=i%2?'#4b4870':'#3c4b79';
-        ctx.beginPath(); ctx.ellipse(c[0],c[1],c[2],c[2]*.35,0,0,6.29); ctx.fill();
+        ctx.fillStyle=i%2?'#4b4870':'#3c4b79'; ctx.beginPath(); ctx.ellipse(c[0],c[1],c[2],c[2]*.35,0,0,6.29); ctx.fill();
         ctx.fillStyle='#263152'; ctx.beginPath(); ctx.ellipse(c[0],c[1]+c[2]*.24,c[2]*.72,c[2]*.24,0,0,6.29); ctx.fill();
+        drawTree(c[0],c[1]-4,.22);
       });
       cloud(120,120,1.2,.28); cloud(390,96,1.5,.22); cloud(552,150,.9,.3);
-      ctx.restore();
+      drawGround(250,['#355a3c','#1a2a20']); drawRoad(250,80,360,'#7d704d','#4b4330'); drawGrassTufts(now,30);
     }else{
-      drawGround(176,['#4a4568','#1c1a2e']); arcadeGround();
-      ctx.fillStyle='#b9a374'; ctx.fillRect(W/2-170,80,340,120);
-      ctx.fillStyle='#8d7a56'; [0,1,2,3,4].forEach(i=>ctx.fillRect(W/2-164+i*68,86,10,110));
+      drawGround(176,['#4a4568','#1c1a2e']); drawRoad(176,44,420,'#9a8d69','#514936');
+      drawOrnamentWall(0,70,W,132,'#b9a374','#d7c69c');
       ctx.fillStyle='#c43c3c'; ctx.beginPath(); ctx.moveTo(W/2-184,82); ctx.lineTo(W/2,26); ctx.lineTo(W/2+184,82); ctx.closePath(); ctx.fill();
       ctx.fillStyle='#ffe6a0'; ctx.fillRect(W/2-18,150,36,50);
+      drawTree(54,260,.55); drawTree(586,268,.48); drawGrassTufts(now,26);
     }
     const vig=ctx.createRadialGradient(W/2,H/2,80,W/2,H/2,380); vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,.55)'); ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
   }
@@ -567,21 +811,23 @@
       if(b.anim.t<=0)b.anim=null;
     }
     const m=b.monster, sc=clamp(180/(m.maxHp+80)+.55,.7,1.25);
-    ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(W/2,282,40*sc,10*sc,0,0,6.29); ctx.fill(); ctx.restore();
-    drawSprite(m.sprite,W/2+el,282,132*sc,1,1,ebend,1);
-    drawHeroBack(W/2,352,160,now,0,hbend);
-    panel(12,12,220,56);
-    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,22,24);
-    bar(22,38,200,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
-    bar(22,54,200,'MP',game.hero.mp,game.hero.maxMp,'#60a5fa');
-    panel(W-232,12,220,44); ctx.fillStyle='#ffb4b4'; ctx.font='bold 11px sans-serif'; ctx.fillText(m.name,W-222,25);
-    bar(W-222,38,200,'HP',m.hp,m.maxHp,'#ef4444');
+    ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(172,288,40*sc,10*sc,0,0,6.29); ctx.fill(); ctx.restore();
+    drawSprite(m.sprite,172+el,288,132*sc,1,1,ebend,1);
+    drawHeroBack(468+hj,352,160,now,0,hbend);
+
+    panel(W-232,12,220,56);
+    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,W-222,24);
+    bar(W-222,38,200,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
+    bar(W-222,54,200,'MP',game.hero.mp,game.hero.maxMp,'#60a5fa');
+    panel(12,12,220,44); ctx.fillStyle='#ffb4b4'; ctx.font='bold 11px sans-serif'; ctx.fillText(m.name,22,25);
+    bar(22,38,200,'HP',m.hp,m.maxHp,'#ef4444');
     roundRect(W/2-54,12,108,26,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
     ctx.fillStyle=b.turn==='hero'?'#ffe6a8':'#fca5a5'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ'):(b.turn==='hero'?'ТВОЙ ХОД':'ХОД ВРАГА'),W/2,26);
-    b.char=Math.min(b.char+dt/24,b.log.length?b.log[b.log.length-1].length:0);
-    roundRect(74,310,492,36,7); ctx.fillStyle='rgba(5,7,15,.9)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
-    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.fillText('✦',86,328);
-    ctx.fillStyle='#f5f0e2'; ctx.font='bold 11px sans-serif'; ctx.fillText((b.log[b.log.length-1]||'').slice(0,Math.floor(b.char)),102,328);
+
+    b.char=b.log.length?b.log[b.log.length-1].length:0;
+    roundRect(30,312,580,28,7); ctx.fillStyle='rgba(5,7,15,.92)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('✦',42,326);
+    fitText(b.log[b.log.length-1]||'',548,11,'#f5f0e2',60,326);
     roundRect(178,276,284,24,7); ctx.fillStyle='rgba(6,8,18,.72)'; ctx.fill();
     ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText('Пробел/клик — удар · F — заряд ('+game.hero.mp+' MP)',W/2,288);
     drawSmallRing(W/2,H-18,11);
@@ -598,7 +844,7 @@
         p.moveT=Math.max(0,p.moveT-dt/230); const t=ease(1-p.moveT);
         p.px=lerp(p.fromX,p.x,t); p.py=lerp(p.fromY,p.y,t); p.jump=Math.sin(Math.PI*t)*16;
       }
-      drawMap(now);
+      if(game.interior) drawInterior(now); else drawMap(now);
     }else drawBattle(now,dt);
   }
   requestAnimationFrame(loop);
@@ -616,7 +862,7 @@
     }
     const k=e.key.toLowerCase();
     if(k==='m'||k==='ь'||e.key==='Escape'){ e.preventDefault(); if(game&&game.shopOpen)toggleShop(false); else goHub(); return; }
-    if((k==='s'||k==='ы')&&!game.battle){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
+    if((k==='b'||k==='б')&&!game.battle){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
     if(game&&game.shopOpen)return;
     if(game&&game.battle){
       if(e.key===' '||e.key==='Enter'){e.preventDefault();heroAttack(false);}
@@ -624,9 +870,12 @@
       return;
     }
     if(game&&game.mode==='map'){
-      const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1],a:[-1,0],d:[1,0],w:[0,-1],s2:[0,1],ф:[-1,0],в:[1,0],ц:[0,-1],ы2:[0,1]};
-      const mv=moves[e.key]||moves[k]||(e.key==='s'?[0,1]:null);
-      if(mv){ e.preventDefault(); tryMove(mv[0],mv[1]); }
+      if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
+      if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
+      if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
+      const rel = ({ArrowUp:[1,0],w:[1,0],ц:[1,0],ArrowDown:[-1,0],s:[-1,0],ы:[-1,0],ArrowLeft:[0,-1],a:[0,-1],ф:[0,-1],ArrowRight:[0,1],d:[0,1],в:[0,1]})[e.key]||
+                  ({ArrowUp:[1,0],w:[1,0],ц:[1,0],ArrowDown:[-1,0],s:[-1,0],ы:[-1,0],ArrowLeft:[0,-1],a:[0,-1],ф:[0,-1],ArrowRight:[0,1],d:[0,1],в:[0,1]})[k];
+      if(rel){ e.preventDefault(); relativeMove(rel[0],rel[1]); }
     }
   });
   cv.addEventListener('pointerdown',()=>{ if(game&&game.battle)heroAttack(false); });
@@ -636,10 +885,10 @@
     if(win){
       progress.map=Math.min(5,progress.map+1);
       if(progress.map>=5&&progress.skirmish>=5&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы закрыт!'); }
-      else toast('Карта очищена! Карта '+progress.map+'/5');
+      else toast('Все регионы очищены! Карта '+progress.map+'/5');
       saveProgress();
     }
-    phase='start'; game=null; startScreen.classList.remove('hidden'); renderCards();
+    phase='start'; game=null; turnPad.classList.remove('show'); startScreen.classList.remove('hidden'); renderCards();
   }
 
   function applyD28Data(d){
@@ -648,18 +897,19 @@
     HEROES.splice(0,HEROES.length,...d.heroes.slice(0,2).map(h=>({
       name:h.name, set:h.set, hp:h.maxHp, mp:h.maxMp, atk:1, def:0, sprite:h.sprite,
       desc:desc[h.name]||'Герой из Подземелья 28.',
-      weapons:d.weapons[h.set].map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,sprite:w.sprite}))
+      weapons:d.weapons[h.set].map(w=>({...w,sell:Math.max(1,Math.floor((w.cost||0)*.75))}))
     })));
     MONSTERS.splice(0,MONSTERS.length,...d.monsters.map(m=>({
       name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, poison:m.poison
     })));
     heroIdx=Math.min(heroIdx,HEROES.length-1);
     imgCache.clear();
-    HEROES.forEach(h=>img(h.sprite)); MONSTERS.forEach(m=>img(m.sprite));
+    HEROES.forEach(h=>{ img(h.sprite); h.weapons.forEach(w=>img(w.sprite)); }); MONSTERS.forEach(m=>img(m.sprite));
     renderCards();
   }
   window.addEventListener('d28-data',e=>applyD28Data(e.detail));
 
+  window.__mm6State = function(){ return game; };
   renderCards();
 })();
 </script>

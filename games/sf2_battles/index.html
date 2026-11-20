@@ -81,7 +81,7 @@ select { background: #222; color: #fff; border: 1px solid #555; padding: 4px; bo
 .mel-btn.active { background: #b45309; color: #fff; border-color: #fbbf24; }
 .reset-btn { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px; font-family: inherit; }
 canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; height: 326px; box-sizing: content-box; display: block; }
-.magic-zone { display: flex; gap: 15px; margin-top: 5px; margin-bottom: 5px; width: 326px; justify-content: center; box-sizing: border-box; }
+.magic-zone { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; margin-bottom: 5px; width: 326px; justify-content: center; box-sizing: border-box; }
 .m-btn { padding: 6px 12px; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 13px; transition: background-color 0.2s; cursor: pointer; }
 .m-btn:disabled { background-color: #4b5563 !important; color: #9ca3af !important; opacity: 0.5; }
 .dpad { margin-top: 5px; display: grid; grid-template-columns: 1fr 55px 1fr; grid-template-rows: repeat(3, 40px); gap: 6px; width: 326px; box-sizing: border-box; }
@@ -155,7 +155,10 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 
 <div class="magic-zone">
 <button id="btn-light" class="m-btn" style="background-color:#eab308" onclick="castLightning()">Молния ⚡ (3⚡) [1]</button>
+<button id="btn-heal" class="m-btn" style="background-color:#22c55e" onclick="castHeal()">Лечение ✚ (3⚡) [2]</button>
 <button id="btn-stun" class="m-btn" style="background-color:#38bdf8" onclick="castStun()">Стан ❄️ (2⚡) [3]</button>
+<button id="btn-hurricane" class="m-btn" style="background-color:#a855f7" onclick="castHurricane()">Ураган 🌪 (4⚡) [4]</button>
+<button id="btn-ability" class="m-btn" style="background-color:#f97316" onclick="activateAbility()">Умение ☄ [ё]</button>
 </div>
 
 <div class="dpad">
@@ -246,7 +249,10 @@ const highScoreEl = document.getElementById('high-score');
 const eListEl = document.getElementById('e-list');
 const eCountEl = document.getElementById('e-count');
 const btnLight = document.getElementById('btn-light');
+const btnHeal = document.getElementById('btn-heal');
 const btnStun = document.getElementById('btn-stun');
+const btnHurricane = document.getElementById('btn-hurricane');
+const btnAbility = document.getElementById('btn-ability');
 const actionHint = document.getElementById('action-hint');
 const heroFig = document.getElementById('hero-fig');
 const heroNameLabel = document.getElementById('hero-name-label');
@@ -263,6 +269,7 @@ const THIN_SCALE = IS_MOBILE ? 0.5 : 1;
 
 let goldCount = 0;
 let poisonTurns = 0, poisonDmg = 0;
+let abilityTurns = 0, abilityCooldown = 0, abilityAtk = 0, abilityShield = 0, spellDiscount = 0;
 let playerHp = 100;
 let starBonus = 0;
 let shieldBonus = 0;
@@ -588,6 +595,12 @@ gain.gain.setValueAtTime(0.1*V, now); gain.gain.setValueAtTime(0, now+0.4); osc.
 } else if (type === 'lose') {
 osc.type='square'; osc.frequency.setValueAtTime(150, now); osc.frequency.setValueAtTime(100, now+0.15); osc.frequency.setValueAtTime(60, now+0.3);
 gain.gain.setValueAtTime(0.08*V, now); gain.gain.setValueAtTime(0, now+0.4); osc.start(now); osc.stop(now+0.4);
+} else if (type === 'battle') {
+osc.type='sawtooth'; osc.frequency.setValueAtTime(180, now); osc.frequency.setValueAtTime(320, now+0.09); osc.frequency.setValueAtTime(520, now+0.18);
+gain.gain.setValueAtTime(0.07*V, now); gain.gain.setValueAtTime(0, now+0.28); osc.start(now); osc.stop(now+0.28);
+} else if (type === 'tick') {
+osc.type='square'; osc.frequency.setValueAtTime(760, now); osc.frequency.setValueAtTime(420, now+0.018);
+gain.gain.setValueAtTime(0.075*V, now); gain.gain.setValueAtTime(0, now+0.026); osc.start(now); osc.stop(now+0.026);
 } else if (type === 'menu') {
 osc.type='triangle'; osc.frequency.setValueAtTime(500, now);
 gain.gain.setValueAtTime(0.05*V, now); gain.gain.setValueAtTime(0, now+0.06); osc.start(now); osc.stop(now+0.06);
@@ -790,6 +803,7 @@ startScreen.style.display = 'none';
 gameActive = true;
 goldCount = 0; playerHp = HEROES[heroIdx].maxHp; starBonus = 0; shieldBonus = 0;
 poisonTurns = 0; poisonDmg = 0;
+abilityTurns = 0; abilityCooldown = 0; abilityAtk = 0; abilityShield = 0; spellDiscount = 0;
 energy = 0; weaponLevel = 0; totalTurns = 0; currentFloor = 1;
 weapons = getWeaponsBySet(HEROES[heroIdx].set);
 startAmbient();
@@ -981,8 +995,10 @@ items.push({x:cell.x, y:cell.y, type:t});
 while (items.length > MAX_ITEMS) items.shift();
 }
 
-function lightCost() { return 3 + HEROES[heroIdx].melMod; }
-function stunCost() { return 2 + HEROES[heroIdx].melMod; }
+function lightCost() { return Math.max(0, 3 + HEROES[heroIdx].melMod - spellDiscount); }
+function healCost() { return Math.max(0, 3 + HEROES[heroIdx].melMod - spellDiscount); }
+function stunCost() { return Math.max(0, 2 + HEROES[heroIdx].melMod - spellDiscount); }
+function hurricaneCost() { return Math.max(0, 4 + HEROES[heroIdx].melMod - spellDiscount); }
 function heroMaxHp() { return HEROES[heroIdx].maxHp; }
 
 function updateHud() {
@@ -1013,9 +1029,15 @@ eListEl.innerHTML += "<div style='color:#9ca3af;'>… ещё " + (sorted.length 
 }
 
 btnLight.disabled = energy < lightCost();
+btnHeal.disabled = energy < healCost() || playerHp >= heroMaxHp();
 btnStun.disabled = energy < stunCost();
+btnHurricane.disabled = energy < hurricaneCost();
+btnAbility.disabled = abilityCooldown > 0;
 btnLight.innerText = "Молния ⚡ (" + lightCost() + "⚡) [1]";
+btnHeal.innerText = "Лечение ✚ (" + healCost() + "⚡) [2]";
 btnStun.innerText = "Стан ❄️ (" + stunCost() + "⚡) [3]";
+btnHurricane.innerText = "Ураган 🌪 (" + hurricaneCost() + "⚡) [4]";
+btnAbility.innerText = abilityCooldown > 0 ? "Умение ☄ (" + abilityCooldown + ")" : "Умение ☄ [ё]";
 const sharing = monsters.some(m => m.x === player.x && m.y === player.y);
 actionHint.innerText = sharing ? "⚔ На одной клетке с врагом! Пробел — АТАКА" : "";
 if (shopOpen) updateShop();
@@ -1046,7 +1068,9 @@ playSound('tele');
 
 function fight(m, index) {
 playSound('hit');
-let pDmg = (weapons[weaponLevel].dmg + starBonus) - m.def;
+let baseDmg = weapons[weaponLevel].dmg + starBonus + abilityAtk;
+if (HEROES[heroIdx].name === 'Лучник' && abilityTurns > 0) baseDmg = Math.round(baseDmg * 1.5);
+let pDmg = baseDmg - m.def;
 if (pDmg < 1) pDmg = 1;
 m.hp -= pDmg;
 if (m.hp <= 0) {
@@ -1057,7 +1081,7 @@ openStairs();
 return;
 }
 if (!m.isStunned) {
-const mDmg = Math.max(0, m.atk - shieldBonus);
+const mDmg = Math.max(0, m.atk - shieldBonus - abilityShield);
 if (mDmg > 0) {
 playerHp -= mDmg;
 if (m.type === "👺" && goldCount > 0) { goldCount--; playSound('steal'); }
@@ -1079,6 +1103,7 @@ highScore = totalTurns; highScoreEl.innerText = highScore;
 try { localStorage.setItem('sf2_highscore', String(highScore)); } catch (e) {}
 }
 goldCount = 0; playerHp = HEROES[heroIdx].maxHp; clearBonuses(); poisonTurns = 0; poisonDmg = 0;
+abilityTurns = 0; abilityCooldown = 0; abilityAtk = 0; abilityShield = 0; spellDiscount = 0;
 energy = 0; weaponLevel = 0; currentFloor = 1; totalTurns = 0;
 showMenu();
 }
@@ -1176,6 +1201,7 @@ else if (mon.type === "👺") { items.splice(i, 1); playSound('eat'); }
 function afterTurn() {
 if (!gameActive) return;
 totalTurns++;
+tickAbility();
 if (poisonTurns > 0) {
 playerHp -= poisonDmg;
 playSound('bad');
@@ -1215,6 +1241,7 @@ currentFloor++;
 if (currentFloor > settings.floors) { endGame(true); return; }
 playSound('stairs');
 if (settings.bonusReset) clearBonuses();
+abilityTurns = 0; abilityAtk = 0; abilityShield = 0; spellDiscount = 0;
 initFloor();
 draw();
 return;
@@ -1256,6 +1283,53 @@ energy -= stunCost();
 playSound('magic');
 monsters.forEach(m => { m.isStunned = true; m.stunTimer = 2; });
 updateHud(); draw();
+}
+
+function castHeal() {
+if (!gameActive || energy < healCost() || playerHp >= heroMaxHp() || shopOpen || settingsOpen) return;
+energy -= healCost();
+playSound('magic');
+playerHp = Math.min(heroMaxHp(), playerHp + 30);
+updateHud(); draw();
+}
+
+function castHurricane() {
+if (!gameActive || energy < hurricaneCost() || shopOpen || settingsOpen) return;
+const targets = monsters.filter(m => Math.abs(m.x - player.x) <= CELL * 2 && Math.abs(m.y - player.y) <= CELL * 2);
+if (targets.length === 0) return;
+energy -= hurricaneCost();
+playSound('magic');
+targets.forEach(m => {
+m.x = Math.max(0, Math.min(320 - CELL, m.x + Math.sign(m.x - player.x) * CELL * 3));
+m.y = Math.max(0, Math.min(320 - CELL, m.y + Math.sign(m.y - player.y) * CELL * 3));
+});
+updateHud(); draw();
+}
+
+function activateAbility() {
+if (!gameActive || abilityCooldown > 0 || shopOpen || settingsOpen) return;
+const hero = HEROES[heroIdx];
+playSound('magic');
+if (hero.name === 'Ангел') {
+playerHp = Math.min(heroMaxHp(), playerHp + 50);
+abilityCooldown = 30;
+} else {
+abilityTurns = hero.name === 'Лучник' ? 4 : 5;
+abilityCooldown = 10;
+abilityAtk = 0; abilityShield = 0; spellDiscount = 0;
+if (hero.name === 'Воин') abilityAtk = 5;
+else if (hero.name === 'Маг') spellDiscount = 1;
+else if (hero.name === 'Паладин') abilityShield = 3;
+}
+updateHud(); draw();
+}
+
+function tickAbility() {
+if (abilityTurns > 0) {
+abilityTurns--;
+if (abilityTurns === 0) { abilityAtk = 0; abilityShield = 0; spellDiscount = 0; }
+}
+if (abilityCooldown > 0) abilityCooldown--;
 }
 
 const SPRITE_BASE = "../dungeon28/assets/sprites/";
@@ -1358,17 +1432,26 @@ ctx.strokeRect(player.x+1, player.y+1, 30, 30);
 }
 }
 
-function wasdAllowed() { return settings.keysMode !== 'arrows'; }
-function arrowsAllowed() { return settings.keysMode !== 'wasd'; }
-function letterOk(latKey, cyrKey) {
-if (settings.keysLayout === 'both') return true;
-if (settings.keysLayout === 'lat') return !/^[а-яё]$/i.test(cyrKey || '');
-return !/^[a-z]$/i.test(latKey || '');
+function wasdAllowed() { return settings.keysMode === 'all' || settings.keysMode === 'wasd'; }
+function arrowsAllowed() { return settings.keysMode === 'all' || settings.keysMode === 'arrows'; }
+function pointerToBoard(e) {
+const r = canvas.getBoundingClientRect();
+return { x: (e.clientX - r.left) / r.width * canvas.width, y: (e.clientY - r.top) / r.height * canvas.height };
 }
+function stepTowards(e) {
+if (!gameActive || playerHp <= 0 || shopOpen || settingsOpen) return;
+const p = pointerToBoard(e), hx = player.x + CELL / 2, hy = player.y + CELL / 2, dx = p.x - hx, dy = p.y - hy;
+if (Math.abs(dx) < CELL / 2 && Math.abs(dy) < CELL / 2) { skipTurn(); return; }
+if (Math.abs(dx) >= Math.abs(dy)) move(dx > 0 ? CELL : -CELL, 0);
+else move(0, dy > 0 ? CELL : -CELL);
+}
+canvas.addEventListener('pointerdown', (e) => { if (!shopOpen && !settingsOpen) e.preventDefault(); });
+canvas.addEventListener('pointerup', (e) => { e.preventDefault(); stepTowards(e); });
 document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape') {
-if (settingsOpen) { toggleSettings(false); return; }
-if (shopOpen) { toggleShop(false); return; }
+if (settingsOpen) toggleSettings(false);
+if (shopOpen) toggleShop(false);
+return;
 }
 if (shopOpen || settingsOpen) return;
 if (menuActive) {
@@ -1384,15 +1467,19 @@ else if (e.key === '2') selectMode(1);
 else if (e.key === '3') selectMode(2);
 return;
 }
-const lat = e.key.toLowerCase();
-if ((arrowsAllowed() && e.key === 'ArrowUp') || (wasdAllowed() && lat === 'w' && letterOk('w', 'ц'))) { move(0, -32); return; }
-if ((arrowsAllowed() && e.key === 'ArrowLeft') || (wasdAllowed() && lat === 'a' && letterOk('a', 'ф'))) { move(-32, 0); return; }
-if ((arrowsAllowed() && e.key === 'ArrowDown') || (wasdAllowed() && lat === 's' && letterOk('s', 'ы'))) { move(0, 32); return; }
-if ((arrowsAllowed() && e.key === 'ArrowRight') || (wasdAllowed() && lat === 'd' && letterOk('d', 'в'))) { move(32, 0); return; }
-if (e.key === ' ') skipTurn();
-else if (e.key === '1') castLightning();
-else if (e.key === '3') castStun();
-else if (lat === 'm' || e.key === 'ь') toggleShop(true);
+const key = e.key.toLowerCase();
+if (((arrowsAllowed() && e.key === 'ArrowUp') || (wasdAllowed() && (key === 'w' || key === 'ц')))) { e.preventDefault(); move(0, -CELL); return; }
+if (((arrowsAllowed() && e.key === 'ArrowDown') || (wasdAllowed() && (key === 's' || key === 'ы')))) { e.preventDefault(); move(0, CELL); return; }
+if (((arrowsAllowed() && e.key === 'ArrowLeft') || (wasdAllowed() && (key === 'a' || key === 'ф')))) { e.preventDefault(); move(-CELL, 0); return; }
+if (((arrowsAllowed() && e.key === 'ArrowRight') || (wasdAllowed() && (key === 'd' || key === 'в')))) { e.preventDefault(); move(CELL, 0); return; }
+if (key === '1' || key === 'z' || key === 'я') castLightning();
+else if (key === '2' || key === 'x' || key === 'ч') castHeal();
+else if (key === '3' || key === 'c' || key === 'с') castStun();
+else if (key === '4' || key === 'v' || key === 'м') castHurricane();
+else if (key === '`' || key === 'ё' || key === '~') activateAbility();
+else if (e.key === ' ') { e.preventDefault(); skipTurn(); }
+else if (key === 'm' || key === 'ь') toggleShop(true);
+if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) e.preventDefault();
 });
 
 try {
@@ -1507,6 +1594,10 @@ function draw(now) {
 if (!active) return;
 t = now - t0;
 raf = requestAnimationFrame(draw);
+if (typeof playSound === 'function') {
+cue('heroHit', T_H1_HIT, function () { playSound('tick'); });
+if (cfg.counterDamage > 0) cue('enemyHit', T_ENEMY_HIT, function () { playSound('tick'); });
+}
 cx.setTransform(1, 0, 0, 1, 0, 0);
 cx.clearRect(0, 0, W, H);
 cx.drawImage(bg, 0, 0);
@@ -1560,8 +1651,11 @@ cx.fillStyle = 'rgba(4,6,14,.94)'; cx.fillRect(12, H - 70, W - 24, 58);
 cx.strokeStyle = 'rgba(251,191,36,.65)'; cx.lineWidth = 1.5; cx.strokeRect(12, H - 70, W - 24, 58);
 cx.fillStyle = '#fbbf24'; cx.font = 'bold 15px sans-serif'; cx.textBaseline = 'middle';
 cx.fillText('✦', 22, H - 41);
-cx.fillStyle = '#f5f0e2'; cx.font = 'bold 12px sans-serif'; cx.textAlign = 'left';
-for (var i = 0; i < visible.length; i++) cx.fillText(visible[i].text, 38, H - 57 + i * 16);
+cx.font = 'bold 12px sans-serif'; cx.textAlign = 'left';
+for (var i = 0; i < visible.length; i++) {
+cx.fillStyle = visible[i].color || '#f5f0e2';
+cx.fillText(visible[i].text, 38, H - 57 + i * 16);
+}
 cx.restore();
 
 cx.restore();
@@ -1577,6 +1671,7 @@ cx.fillText(text, x, y - dt * .05); cx.restore();
 function start(o) {
 if (!o || !o.enemies || !o.enemies.length) { if (o && o.onEnd) o.onEnd(); return; }
 cfg = o; fired = {}; t = 0; t0 = performance.now(); active = true;
+if (typeof playSound === 'function') playSound('battle');
 buildBg();
 overlay = document.createElement('div');
 overlay.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:9000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;';
@@ -1633,26 +1728,28 @@ if (window[BUSY]) return;
 if (window.startBattleCutscene) {
 window[BUSY] = true;
 var h = HEROES[heroIdx];
-var atk = weapons[weaponLevel].dmg + starBonus;
+var atk = weapons[weaponLevel].dmg + starBonus + abilityAtk;
+if (HEROES[heroIdx].name === 'Лучник' && abilityTurns > 0) atk = Math.round(atk * 1.5);
 var dmg = Math.max(1, atk - m.def);
 var killed = (m.hp - dmg) <= 0;
-var counter = (!killed && !m.isStunned) ? Math.max(0, m.atk - shieldBonus) : 0;
-var defense = shieldBonus;
+var defense = shieldBonus + abilityShield;
+var counter = (!killed && !m.isStunned) ? Math.max(0, m.atk - defense) : 0;
 var poison = !killed && m.type === '🧟';
 var eName = ENEMY_NAMES[m.type] || m.type;
+var C_HERO = '#86efac', C_ENEMY = '#fca5a5', C_NEUTRAL = '#fde68a';
 var messages = [
-{at: 560, text: eName + ' появился.'},
-{at: 1470, text: h.name + ' атаковал на ' + dmg + ' ед.'},
-{at: 1600, text: eName + ' защитился на ' + m.def + ' ед.'},
-{at: 1730, text: eName + ' получил урон ' + dmg + ' ед.'}
+{at: 560, text: eName + ' появился.', color: C_ENEMY},
+{at: 1470, text: h.name + ' атаковал на ' + dmg + ' ед.', color: C_HERO},
+{at: 1600, text: eName + ' защитился на ' + m.def + ' ед.', color: C_ENEMY},
+{at: 1730, text: eName + ' получил урон ' + dmg + ' ед.', color: C_ENEMY}
 ];
 if (counter > 0) messages.push(
-{at: 2520, text: eName + ' атаковал на ' + m.atk + ' ед.'},
-{at: 2650, text: h.name + ' защитился на ' + defense + ' ед.'},
-{at: 2780, text: h.name + ' получил урон ' + counter + ' ед.'}
+{at: 2520, text: eName + ' атаковал на ' + m.atk + ' ед.', color: C_ENEMY},
+{at: 2650, text: h.name + ' защитился на ' + defense + ' ед.', color: C_HERO},
+{at: 2780, text: h.name + ' получил урон ' + counter + ' ед.', color: C_HERO}
 );
-if (poison) messages.push({at: 3000, text: 'Зомби наложил яд 3 ед на 2 хода.'});
-if (killed) messages.push({at: 2100, text: eName + ' повержен!'});
+if (poison) messages.push({at: 3000, text: 'Зомби наложил яд 3 ед на 2 хода.', color: C_ENEMY});
+if (killed) messages.push({at: 2100, text: eName + ' повержен!', color: C_NEUTRAL});
 var endAt = killed ? 2600 : (poison ? 3700 : (counter > 0 ? 3300 : 2200));
 window[DONE] = function () {
 m.hp -= dmg;
