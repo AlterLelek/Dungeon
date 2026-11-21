@@ -18,6 +18,126 @@ const ctx = canvas.getContext('2d');
 let bgCanvas = null;
 let gameLoopStarted = false;
 
+// ===== Статичные наложения на героя поверх карты (оружие слева, щит справа) =====
+// Спрайты берём только из первого кадра D28; анимации кадров здесь нет.
+const HERO_OVERLAY_ITEMS = 'assets/sprites/items/';
+const heroOverlayImages = {};
+function heroOverlayImage(src) {
+    if (!src) return null;
+    if (!heroOverlayImages[src]) {
+        const img = new Image();
+        img.src = src;
+        heroOverlayImages[src] = img;
+    }
+    return heroOverlayImages[src];
+}
+
+function heroOverlayWeaponSprite(w) {
+    // Из D28 берём только first-frame варианты: sword_0 / axe_0 / staff_0 / bow0_0 / bow1_0.
+    const file = w && w.sprite ? String(w.sprite).split('/').pop().toLowerCase() : '';
+    if (/^bow1/.test(file)) return HERO_OVERLAY_ITEMS + 'bow1_0.png';
+    if (/^bow0/.test(file)) return HERO_OVERLAY_ITEMS + 'bow0_0.png';
+    if (/^staff/.test(file)) return HERO_OVERLAY_ITEMS + 'staff_0.png';
+    if (/^axe/.test(file)) return HERO_OVERLAY_ITEMS + 'axe_0.png';
+    if (/^sword/.test(file)) return HERO_OVERLAY_ITEMS + 'sword_0.png';
+    const name = ((w && w.name) || '').toLowerCase();
+    if (/арбалет|bow1|crossbow/.test(name)) return HERO_OVERLAY_ITEMS + 'bow1_0.png';
+    if (/лук|bow/.test(name)) return HERO_OVERLAY_ITEMS + 'bow0_0.png';
+    if (/палоч|посох|staff|wand/.test(name)) return HERO_OVERLAY_ITEMS + 'staff_0.png';
+    if (/топор|молот|axe|hammer|mace/.test(name)) return HERO_OVERLAY_ITEMS + 'axe_0.png';
+    return HERO_OVERLAY_ITEMS + 'sword_0.png';
+}
+
+function heroOverlayArmor() { return (state.permanentShield || 0) + (state.tempDef || 0); }
+// 0 — щита нет; 1 — четверть высоты; 30 — три четверти; больше — потолок 3/4.
+function heroOverlayShieldFill(armor) {
+    if (!(armor > 0)) return 0;
+    return Math.min(0.75, 0.25 + ((Math.min(30, armor) - 1) * 0.5) / 29);
+}
+
+function drawProceduralHeroWeapon(c, x, y, size, sprite) {
+    c.save();
+    c.lineWidth = Math.max(1, size * 0.1);
+    if (/bow/.test(sprite)) {
+        c.strokeStyle = '#b45309';
+        c.beginPath(); c.arc(x + size * 0.45, y + size / 2, size * 0.42, -1.1, 1.1); c.stroke();
+        c.strokeStyle = '#e5e7eb';
+        c.beginPath(); c.moveTo(x + size * 0.55, y + size * 0.12); c.lineTo(x + size * 0.55, y + size * 0.88); c.stroke();
+    } else if (/staff/.test(sprite)) {
+        c.strokeStyle = '#92400e';
+        c.beginPath(); c.moveTo(x + size / 2, y + size * 0.9); c.lineTo(x + size / 2, y + size * 0.25); c.stroke();
+        c.fillStyle = '#a855f7';
+        c.beginPath(); c.arc(x + size / 2, y + size * 0.2, size * 0.16, 0, Math.PI * 2); c.fill();
+    } else {
+        c.strokeStyle = '#9ca3af';
+        c.beginPath(); c.moveTo(x + size * 0.3, y + size * 0.85); c.lineTo(x + size * 0.7, y + size * 0.2); c.stroke();
+        c.strokeStyle = '#fbbf24'; c.lineWidth = Math.max(1, size * 0.14);
+        c.beginPath(); c.moveTo(x + size * 0.15, y + size * 0.9); c.lineTo(x + size * 0.4, y + size * 0.65); c.stroke();
+    }
+    c.restore();
+}
+
+function drawHeroWeaponOverlay(c, cellX, cellY) {
+    const w = state.weapons && state.weapons[state.weaponLevel];
+    const sprite = heroOverlayWeaponSprite(w);
+    const img = heroOverlayImage(sprite);
+    const size = 15;
+    // левая нижняя четверть клетки: лицо героя (центр) не закрываем
+    const x = cellX - 9, y = cellY + 12;
+    if (img && img.complete && img.naturalWidth > 0) {
+        try { c.drawImage(img, x, y, size, size); return; } catch (e) {}
+    }
+    drawProceduralHeroWeapon(c, x, y, size, sprite);
+}
+
+function drawProceduralHeroShield(c, x, y, w, h) {
+    c.fillStyle = '#3b82f6'; c.strokeStyle = '#1e3a8a'; c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(x + 1, y + 1); c.lineTo(x + w - 1, y + 1); c.lineTo(x + w - 1, y + h * 0.55);
+    c.quadraticCurveTo(x + w / 2, y + h, x + w / 2, y + h);
+    c.quadraticCurveTo(x + 1, y + h * 0.55, x + 1, y + h * 0.55);
+    c.closePath(); c.fill(); c.stroke();
+}
+
+function drawHeroShieldOverlay(c, cellX, cellY) {
+    const armor = heroOverlayArmor();
+    const fill = heroOverlayShieldFill(armor);
+    if (fill <= 0) return;
+    const w = 14, h = 18;
+    const x = cellX + 27, y = cellY + 9; // правая сторона, вне лица героя
+    const img = heroOverlayImage(HERO_OVERLAY_ITEMS + 'shield.png');
+    c.save();
+    // высота видимой части растёт снизу вверх вместе с броней
+    c.beginPath(); c.rect(x, y + h * (1 - fill), w, h * fill + 0.5); c.clip();
+    if (img && img.complete && img.naturalWidth > 0) {
+        try { c.drawImage(img, x, y, w, h); c.restore(); return; } catch (e) {}
+    }
+    drawProceduralHeroShield(c, x, y, w, h);
+    c.restore();
+}
+
+function drawHeroOverlay(c) {
+    if (!state.gameActive) return;
+    const x = state.player.px, y = state.player.py;
+    c.save();
+    c.globalAlpha = 1;
+    drawHeroWeaponOverlay(c, x, y);
+    drawHeroShieldOverlay(c, x, y);
+    c.restore();
+}
+
+window.__d28HeroOverlay = function () {
+    const w = state.weapons && state.weapons[state.weaponLevel];
+    const armor = heroOverlayArmor();
+    return {
+        weapon: w ? w.name : null,
+        armor: armor,
+        shieldFill: heroOverlayShieldFill(armor),
+        weaponSide: 'left',
+        shieldSide: 'right'
+    };
+};
+
 // Поле 15×15 без D-pad. На телефоне окно просмотра --layout-size = 320px (10 клеток),
 // на ПК — 480px (всё поле). Масштабируем по окну просмотра, а не по всему миру:
 // так клетки на телефоне остаются крупными, а остальное поле доступно сдвигом.
@@ -499,7 +619,7 @@ function gameLoop() {
     Object.keys(state.elementFx).forEach(k => {
       if (state.elementFx[k] > 0) state.elementFx[k] = Math.max(0, state.elementFx[k] - 0.02);
     });
-    draw(ctx, bgCanvas); updateHUD();
+    draw(ctx, bgCanvas); drawHeroOverlay(ctx); updateHUD();
   }
   requestAnimationFrame(gameLoop);
 }

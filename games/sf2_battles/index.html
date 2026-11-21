@@ -2294,6 +2294,86 @@ v.addColorStop(0, 'rgba(0,0,0,0)');
 v.addColorStop(1, theme === 'sky' ? 'rgba(0,0,0,.18)' : 'rgba(0,0,0,.52)');
 c.fillStyle = v; c.fillRect(0, 0, MAP_WORLD, MAP_WORLD);
 }
+/* ===== Статичные наложения на героя в режиме карты 15×15 (оружие слева, щит справа) =====
+   Бой 1 на 1 и его расстановку не трогаем: работает только drawMap(). */
+var SF_OVERLAY_ITEMS = '../dungeon28/assets/sprites/items/';
+function sfOverlayShieldFill(armor) {
+if (!(armor > 0)) return 0;
+return Math.min(0.75, 0.25 + ((Math.min(30, armor) - 1) * 0.5) / 29);
+}
+function sfOverlayArmor() { return (shieldBonus || 0) + (abilityShield || 0); }
+function sfOverlayWeapon() {
+var w = weapons[weaponLevel] || {};
+var set = (HEROES[heroIdx] || {}).set || 'warrior';
+var data = window.D28_DATA && window.D28_DATA.weapons && window.D28_DATA.weapons[set];
+var src = data && data[weaponLevel] && data[weaponLevel].sprite ? String(data[weaponLevel].sprite) : '';
+var file = src.split('/').pop().toLowerCase();
+if (/^bow1/.test(file)) return {name:w.name || '', sprite:src};
+if (/^bow0/.test(file)) return {name:w.name || '', sprite:src};
+if (/^staff/.test(file)) return {name:w.name || '', sprite:src};
+if (/^axe/.test(file)) return {name:w.name || '', sprite:src};
+if (/^sword/.test(file)) return {name:w.name || '', sprite:src};
+var name = (w.name || '').toLowerCase(); // first-frame fallback по типу оружия
+if (/арбалет|crossbow/.test(name)) return {name:w.name || '', sprite:SF_OVERLAY_ITEMS + 'bow1_0.png'};
+if (/лук|bow/.test(name)) return {name:w.name || '', sprite:SF_OVERLAY_ITEMS + 'bow0_0.png'};
+if (/палоч|посох|staff|wand/.test(name)) return {name:w.name || '', sprite:SF_OVERLAY_ITEMS + 'staff_0.png'};
+if (/топор|молот|axe|hammer|mace/.test(name)) return {name:w.name || '', sprite:SF_OVERLAY_ITEMS + 'axe_0.png'};
+return {name:w.name || '', sprite:SF_OVERLAY_ITEMS + 'sword_0.png'};
+}
+function sfDrawProceduralWeapon(c, x, y, size, sprite) {
+c.save();
+c.lineWidth = Math.max(1, size * 0.1);
+if (/bow/.test(sprite)) {
+c.strokeStyle = '#b45309'; c.beginPath(); c.arc(x + size*0.45, y + size/2, size*0.42, -1.1, 1.1); c.stroke();
+c.strokeStyle = '#e5e7eb'; c.beginPath(); c.moveTo(x + size*0.55, y + size*0.12); c.lineTo(x + size*0.55, y + size*0.88); c.stroke();
+} else if (/staff/.test(sprite)) {
+c.strokeStyle = '#92400e'; c.beginPath(); c.moveTo(x + size/2, y + size*0.9); c.lineTo(x + size/2, y + size*0.25); c.stroke();
+c.fillStyle = '#a855f7'; c.beginPath(); c.arc(x + size/2, y + size*0.2, size*0.16, 0, 2*Math.PI); c.fill();
+} else {
+c.strokeStyle = '#9ca3af'; c.beginPath(); c.moveTo(x + size*0.3, y + size*0.85); c.lineTo(x + size*0.7, y + size*0.2); c.stroke();
+c.strokeStyle = '#fbbf24'; c.lineWidth = Math.max(1, size*0.14); c.beginPath(); c.moveTo(x + size*0.15, y + size*0.9); c.lineTo(x + size*0.4, y + size*0.65); c.stroke();
+}
+c.restore();
+}
+function sfDrawMapHeroOverlay(c, px, py) {
+var wp = sfOverlayWeapon(), im = boardImg(wp.sprite), size = 15;
+var wx = px - 9, wy = py + 12; // слева от героя, ниже лица
+c.save(); c.globalAlpha = 1;
+if (im && im.complete && im.naturalWidth) { try { c.drawImage(im, wx, wy, size, size); } catch (e) { sfDrawProceduralWeapon(c, wx, wy, size, wp.sprite); } }
+else sfDrawProceduralWeapon(c, wx, wy, size, wp.sprite);
+var armor = sfOverlayArmor(), fill = sfOverlayShieldFill(armor);
+if (fill > 0) {
+var w = 14, h = 18, sx = px + 27, sy = py + 9; // справа от героя
+var shield = boardImg(SF_OVERLAY_ITEMS + 'shield.png');
+c.save();
+c.beginPath(); c.rect(sx, sy + h * (1 - fill), w, h * fill + 0.5); c.clip();
+if (shield && shield.complete && shield.naturalWidth) {
+try { c.drawImage(shield, sx, sy, w, h); }
+catch (e) { sfDrawProceduralShield(c, sx, sy, w, h); }
+} else sfDrawProceduralShield(c, sx, sy, w, h);
+c.restore();
+}
+c.restore();
+}
+function sfDrawProceduralShield(c, x, y, w, h) {
+c.fillStyle = '#3b82f6'; c.strokeStyle = '#1e3a8a'; c.lineWidth = 1.5;
+c.beginPath();
+c.moveTo(x + 1, y + 1); c.lineTo(x + w - 1, y + 1); c.lineTo(x + w - 1, y + h * 0.55);
+c.quadraticCurveTo(x + w / 2, y + h, x + w / 2, y + h);
+c.quadraticCurveTo(x + 1, y + h * 0.55, x + 1, y + h * 0.55);
+c.closePath(); c.fill(); c.stroke();
+}
+window.__sfHeroOverlay = function () {
+var armor = sfOverlayArmor();
+return {
+weapon: (weapons[weaponLevel] || {}).name || null,
+armor: armor,
+shieldFill: sfOverlayShieldFill(armor),
+weaponSide: 'left',
+shieldSide: 'right'
+};
+};
+
 function drawMap() {
 if (!mapBg) buildMapBg();
 ctx.clearRect(0, 0, 320, 320);
@@ -2316,6 +2396,7 @@ drawBars(m.x-mapCam.x, m.y-mapCam.y, m.hp, m.maxHp, m.def, m.atk);
 });
 drawCell(player.x-mapCam.x, player.y-mapCam.y, HEROES[heroIdx].emoji, 22);
 drawBars(player.x-mapCam.x, player.y-mapCam.y, playerHp, heroMaxHp(), shieldBonus, weapons[weaponLevel].dmg + starBonus);
+sfDrawMapHeroOverlay(ctx, player.x-mapCam.x, player.y-mapCam.y);
 }
 var origDraw = draw;
 draw = function () { if (mapActive) { drawMap(); return; } origDraw(); };

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05060d">
 <title>Подземелье 6</title>
+<link rel="icon" href="data:,">
 <style>
 /* ============================ ОСНОВЫ ============================ */
 :root{--gold:#fbbf24;--ink:#f3e8cf;--hero:#86efac;--enemy:#fca5a5;--neutral:#fde68a}
@@ -43,6 +44,14 @@ button,input,select{font-family:inherit}
 .pbar{height:4px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:2px;overflow:hidden}
 .pbar i{display:block;height:100%;background:#f87171}
 .pbar.mp i{background:#60a5fa}
+.pcard .nums{display:flex;justify-content:flex-end;gap:8px;font-size:9px;line-height:1.15;margin-top:2px}
+.pcard .nums b{color:#fca5a5}.pcard .nums em{color:#93c5fd;font-style:normal}
+.pcard .mini{display:flex;justify-content:space-between;color:#cbd5e1;font-size:8px;margin-top:1px}
+.pcard .mini i{font-style:normal}
+@media (hover:hover) and (pointer:fine) and (min-width:820px){
+  #controls{display:none!important}
+  #stage{height:100%}
+}
 @media (orientation:portrait){
   #stage{flex:0 0 auto;width:100%;height:auto;aspect-ratio:16/9;max-height:52vh}
   #controls{position:relative;inset:auto;flex:1 1 auto;display:flex;align-items:stretch;justify-content:space-between;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));gap:8px}
@@ -116,6 +125,28 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .recRow{display:flex;gap:8px;align-items:center;padding:6px 8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(255,255,255,.025);font-size:11px;color:#8b94b2}
 .recRow.got{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.08);color:#ffe9b0}
 .recRow span:first-child{width:16px;text-align:center;flex:0 0 16px}
+/* Липкая шапка лавки: название, вкладки и ресурсы всегда видны при прокрутке. */
+#shopSticky{position:sticky;top:-16px;z-index:5;padding:2px 0 6px;margin:-2px 0 6px;
+  background:linear-gradient(180deg,#161a33 0%,#161a33 82%,rgba(22,26,51,0) 100%)}
+#shopSticky .head{gap:6px}
+#shopSticky h2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#shopRes{display:flex;gap:10px;flex:0 0 auto;font-size:11px;color:#fbbf24;white-space:nowrap}
+#shopRes b{color:#fff3c4}
+#shopTabs{position:sticky;top:0;margin-bottom:4px;background:#161a33;padding:3px 0}
+#shopArt{display:block;width:100%;height:auto;max-height:150px;border:1px solid rgba(251,191,36,.35);border-radius:9px;margin:4px 0 8px;background:#0a0d1c;image-rendering:pixelated}
+.ellip{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowItem .info b{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowItem .info small{overflow-wrap:anywhere}
+.setAcc{border:1px solid rgba(255,255,255,.1);border-radius:9px;margin:7px 0;background:rgba(255,255,255,.025)}
+.setAcc summary{cursor:pointer;padding:8px 10px;color:#ffe09a;font-size:12px;font-weight:700}
+.setAcc .setBody{padding:0 10px 10px}
+.setRow{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:11px}
+.setRow .setLabel{flex:1;color:#c8cfe4}
+.setRow input,.setRow select{width:88px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:5px;color:#fff3d0}
+.setCheck{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:11px;color:#c8cfe4}
+.keysHelp{font-size:10px;color:#9aa4c2;line-height:1.6}
+.keyCap{display:inline-block;border:1px solid rgba(251,191,36,.4);border-radius:5px;padding:1px 5px;margin-right:4px;color:#ffe9b0}
+.legendItem{font-size:10px;color:#b9bfd6;padding:3px 0;line-height:1.35}
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (max-width:620px){.invBody{flex-direction:column}.mannequin{width:100%;flex:auto}.box{padding:12px}}
@@ -148,13 +179,14 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
       <button id="btnInv" aria-label="Инвентарь" title="Инвентарь [I]">🎒</button>
       <button id="btnShop" aria-label="Магазин" title="Магазин [B]">🛒</button>
       <button id="btnInteract" aria-label="Взаимодействие" title="Взаимодействие [Enter]">↵</button>
+      <button id="btnSettings" aria-label="Настройки" title="Настройки [P]">⚙</button>
     </div>
   </div>
 </div>
 
 <div id="start" class="overlay">
   <div class="box">
-    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="homeBtn">Главное меню</button></div></div>
+    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button><button class="link" id="homeBtn">Главное меню</button></div></div>
     <div class="progress">
       <svg viewBox="0 0 42 42" aria-hidden="true"><circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle></svg>
       <div><b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b><small id="achText">Победите 10 боссов на карте, чтобы замкнуть круг.</small><div id="winCounts">Боссы 0/10</div></div>
@@ -176,9 +208,56 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 </div></div>
 
 <div id="shop" class="overlay hidden"><div class="box">
-  <div class="head"><h2 id="shopTitle">🛒 Лавка</h2><button class="link" id="shopClose">Закрыть [B]</button></div>
-  <div class="tabs" id="shopTabs"></div>
-  <div id="shopList"></div><div class="foot">Золото: <b id="shopGold">0</b> · Кристаллы: <b id="shopCrystals">0</b></div>
+  <div id="shopSticky">
+    <div class="head"><h2 id="shopTitle">🛒 Лавка</h2><div id="shopRes"><span>🪙 <b id="shopGold">0</b></span><span>💎 <b id="shopCrystals">0</b></span><button class="link" id="shopClose">Закрыть [B]</button></div></div>
+    <div class="tabs" id="shopTabs"></div>
+  </div>
+  <canvas id="shopArt" width="640" height="150" aria-label="Внутренний вид лавки"></canvas>
+  <div id="shopList"></div>
+</div></div>
+
+<div id="settings" class="overlay hidden"><div class="box">
+  <div class="head"><h2>⚙️ Настройки</h2><button class="link" id="settingsClose">Закрыть [Esc]</button></div>
+  <details class="setAcc" open><summary>🎚️ Сложность и мир</summary><div class="setBody">
+    <div class="setRow"><span class="setLabel">Сложность</span><select id="setDiff"><option value="easy">🙂 Простая</option><option value="normal">🔥 Средняя</option><option value="hard">🧠 Сложная</option></select></div>
+    <div class="setRow"><span class="setLabel">🏰 Этажей всего</span><input type="number" id="setFloors" min="1" max="20" step="1" value="5"></div>
+    <div class="setRow"><span class="setLabel">📐 Размер карты (клеток)</span><input type="number" id="setMapSize" min="8" max="24" step="1" value="14"></div>
+    <div class="setRow"><span class="setLabel">🔲 Размер клетки</span><input type="number" id="setCellSize" min="8" max="28" step="1" value="16"></div>
+    <div class="setRow"><span class="setLabel">👹 Монстров +</span><input type="number" id="setMonstersAdd" min="0" max="5" step="1" value="0"></div>
+    <div class="setRow"><span class="setLabel">🧰 Спавн (раз в N)</span><input type="number" id="setItemRate" min="1" max="5" step="1" value="2"></div>
+    <div class="setCheck"><input type="checkbox" id="setSimple" checked><span>🙂 Простой режим</span></div>
+    <div class="setCheck"><input type="checkbox" id="setExtreme"><span>🔥 Экстрим (вкусы)</span></div>
+    <div class="setCheck"><input type="checkbox" id="setCriticalAI"><span>🧠 Критический ИИ</span></div>
+  </div></details>
+  <details class="setAcc"><summary>🔊 Звук</summary><div class="setBody">
+    <div class="setRow"><span class="setLabel">Общая громкость</span><input type="number" id="setMaster" min="0" max="10" step="1" value="10"></div>
+    <div class="setRow"><span class="setLabel">Звуки</span><input type="number" id="setSfx" min="0" max="10" step="1" value="10"></div>
+    <div class="setRow"><span class="setLabel">Фон</span><input type="number" id="setAmb" min="0" max="10" step="1" value="10"></div>
+    <div class="setRow"><span class="setLabel">Мелодия</span><input type="number" id="setMelody" min="0" max="10" step="1" value="5"></div>
+    <div class="setRow"><span class="setLabel">Темп (мс)</span><input type="number" id="setTempo" min="300" max="1200" step="100" value="600"></div>
+    <div class="setRow"><span class="setLabel">Тема</span><select id="setMelodyTheme"><option value="town">Городская 🎵</option><option value="cave">Подземелье</option><option value="elven">Эльфийская</option><option value="dwarven">Гномия</option><option value="dice">Кости 🎲</option></select></div>
+  </div></details>
+  <details class="setAcc"><summary>🛡️ Магия и монстры</summary><div class="setBody">
+    <div class="setRow"><span class="setLabel">🛡️ Сила щита</span><input type="number" id="setShieldVal" min="1" max="10" step="1" value="3"></div>
+    <div class="setRow"><span class="setLabel">⭐ Сила звезды</span><input type="number" id="setStarVal" min="1" max="10" step="1" value="1"></div>
+    <div class="setCheck"><input type="checkbox" id="setVibro" checked><span>📳 Вибрация</span></div>
+    <div class="setCheck"><input type="checkbox" id="setHints" checked><span>Подсказки клавиш на экране</span></div>
+    <div class="setCheck"><input type="checkbox" id="setBattleMirror"><span>Бой: сообщения справа, герой слева</span></div>
+    <div class="legendItem">❄️ Застанен · 💤 Отдыхает · 🕸️ Замедлен · ☠️ Отравление · 🩸 Вампиризм · 🛡️ Толстая броня.</div>
+    <div class="legendItem">Мания: ⚡ молния, 🔥 огонь, ❄️ лёд, 💧 вода, 🌪️ ветер.</div>
+  </div></details>
+  <details class="setAcc"><summary>🎮 Управление</summary><div class="setBody">
+    <div class="setRow"><span class="setLabel">Клавиши</span><select id="setKeysMode"><option value="all">WASD + Стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
+    <div class="setRow"><span class="setLabel">Раскладка</span><select id="setKeysLayout"><option value="both">Обе</option><option value="lat">Латиница</option><option value="cyr">Кириллица</option></select></div>
+    <div class="keysHelp">
+      <div><span class="keyCap">WASD</span><span class="keyCap">↑↓←→</span> ход</div>
+      <div><span class="keyCap">Q/E</span><span class="keyCap">й/у</span> поворот (E — также диалог у прилавка)</div>
+      <div><span class="keyCap">Enter</span> взаимодействие · <span class="keyCap">B</span> лавка · <span class="keyCap">I</span> инвентарь</div>
+      <div><span class="keyCap">Пробел</span> атака в бою · <span class="keyCap">F</span> магия · <span class="keyCap">R</span> бегство</div>
+      <div><span class="keyCap">M/Esc</span> меню · <span class="keyCap">P</span> настройки</div>
+    </div>
+  </div></details>
+  <div class="row"><button class="link" id="resetSettings">↺ Сбросить настройки</button></div>
 </div></div>
 
 <div id="inventory" class="overlay hidden"><div class="box">
@@ -197,7 +276,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, HERBS, RECIPES, LIQUIDS, SCROLLS, ARMORS, CLASS_PENALTY, SHOP_TYPES, BIOMES, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BIOMES, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, RECORDS } from '../shared/records.js';
 
@@ -211,6 +290,7 @@ const pick = a => a[Math.floor(Math.random()*a.length)];
 const ckey = (x,y) => x+','+y;
 let uidSeq = 0;
 const uid = () => 'i'+(++uidSeq);
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function fitText(text,maxW,size,color,x,y){
   let s=size; ctx.font='bold '+s+'px sans-serif';
   while(ctx.measureText(text).width>maxW && s>8){ s--; ctx.font='bold '+s+'px sans-serif'; }
@@ -254,7 +334,7 @@ const HERO_DESC=[
   'Ангел: свет пробивает нежить.',
   'Следопыт: быстрая стрельба и ловкость.'
 ];
-const EXTRA_EMOJI={'Друид':'🌲','Разбойник':'🏹','Жрец':'🔆','Амазонка':'🎯','Гном-кулига':'⛏️'};
+const EXTRA_EMOJI={'Друид':'🌲','Разбойник':'🏹','Амазонка':'🎯','Гном-кулига':'⛏️','Гном-колдун':'💎'};
 const MONSTER_EMOJI={wolf:'🐺',goblin:'👺',orc:'👹',troll:'🧌',golem:'🗿',vampire:'🧛',mummy:'🧟',siren:'🧜',wyvern:'🐉',lich:'☠️'};
 function weaponKind(name){
   const n=name.toLowerCase();
@@ -331,9 +411,132 @@ function loadProgress(){
 function saveProgress(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(progress)); }catch(e){} }
 let progress=loadProgress();
 
+/* --- Настройки: полный дубль панели подземелья, сохраняются в localStorage --- */
+const SETTINGS_KEY='mm6_settings_v1';
+function loadSettings(){
+  try{ return Object.assign({},DEFAULT_SETTINGS,JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}')); }
+  catch(e){ return Object.assign({},DEFAULT_SETTINGS); }
+}
+let settings=loadSettings();
+function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); }catch(e){} }
+function openSettings(){ $('settings').classList.remove('hidden'); if(game) game.settingsOpen=true; syncSettings(); updateControls(); }
+function closeSettings(){ $('settings').classList.add('hidden'); if(game) game.settingsOpen=false; saveSettings(); if(game) updateControls(); }
+function syncSettings(){
+  const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
+    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
+    setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
+    setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
+  Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
+  const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
+    setHints:'showHints',setBattleMirror:'battleMirror'};
+  Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
+}
+function bindSettings(){
+  const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
+    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
+    setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
+    setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
+  Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(!el) return;
+    el.addEventListener('change',()=>{ settings[key]=(el.type==='number'||el.type==='range')?Number(el.value):el.value;
+      if(key==='difficulty') selDiff=settings.difficulty; saveSettings(); });
+  });
+  const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
+    setHints:'showHints',setBattleMirror:'battleMirror'};
+  Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
+    el.addEventListener('change',()=>{ settings[key]=el.checked; saveSettings(); });
+  });
+  $('resetSettings').onclick=()=>{ settings=Object.assign({},DEFAULT_SETTINGS); selDiff=settings.difficulty;
+    saveSettings(); syncSettings(); toast('Настройки сброшены.'); };
+  $('settingsClose').onclick=closeSettings;
+  $('settingsBtn').onclick=openSettings;
+  $('btnSettings').onclick=openSettings;
+}
+
+/* --- Загрузка спрайтов и иконок из Dungeon28 (без покадровой анимации) --- */
+const SPRITE_BASE='../dungeon28/assets/sprites/';
+const imgCache={};
+function spriteImg(path){
+  if(!path) return null;
+  if(!imgCache[path]){ const im=new Image(); im.dataset.ready='0'; im.onload=()=>{ im.dataset.ready='1'; }; im.src=path; imgCache[path]=im; }
+  return imgCache[path];
+}
+function drawSprite(path,x,y,w,h,tint){
+  const im=spriteImg(path);
+  if(!im||im.dataset.ready!=='1') return false;
+  ctx.save(); ctx.imageSmoothingEnabled=false;
+  if(!tint){ ctx.drawImage(im,x,y,w,h); ctx.restore(); return true; }
+  // Тинт рисуется на отдельном холсте, чтобы не окрашивать весь фон сцены.
+  const tw=Math.max(1,Math.ceil(w)), th=Math.max(1,Math.ceil(h));
+  if(!im._tintCanvas||im._tintCanvas.width!==tw||im._tintCanvas.height!==th){
+    const c=document.createElement('canvas'); c.width=tw; c.height=th; im._tintCanvas=c;
+  }
+  const tc=im._tintCanvas, tg=tc.getContext('2d');
+  tg.clearRect(0,0,tw,th); tg.globalCompositeOperation='source-over'; tg.globalAlpha=1;
+  tg.imageSmoothingEnabled=false; tg.drawImage(im,0,0,tw,th);
+  tg.globalCompositeOperation='source-atop'; tg.globalAlpha=.32; tg.fillStyle=tint; tg.fillRect(0,0,tw,th);
+  ctx.drawImage(tc,x,y,w,h); ctx.restore(); return true;
+}
+const ITEM_SPRITES={
+  coin:SPRITE_BASE+'items/coin.png', star:SPRITE_BASE+'items/star.png', shield:SPRITE_BASE+'items/shield.png',
+  lightning:SPRITE_BASE+'items/lightning.png', sword:SPRITE_BASE+'items/sword_0.png',
+  axe:SPRITE_BASE+'items/axe_0.png', staff:SPRITE_BASE+'items/staff_0.png', bow:SPRITE_BASE+'items/bow0_0.png'
+};
+function itemIconId(it){
+  if(!it) return 'coin';
+  const id=(it.id||'').toLowerCase(), n=(it.name||'').toLowerCase();
+  if(it.icon==='🪙'||id==='coin'||it.type==='gold') return 'coin';
+  if(it.icon==='💎'||it.type==='crystal'||n.includes('кристалл')) return 'star';
+  if(it.icon==='⚡'||id==='lightning'||n.includes('молн')) return 'lightning';
+  if(it.type==='weapon'){ const k=it.wkind||weaponKind(it.name);
+    return k==='axe'?'axe':k==='bow'?'bow':k==='staff'?'staff':'sword'; }
+  if(it.type==='armor'||it.icon==='🛡') return 'shield';
+  if(it.type==='herb') return 'herb';
+  if(it.type==='potion'||it.type==='liquid') return 'potion';
+  if(it.type==='scroll') return 'scroll';
+  if(it.type==='chest') return 'chest';
+  return 'coin';
+}
+function drawProcIcon(kind,x,y,s){
+  ctx.save(); ctx.translate(x,y);
+  if(kind==='potion'){
+    ctx.fillStyle='#cbd5e1'; roundRect(-s*.22,-s*.08,s*.44,s*.62,s*.08); ctx.fill();
+    ctx.fillStyle='#7c4bb0'; roundRect(-s*.28,-s*.42,s*.56,s*.16,s*.05); ctx.fill();
+    ctx.fillStyle='#f472b6'; roundRect(-s*.17,s*.1,s*.34,s*.36,s*.05); ctx.fill();
+  }else if(kind==='scroll'){
+    ctx.fillStyle='#f5e6bd'; roundRect(-s*.36,-s*.4,s*.72,s*.8,s*.06); ctx.fill();
+    ctx.strokeStyle='#a16207'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#7c4bb0'; for(let i=0;i<3;i++) ctx.fillRect(-s*.22,-s*.2+i*s*.18,s*.44,s*.06);
+  }else if(kind==='chest'){
+    ctx.fillStyle='#7a5230'; roundRect(-s*.4,-s*.1,s*.8,s*.5,s*.06); ctx.fill();
+    ctx.fillStyle='#a9743d'; roundRect(-s*.42,-s*.42,s*.84,s*.34,s*.08); ctx.fill();
+    ctx.fillStyle='#fbbf24'; ctx.fillRect(-s*.08,-s*.2,s*.16,s*.28);
+  }else if(kind==='herb'){
+    ctx.strokeStyle='#4ade80'; ctx.lineWidth=s*.1;
+    ctx.beginPath(); ctx.moveTo(0,s*.45); ctx.lineTo(0,-s*.4); ctx.stroke();
+    ctx.fillStyle='#86efac'; ctx.beginPath(); ctx.ellipse(-s*.22,-s*.18,s*.22,s*.12,-.5,0,6.29); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(s*.22,-s*.02,s*.22,s*.12,.5,0,6.29); ctx.fill();
+  }else{
+    ctx.fillStyle='#fde68a'; ctx.beginPath(); ctx.arc(0,0,s*.35,0,6.29); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawIcon(kind,x,y,s,label){
+  if(ITEM_SPRITES[kind]&&drawSprite(ITEM_SPRITES[kind],x-s/2,y-s/2,s,s)){
+    if(label){ ctx.save(); ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffe9b0';
+      ctx.fillText(label,x,y+s*.75); ctx.restore(); }
+    return;
+  }
+  drawProcIcon(kind,x,y,s);
+  if(label){ ctx.save(); ctx.font='bold 9px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffe9b0';
+    ctx.fillText(label,x,y+s*.75); ctx.restore(); }
+}
+function heroName(h){ return h===party()[0]?heroNameText:h.def.name; }
+function canCast(h){ const r=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set]; return !(r&&r.magic); }
+function restrictionText(h){ const r=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set]; return r&&r.reason?r.reason:''; }
+
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
-let selHero=[0,1], selDiff='normal', heroNameText='Герой', pickHeroTab=0;
+let selHero=[0,1], selDiff=settings.difficulty, heroNameText='Герой', pickHeroTab=0;
 let invTab='Общий';
 
 function makeItem(o){
@@ -344,15 +547,24 @@ function makeHeroState(def,slot){
   const weapon=makeItem({type:'weapon',name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
     sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality===undefined?1:w.quality,
     wkind:w.kind||'sword',reforges:0,enchant:null,icon:'⚔'});
-  const armor=makeItem({type:'armor',name:'Тряпичная одежда',def:0,cost:0,sell:1,armorDef:0,icon:'🛡'});
+  const armor=makeItem({type:'armor',name:'Тряпичная одежда',def:0,cost:0,sell:1,armorDef:0,slot:'body',dir:'def',icon:'🛡'});
   game.bag.push(weapon,armor);
-  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,
-    bonus:{atk:0,def:0,magic:0},shield:0,poison:0,poisonTurns:0,
-    spells:(DEFAULT_SPELLS[def.set]||['heal']).slice(),
-    equip:{weapon:weapon.uid,armor:armor.uid}};
+  const restrictions=HERO_RESTRICTIONS[def.name]||{};
+  const spells=restrictions.magic?[]:(DEFAULT_SPELLS[def.set]||['heal']).slice();
+  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,
+    magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
+    bonus:{atk:0,def:0,magic:0},shield:0,poison:0,poisonTurns:0,statuses:[],
+    spells,
+    equip:{weapon:weapon.uid,body:armor.uid,armor:armor.uid,shield:null,helmet:null,legs:null,hands:null,cloak:null}};
 }
 function equippedWeapon(h){ return game.bag.find(i=>i.uid===h.equip.weapon)||null; }
-function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.armor)||null; }
+function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.body)||game.bag.find(i=>i.uid===h.equip.armor)||null; }
+function equippedArmors(h){
+  const uids=ARMOR_SLOTS.map(s=>h.equip[s.id]).filter(Boolean);
+  if(h.equip.armor&&!uids.includes(h.equip.armor)) uids.push(h.equip.armor);
+  return game.bag.filter(i=>uids.includes(i.uid));
+}
+function armorTotal(h){ return equippedArmors(h).reduce((s,a)=>s+(a.armorDef||0),0); }
 function weaponPenalty(h,w){
   const table=CLASS_PENALTY[h.def.set]||{};
   return table[w&&w.wkind]||0;
@@ -368,10 +580,18 @@ function heroAtk(h){
   return Math.max(1,a);
 }
 function heroDef(h){
-  const a=equippedArmor(h); let d=(a?a.armorDef:0)+h.bonus.def+armorPenalty(h,a)+h.shield;
+  let d=armorTotal(h)+h.bonus.def+h.shield;
+  equippedArmors(h).forEach(a=>{ d+=armorPenalty(h,a); });
   const w=equippedWeapon(h);
   if(w&&w.enchant&&w.enchant.stat==='def') d+=w.enchant.value;
   return Math.max(0,d);
+}
+function weaponCrit(h,w){
+  if(!w) return 5;
+  const q=(QUALITY[w.quality]||QUALITY[0]).crit||0;
+  const cls=D28_DATA.heroes.findIndex(x=>x.name===h.def.name);
+  const classBonus=cls>=0?cls:2; // чем «выше» класс, тем больше шанс крита
+  return clamp(4+q+classBonus*2+(w.reforges||0)*2+(w.enchant?3:0),1,60);
 }
 function party(){ return game?game.party:[]; }
 function aliveHeroes(){ return party().filter(h=>h.hp>0); }
@@ -384,8 +604,8 @@ function startGame(diffId,a,b){
   selHero=[i1,i2]; selDiff=d.id;
   heroNameText=($('heroName').value||'').trim().slice(0,14)||'Герой';
   game={difficulty:d.id,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
-    battle:null,shopType:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,
-    msg:'',audio:null,nearShop:null,totalTurns:0};
+    battle:null,shopType:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
+    msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
   game.party=[makeHeroState(HEROES[i1],0),makeHeroState(HEROES[i2],1)];
   game.world=generateWorld(d.id);
   setMap(0,null);
@@ -400,11 +620,14 @@ function startGame(diffId,a,b){
   beep(540,.12);
   return game;
 }
+function boostRegen(sec){
+  if(game) game.regenBoost=Math.max(game.regenBoost||0,performance.now()+sec*1000);
+}
 
 /* ============================ 4. МИР: КАРТЫ, ДОРОГИ, БИОМЫ ============================ */
 function generateWorld(diffId){
   const d=DIFFICULTY.find(x=>x.id===diffId)||DIFFICULTY[1];
-  const count=rnd(d.maps[0],d.maps[1]);
+  const count=clamp(Math.round(Number(settings.floors)||rnd(d.maps[0],d.maps[1])),1,20);
   const cands=LAYOUTS.filter(l=>l[0]*l[1]>=count).sort((a,b)=>a[0]*a[1]-b[0]*b[1]);
   const layout=pick(cands.slice(0,Math.min(3,cands.length)))||LAYOUTS[LAYOUTS.length-1];
   const cols=layout[0],rows=layout[1];
@@ -418,7 +641,8 @@ function emptyCells(size){
   const g=[]; for(let y=0;y<size;y++){ g[y]=[]; for(let x=0;x<size;x++) g[y][x]={t:'grass'}; } return g;
 }
 function generateMap(i,total,slot,d,pos,cols,rows){
-  const size=rnd(d.size[0],d.size[1]);
+  const baseSize=clamp(Math.round(Number(settings.mapSize)||d.size[1]),8,28);
+  const size=clamp(rnd(Math.max(8,baseSize-2),baseSize+2),8,28);
   const biome=BIOME_KEYS[i%BIOME_KEYS.length];
   const cells=emptyCells(size);
   const cx=Math.floor(size/2),cy=Math.floor(size/2);
@@ -432,14 +656,16 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     cells[y][x]={t:'gate',dir,to:ni,biome:BIOME_KEYS[ni%BIOME_KEYS.length],
       bname:BIOMES[BIOME_KEYS[ni%BIOME_KEYS.length]].name};
   });
-  const farX=slot.gx<cols/2?size-2:1, farY=slot.gy<rows/2?size-2:1;
+  let farX=slot.gx<cols/2?size-2:1, farY=slot.gy<rows/2?size-2:1;
   if(Math.abs(farX-cx)<2) farX=cx===size-2?1:size-2;
   if(Math.abs(farY-cy)<2) farY=cy===size-2?1:size-2;
   cells[farY][farX]={t:'boss',opened:false};
   const chestX=clamp(farX+(farX>cx?-1:1),0,size-1);
   if(cells[farY][chestX].t==='grass') cells[farY][chestX]={t:'chest',boss:true,opened:false};
-  const shopA=SHOP_TYPES[i%SHOP_TYPES.length].id;
-  const shopB=size>=14?SHOP_TYPES[(i+2)%SHOP_TYPES.length].id:null;
+  const shopKinds=[SHOP_TYPES[i%SHOP_TYPES.length].id];
+  if(size>=12) shopKinds.push(SHOP_TYPES[(i+2)%SHOP_TYPES.length].id);
+  if(size>=16) shopKinds.push(SHOP_TYPES[(i+5)%SHOP_TYPES.length].id);
+  if(size>=20) shopKinds.push('tavern',(i%2?'inn':'forge'));
   const occupied=new Set([ckey(cx,cy),ckey(farX,farY),ckey(chestX,farY)]);
   function freeSpot(minDist){
     for(let k=0;k<160;k++){
@@ -451,8 +677,13 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     }
     return null;
   }
-  [shopA,shopB].forEach(kind=>{
-    if(!kind) return; const s=freeSpot(2); if(s) cells[s.y][s.x]={t:'shop',kind};
+  const shops=[];
+  shopKinds.forEach(kind=>{
+    const s=freeSpot(2); if(!s) return;
+    const def=SHOP_TYPES.find(x=>x.id===kind)||SHOP_TYPES[0];
+    const name=pick(def.names||[def.title]);
+    cells[s.y][s.x]={t:'shop',kind,shopName:name};
+    shops.push({kind,name,x:s.x,y:s.y});
   });
   const decoCount=Math.floor(size*size*.18);
   for(let k=0;k<decoCount;k++){
@@ -460,10 +691,11 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     let t='tree';
     if(biome==='port'&&Math.random()<.55) t='water';
     else if(biome==='mountains'&&Math.random()<.7) t='rock';
-    else if((biome==='village'||biome==='city')&&Math.random()<.55) t='house';
-    cells[s.y][s.x]={t};
+    else if((biome==='village'||biome==='city')&&Math.random()<.7) t='house';
+    cells[s.y][s.x]=t==='house'?{t,houseName:pick(['Жилой дом','Дом ремесленника','Каменный дом','Дом у дороги'])}:{t};
   }
-  const treasureCount=rnd(2,4);
+  const rate=clamp(Number(settings.itemRate)||2,1,5);
+  const treasureCount=rnd(2,4)+Math.floor(rate/2);
   for(let k=0;k<treasureCount;k++){
     const s=freeSpot(2); if(!s) break;
     const tp=pick(TREASURES);
@@ -483,12 +715,12 @@ function generateMap(i,total,slot,d,pos,cols,rows){
   const firstPool=MONSTERS.filter(m=>m.id==='mouse'||m.id==='turtle');
   const pool=i===0?firstPool:MONSTERS.filter(m=>m.tier<=tier);
   const mons=[];
-  for(let k=0;k<d.monsters+(i>2?1:0);k++){
+  for(let k=0;k<d.monsters+(i>2?1:0)+(Number(settings.monstersAdd)||0);k++){
     const s=freeSpot(4); if(!s) break;
     mons.push(spawnMonster(pick(pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
   }
   return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},
-    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops:[shopA,shopB].filter(Boolean),tier};
+    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier};
 }
 function spawnMonster(def,tier,x,y,variantId,isBoss,allowVariant){
   const color=MONSTER_COLORS.find(c=>c.id===variantId)||
@@ -574,7 +806,7 @@ function tryMove(dx,dy){
     toast('Переход: '+BIOMES[nm.biome].name); beep(620,.14);
     updateParty(); return;
   }
-  if(c.t==='treasure'){ collectTreasure(c); c.t='grass'; }
+  if(c.t==='treasure'){ collectTreasure(c); c.taken=true; c.foundName=(c.item&&c.item.name)||'находка'; }
   if(c.t==='chest'){ openSmallChest(c); }
   afterStep();
 }
@@ -614,14 +846,18 @@ function collectTreasure(c){
   else if(t.kind==='crystal'){ addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6}); game.msg='Находка: 💎 кристалл.'; }
   else if(t.kind==='scroll'){ const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)}); game.msg='Находка: 📜 '+s.name+'.'; }
   else if(t.kind==='weapon'){
-    const h=party()[0], base=h.def.weapons[0];
     const it=addItem({type:'weapon',name:t.name,dmg:t.level+1,baseDmg:t.level+1,cost:t.level*2,sell:t.level,
       quality:Math.min(3,t.level),wkind:weaponKind(t.name),reforges:0,enchant:null,icon:'⚔'});
     game.msg='Находка: ⚔ '+it.name+'.';
   }else if(t.kind==='armor'){
     const a=ARMORS[Math.min(ARMORS.length-1,t.level+1)];
-    addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,sell:Math.max(1,Math.floor(a.cost*.5)),icon:'🛡'});
+    addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,sell:Math.max(1,Math.floor(a.cost*.5)),
+      slot:a.slot||'body',dir:a.dir||'def',icon:'🛡'});
     game.msg='Находка: 🛡 '+a.name+'.';
+  }else if(t.kind==='material'){
+    const mat=MATERIALS.find(m=>m.id===(t.id2||t.id))||MATERIALS[0];
+    addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
+    game.msg='Находка: '+mat.icon+' '+mat.name+'.';
   }else{
     const id=t.id==='coin'?'coin':t.id;
     addItem({id,type:'potion',name:t.name,icon:t.icon,cost:5,sell:3,heal:t.id==='potion_hp'?40:0,mp:t.id==='potion_mp'?15:0});
@@ -653,7 +889,7 @@ function openBossChest(){
 }
 function tryInteract(){
   if(!game||phase!=='play') return;
-  if(game.battle){ heroAttack(); return; }
+  if(game.battle) return; // атака в бою — только пробел/кнопка атаки
   if(game.shopOpen){ toggleShop(false); return; }
   if(game.invOpen){ toggleInventory(false); return; }
   const m=currentMap(), p=game.player;
@@ -665,6 +901,14 @@ function tryInteract(){
   if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop'){ openShop(m.cells[ny][nx].kind); return; }
   game.msg='Здесь не с чем взаимодействовать.';
 }
+function canInteractHere(){
+  if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return false;
+  const m=currentMap(), p=game.player, here=m.cells[p.y][p.x];
+  if(here.t==='shop'||(here.t==='chest'&&!here.opened)) return true;
+  if(Math.abs(p.x-m.boss.x)+Math.abs(p.y-m.boss.y)<=2&&m.boss.dead&&!m.cells[m.boss.y][m.boss.x].bossOpened) return true;
+  const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
+  return nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop';
+}
 
 /* ============================ 5. ВЕРХНЯЯ ПОЛОСА ОТРЯДА ============================ */
 function updateParty(){
@@ -673,20 +917,23 @@ function updateParty(){
   $('party').innerHTML=game.party.map((h,i)=>{
     const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
     return '<div class="pcard'+(i===active?' active':'')+'"><div class="ptop"><span class="pemoji">'+h.def.emoji+'</span>'+
-      '<span class="pname">'+(i===0?heroNameText:h.def.name)+'</span><span>'+Math.max(0,Math.round(h.hp))+'</span></div>'+
-      '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div></div>';
+      '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
+      '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
+      '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
+      '<div class="mini"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i></div></div>';
   }).join('');
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
 }
 function updateControls(){
   if(!game) return;
-  const hide=phase!=='play'||game.shopOpen||game.invOpen||game.reward||game.spellOpen;
-  $('controls').classList.toggle('hidden',!game||phase!=='play');
+  const blocked=game.shopOpen||game.invOpen||game.reward||game.spellOpen||game.settingsOpen;
+  $('controls').classList.toggle('hidden',phase!=='play'||blocked);
+  $('party').classList.toggle('hidden',phase!=='play');
   $('btnAttack').classList.toggle('hot',!!game.battle&&game.battle.turn==='hero');
   $('btnSpell').classList.toggle('hot',!!game.battle&&game.battle.turn==='hero');
   $('btnFlee').classList.toggle('hot',!!game.battle);
-  void hide;
+  $('party').style.display=settings.showHints===false?'none':'';
 }
 
 /* ============================ 6. ГРУППОВОЙ БОЙ ============================ */
@@ -703,7 +950,9 @@ function startBattle(list,mapRef){
   units.sort((a,b)=>(b.speed-a.speed)||(a.tie-b.tie));
   units.forEach(u=>{ const n=(u.side==='enemy'&&enemies[u.idx].acts===2)?2:1;
     for(let k=0;k<n;k++) b.order.push({...u}); });
-  pushLog('Встреча: '+enemies.map(e=>e.name).join(', ')+'.',C_NEUTRAL,'neutral');
+  pushLog('В бой вступают все участники:',C_NEUTRAL,'neutral');
+  party().forEach(h=>pushLog('  '+h.def.name+' — атака '+heroAtk(h)+', защита '+heroDef(h)+', магия '+h.magicPower+'.',C_HERO,'hero'));
+  enemies.forEach(e=>pushLog(e.name+' — атака '+e.atk+', защита '+e.defVal+'.',C_ENEMY,'enemy'));
   game.msg='Бой! Пробел — атака · F — магия · R — бегство.';
   nextTurn(); updateParty(); updateControls(); beep(420,.12);
   return b;
@@ -712,7 +961,7 @@ function pushLog(text,color,side){
   const b=game&&game.battle; if(!b) return;
   b.log.push({text,color:color||C_NEUTRAL,side:side||'neutral'});
 
-  if(b.log.length>5) b.log.shift();
+  if(b.log.length>9) b.log.shift();
 }
 function checkBattleEnd(){
   const b=game&&game.battle; if(!b||b.end) return true;
@@ -739,6 +988,23 @@ function nextTurn(){
   }
   checkBattleEnd();
 }
+function instrumental(name){
+  const table={'Кулаки':'Кулаками','Кинжал':'Кинжалом','Меч':'Мечом','Топор':'Топором','Молот':'Молотом',
+    'Лук':'Луком','Арбалет':'Арбалетом','Посох':'Посохом','Палочка':'Палочкой','Книга':'Книгой',
+    'Кольцо':'Кольцом','Амулет':'Амулетом','Свиток':'Свитком'};
+  if(table[name]) return table[name];
+  if(/а$/i.test(name)) return name.slice(0,-1)+'ой';
+  if(/ь$/i.test(name)) return name.slice(0,-1)+'ем';
+  return name+'ом';
+}
+function attackVerb(m){
+  const n=(m.name||'').toLowerCase();
+  if(/волк|паук|зме|таракан/.test(n)) return 'укусил';
+  if(/черепах|муми|зомби/.test(n)) return 'укусила';
+  if(/крыс|мыш/.test(n)) return 'укусила';
+  if(/виверн|дракон/.test(n)) return 'укусила';
+  return 'ударил';
+}
 function heroAttack(){
   const b=game&&game.battle; if(!b||b.end||b.busy||b.turn!=='hero') return;
   const h=party()[b.heroIdx]; if(!h||h.hp<=0) return;
@@ -749,10 +1015,16 @@ function heroAttack(){
   if(w&&w.enchant){
     if(w.enchant.stat==='light'&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) atk+=w.enchant.value;
   }
-  const dmg=Math.max(1,atk-Math.max(0,target.defVal)+rnd(0,2));
+  const crit=Math.random()*100<weaponCrit(h,w);
+  const raw=Math.max(1,Math.round((atk+rnd(0,2))*(crit?2:1)));
+  const defense=Math.max(0,target.defVal);
+  const dmg=Math.max(0,raw-defense);
   target.hp=Math.max(0,target.hp-dmg);
-  b.anim={who:'hero',t:1,jump:12};
-  pushLog(h.def.name+': удар по '+target.name+' — '+dmg+' урона.',C_HERO,'hero');
+  b.lastHit={attacker:heroName(h),weapon:w?w.name:'Кулаки',raw,defense,final:dmg,crit};
+  const weaponText=instrumental(w?w.name:'Кулаки');
+  pushLog(crit
+    ? h.def.name+' нанес критический удар '+weaponText+' на '+raw+', но '+target.name+' защитилась на '+defense+' и получила '+dmg+' урона.'
+    : h.def.name+' ударил '+weaponText+' и нанес '+raw+' урона, но '+target.name+' защитилась на '+defense+' и получила '+dmg+' урона.',C_HERO,'hero');
   if(w&&w.enchant){
     const en=w.enchant;
     if(en.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+en.value);
@@ -769,14 +1041,14 @@ function enemyAct(b,idx){
   const m=b.enemies[idx]; if(!m||!m.alive) return;
   const targets=aliveHeroes(); if(!targets.length){ finishBattle(false); return; }
   const h=pick(targets);
-  let dmg;
-  if(m.magic&&Math.random()<.35){
-    dmg=Math.max(1,Math.round(m.atk+m.magicBonus-h.bonus.def*.5)+rnd(0,2));
-    pushLog(m.name+': чары на '+h.def.name+' — '+dmg+' урона.',C_ENEMY,'enemy');
-  }else{
-    dmg=Math.max(0,m.atk-heroDef(h)+rnd(0,1));
-    pushLog(m.name+': удар по '+h.def.name+' — '+dmg+' урона.',C_ENEMY,'enemy');
-  }
+  const magicHit=m.magic&&Math.random()<.35;
+  const raw=Math.max(1,Math.round(m.atk+m.magicBonus+(magicHit?0:0)+rnd(0,2)));
+  const defense=magicHit?Math.round(heroDef(h)*.5):heroDef(h);
+  const dmg=Math.max(0,raw-defense);
+  b.lastHit={attacker:m.name,weapon:magicHit?'чары':attackVerb(m),raw,defense,final:dmg,crit:false};
+  pushLog(magicHit
+    ? m.name+' наложил чары на '+h.def.name+' и нанес '+raw+' урона, но '+h.def.name+' защитился на '+defense+' и получил '+dmg+' урона.'
+    : m.name+' '+attackVerb(m)+' и нанес '+raw+' урона, но '+h.def.name+' защитился на '+defense+' и получил '+dmg+' урона.',C_ENEMY,'enemy');
   h.hp=Math.max(0,h.hp-dmg);
   if(m.poison&&Math.random()<.35&&h.hp>0){
     h.poison=3; h.poisonTurns=2; pushLog(m.name+' наложил яд на '+h.def.name+'.',C_ENEMY,'enemy');
@@ -799,20 +1071,26 @@ function castSpell(id,targetIdx){
   const s=spell(id); if(!s) return false;
   const h=party()[b.heroIdx];
   if(!h||h.spells.indexOf(id)<0){ toast('Заклинание не изучено.'); return false; }
-  if(h.mp<s.mp){ toast('Не хватает маны: нужно '+s.mp+'.'); return false; }
-  h.mp-=s.mp;
+  if(!canCast(h)){ toast(restrictionText(h)||'Этот герой не владеет магией.'); return false; }
+  const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
+  if(h.mp<cost){ toast('Не хватает маны: нужно '+cost+'.'); return false; }
+  h.mp-=cost;
   const target=b.enemies[Number.isInteger(targetIdx)?targetIdx:b.enemies.findIndex(e=>e.alive)]||b.enemies.find(e=>e.alive);
+  const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||SPELL_TIERS[1]).name;
+  const magic=h.bonus.magic+Math.round(h.magicPower/2);
   let txt='';
   if(s.power){
-    let dmg=s.power+h.bonus.magic;
+    let dmg=Math.max(1,s.power+magic+rnd(0,2));
     if(s.undead&&target&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) dmg*=2;
     const victims=s.aoe?b.enemies.filter(e=>e.alive):[target].filter(Boolean);
     victims.forEach(v=>{ v.hp=Math.max(0,v.hp-dmg); if(v.hp<=0) v.alive=false;
       if(s.id==='ice') v.slow=(v.slow||0)+1;
       if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
     });
-    txt=h.def.name+' применяет «'+s.name+'» — '+Math.round(dmg)+' урона'+(s.aoe?' по всем врагам':'')+'.';
-  }else if(s.heal){ h.hp=Math.min(h.maxHp,h.hp+s.heal); txt=h.def.name+' лечит себя на '+s.heal+' HP.'; }
+    txt=h.def.name+' применяет «'+s.name+'» ('+tier+(s.aoe?', по всем врагам':'')+') — '+Math.round(dmg)+' урона'+(s.aoe?' каждому':'')+'.';
+  }else if(s.heal){ h.hp=Math.min(h.maxHp,h.hp+s.heal+magic); txt=h.def.name+' лечит себя на '+(s.heal+magic)+' HP ('+tier+').'; }
+  else if(s.healAll){ party().forEach(x=>{ if(x.hp>0) x.hp=Math.min(x.maxHp,x.hp+s.healAll+magic); });
+    txt=h.def.name+' лечит отряд на '+(s.healAll+magic)+' HP ('+tier+').'; }
   else if(s.shield){ h.shield+=s.shield; txt=h.def.name+' создаёт щит +'+s.shield+'.'; }
   else if(s.poison&&target){ target.poison=(target.poison||0)+s.poison; txt=h.def.name+' отравляет '+target.name+'.'; }
   else if(s.stun&&target){ target.stun=(target.stun||0)+s.stun; txt=h.def.name+' оглушает '+target.name+' на '+s.stun+' хода.'; }
@@ -820,7 +1098,7 @@ function castSpell(id,targetIdx){
   else if(s.atk){ h.bonus.atk+=s.atk; txt=h.def.name+' благословляет себя (+'+s.atk+' атаки).'; }
   else if(s.gain){ h.mp=Math.min(h.maxMp,h.mp+s.gain); txt=h.def.name+' восстанавливает ману +'+s.gain+'.'; }
   else if(s.id==='teleport'){ closeBattleKeep(); closeSpellMenu(); toast('Прыжок: бой оставлен без штрафа.'); return true; }
-  else txt=h.def.name+' применяет «'+s.name+'».';
+  else txt=h.def.name+' применяет «'+s.name+'» ('+tier+').';
   pushLog(txt,C_HERO,'hero');
   b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
   closeSpellMenu(); updateParty();
@@ -865,7 +1143,10 @@ function finishBattle(win){
   }
   const gold=b.enemies.filter(e=>e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0)
     +b.enemies.filter(e=>!e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0);
+  const exp=Math.max(10,10*b.enemies.filter(e=>e.alive||e.hp<=0).length);
+  party().forEach(h=>{ if(h.hp>0){ h.exp+=exp; h.magicPower+=0.05; } });
   game.gold+=gold;
+  pushLog('Победа! Вы получили опыт по '+exp+' очков каждому и золото '+gold+' монет',C_NEUTRAL,'neutral');
   b.enemies.forEach(e=>{ if(!e.isBoss) e.alive=false; });
   if(b.boss&&b.map){
     recordAnnounce('boss_mm6',unlockRecord('boss_mm6'));
@@ -934,21 +1215,28 @@ function openSpellMenu(){
   const b=game.battle;
   if(!b){ $('spellList').innerHTML='<p class="sec">Заклинания можно применять только в бою.</p>'; updateControls(); return; }
   const h=party()[b.heroIdx];
-  $('spellList').innerHTML=h.spells.map(id=>{
+  const tierName=id=>{ const s=spell(id),t=SPELL_TIERS.find(x=>x.id===(s&&s.tier))||SPELL_TIERS[1]; return t.name; };
+  $('spellList').innerHTML=(restrictionText(h)?'<div class="sec bad">⚠ '+restrictionText(h)+'</div>':'')+
+    h.spells.map(id=>{
     const s=spell(id); if(!s) return '';
-    return '<div class="rowItem"><span class="ic">'+s.icon+'</span><div class="info"><b>'+s.name+'</b><small>'+s.desc+'</small></div>'+
-      '<button class="act magic" data-spell="'+s.id+'"'+(h.mp<s.mp||b.turn!=='hero'?' disabled':'')+'>'+s.mp+' MP</button></div>';
-
+    const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
+    const target=s.aoe?'по всем':(s.heal||s.shield||s.atk||s.gain?'на себя':'на врага');
+    return '<div class="rowItem"><span class="ic">'+s.icon+'</span><div class="info"><b class="ellip">'+s.name+'</b><small>'+
+      s.desc+' · '+tierName(id)+' · цель: '+target+' · сила магии '+Math.round(h.magicPower)+'</small></div>'+
+      '<button class="act magic" data-spell="'+s.id+'"'+(h.mp<cost||b.turn!=='hero'||!canCast(h)?' disabled':'')+'>'+cost+' MP</button></div>';
   }).join('')||'<p class="sec">Заклинаний пока нет.</p>';
   $('spellList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>castSpell(btn.dataset.spell));
   updateControls();
 }
 function closeSpellMenu(){ $('spellMenu').classList.add('hidden'); if(game) game.spellOpen=false; updateControls(); }
 
-/* ============================ 8. ПЯТЬ ЛАВОК ============================ */
-function openShop(type){
+/* ============================ 8. ЛАВКИ, КУЗНИЦЫ, ТАВЕРНЫ ============================ */
+function openShop(type,name){
   if(!game||phase!=='play'||game.battle) return;
-  game.shopType=type||game.shopType||'market';
+  const def=SHOP_TYPES.find(s=>s.id===type)||SHOP_TYPES[0];
+  game.shopType=def.id;
+  const found=currentMap()&&currentMap().shops.find(s=>s.kind===def.id&&s.x===game.player.x&&s.y===game.player.y);
+  game.shopName=name||(found&&found.name)||(currentMap()&&currentMap().shops.find(s=>s.kind===def.id)||{}).name||def.title;
   game.shopOpen=true; $('shop').classList.remove('hidden');
   renderShop(); updateControls(); beep(520,.1);
 }
@@ -964,150 +1252,230 @@ function shopButton(text,fn,disabled,cls){
   const b=document.createElement('button'); b.className='act'+(cls?' '+cls:''); b.textContent=text;
   if(disabled) b.disabled=true; else b.onclick=fn; return b;
 }
-function shopRow(icon,name,sub,buttons){
+function shopRow(icon,name,sub,buttons,mode){
   const r=document.createElement('div'); r.className='rowItem';
-  r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b>'+name+'</b><small>'+sub+'</small></div>';
+  r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b class="ellip">'+esc(name)+'</b><small>'+sub+'</small></div>'+
+    (mode?'<span class="ellip" style="font-size:8px;color:#9fb0d8;max-width:78px;text-align:right">'+mode+'</span>':'');
   buttons.forEach(b=>r.appendChild(b)); $('shopList').appendChild(r);
 }
-function forgeCost(it){ return (QUALITY[it.quality]||QUALITY[0]).forgeCost+(it.reforges+1); }
+function buy(price,add){
+  const cost=Math.max(0,Math.round(price));
+  if(!game||!game.shopOpen) return false;
+  if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
+  game.gold-=cost;
+  add();
+  beep(720,.09); renderShop(); updateParty();
+  return true;
+}
+function forgeCost(it){ return 1+(QUALITY[it.quality]||QUALITY[0]).id+(it.reforges||0)+(it.level||0); }
+function allShopWeapons(){
+  const seen=new Set(), out=[];
+  HEROES.forEach(h=>(h.weapons||[]).forEach(w=>{
+    const key=w.name+'|'+w.quality+'|'+w.kind;
+    if(seen.has(key)) return; seen.add(key); out.push({...w,set:h.set});
+  }));
+  return out;
+}
+function priceMult(def,base){
+  const stock=SHOP_STOCK[def.id]||SHOP_STOCK.market;
+  let m=stock.price||1;
+  if(def.id==='jeweler') m*=2.1;
+  if(def.id==='magic'&&base.wkind==='staff') m*=.8;
+  return Math.max(1,Math.round((base.cost||1)*m));
+}
+function addShopWeapon(def,w,h){
+  const price=priceMult(def,w);
+  shopRow(weaponIcon(w.kind),w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name+' · '+(w.set||'любой')+' класс',
+    [shopButton('🪙 '+price,()=>buy(price,()=>{
+      const it=addItem({type:'weapon',name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:price,
+        sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),quality:w.quality,wkind:w.kind,
+        reforges:0,enchant:null,icon:'⚔'});
+      h.equip.weapon=it.uid; toast('Куплено и надето: '+w.name);
+    }),game.gold<price)],'ПОКУПКА');
+}
+function addShopArmor(def,a,h){
+  const price=priceMult(def,a);
+  shopRow('🛡',a.name,'Защита +'+a.def+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===a.slot)||{}).name||'тело')+
+    ' · '+(a.set==='any'?'любой класс':a.set),
+    [shopButton('🪙 '+price,()=>buy(price,()=>{
+      const it=addItem({type:'armor',name:a.name,armorDef:a.def,baseArmor:a.def,cost:price,
+        sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),slot:a.slot||'body',dir:a.dir||'def',
+        quality:1,upgrades:0,icon:'🛡'});
+      h.equip[a.slot||'body']=it.uid; h.equip.armor=it.uid; toast('Надето: '+a.name);
+    }),game.gold<price)],'ПОКУПКА');
+}
+function weaponIcon(kind){
+  return kind==='axe'?'🪓':kind==='bow'?'🏹':kind==='staff'?'🪄':kind==='dagger'?'🗡':'⚔';
+}
+function reforgeSection(h){
+  shopSec('Перековка и усиление одежды');
+  game.bag.filter(i=>i.type==='weapon'||i.type==='armor').forEach(it=>{
+    const isArmor=it.type==='armor';
+    const q=isArmor?(it.quality===undefined?1:it.quality):(QUALITY[it.quality]||QUALITY[0]).id;
+    const upgrades=isArmor?(it.upgrades||0):(it.reforges||0);
+    const cost=forgeCost({quality:q,reforges:upgrades});
+    const ok=q>=1&&upgrades<5&&game.gold>=cost;
+    shopRow(isArmor?'🧵':'🔨',it.name,(isArmor?'Слот: '+((ARMOR_SLOTS.find(s=>s.id===it.slot)||{}).name||'тело')+' · защита '+(it.armorDef||0):
+      'Качество: '+QUALITY[q].name)+' · улучшений '+upgrades+'/5 · цена 1 + качество + уровень',
+      [shopButton('🪙 '+cost+' усилить',()=>{
+        if(buy(cost,()=>{
+          upgrades++;
+          const inc=Math.max(1,Math.ceil(((isArmor?it.baseArmor:it.baseDmg)||1)/5));
+          if(isArmor){ it.upgrades=upgrades; it.armorDef+=inc; toast('Усиление одежды: '+it.name+' +'+inc+' защиты'); }
+          else { it.reforges=upgrades; it.dmg+=inc; toast('Перековка: '+it.name+' +'+inc+' урона'); }
+        })) renderShop();
+      },!ok)],'УСИЛЕНИЕ');
+  });
+}
 function renderShop(){
   if(!game) return;
-  const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[4];
-  $('shopTitle').textContent=def.icon+' '+def.title;
+  const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
+  const stock=SHOP_STOCK[def.id]||SHOP_STOCK.market;
+  const h=party()[game.invHero||0];
+  $('shopTitle').textContent=def.icon+' '+(game.shopName||def.title);
   $('shopTabs').innerHTML=SHOP_TYPES.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
   $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
   $('shopList').innerHTML='';
-  const h=party()[game.invHero||0];
-  const basicPotion=()=>shopRow('🧪','Зелье жизни','Лечит 40 HP',[shopButton('🪙 6',()=>{
-    if(game.gold<6) return; game.gold-=6; addItem({id:'potion_hp',type:'potion',name:'Зелье жизни',icon:'🧪',heal:40,cost:6,sell:3});
-    beep(720,.1); renderShop(); updateParty();
-  },game.gold<6)]);
-  if(game.shopType==='weapons'){
-    shopSec('Оружие — цены Подземелья 28');
-    h.def.weapons.forEach(w=>{
-      shopRow('⚔',w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name,[
-        shopButton('🪙 '+w.cost,()=>{
-          if(game.gold<w.cost) return; game.gold-=w.cost;
-          const it=addItem({type:'weapon',name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
-            sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality,wkind:w.kind,reforges:0,enchant:null,icon:'⚔'});
-          h.equip.weapon=it.uid; toast('Куплено и надето: '+w.name); beep(760,.12); renderShop(); updateParty();
-        },game.gold<w.cost)
-      ]);
+  drawShopInterior(def.id,performance.now(),game.shopName||def.title);
+
+  shopSec('Оружие · '+def.title);
+  const weapons=allShopWeapons();
+  (stock.weapons||[]).forEach(idx=>{
+    const w=weapons[idx%weapons.length]; if(!w) return;
+    if(def.id==='jeweler'&&w.kind==='bow') return;
+    addShopWeapon(def,w,h);
+  });
+  shopSec('Броня · 6 слотов');
+  (stock.armor||[]).forEach(idx=>{
+    const a=ARMORS[idx%ARMORS.length]; if(!a) return;
+    if((stock.noHeavy||def.id==='magic')&&a.def>=7) return;
+    addShopArmor(def,a,h);
+  });
+
+  if(['weapons','armory','forge','armor','jeweler'].includes(def.id)) reforgeSection(h);
+
+  if(def.id==='magic'){
+    shopSec('Свитки и заклинания');
+    SCROLLS.forEach(s=>{
+      const price=Math.max(1,Math.round(s.cost*stock.price*(stock.spellDiscount||.9)));
+      shopRow(s.icon,s.name,'Заклинание: '+(spell(s.spell)||{}).name+' · '+(SPELL_TIERS.find(t=>t.id===(spell(s.spell)||{}).tier)||{}).name,
+        [shopButton('🪙 '+price,()=>buy(price,()=>{
+          addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:price,sell:Math.floor(price*.5)});
+          toast('Куплен: '+s.name);
+        }),game.gold<price)],'ПОКУПКА');
     });
-    shopSec('Перековка · только качество «Острое» и выше');
-    game.bag.filter(i=>i.type==='weapon').forEach(it=>{
-      const cost=forgeCost(it), ok=it.quality>=1&&it.reforges<5&&game.gold>=cost;
-      shopRow('🔨',it.name,'Качество: '+QUALITY[it.quality].name+' · перековок '+it.reforges+'/5',[
-        shopButton('🪙 '+cost+' перековать',()=>{ forgeItem(it.uid); renderShop(); },!ok)
-      ]);
+    SPELLS.forEach(s=>{
+      const price=Math.max(2,Math.round((7+SPELLS.indexOf(s)*2)*stock.price*(stock.spellDiscount||1)));
+      const known=h.spells.includes(s.id), restricted=!canCast(h);
+      shopRow(s.icon,s.name,s.desc+' · '+((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+s.mp+' MP',
+        [shopButton(known?'Изучено':restricted?'⚠ нельзя':'🪙 '+price+' выучить',()=>buy(price,()=>{
+          h.spells.push(s.id); h.mpDiscount=stock.spellDiscount||1; toast('Изучено: '+s.name+' (мана дешевле)');
+        }),known||restricted||game.gold<price)],'ОБУЧЕНИЕ');
     });
-    shopSec('Базовые товары'); basicPotion();
-  }else if(game.shopType==='armor'){
-    shopSec('Броня · 17 предметов');
-    ARMORS.forEach((a,i)=>{
-      shopRow('🛡',a.name,'Защита +'+a.def+' · '+(a.set==='any'?'любой класс':a.set)+' · 🪙 '+a.cost,[
-        shopButton('🪙 '+a.cost,()=>{
-          if(game.gold<a.cost) return; game.gold-=a.cost;
-          const it=addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,
-            sell:Math.max(1,Math.floor(a.cost*.5)),icon:'🛡',set:a.set});
-          h.equip.armor=it.uid; toast('Надето: '+a.name); beep(740,.12); renderShop(); updateParty();
-        },game.gold<a.cost)
-      ]);
-    });
-    shopSec('Починка');
-    const armor=equippedArmor(h);
-    shopRow('🧵',armor?armor.name:'Нет брони','Починка даёт +1 защиты',[shopButton('🪙 4',()=>{
-      if(game.gold<4||!armor) return; game.gold-=4; armor.armorDef=(armor.armorDef||0)+1;
-      toast('Броня починена: +1'); renderShop(); updateParty();
-    },game.gold<4||!armor)]);
-    shopSec('Базовые товары'); basicPotion();
-  }else if(game.shopType==='magic'){
-    shopSec('Свитки');
-    SCROLLS.forEach(s=>shopRow(s.icon,s.name,'Заклинание: '+(spell(s.spell)||{}).name,[
-      shopButton('🪙 '+s.cost,()=>{
-        if(game.gold<s.cost) return; game.gold-=s.cost;
-        addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)});
-        toast('Куплен: '+s.name); renderShop();
-      },game.gold<s.cost)
-    ]));
-    shopSec('Заклинания для отряда');
-    SPELLS.forEach((s,i)=>{
-      const cost=8+i*2, known=h.spells.includes(s.id);
-      shopRow(s.icon,s.name,s.desc+' · '+s.mp+' MP',[shopButton(known?'Изучено':'🪙 '+cost+' выучить',()=>{
-        if(game.gold<cost) return; game.gold-=cost; h.spells.push(s.id);
-        toast('Изучено: '+s.name); renderShop();
-      },known||game.gold<cost)]);
-    });
-    shopSec('Зелья'); basicPotion();
-    shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 7',()=>{
-      if(game.gold<7) return; game.gold-=7;
-      addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:7,sell:3}); renderShop();
-    },game.gold<7)]);
-  }else if(game.shopType==='jeweler'){
+    shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 6',()=>buy(6,()=>{
+      addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3});
+    }),game.gold<6)],'ПОКУПКА');
+  }
+
+  if(def.id==='jeweler'){
     shopSec('Кристаллы и жидкости');
-    shopRow('💎','Кристалл','Для зачарования',[shopButton('🪙 7',()=>{
-      if(game.gold<7) return; game.gold-=7;
-      addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6}); renderShop(); updateParty();
-    },game.gold<7)]);
+    shopRow('💎','Кристалл','Для зачарования',[shopButton('🪙 4',()=>buy(4,()=>{
+      addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:4,sell:3});
+    }),game.gold<4)],'ПОКУПКА');
     LIQUIDS.forEach(l=>shopRow(l.icon,l.name,'Эффект: '+l.stat+' +'+l.value,[
-      shopButton('🪙 9',()=>{
-        if(game.gold<9) return; game.gold-=9;
-        addItem({id:l.id,type:'liquid',name:l.name,icon:l.icon,color:l.color,stat:l.stat,value:l.value,cost:9,sell:5});
-        toast('Куплено: '+l.name); renderShop();
-      },game.gold<9)
-    ]));
+      shopButton('🪙 11',()=>buy(11,()=>{
+        addItem({id:l.id,type:'liquid',name:l.name,icon:l.icon,color:l.color,stat:l.stat,value:l.value,cost:11,sell:6});
+      }),game.gold<11)],'ПОКУПКА'));
     shopSec('Перековка + зачарование кристаллом');
-    const options='<select data-liq>'+LIQUIDS.map(l=>'<option value="'+l.id+'">'+l.name+'</option>').join('')+'</select>';
+    const crystals=crystalCount();
     game.bag.filter(i=>i.type==='weapon').forEach(it=>{
       const row=document.createElement('div'); row.className='rowItem';
-      const cost=forgeCost(it)+2;
-      const crystals=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+      const q=(QUALITY[it.quality]||QUALITY[0]).id, cost=forgeCost(it)+2;
       const haveLiq=LIQUIDS.some(l=>game.bag.some(i=>i.type==='liquid'&&i.id===l.id));
-      row.innerHTML='<span class="ic">💍</span><div class="info"><b>'+it.name+'</b><small>'+options+' · 🪙 '+cost+' · 💎 1</small></div>';
+      const options='<select data-liq>'+LIQUIDS.map(l=>'<option value="'+l.id+'">'+l.name+'</option>').join('')+'</select>';
+      row.innerHTML='<span class="ic">💍</span><div class="info"><b class="ellip">'+esc(it.name)+'</b><small>'+options+' · 🪙 '+cost+' · 💎 1</small></div>';
+      const ok=q>=1&&(it.reforges||0)<5&&game.gold>=cost&&crystals>0&&haveLiq;
       row.appendChild(shopButton('Зачаровать',()=>{
-        const sel=row.querySelector('select');
-        enchantItem(it.uid,sel.value,true); renderShop();
-      },!(it.quality>=1&&it.reforges<5&&game.gold>=cost&&crystals>0&&haveLiq)));
+        const liqId=row.querySelector('select').value;
+        if(buy(cost,()=>{ enchantItem(it.uid,liqId,true); })) renderShop();
+      },!ok,'magic'));
       $('shopList').appendChild(row);
     });
-    shopSec('Рецепты трав'); renderRecipeRows(true);
-  }else{
-    shopSec('Травы');
-    HERBS.forEach(x=>shopRow(x.icon,x.name,x.desc+' · 🪙 2',[shopButton('🪙 2',()=>{
-      if(game.gold<2) return; game.gold-=2;
-      addItem({id:x.id,type:'herb',name:x.name,icon:x.icon,desc:x.desc,effect:x.effect,value:x.value,cost:2,sell:1});
-      renderShop();
-    },game.gold<2)]));
-    shopSec('Еда и зелья'); basicPotion();
-    shopRow('🥖','Хлеб','Восстанавливает 12 HP',[shopButton('🪙 3',()=>{
-      if(game.gold<3) return; game.gold-=3;
-      addItem({id:'bread',type:'potion',name:'Хлеб',icon:'🥖',heal:12,cost:3,sell:2}); renderShop();
-    },game.gold<3)]);
-    shopSec('Продажа товаров');
-    if(!game.bag.length) shopRow('•','Пока пусто','Находите предметы на карте',[shopButton('—',null,true)]);
-    game.bag.filter(i=>i.uid!==h.equip.weapon&&i.uid!==h.equip.armor).forEach(it=>{
-      shopRow(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),'Цена продажи: 🪙 '+it.sell,
-        [shopButton('Продать '+it.sell,()=>{ sellBagItem(it.uid,true); renderShop(); },false,'sell')]);
-    });
   }
+
+  const basicPotion=(price,name,sub,props,id)=>shopRow('🧪',name,sub,[shopButton('🪙 '+price,()=>buy(price,()=>{
+    addItem(Object.assign({id:id,type:'potion',name:name,icon:'🧪',cost:price,sell:Math.floor(price*.5)},props));
+  }),game.gold<price)],'ПОКУПКА');
+  shopSec('Зелья и товары');
+  basicPotion(6,'Зелье жизни','Лечит 40 HP',{heal:40},'potion_hp');
+  if(def.id!=='magic') basicPotion(7,'Зелье маны','Восстанавливает 15 MP',{mp:15},'potion_mp');
+  MATERIALS.forEach(mat=>shopRow(mat.icon,mat.name,mat.desc,[shopButton('🪙 '+mat.cost,()=>buy(mat.cost,()=>{
+    addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
+  }),game.gold<mat.cost)],'ПОКУПКА'));
+
+  if(def.id==='market'){
+    shopSec('Ягоды · только покупка');
+    shopRow('🫐','Ягода','Покупка за 2 монеты · продажа недоступна',[shopButton('🪙 2 купить',()=>buy(2,()=>{
+      addItem({id:'berry',type:'herb',name:'Ягода',icon:'🫐',desc:'+8 HP',effect:'hp',value:8,cost:2,sell:1});
+    }),game.gold<2)],'ПОКУПКА');
+    HERBS.forEach(x=>shopRow(x.icon,x.name,x.desc+' · 🪙 2',[shopButton('🪙 2',()=>buy(2,()=>{
+      addItem({id:x.id,type:'herb',name:x.name,icon:x.icon,desc:x.desc,effect:x.effect,value:x.value,cost:2,sell:1});
+    }),game.gold<2)],'ПОКУПКА'));
+    shopSec('Рецепты трав'); renderRecipeRows(true);
+  }
+  if(def.id==='tavern'){
+    shopSec('Еда и напитки');
+    shopRow('🥣','Каша','Восстанавливает 12 HP и ускоряет регенерацию',[shopButton('🪙 3 съесть',()=>buy(3,()=>{
+      h.hp=Math.min(h.maxHp,h.hp+12); boostRegen(18); toast('Вы поели: +12 HP, регенерация ускорена.');
+    }),game.gold<3)],'ЕДА');
+    shopRow('🍖','Жаркое','Восстанавливает 30 HP и ускоряет регенерацию',[shopButton('🪙 7 съесть',()=>buy(7,()=>{
+      h.hp=Math.min(h.maxHp,h.hp+30); boostRegen(25); toast('Вы поели: +30 HP, регенерация ускорена.');
+    }),game.gold<7)],'ЕДА');
+    shopRow('🍺','Эль','Восстанавливает 6 MP и ускоряет регенерацию',[shopButton('🪙 4 выпить',()=>buy(4,()=>{
+      h.mp=Math.min(h.maxMp,h.mp+6); boostRegen(18); toast('Вы выпили: +6 MP, регенерация ускорена.');
+    }),game.gold<4)],'ЕДА');
+  }
+  if(def.id==='inn'){
+    shopSec('Отдых и сон');
+    shopRow('🛏','Короткий отдых','Лечит 40% HP и 30% MP, ускоряет регенерацию',[shopButton('🪙 6 отдохнуть',()=>buy(6,()=>{
+      party().forEach(x=>{ if(x.hp>0){ x.hp=Math.min(x.maxHp,x.hp+Math.ceil(x.maxHp*.4));
+        x.mp=Math.min(x.maxMp,x.mp+Math.ceil(x.maxMp*.3)); } }); boostRegen(30); toast('Отряд отдохнул: регенерация ускорена.');
+    }),game.gold<6)],'ОТДЫХ');
+    shopRow('🌙','Полный сон','Полностью восстанавливает HP и MP',[shopButton('🪙 12 спать',()=>buy(12,()=>{
+      party().forEach(x=>{ x.hp=x.maxHp; x.mp=x.maxMp; x.poison=0; x.poisonTurns=0; }); boostRegen(45); toast('Отряд выспался.');
+    }),game.gold<12)],'ОТДЫХ');
+  }
+
+  shopSec('Продажа товаров');
+  const equipped=new Set();
+  party().forEach(x=>Object.values(x.equip).forEach(uid=>{ if(uid) equipped.add(uid); }));
+  const sellables=game.bag.filter(i=>!equipped.has(i.uid));
+  if(!sellables.length) shopRow('•','Пока пусто','Находите предметы на карте',[shopButton('—',null,true)],'ПРОДАЖА');
+  sellables.forEach(it=>{
+    const total=Math.max(1,Math.round(it.sell||1))*(it.count||1);
+    shopRow(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),'Цена продажи: 🪙 '+total,
+      [shopButton('Продать '+total,()=>{ sellBagItem(it.uid,true); renderShop(); },false,'sell')],'ПРОДАЖА');
+  });
   $('shopGold').textContent=game.gold;
-  $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+  $('shopCrystals').textContent=crystalCount();
   updateParty();
 }
+function crystalCount(){ return game?game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0):0; }
 function forgeItem(uid){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
-  if(it.quality<1){ toast('Ржавое оружие нельзя перековать.'); return false; }
-  if(it.reforges>=5){ toast('Достигнут предел перековок (5).'); return false; }
   const cost=forgeCost(it);
-  if(game.gold<cost){ toast('Не хватает золота.'); return false; }
-  game.gold-=cost; it.reforges++;
-  const inc=Math.max(1,Math.ceil(it.baseDmg/5)); it.dmg+=inc;
-  toast('Перековка: '+it.name+' +'+inc+' урона'); beep(660,.14); updateParty(); return true;
+  if((QUALITY[it.quality]||QUALITY[0]).id<1){ toast('Ржавое оружие нельзя перековать.'); return false; }
+  if((it.reforges||0)>=5){ toast('Достигнут предел перековок (5).'); return false; }
+  if(!game.shopOpen||game.gold<cost){ toast('Не хватает золота.'); return false; }
+  game.gold-=cost; it.reforges=(it.reforges||0)+1;
+  it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
+  toast('Перековка: '+it.name+' +'+Math.max(1,Math.ceil(it.baseDmg/5))+' урона');
+  beep(660,.14); updateParty(); return true;
 }
 function enchantItem(uid,liquidId,withCrystal){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
   const liq=liquid(liquidId); if(!liq) return false;
-  if(it.quality<1||it.reforges>=5){ toast('Оружие нельзя зачаровать.'); return false; }
+  if((QUALITY[it.quality]||QUALITY[0]).id<1||(it.reforges||0)>=5||!game.shopOpen){ toast('Оружие нельзя зачаровать.'); return false; }
   const liqItem=game.bag.find(i=>i.type==='liquid'&&i.id===liquidId);
   if(!liqItem){ toast('Нет жидкости: '+liq.name); return false; }
   const cost=forgeCost(it)+(withCrystal?2:4);
@@ -1119,43 +1487,134 @@ function enchantItem(uid,liquidId,withCrystal){
   if(withCrystal){ forgeItemFree(it); cr.count=(cr.count||1)-1; if(cr.count<=0) game.bag.splice(game.bag.indexOf(cr),1); }
   it.enchant={id:liq.id,stat:liq.stat,value:liq.value,color:liq.color};
   const base=it.baseName||it.name.replace(/ [^ ]+$/,'');
-  it.baseName=base;
-  it.name=base+' '+(LIQUID_NAME[liq.id]||liq.stat);
+  it.baseName=base; it.name=base+' '+(LIQUID_NAME[liq.id]||liq.stat);
   toast('Зачарование: '+it.name); beep(880,.18); updateParty(); return true;
 }
 function forgeItemFree(it){
-  if(it.reforges>=5) return;
-  it.reforges++; it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
+  if((it.reforges||0)>=5) return;
+  it.reforges=(it.reforges||0)+1; it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
 }
+// Продажа доступна только в открытой лавке и только для неэкипированных предметов.
 function sellBagItem(uid,silent){
-  const i=game.bag.find(x=>x.uid===uid); if(!i) return;
-  const gain=Math.max(1,i.sell||1)*(i.count||1); game.gold+=gain;
-  party().forEach(h=>{ if(h.equip.weapon===uid) h.equip.weapon=null; if(h.equip.armor===uid) h.equip.armor=null; });
+  if(!game||!game.shopOpen) return false;
+  const i=game.bag.find(x=>x.uid===uid); if(!i) return false;
+  if(party().some(h=>Object.values(h.equip).includes(uid))){ toast('Сначала снимите предмет.'); return false; }
+  const gain=Math.max(1,Math.round(i.sell||1))*(i.count||1);
+  game.gold+=gain;
   game.bag.splice(game.bag.indexOf(i),1);
   if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); beep(560,.08); }
-  updateParty();
+  updateParty(); return true;
+}
+function hasNeedItem(id){
+  if(!game) return false;
+  if(id==='crystal') return crystalCount()>0;
+  return game.bag.some(i=>(i.type==='herb'||i.type==='material')&&i.id===id&&(i.count||1)>0);
 }
 function renderRecipeRows(inShop){
+  const anyHerb=game.bag.some(i=>i.type==='herb'&&(i.count||1)>0);
   RECIPES.forEach(r=>{
-    const have=r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0));
+    if((r.kind||'herb')==='herb'&&!anyHerb) return; // нет трав — нет и рецептов трав
+    const have=r.need.every(hasNeedItem);
     const row=document.createElement('div'); row.className='rowItem';
-    row.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b>'+r.name+'</b><small>'+r.need.map(id=>(herb(id)||{}).name).join(' + ')+'</small></div>';
+    row.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b class="ellip">'+r.name+'</b><small>'+
+      r.need.map(id=>(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name).join(' + ')+' · '+(r.desc||'')+'</small></div>';
     const b=document.createElement('button'); b.className='act'; b.textContent='Создать'; b.disabled=!have;
     b.onclick=()=>{ craftRecipe(r); if(inShop) renderShop(); else renderInventory(); };
-    row.appendChild(b); $('shopList').appendChild(row);
+    row.appendChild(b); (inShop?$('shopList'):$('invList')).appendChild(row);
   });
 }
 function craftRecipe(r){
-  if(!r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0))){ toast('Не хватает трав.'); return false; }
-  r.need.forEach(id=>{ const it=game.bag.find(i=>i.type==='herb'&&i.id===id); it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); });
+  if(!r.need.every(hasNeedItem)){ toast('Не хватает материалов.'); return false; }
+  r.need.forEach(id=>{
+    if(id==='crystal'){ const c=game.bag.find(i=>i.type==='crystal'); c.count=(c.count||1)-1;
+      if(c.count<=0) game.bag.splice(game.bag.indexOf(c),1); return; }
+    const it=game.bag.find(i=>(i.type==='herb'||i.type==='material')&&i.id===id);
+    it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1);
+  });
   const eff={potion_hp:{heal:45},potion_mp:{mp:18},antidote:{cure:true},stone_skin:{def:5},
     battle_draught:{atk:4},crystal_tonic:{crystal:1},frost_flask:{frost:true},greater_heal:{healAll:60}}[r.give.id]||{};
-  addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
-  toast('Создано: '+r.name+' ×'+r.give.count); beep(840,.16); updateParty(); return true;
+  if(r.give.id==='craft_sword') addItem({type:'weapon',name:'Кованый меч',dmg:6,baseDmg:6,cost:10,sell:5,quality:1,wkind:'sword',reforges:0,enchant:null,icon:'⚔'});
+  else if(r.give.id==='craft_axe') addItem({type:'weapon',name:'Кованый топор',dmg:7,baseDmg:7,cost:11,sell:5,quality:1,wkind:'axe',reforges:0,enchant:null,icon:'🪓'});
+  else if(r.give.id==='craft_armor') addItem({type:'armor',name:'Сшитый доспех',armorDef:4,baseArmor:4,cost:10,sell:5,slot:'body',dir:'def',quality:1,upgrades:0,icon:'🛡'});
+  else if(r.give.id==='craft_shield') addItem({type:'armor',name:'Кованый щит',armorDef:3,baseArmor:3,cost:8,sell:4,slot:'shield',dir:'def',quality:1,upgrades:0,icon:'🛡'});
+  else if(r.give.id==='craft_scroll') addItem({id:'scroll_lightning_weak',type:'scroll',name:'Свиток слабой молнии',icon:'📜',spell:'lightning_weak',cost:8,sell:4});
+  else addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
+  toast('Создано: '+r.name+' ×'+(r.give.count||1)); beep(840,.16); updateParty(); return true;
 }
 
-/* ============================ 9. ИНВЕНТАРЬ ============================ */
-const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Свитки','Сундуки'];
+/* Интерьеры лавок: разные для каждого типа, продавец за прилавком с лёгкой анимацией. */
+function drawShopInterior(kind,now,name){
+  const c=document.getElementById('shopArt'); if(!c) return;
+  const g=c.getContext('2d'); const Wc=640,Hc=150;
+  const colors={weapons:'#3a1d1d',armory:'#26253f',forge:'#3c1e11',armor:'#152a44',magic:'#251443',
+    jeweler:'#0f3834',market:'#3b3218',tavern:'#3b2519',inn:'#242044'};
+  g.fillStyle=colors[kind]||colors.market; g.fillRect(0,0,Wc,Hc);
+  // кирпичная стена и текстура
+  g.strokeStyle='rgba(255,255,255,.05)'; g.lineWidth=1;
+  for(let y=12;y<100;y+=14){ g.beginPath(); g.moveTo(0,y); g.lineTo(Wc,y); g.stroke();
+    for(let x=(y/14%2)*20;x<Wc;x+=40){ g.beginPath(); g.moveTo(x,y); g.lineTo(x,y+14); g.stroke(); } }
+  const floor=g.createLinearGradient(0,100,0,Hc); floor.addColorStop(0,'#241c18'); floor.addColorStop(1,'#0c0a12');
+  g.fillStyle=floor; g.fillRect(0,100,Wc,Hc-100);
+  const t=now/560;
+  // продавец за прилавком
+  const sx=470, sy=96;
+  g.save();
+  g.fillStyle='#3b2a20'; g.fillRect(sx-18,sy-30,36,32);
+  g.fillStyle='#d8a97f'; g.beginPath(); g.arc(sx,sy-40+Math.sin(t)*2,12,0,6.29); g.fill();
+  g.fillStyle=(kind==='magic'||kind==='inn')?'#5b3fa8':(kind==='forge'?'#7c2d12':'#4a3524');
+  g.beginPath(); g.moveTo(sx-14,sy-46+Math.sin(t)*2); g.lineTo(sx+14,sy-46+Math.sin(t)*2);
+  g.lineTo(sx+10,sy-58+Math.sin(t)*2); g.lineTo(sx-10,sy-58+Math.sin(t)*2); g.closePath(); g.fill();
+  g.fillStyle='#111'; g.fillRect(sx-5,sy-43+Math.sin(t)*2,2,2); g.fillRect(sx+4,sy-43+Math.sin(t)*2,2,2);
+  g.strokeStyle='#d8a97f'; g.lineWidth=5; g.lineCap='round';
+  g.beginPath(); g.moveTo(sx-16,sy-22); g.lineTo(sx-24,sy-10+Math.sin(t*1.7)*5); g.stroke();
+  g.beginPath(); g.moveTo(sx+16,sy-22); g.lineTo(sx+24,sy-10-Math.sin(t*1.7)*5); g.stroke();
+  g.restore();
+  // прилавок
+  g.fillStyle='#6b4a26'; g.fillRect(330,96,290,16);
+  g.fillStyle='#8a6337'; g.fillRect(330,92,290,6);
+  g.strokeStyle='rgba(251,191,36,.4)'; g.strokeRect(330,92,290,20);
+  // витрина/стены по типу
+  const icon=(id,x,y,s)=>{
+    const im=spriteImg(ITEM_SPRITES[id]);
+    if(im&&im.dataset.ready==='1'){ g.save(); g.imageSmoothingEnabled=false; g.drawImage(im,x-s/2,y-s/2,s,s); g.restore(); }
+    else { g.fillStyle='#fbbf24'; g.font='20px sans-serif'; g.fillText(id==='sword'?'⚔':id==='shield'?'🛡':'💎',x-8,y+7); }
+  };
+  if(kind==='weapons'||kind==='armory'){
+    for(let i=0;i<6;i++){ icon(kind==='weapons'?'sword':'shield',40+i*48,45,32);
+      g.fillStyle='#8b5a2b'; g.fillRect(25+i*48,60,30,3); }
+  }else if(kind==='forge'){
+    g.fillStyle='#ef4444'; g.globalAlpha=.35+Math.abs(Math.sin(t*2))*.35;
+    g.beginPath(); g.arc(90,76,26,0,6.29); g.fill(); g.globalAlpha=1;
+    g.fillStyle='#111'; g.fillRect(55,50,50,50);
+    g.fillStyle='#9ca3af'; g.fillRect(150,82,60,12); g.fillRect(175,66,12,18);
+  }else if(kind==='armor'){
+    for(let i=0;i<6;i++){ icon('shield',40+i*48,45,30); g.fillStyle='#94a3b8'; g.fillRect(30+i*48,62,24,26); }
+  }else if(kind==='magic'){
+    g.strokeStyle='rgba(192,132,252,.7)'; g.lineWidth=2;
+    g.beginPath(); g.arc(110,62,32,0,6.29); g.stroke();
+    for(let i=0;i<4;i++) icon('star',220+i*28,50+Math.sin(t+i)*3,18);
+    g.fillStyle='#7c4bb0'; for(let i=0;i<4;i++) g.fillRect(210+i*28,78,12,18);
+  }else if(kind==='jeweler'){
+    for(let i=0;i<8;i++) icon('star',35+i*36,45+Math.sin(t+i)*4,18);
+    g.fillStyle='rgba(52,211,153,.25)'; g.beginPath(); g.arc(110,70,36,0,6.29); g.fill();
+  }else if(kind==='market'){
+    for(let i=0;i<4;i++){ g.fillStyle='#8a6337'; g.fillRect(25+i*76,70,66,8); g.fillRect(28+i*76,78,5,18); g.fillRect(84+i*76,78,5,18);
+      g.fillStyle=['#ef4444','#84cc16','#facc15','#a855f7'][i]; g.beginPath(); g.arc(58+i*76,64,10,0,6.29); g.fill(); }
+  }else if(kind==='tavern'){
+    for(let i=0;i<3;i++){ g.fillStyle='#7c5230'; g.beginPath(); g.arc(70+i*100,80,24,0,6.29); g.fill();
+      g.fillStyle='#e5c07b'; g.fillRect(62+i*100,56,14,18); }
+    g.fillStyle='#6b4423'; for(let i=0;i<3;i++) g.fillRect(560+i*22,60,18,36);
+  }else if(kind==='inn'){
+    for(let i=0;i<3;i++){ g.fillStyle='#c4b5fd'; g.fillRect(28+i*86,72,70,18); g.fillStyle='#6d28d9'; g.fillRect(34+i*86,64,58,10); }
+    g.fillStyle='#fde68a'; g.beginPath(); g.arc(305,40,10+Math.sin(t*2)*2,0,6.29); g.fill();
+  }
+  g.fillStyle='#ffe9b0'; g.font='bold 13px sans-serif'; g.textAlign='left'; g.textBaseline='top';
+  let s=String(name||''); while(g.measureText(s).width>300&&s.length>4) s=s.slice(0,-2)+'…';
+  g.fillText(s,12,10);
+  g.fillStyle='#a8b4d8'; g.font='11px sans-serif'; g.fillText('Продавец за прилавком',12,28);
+}
+/* ============================ 9. ИНВЕНТАРЬ И РЕМЕСЛО ============================ */
+const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Свитки','Ремесло','Сундуки'];
 function toggleInventory(open){
   if(!game||phase!=='play') return;
   game.invOpen=!!open;
@@ -1171,7 +1630,7 @@ function renderInventory(){
   const h=party()[game.invHero||0], list=$('invList'); list.innerHTML='';
   const row=(icon,name,sub,buttons)=>{
     const r=document.createElement('div'); r.className='rowItem';
-    r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b>'+name+'</b><small>'+sub+'</small></div>';
+    r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b class="ellip" title="'+esc(name)+'">'+esc(name)+'</b><small>'+sub+'</small></div>';
     buttons.forEach(b=>r.appendChild(b)); list.appendChild(r);
   };
   const btn=(text,fn,cls,disabled)=>{
@@ -1179,57 +1638,98 @@ function renderInventory(){
     b.textContent=text; if(disabled) b.disabled=true; else b.onclick=fn; return b;
   };
   const sec=t=>{ const d=document.createElement('div'); d.className='sec'; d.textContent=t; list.appendChild(d); };
+  const sellBtn=it=>btn('В лавке '+it.sell,null,'sell',true);
   if(invTab==='Общий'){
-    sec('Отряд');
-    party().forEach((x,i)=>row(x.def.emoji,(i===0?heroNameText:x.def.name),
-      'HP '+Math.round(x.hp)+'/'+x.maxHp+' · MP '+Math.round(x.mp)+'/'+x.maxMp+' · бонус А'+x.bonus.atk+' З'+x.bonus.def+' М'+x.bonus.magic,[]));
+    sec('Отряд · полные данные');
+    party().forEach((x,i)=>row(x.def.emoji,heroName(x),
+      'HP '+Math.round(x.hp)+'/'+x.maxHp+' · MP '+Math.round(x.mp)+'/'+x.maxMp+' · атака '+heroAtk(x)+
+      ' · защита '+heroDef(x)+' · сила магии '+Math.round(x.magicPower+x.bonus.magic)+
+      ' · опыт '+x.exp+' · статус: '+(x.poison>0?'отравлен':x.hp>0?'здоров':'без сознания')+' · '+
+      (restrictionText(x)||'ограничений нет'),[]));
     sec('Ресурсы');
-    row('🪙','Золото','На покупки и перековку',[]);
-    row('💎','Кристаллы',String(game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0)),[]);
+    row('🪙','Золото','🪙 '+game.gold+' · на покупки и усиление',[]);
+    row('💎','Кристаллы','💎 '+crystalCount()+' · на зачарование',[]);
+    row('⚔','Оружие',equippedWeapon(h)?equippedWeapon(h).name:'—',[]);
+    sec('Экипировка по слотам');
+    ARMOR_SLOTS.forEach(s=>{
+      const a=game.bag.find(i=>i.uid===h.equip[s.id]);
+      row(s.icon,s.name,a?a.name+' (+'+(a.armorDef||0)+' защиты)':'пусто',[]);
+    });
     sec('Быстрые действия');
     row('🧪','Использовать зелье','Лечение и мана',[
-      btn('Лечение',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.heal); if(it) useItem(it.uid); },'use',!game.bag.some(i=>i.type==='potion'&&i.heal)),
-      btn('Мана',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.mp); if(it) useItem(it.uid); },'use',!game.bag.some(i=>i.type==='potion'&&i.mp))
+      btn('Лечение',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.heal); if(it){ useItem(it.uid); renderInventory(); } },'use',!game.bag.some(i=>i.type==='potion'&&i.heal)),
+      btn('Мана',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.mp); if(it){ useItem(it.uid); renderInventory(); } },'use',!game.bag.some(i=>i.type==='potion'&&i.mp))
     ]);
   }else if(invTab==='Оружие'){
     sec('Оружие отряда');
     game.bag.filter(i=>i.type==='weapon').forEach(it=>{
       const pen=weaponPenalty(h,it), eq=Object.values(h.equip).includes(it.uid);
-      row('⚔',it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+it.reforges+'/5'+
-        (it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+(pen?' · ⚠ штраф '+pen:''),[
+      const cost=forgeCost(it);
+      row(weaponIcon(it.wkind),it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+(it.reforges||0)+'/5'+
+        ' · крит '+weaponCrit(h,it)+'%'+(it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+(pen?' · ⚠ штраф '+pen:''),[
         btn(eq?'Надето':'Надеть',()=>{ h.equip.weapon=it.uid; renderInventory(); updateParty(); },'use',eq),
-        btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')
+        btn('Усилить 🪙'+cost,()=>{
+          if(!game.shopOpen){ toast('Усиление доступно в кузнице.'); return; }
+          if(buy(cost,()=>forgeItemFree(it))){ toast('Оружие усилено: +'+Math.max(1,Math.ceil(it.baseDmg/5))); renderInventory(); }
+        },null,(it.reforges||0)>=5||(QUALITY[it.quality]||QUALITY[0]).id<1||game.gold<cost||!game.shopOpen),
+        sellBtn(it)
       ]);
     });
   }else if(invTab==='Броня'){
-    sec('Доспехи');
+    sec('Доспехи по слотам');
     game.bag.filter(i=>i.type==='armor').forEach(it=>{
-      const pen=armorPenalty(h,it), eq=h.equip.armor===it.uid;
-      row('🛡',it.name,'Защита +'+(it.armorDef||0)+(pen?' · ⚠ штраф '+pen:''),[
-        btn(eq?'Надето':'Надеть',()=>{ h.equip.armor=it.uid; renderInventory(); updateParty(); },'use',eq),
-        btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')
+      const pen=armorPenalty(h,it), slot=it.slot||'body', eq=h.equip[slot]===it.uid;
+      const q=it.quality===undefined?1:it.quality, cost=forgeCost({quality:q,reforges:it.upgrades||0});
+      row('🛡',it.name,'Слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+' · защита +'+(it.armorDef||0)+
+        ' · улучшений '+(it.upgrades||0)+'/5'+(pen?' · ⚠ штраф '+pen:''),[
+        btn(eq?'Надето':'Надеть',()=>{ h.equip[slot]=it.uid; h.equip.armor=it.uid; renderInventory(); updateParty(); },'use',eq),
+        btn('Усилить 🪙'+cost,()=>{
+          if(!game.shopOpen){ toast('Усиление доступно в лавке.'); return; }
+          if(buy(cost,()=>{ it.upgrades=(it.upgrades||0)+1; it.armorDef+=Math.max(1,Math.ceil((it.baseArmor||it.armorDef)/5)); })){ toast('Одежда усилена.'); renderInventory(); }
+        },null,(it.upgrades||0)>=5||game.gold<cost||!game.shopOpen),
+        sellBtn(it)
       ]);
     });
   }else if(invTab==='Магия'){
-    sec('Изучённые заклинания');
-    h.spells.forEach(id=>{ const s=spell(id); if(s) row(s.icon,s.name,s.desc+' · '+s.mp+' MP',[]); });
-    sec('Зелья');
-    game.bag.filter(i=>i.type==='potion').forEach(it=>row(it.icon||'🧪',it.name+(it.count>1?' ×'+it.count:''),
-      'Цена: 🪙 '+it.sell,[btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),
-      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
+    sec('Изучённые заклинания · сила магии '+Math.round(h.magicPower+h.bonus.magic));
+    if(restrictionText(h)) sec('⚠ '+restrictionText(h));
+    h.spells.forEach(id=>{ const s=spell(id); if(s) row(s.icon,s.name,s.desc+' · '+
+      ((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+(s.aoe?'по всем врагам':'одна цель')+' · '+s.mp+' MP',[]); });
+    sec('Зелья и жидкости');
+    game.bag.filter(i=>i.type==='potion'||i.type==='liquid').forEach(it=>row(it.icon||'🧪',it.name+(it.count>1?' ×'+it.count:''),
+      'Цена: 🪙 '+it.sell+' · '+(it.desc||''),[btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),sellBtn(it)]));
   }else if(invTab==='Травы'){
     sec('Травы');
     game.bag.filter(i=>i.type==='herb').forEach(it=>row(it.icon||'🌿',it.name+(it.count>1?' ×'+it.count:''),it.desc||'',[
-      btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),
-      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
-    sec('Рецепты'); renderRecipeRowsTo(list);
+      btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),sellBtn(it)]));
+    sec('Материалы');
+    game.bag.filter(i=>i.type==='material').forEach(it=>row(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),it.desc||'',[sellBtn(it)]));
+    sec('Рецепты');
+    RECIPES.filter(r=>(r.kind||'herb')==='herb').forEach(r=>craftRow(r,list,false));
   }else if(invTab==='Свитки'){
     sec('Свитки');
     game.bag.filter(i=>i.type==='scroll').forEach(it=>row(it.icon||'📜',it.name+(it.count>1?' ×'+it.count:''),
-      'Заклинание: '+((spell(it.spell)||{}).name||'?'),[
-      btn('Изучить',()=>{ if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
-        it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); renderInventory(); },'magic'),
-      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
+      'Заклинание: '+((spell(it.spell)||{}).name||'?')+' · '+((SPELL_TIERS.find(t=>t.id===(spell(it.spell)||{}).tier)||{}).name||''),[
+      btn(canCast(h)?'Изучить':'⚠ магия недоступна',()=>{
+        if(!canCast(h)){ toast(restrictionText(h)); return; }
+        if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
+        it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); renderInventory(); },'magic',!canCast(h)),
+      sellBtn(it)]));
+  }else if(invTab==='Ремесло'){
+    sec('Создание предметов · травы, оружие, броня, заклинания');
+    const anyHerb=game.bag.some(i=>i.type==='herb'&&(i.count||1)>0);
+    RECIPES.forEach(r=>{
+      if((r.kind||'herb')==='herb'&&!anyHerb) return;
+      craftRow(r,list,false);
+    });
+    sec('Усиление одежды и оружия');
+    const w=equippedWeapon(h), a=equippedArmor(h);
+    row('🔨','Перековка оружия',w?w.name+' · урон '+w.dmg:'нет оружия',[
+      btn('Усилить',()=>{ if(w&&forgeItem(w.uid)) renderInventory(); },'use',!w||!game.shopOpen||(QUALITY[w.quality]||QUALITY[0]).id<1||(w.reforges||0)>=5)]);
+    row('🧵','Усиление одежды',a?a.name+' · защита '+a.armorDef:'нет брони',[
+      btn('Усилить',()=>{ if(!a||!game.shopOpen) return; const cost=forgeCost({quality:a.quality||1,reforges:a.upgrades||0});
+        if(buy(cost,()=>{ a.upgrades=(a.upgrades||0)+1; a.armorDef+=Math.max(1,Math.ceil((a.baseArmor||a.armorDef)/5)); })) renderInventory(); },'use',
+        !a||!game.shopOpen||(a.upgrades||0)>=5||game.gold<forgeCost({quality:a.quality||1,reforges:a.upgrades||0}))]);
   }else{
     sec('Сундуки');
     game.bag.filter(i=>i.type==='chest').forEach(it=>row('🧰',it.name+(it.count>1?' ×'+it.count:''),'Нажмите «Открыть»',[
@@ -1237,14 +1737,14 @@ function renderInventory(){
     if(!game.bag.some(i=>i.type==='chest')) row('🧰','Пусто','Сундуки находятся на карте',[]);
   }
 }
-function renderRecipeRowsTo(list){
-  RECIPES.forEach(r=>{
-    const have=r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0));
-    const rEl=document.createElement('div'); rEl.className='rowItem';
-    rEl.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b>'+r.name+'</b><small>'+r.need.map(id=>(herb(id)||{}).name).join(' + ')+'</small></div>';
-    const b=document.createElement('button'); b.className='act'; b.textContent='Создать'; b.disabled=!have;
-    b.onclick=()=>{ craftRecipe(r); renderInventory(); }; rEl.appendChild(b); list.appendChild(rEl);
-  });
+function craftRow(r,list,inShop){
+  const have=r.need.every(hasNeedItem);
+  const rEl=document.createElement('div'); rEl.className='rowItem';
+  rEl.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b class="ellip">'+r.name+'</b><small>'+
+    r.need.map(id=>(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name).join(' + ')+' · '+(r.desc||'')+'</small></div>';
+  const b=document.createElement('button'); b.className='act'; b.textContent='Создать'; b.disabled=!have;
+  b.onclick=()=>{ craftRecipe(r); if(inShop) renderShop(); else renderInventory(); };
+  rEl.appendChild(b); list.appendChild(rEl);
 }
 function renderMannequin(){
   const h=party()[game.invHero||0];
@@ -1252,11 +1752,17 @@ function renderMannequin(){
   const pen=w?weaponPenalty(h,w):0, apen=a?armorPenalty(h,a):0;
   $('mannequin').innerHTML='<div style="display:flex;gap:4px;justify-content:center">'+
     party().map((x,i)=>'<button class="tab'+(i===(game.invHero||0)?' sel':'')+'" data-h="'+i+'" style="min-height:30px">'+x.def.emoji+'</button>').join('')+'</div>'+
-    '<div class="face">'+h.def.emoji+'</div><b style="color:#ffe9b0;font-size:12px">'+(game.invHero===0?heroNameText:h.def.name)+'</b>'+
-    '<div class="slot">⚔ Оружие<br><b>'+(w?w.name:'—')+'</b></div>'+
-    '<div class="slot">🛡 Броня<br><b>'+(a?a.name:'—')+'</b></div>'+
-    '<div class="slot">Атака '+heroAtk(h)+' · Защита '+heroDef(h)+'</div>'+
-    ((pen||apen)?'<div class="bad">⚠ Несоответствие класса: '+(pen?'−'+pen+' атаки':'')+(pen&&apen?', ':'')+(apen?'−'+apen+' защиты':'')+'</div>':'');
+    '<div class="face">'+h.def.emoji+'</div><b class="ellip" style="color:#ffe9b0;font-size:12px">'+esc(heroName(h))+'</b>'+
+    '<div class="slot">HP / MP<br><b>'+Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp+'</b></div>'+
+    '<div class="slot">⚔ Атака / 🛡 Защита<br><b>'+heroAtk(h)+' / '+heroDef(h)+'</b></div>'+
+    '<div class="slot">✨ Сила магии<br><b>'+Math.round(h.magicPower+h.bonus.magic)+'</b></div>'+
+    '<div class="slot">⚔ Оружие<br><b class="ellip">'+esc(w?w.name:'—')+'</b></div>'+
+    '<div class="slot">🪙 Золото / 💎 Кристаллы<br><b>'+game.gold+' / '+crystalCount()+'</b></div>'+
+    ARMOR_SLOTS.map(s=>{ const it=game.bag.find(i=>i.uid===h.equip[s.id]);
+      return '<div class="slot">'+s.icon+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b></div>'; }).join('')+
+    '<div class="slot">Статус<br><b>'+(h.poison>0?'отравлен':h.hp>0?'здоров':'без сознания')+'</b></div>'+
+    ((pen||apen)?'<div class="bad">⚠ Несоответствие класса: '+(pen?'−'+pen+' атаки':'')+(pen&&apen?', ':'')+(apen?'−'+apen+' защиты':'')+'</div>':'')+
+    (restrictionText(h)?'<div class="bad">⚠ '+restrictionText(h)+'</div>':'');
   $('mannequin').querySelectorAll('button').forEach(b=>b.onclick=()=>{ game.invHero=Number(b.dataset.h); renderInventory(); });
 }
 function useItem(uid){
@@ -1265,13 +1771,21 @@ function useItem(uid){
   const h=party()[game.invHero||0];
   if(it.type==='potion'){
     if(it.healAll){ party().forEach(x=>x.hp=Math.min(x.maxHp,x.hp+it.healAll)); toast('Все герои лечатся.'); }
-    else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(h.def.name+': +'+it.heal+' HP.'); }
+    else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(heroName(h)+': +'+it.heal+' HP.'); }
     if(it.mp) h.mp=Math.min(h.maxMp,h.mp+it.mp);
     if(it.cure){ h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
     if(it.def){ h.bonus.def+=it.def; toast('Защита +'+it.def+'.'); }
     if(it.atk){ h.bonus.atk+=it.atk; toast('Атака +'+it.atk+'.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp-=12; if(e.hp<=0) e.alive=false; } }); toast('Мороз бьёт по врагам.'); }
+  }else if(it.type==='liquid'){
+    if(it.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
+    else if(it.stat==='mp') h.mp=Math.min(h.maxMp,h.mp+it.value);
+    else if(it.stat==='atk') h.bonus.atk+=it.value;
+    else if(it.stat==='def') h.bonus.def+=it.value;
+    else if(it.stat==='poison'&&game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.poison=(x.poison||0)+it.value; });
+    else if(it.stat==='light'&&game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.defVal=Math.max(0,x.defVal-it.value); });
+    toast('Использовано: '+it.name);
   }else if(it.type==='herb'){
     const e=it.effect;
     if(e==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
@@ -1283,7 +1797,9 @@ function useItem(uid){
     else if(e==='crystal') addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     else if(e==='slow'){ if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.speed=Math.max(1,x.speed-1); }); }
     toast('Использовано: '+it.name);
+  }else if(it.type==='material'){ toast('Материал используется в ремесле.'); return false;
   }else if(it.type==='scroll'){
+    if(!canCast(h)){ toast(restrictionText(h)||'Герой не владеет магией.'); return false; }
     if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
     else if(game.battle){ castSpell(it.spell); }
   }else if(it.type==='chest'){
@@ -1311,13 +1827,50 @@ function drawGround(biome){
   const g=ctx.createLinearGradient(0,150,0,H); g.addColorStop(0,b.ground[0]); g.addColorStop(1,b.ground[1]);
   ctx.fillStyle=g; ctx.fillRect(0,150,W,H-150);
 }
+// Текстурированные фоны: пещера / лес / храм / город / порт.
+function drawSceneBackdrop(biome,now){
+  const b=BIOMES[biome]||BIOMES.field, scene=b.scene||'forest';
+  ctx.save();
+  if(scene==='cave'){
+    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#080914'); g.addColorStop(.6,'#1a1726'); g.addColorStop(1,'#100d18');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    for(let i=0;i<16;i++){ const x=(i*79+13)%W, h=18+((i*31)%46);
+      ctx.fillStyle=i%2?'#272334':'#1d1a2b'; ctx.beginPath(); ctx.moveTo(x-18,0); ctx.lineTo(x+18,0); ctx.lineTo(x,h); ctx.closePath(); ctx.fill(); }
+    for(let y=120;y<H;y+=22){ ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.beginPath(); ctx.moveTo(0,y+(y%44?6:0)); ctx.lineTo(W,y); ctx.stroke(); }
+    for(let i=0;i<7;i++){ const x=(i*97+25)%W,y=110+((i*37)%140);
+      ctx.fillStyle='rgba(192,132,252,'+(.18+.12*Math.sin(now/700+i))+')'; ctx.beginPath(); ctx.arc(x,y,7,0,6.29); ctx.fill(); }
+  }else if(scene==='forest'){
+    for(let layer=0;layer<3;layer++){ ctx.globalAlpha=.18+layer*.09;
+      for(let i=0;i<12;i++){ const x=(i*83+layer*37)%W, y=120+layer*20;
+        ctx.fillStyle=layer===0?'#163b2a':(layer===1?'#205337':'#2f6b38');
+        ctx.beginPath(); ctx.arc(x,y,26+layer*6,0,6.29); ctx.fill(); } }
+    ctx.globalAlpha=1;
+    for(let i=0;i<70;i++){ const x=(i*67)%W,y=170+((i*43)%180);
+      ctx.strokeStyle='rgba(134,239,172,.16)'; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-2,y-6); ctx.moveTo(x,y); ctx.lineTo(x+2,y-5); ctx.stroke(); }
+  }else if(scene==='town'||scene==='port'){
+    for(let i=0;i<9;i++){ const x=i*74-20,h=50+((i*41)%70);
+      ctx.fillStyle=i%2?'#2a2838':'#353044'; ctx.fillRect(x,180-h,66,h);
+      ctx.fillStyle='rgba(253,224,71,'+(.15+.2*Math.abs(Math.sin(now/900+i)))+')';
+      for(let wy=0;wy<3;wy++) for(let wx=0;wx<2;wx++) ctx.fillRect(x+10+wx*24,190-h+wy*20,10,9); }
+    if(scene==='port'){ ctx.fillStyle='rgba(37,99,235,.28)'; ctx.fillRect(0,250,W,110);
+      ctx.strokeStyle='rgba(125,211,252,.22)'; for(let y=260;y<H;y+=14){ ctx.beginPath(); ctx.moveTo(0,y+Math.sin(now/600+y)*2); ctx.lineTo(W,y); ctx.stroke(); } }
+  }else{
+    for(let i=0;i<6;i++){ const x=20+i*112;
+      ctx.fillStyle='#3c3550'; ctx.fillRect(x,70,16,120); ctx.fillRect(x-8,64,32,12); ctx.fillRect(x-10,186,36,10); }
+    ctx.fillStyle='rgba(253,224,71,.16)'; ctx.fillRect(0,0,W,20);
+    for(let i=0;i<5;i++){ ctx.fillStyle=i%2?'#6d28d9':'#b45309'; ctx.beginPath();
+      ctx.moveTo(i*140+20,20); ctx.lineTo(i*140+78,20); ctx.lineTo(i*140+49,64); ctx.closePath(); ctx.fill(); }
+  }
+  ctx.restore();
+}
 function drawCellPatch(sx,sy,sc,cell,biome,alpha){
   ctx.save(); ctx.globalAlpha=alpha;
   const b=BIOMES[biome]||BIOMES.field;
   const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss';
+  const cellScale=sc*(clamp(Number(settings.cellSize)||16,8,28)/16);
   ctx.fillStyle=road?b.road:b.ground[0];
-  ctx.beginPath(); ctx.moveTo(sx-52*sc,sy+12*sc); ctx.lineTo(sx+52*sc,sy+12*sc);
-  ctx.lineTo(sx+66*sc,sy+30*sc); ctx.lineTo(sx-66*sc,sy+30*sc); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(sx-52*cellScale,sy+12*sc); ctx.lineTo(sx+52*cellScale,sy+12*sc);
+  ctx.lineTo(sx+66*cellScale,sy+30*sc); ctx.lineTo(sx-66*cellScale,sy+30*sc); ctx.closePath(); ctx.fill();
   ctx.strokeStyle='rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
   if(road){ ctx.fillStyle=b.roadDark; ctx.fillRect(sx-2*sc,sy+13*sc,4*sc,16*sc); }
   ctx.restore();
@@ -1341,30 +1894,50 @@ function drawWater(x,y,s,b){
   for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(x,y+((i-1)*6*s),38*s-i*9*s,5*s,0,0,Math.PI); ctx.stroke(); }
   ctx.restore();
 }
-function drawHouse(x,y,s,kind){
-  const titles={weapons:'Оружейная',armor:'Бронница',magic:'Магазия',jeweler:'Ювелир',market:'Рынок'};
-  const accents={weapons:'#f87171',armor:'#60a5fa',magic:'#c084fc',jeweler:'#34d399',market:'#fbbf24'};
-  const accent=accents[kind]||accents.market;
-  ctx.save(); ctx.fillStyle='#c9b89a'; ctx.fillRect(x-42*s,y-58*s,84*s,58*s);
+function drawHouse(x,y,s,kind,label){
+  const def=SHOP_TYPES.find(t=>t.id===kind)||{};
+  const titles={weapons:'Оружейная',armory:'Оружейная палата',forge:'Кузница',armor:'Бронница',magic:'Магазия',
+    jeweler:'Ювелир',market:'Рынок',tavern:'Таверна',inn:'Гостиница',house:'Жилой дом'};
+  const accents={weapons:'#f87171',armory:'#fb923c',forge:'#f97316',armor:'#60a5fa',magic:'#c084fc',
+    jeweler:'#34d399',market:'#fbbf24',tavern:'#fcd34d',inn:'#a78bfa',house:'#c9b89a'};
+  const title=label||titles[kind]||'Дом';
+  const accent=accents[kind]||(def.accent)||accents.market;
+  ctx.save(); ctx.fillStyle=kind==='tavern'?'#8a5a37':(kind==='inn'?'#7a6b8c':'#c9b89a');
+  ctx.fillRect(x-42*s,y-58*s,84*s,58*s);
   ctx.strokeStyle=accent; ctx.lineWidth=1.2*s; ctx.strokeRect(x-42*s,y-58*s,84*s,58*s);
-  ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(x-50*s,y-58*s); ctx.lineTo(x,y-86*s); ctx.lineTo(x+50*s,y-58*s); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#ffe6a0'; ctx.fillRect(x-26*s,y-46*s,16*s,15*s); ctx.fillRect(x+10*s,y-46*s,16*s,15*s);
+  ctx.fillStyle=kind==='forge'?'#6b2717':'#7e3f2e';
+  ctx.beginPath(); ctx.moveTo(x-50*s,y-58*s); ctx.lineTo(x,y-86*s); ctx.lineTo(x+50*s,y-58*s); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=kind==='forge'?'#fb923c':'#ffe6a0'; ctx.fillRect(x-26*s,y-46*s,16*s,15*s); ctx.fillRect(x+10*s,y-46*s,16*s,15*s);
   ctx.fillStyle='#241704'; ctx.fillRect(x-11*s,y-26*s,22*s,26*s);
-  ctx.fillStyle=accent; ctx.font='bold '+Math.max(7,9*s)+'px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(titles[kind]||'Дом',x,y-92*s); ctx.restore();
+  ctx.fillStyle='#6b4a26'; roundRect(x-46*s,y-78*s,92*s,15*s,3*s); ctx.fill();
+  ctx.strokeStyle=accent; ctx.lineWidth=1*s; ctx.stroke();
+  ctx.fillStyle=accent; ctx.font='bold '+Math.max(7,9*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  fitText(title,88*s,Math.max(7,9*s),'#ffe9b0',x-42*s,y-70*s);
+  ctx.restore();
 }
-function drawChestArt(x,y,s,gold){
+function drawChestArt(x,y,s,gold,opened){
   ctx.save(); const w=42*s,h=26*s;
+  ctx.globalAlpha=opened?.55:1;
   ctx.fillStyle='#3b2412'; roundRect(x-w/2,y-h,w,h,3*s); ctx.fill();
   ctx.fillStyle=gold?'#d4a72c':'#7a5230'; ctx.fillRect(x-w/2,y-h*.75,w,h*.75);
   ctx.strokeStyle=gold?'#ffe9a8':'#c8a06a'; ctx.lineWidth=2*s; ctx.strokeRect(x-w/2,y-h,w,h);
-  ctx.fillStyle=gold?'#fff1b0':'#e6c27a'; ctx.fillRect(x-4*s,y-h*.72,8*s,12*s);
+  if(opened){
+    ctx.fillStyle='#1a120c'; ctx.fillRect(x-w/2+3*s,y-h*.82,w-6*s,h*.34);
+    ctx.save(); ctx.translate(x-w/2,y-h); ctx.rotate(-.55); ctx.fillStyle=gold?'#e0b638':'#8a5f38';
+    ctx.fillRect(0,-6*s,w,8*s); ctx.restore();
+    ctx.fillStyle='#9fb0d8'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center'; ctx.fillText('пусто',x,y+8*s);
+  }else{ ctx.fillStyle=gold?'#fff1b0':'#e6c27a'; ctx.fillRect(x-4*s,y-h*.72,8*s,12*s); }
   ctx.restore();
 }
 function drawTreasureArt(x,y,s,t){
-  ctx.save(); ctx.shadowColor='#ffe9a8'; ctx.shadowBlur=12*s;
-  ctx.font=Math.round(24*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(t.icon||'•',x,y-10*s); ctx.restore();
+  const kind=itemIconId(t), taken=t.taken;
+  ctx.save(); ctx.globalAlpha=taken?.4:1;
+  if(!taken){ ctx.shadowColor='#ffe9a8'; ctx.shadowBlur=12*s; }
+  drawIcon(kind,x,y-10*s,26*s);
+  ctx.shadowBlur=0;
+  ctx.fillStyle=taken?'#8b94b2':'#ffe9b0'; ctx.font='bold '+Math.max(8,9*s)+'px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(taken?'найдено':(t.name||'находка'),x,y+8*s);
+  ctx.restore();
 }
 function drawGateSign(x,y,s,dir,playerDir,bname){
   const rel=(dir-playerDir+4)%4;
@@ -1373,42 +1946,55 @@ function drawGateSign(x,y,s,dir,playerDir,bname){
   ctx.fillStyle='#6b4a26'; roundRect(x-26*s,y-42*s,52*s,20*s,3*s); ctx.fill();
   ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5*s; ctx.stroke();
   ctx.fillStyle='#ffe9b0'; ctx.font='bold '+Math.max(8,11*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(arrows[rel]+' '+bname,x,y-32*s);
+  fitText(arrows[rel]+' '+bname,48*s,Math.max(8,11*s),'#ffe9b0',x-24*s,y-32*s);
   ctx.restore();
 }
 function drawMonsterArt(x,y,s,m,now){
   ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000';
   ctx.beginPath(); ctx.ellipse(x,y+4,30*s,7*s,0,0,6.29); ctx.fill(); ctx.restore();
-  const bob=Math.sin(now/420+x)*3*s;
-  ctx.save(); ctx.fillStyle=m.tint||'#cbd5e1';
-  ctx.beginPath(); ctx.moveTo(x-22*s,y); ctx.lineTo(x-16*s,y-52*s+bob); ctx.lineTo(x,y-66*s+bob);
-  ctx.lineTo(x+16*s,y-52*s+bob); ctx.lineTo(x+22*s,y); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.arc(x-7*s,y-46*s+bob,3*s,0,6.29); ctx.arc(x+7*s,y-46*s+bob,3*s,0,6.29); ctx.fill();
-  if(m.magic){ ctx.strokeStyle='#fbbf24'; ctx.lineWidth=2*s; ctx.beginPath(); ctx.arc(x,y-70*s+bob,9*s,0,6.29); ctx.stroke(); }
-  ctx.restore();
-  ctx.save(); ctx.font=Math.round(30*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(m.def&&m.def.emoji?m.def.emoji:(m.emoji||'👹'),x,y-44*s+bob); ctx.restore();
+  const def=m.def||{};
+  const sprite=def.sprite||m.sprite;
+  if(!drawSprite(sprite,x-30*s,y-70*s,60*s,70*s,m.tint)){
+    ctx.save(); ctx.fillStyle=m.tint||'#cbd5e1';
+    ctx.beginPath(); ctx.moveTo(x-22*s,y); ctx.lineTo(x-16*s,y-52*s); ctx.lineTo(x,y-66*s);
+    ctx.lineTo(x+16*s,y-52*s); ctx.lineTo(x+22*s,y); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.arc(x-7*s,y-46*s,3*s,0,6.29); ctx.arc(x+7*s,y-46*s,3*s,0,6.29); ctx.fill();
+    if(m.magic){ ctx.strokeStyle='#fbbf24'; ctx.lineWidth=2*s; ctx.beginPath(); ctx.arc(x,y-70*s,9*s,0,6.29); ctx.stroke(); }
+    ctx.restore();
+    ctx.save(); ctx.font=Math.round(30*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(def.emoji||m.emoji||'👹',x,y-44*s); ctx.restore();
+  }
   const hpw=44*s;
   ctx.fillStyle='#3a1218'; ctx.fillRect(x-hpw/2,y-72*s,hpw,4*s);
   ctx.fillStyle='#ef4444'; ctx.fillRect(x-hpw/2,y-72*s,hpw*clamp(m.hp/m.maxHp,0,1),4*s);
   if(m.isBoss){ ctx.fillStyle='#fbbf24'; ctx.font='bold '+Math.max(8,9*s)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('★ БОСС',x,y-78*s); }
 }
 function drawHeroFigure(x,y,s,h,now){
-  const bounce=Math.sin(now/460)*2*s;
   ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(x,y+3,30*s,7*s,0,0,6.29); ctx.fill(); ctx.restore();
-  ctx.save(); ctx.translate(x,y+bounce);
-  ctx.fillStyle='#28304e'; ctx.beginPath(); ctx.moveTo(-20*s,-54*s); ctx.quadraticCurveTo(0,-70*s,20*s,-54*s);
-  ctx.lineTo(24*s,0); ctx.quadraticCurveTo(0,8*s,-24*s,0); ctx.closePath(); ctx.fill();
-  ctx.fillStyle='#52608e'; ctx.fillRect(-18*s,-56*s,36*s,22*s);
-  const w=equippedWeapon(h);
-  ctx.fillStyle=w&&w.enchant?w.enchant.color:'#d8c58d';
-  ctx.fillRect(19*s,-48*s,5*s,34*s); ctx.fillRect(14*s,-52*s,15*s,4*s);
-  ctx.restore();
-  ctx.save(); ctx.font=Math.round(45*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(h.def.emoji,x,y-42*s+bounce); ctx.restore();
+  const w=equippedWeapon(h), armor=armorTotal(h);
+  // Оружие слева от героя, лицо не закрывает.
+  if(w){
+    const id=itemIconId(w);
+    ctx.save(); ctx.shadowColor=w.enchant&&w.enchant.color?w.enchant.color:'transparent'; ctx.shadowBlur=8*s;
+    drawIcon(id,x-32*s,y-42*s,28*s); ctx.restore();
+  }
+  // Щит справа: 0 — нет, 1 — около 1/4 высоты, 30 — около 3/4.
+  if(armor>0){
+    const frac=clamp(.25+(armor-1)/29*.5,.25,.75), sh=70*s*frac;
+    drawSprite(SPRITE_BASE+'items/shield.png',x+24*s,y-12*s-sh,26*s,sh);
+    ctx.save(); ctx.strokeStyle='rgba(251,191,36,.6)'; ctx.lineWidth=1.2*s; ctx.strokeRect(x+24*s,y-12*s-sh,26*s,sh); ctx.restore();
+  }
+  if(!drawSprite(h.def.sprite,x-28*s,y-76*s,56*s,74*s)){
+    ctx.save(); ctx.fillStyle='#28304e'; ctx.beginPath(); ctx.moveTo(x-20*s,y-54*s);
+    ctx.quadraticCurveTo(0,y-70*s,20*s,y-54*s); ctx.lineTo(24*s,y); ctx.quadraticCurveTo(0,y+8*s,-24*s,y); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#52608e'; ctx.fillRect(x-18*s,y-56*s,36*s,22*s);
+    ctx.restore();
+    ctx.save(); ctx.font=Math.round(45*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(h.def.emoji,x,y-42*s); ctx.restore();
+  }
 }
 
-/* ============================ 11. КАРТА: ТУМАН И ПСЕВДО-3D ============================ */
+/* ============================ 11. КАРТА ============================ */
 function drawMiniMap(m){
   const size=112, x=W-size-12, y=12;
   panel(x-4,y-4,size+8,size+22);
@@ -1428,6 +2014,14 @@ function drawMiniMap(m){
   ctx.globalAlpha=1;
   m.monsters.forEach(e=>{ if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
     ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,Math.max(2,s*.3),0,6.29); ctx.fill(); });
+  // Иконки building/chest/находок на мини-карте.
+  for(let yy=0;yy<m.size;yy++) for(let xx=0;xx<m.size;xx++){
+    if(!m.seen.has(ckey(xx,yy))) continue;
+    const c=m.cells[yy][xx]; if(!['shop','chest','treasure','boss'].includes(c.t)) continue;
+    ctx.font='bold '+Math.max(7,Math.min(11,s*.9))+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=c.t==='shop'?'#fbbf24':c.t==='chest'?(c.opened?'#6b7280':'#fde68a'):c.t==='treasure'?'#86efac':'#ef4444';
+    ctx.fillText(c.t==='shop'?'⌂':c.t==='chest'?(c.opened?'◇':'▣'):c.t==='treasure'?'✦':'★',x+xx*s+s/2,y+yy*s+s/2);
+  }
   ctx.save(); ctx.translate(x+p.px*s+s/2,y+p.py*s+s/2); ctx.rotate(p.dir*Math.PI/2);
   ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
   ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
@@ -1435,7 +2029,7 @@ function drawMiniMap(m){
 }
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome];
-  drawSky(m.biome,now); drawGround(m.biome);
+  drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
   const px=p.px,py=p.py;
   for(let d=2;d>=1;d--){
@@ -1451,14 +2045,14 @@ function drawMap(now){
       if(cell.t==='tree') drawTree(sx,sy,sc,b);
       else if(cell.t==='rock') drawRock(sx,sy,sc,b);
       else if(cell.t==='water') drawWater(sx,sy,sc,b);
-      else if(cell.t==='house') drawHouse(sx,sy,sc,'market');
-      else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind);
+      else if(cell.t==='house') drawHouse(sx,sy,sc,'house',cell.houseName);
+      else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind,cell.shopName);
       else if(cell.t==='gate') drawGateSign(sx,sy,sc,cell.dir,p.dir,cell.bname);
-      else if(cell.t==='chest') drawChestArt(sx,sy,sc,!!cell.boss);
+      else if(cell.t==='chest') drawChestArt(sx,sy,sc,!!cell.boss,!!cell.opened);
       else if(cell.t==='treasure') drawTreasureArt(sx,sy,sc,cell.item);
       else if(cell.t==='boss'){
         if(!m.boss.dead) drawMonsterArt(sx,sy,sc,m.boss.def,now);
-        else drawChestArt(sx,sy,sc,true);
+        else drawChestArt(sx,sy,sc,true,!!m.cells[m.boss.y][m.boss.x].bossOpened);
       }
     }
   }
@@ -1473,13 +2067,19 @@ function drawMap(now){
     drawMonsterArt(sx,sy,sc,e,now);
   });
   drawHeroFigure(W/2,344,.86,party()[0],now);
-  panel(10,10,202,68);
-  ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
-  fitText(heroNameText+' · '+party()[0].def.name,186,11,'#ffe6a8',18,22);
-  bar(18,34,180,'HP',party()[0].hp,party()[0].maxHp,'#f87171');
-  bar(18,50,180,'MP',party()[0].mp,party()[0].maxMp,'#60a5fa');
-  ctx.fillStyle='#fbbf24'; ctx.font='10px sans-serif';
-  ctx.fillText('🪙 '+game.gold+' · боссы '+game.world.bossKills+'/'+game.world.count,18,66);
+  // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
+  panel(10,10,214,86);
+  fitText(heroNameText+' · '+party()[0].def.name,126,11,'#ffe6a8',18,22);
+  ctx.font='bold 10px sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.fillStyle='#fca5a5'; ctx.fillText(Math.max(0,Math.round(party()[0].hp))+'/'+party()[0].maxHp,218,22);
+  ctx.fillStyle='#93c5fd'; ctx.fillText(Math.max(0,Math.round(party()[0].mp))+'/'+party()[0].maxMp,218,36);
+  bar(18,30,126,'HP',party()[0].hp,party()[0].maxHp,'#f87171');
+  bar(18,46,126,'MP',party()[0].mp,party()[0].maxMp,'#60a5fa');
+  ctx.textAlign='left'; ctx.fillStyle='#fde68a'; ctx.font='10px sans-serif';
+  ctx.fillText('⚔ '+heroAtk(party()[0])+'   🛡 '+heroDef(party()[0])+'   ✨ '+Math.round(party()[0].magicPower),18,62);
+  drawIcon('coin',22,77,12); drawIcon('star',72,77,12);
+  ctx.fillStyle='#ffe6a8'; ctx.font='10px sans-serif'; ctx.fillText(game.gold+'  ·  '+crystalCount(),30,77);
+  ctx.fillStyle='#fde68a'; ctx.fillText('боссы '+game.world.bossKills+'/'+game.world.count,104,77);
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
   if(near.length){
@@ -1494,65 +2094,80 @@ function drawMap(now){
   ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот',12,H-8);
 }
 
-/* ============================ 12. ОТОБРАЖЕНИЕ БОЯ ============================ */
+/* ============================ 12. БОЙ И КАДРЫ ============================ */
 function fitMono(text,maxW,size,color,x,y){
   let s=size; ctx.font=s+'px monospace';
   while(ctx.measureText(text).width>maxW&&s>8){ s--; ctx.font=s+'px monospace'; }
   ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
 }
+function drawBattleScenery(biome,now){
+  const b=BIOMES[biome]||BIOMES.field;
+  drawSky(biome,now); drawGround(biome); drawSceneBackdrop(biome,now);
+  // Декорации «кадра» боя: арки, колонны, факелы, обломки.
+  ctx.save();
+  for(let i=0;i<4;i++){ const x=40+i*190;
+    ctx.fillStyle='rgba(20,18,30,.78)'; ctx.fillRect(x,84,26,130);
+    ctx.fillStyle='rgba(90,80,110,.5)'; ctx.fillRect(x-6,78,38,12); ctx.fillRect(x-10,210,46,12);
+    ctx.fillStyle='rgba(253,224,71,'+(.2+.2*Math.abs(Math.sin(now/500+i)))+')';
+    ctx.beginPath(); ctx.arc(x+13,72,7+Math.sin(now/400+i)*2,0,6.29); ctx.fill(); }
+  for(let i=0;i<14;i++){ ctx.fillStyle='rgba(255,255,255,.05)';
+    ctx.fillRect((i*103+17)%W,230+((i*29)%70),18,4); }
+  ctx.restore();
+}
 function drawBattle(now,dt){
   const b=game.battle;
-  const m=currentMap(); drawSky(m?m.biome:'field',now); drawGround(m?m.biome:'field');
+  const m=currentMap(); drawBattleScenery(m?m.biome:'field',now);
   ctx.save(); ctx.globalAlpha=.22; ctx.fillStyle='#000'; ctx.fillRect(0,196,W,164); ctx.restore();
-  for(let i=0;i<5;i++){ ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle=(BIOMES[m?m.biome:'field']||BIOMES.field).accent;
-    ctx.fillRect((i*147+40)%W,182+((i*23)%16),2,120); ctx.restore(); }
+  const mirror=!!settings.battleMirror;
   let hj=0,ej=0;
   if(b.anim){ b.anim.t=Math.max(0,b.anim.t-dt/520);
     const v=Math.sin(Math.PI*(1-b.anim.t));
     if(b.anim.who==='hero') hj=v*b.anim.jump; else ej=v*b.anim.jump;
     if(b.anim.t<=0) b.anim=null;
   }
-  b.enemies.forEach((e,i)=>{
-    if(!e.alive) return;
-    const x=118+i*104+ej, y=276;
-    drawMonsterArt(x,y,1.12,e,now);
-  });
+  const enemyX=i=>(mirror?450:118)+i*104+ej;
+  const heroX=i=>(mirror?170:470)+i*72+hj;
+  b.enemies.forEach((e,i)=>{ if(!e.alive) return; drawMonsterArt(enemyX(i),276,1.12,e,now); });
   party().forEach((h,i)=>{
     if(h.hp<=0) return;
-    drawHeroFigure(470+i*72+hj,322-i*10,.9,h,now);
+    drawHeroFigure(heroX(i),322-i*10,.9,h,now);
     ctx.fillStyle='#f4e7c6'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(h.def.name,470+i*72+hj,332-i*10);
+    fitText(heroName(h),60,9,'#f4e7c6',heroX(i)-30,332-i*10);
   });
   const e=b.enemies.find(x=>x.alive)||b.enemies[0];
-  panel(10,10,212,44);
-  ctx.fillStyle=C_ENEMY; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
-  fitText(e.name+(b.enemies.length>1?' и др.':''),196,11,C_ENEMY,20,22);
-  bar(20,36,192,'HP',e.hp,e.maxHp,'#ef4444');
-  panel(W-224,10,214,62);
+  const epanel=mirror?W-224:10, hpanel=mirror?10:W-224;
+  panel(epanel,10,212,54);
+  fitText(e.name+(b.enemies.length>1?' и др.':''),196,11,C_ENEMY,epanel+10,22);
+  bar(epanel+10,36,192,'HP',e.hp,e.maxHp,'#ef4444');
+  ctx.fillStyle='#fca5a5'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('⚔ '+e.atk+' · 🛡 '+e.defVal,epanel+10,56);
+  panel(hpanel,10,214,74);
   party().forEach((h,i)=>{
-    bar(W-214,20+i*22,194,(i===0?'1: ':'2: ')+h.def.name.slice(0,6),h.hp,h.maxHp,'#f87171');
+    bar(hpanel+10,20+i*22,194,(i===0?'1: ':'2: ')+heroName(h).slice(0,6),h.hp,h.maxHp,'#f87171');
   });
+  ctx.fillStyle='#86efac'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('⚔ '+party().map(h=>heroAtk(h)).join('/')+' · 🛡 '+party().map(h=>heroDef(h)).join('/'),hpanel+10,68);
   roundRect(W/2-66,12,132,26,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
   ctx.fillStyle=b.end?C_NEUTRAL:(b.turn==='hero'?C_HERO:C_ENEMY);
   ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':b.end==='lose'?'ПОРАЖЕНИЕ':'ОТСТУПЛЕНИЕ'):
     (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
-  roundRect(28,244,584,92,8); ctx.fillStyle='rgba(5,7,15,.95)'; ctx.fill();
+  // Окно сообщений — около 2/3 ширины, не закрывает героя.
+  const mw=Math.round(W*.66), mx=mirror?W-mw-10:10;
+  roundRect(mx,244,mw,92,8); ctx.fillStyle='rgba(5,7,15,.95)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
-  const lines=b.log.slice(-5);
-  lines.forEach((entry,i)=>{
+  b.log.slice(-5).forEach((entry,i)=>{
     const text=entry.side==='hero'?('          '+entry.text):entry.text;
-    fitMono(text,560,11,entry.color,42,258+i*16);
+    fitMono(text,mw-24,11,entry.color,mx+12,258+i*16);
   });
-  roundRect(140,216,360,22,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill();
+  roundRect(mx,216,mw,22,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill();
   ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
   const h=b.turn==='hero'?party()[b.heroIdx]:party()[0];
-  ctx.fillText('Пробел — атака · F — магия ('+Math.round(h.mp)+' MP) · R — бегство · I — инвентарь',W/2,227);
+  ctx.fillText('Пробел — атака · F — магия ('+Math.round(h.mp)+' MP) · R — бегство · I — инвентарь',mx+mw/2,227);
   ctx.fillStyle='#9fb0d8'; ctx.font='9px sans-serif'; ctx.textAlign='left';
   ctx.fillText('Порядок хода: '+b.order.map(u=>u.side==='hero'?party()[u.idx].def.name.slice(0,4):'⚔').join(' → ').slice(0,80),10,H-8);
 }
-
 /* ============================ 13. СТАРТОВЫЙ ЭКРАН ============================ */
 function updateProgressUI(){
   const c=2*Math.PI*17, ring=$('ring');
@@ -1566,7 +2181,9 @@ function updateProgressUI(){
 }
 function renderHeroPick(slot){
   const h=HEROES[selHero[slot]];
-  $(slot===0?'h1Card':'h2Card').innerHTML='<span class="big">'+h.emoji+'</span><div style="min-width:0"><b>'+h.name+'</b><small>'+h.desc.slice(0,110)+'<br>HP '+h.hp+' · MP '+h.mp+' · '+h.weapons.length+' видов оружия</small></div>';
+  const r=HERO_RESTRICTIONS[h.name]||HERO_RESTRICTIONS[h.set];
+  $(slot===0?'h1Card':'h2Card').innerHTML='<span class="big">'+h.emoji+'</span><div style="min-width:0"><b class="ellip">'+h.name+'</b><small>'+esc(h.desc.slice(0,110))+
+    '<br>HP '+h.hp+' · MP '+h.mp+' · '+h.weapons.length+' видов оружия'+(r&&r.reason?'<br>⚠ '+r.reason:'')+'</small></div>';
 }
 function renderDiff(){
   $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
@@ -1600,7 +2217,7 @@ document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{
   if(k==='up') relativeMove(1,0); if(k==='down') relativeMove(-1,0);
   if(k==='left') relativeMove(0,-1); if(k==='right') relativeMove(0,1);
 });
-$('btnAttack').onclick=()=>{ if(game&&game.battle) heroAttack(); else tryInteract(); };
+$('btnAttack').onclick=()=>{ if(game&&game.battle) heroAttack(); };
 $('btnSpell').onclick=openSpellMenu;
 $('btnFlee').onclick=fleeBattle;
 $('btnInv').onclick=()=>toggleInventory(!(game&&game.invOpen));
@@ -1611,7 +2228,23 @@ cv.addEventListener('pointerdown',()=>{ if(game&&game.battle) heroAttack(); });
 
 const MOVE_KEYS={arrowup:[1,0],w:[1,0],ц:[1,0],arrowdown:[-1,0],s:[-1,0],ы:[-1,0],
   arrowleft:[0,-1],a:[0,-1],ф:[0,-1],arrowright:[0,1],d:[0,1],в:[0,1]};
+function keyAllowed(k){
+  const mode=settings.keysMode||'all', layout=settings.keysLayout||'both';
+  const isArrow=k.indexOf('arrow')===0, isLat='wasdqerfbmip'.includes(k);
+  const isCyr='цыйфвъуикмзеьш'.includes(k);
+  if(mode==='arrows'&&!isArrow) return false;
+  if(mode==='wasd'&&isArrow) return false;
+  if(layout==='lat'&&isCyr) return false;
+  if(layout==='cyr'&&isLat&&!isArrow) return false;
+  return true;
+}
 document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(k==='p'||k==='з'){ e.preventDefault();
+    if($('settings').classList.contains('hidden')) openSettings(); else closeSettings(); return; }
+  if(!$('settings').classList.contains('hidden')){
+    if(e.key==='Escape'){ e.preventDefault(); closeSettings(); } return;
+  }
   if(phase==='start'){
     if(e.target&&e.target.tagName==='INPUT'){ if(e.key==='Enter'){ e.preventDefault(); startGame(); } return; }
     if(e.key==='ArrowLeft'){ e.preventDefault(); selectHero(0,-1); }
@@ -1622,7 +2255,6 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if(!game) return;
-  const k=e.key.toLowerCase();
   if(k==='m'||k==='ь'||e.key==='Escape'){
     e.preventDefault();
     if(game.spellOpen) closeSpellMenu();
@@ -1647,17 +2279,34 @@ document.addEventListener('keydown',e=>{
     else if(/^[1-9]$/.test(e.key)){ const h=party()[game.battle.heroIdx], id=h.spells[Number(e.key)-1]; if(id) castSpell(id); }
     return;
   }
+  // Пробел вне боя ничего не открывает — только атака в бою.
+  if(e.key===' '){ e.preventDefault(); return; }
   if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
-  if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
+  if(k==='e'||k==='у'){ e.preventDefault(); if(canInteractHere()) tryInteract(); else turnPlayer(1); return; }
   if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
-  const mv=MOVE_KEYS[k]; if(mv){ e.preventDefault(); relativeMove(mv[0],mv[1]); }
+  const mv=MOVE_KEYS[k]; if(mv&&keyAllowed(k)){ e.preventDefault(); relativeMove(mv[0],mv[1]); }
 });
 
 /* ============================ 15. ГЛАВНЫЙ ЦИКЛ И ДОСТУП ДЛЯ ТЕСТОВ ============================ */
+const REGEN_STEP=1400;
+function regenOutsideBattle(now){
+  if(!game||game.battle||phase!=='play') return;
+  const elapsed=Math.max(0,Math.min(3000,now-(game.lastRegen||now)));
+  if(elapsed<REGEN_STEP) return;
+  const ticks=Math.floor(elapsed/REGEN_STEP);
+  game.lastRegen=now-(elapsed%REGEN_STEP);
+  const per=game.regenBoost>now?2:1;
+  party().forEach(h=>{
+    if(h.hp<=0) return;
+    h.hp=Math.min(h.maxHp,h.hp+ticks*per);
+    h.mp=Math.min(h.maxMp,h.mp+ticks*per);
+  });
+}
 function loop(now){
   requestAnimationFrame(loop);
   const dt=Math.min(50,now-last); last=now;
   if(phase!=='play'||!game) return;
+  regenOutsideBattle(now);
   if(game.player.moveT>0){
     const p=game.player;
     p.moveT=Math.max(0,p.moveT-dt/220);
@@ -1667,6 +2316,84 @@ function loop(now){
   if(game.battle) drawBattle(now,dt); else drawMap(now);
 }
 requestAnimationFrame(loop);
+
+function armorDuplicates(){
+  const seen=new Map(), duplicates=[];
+  ARMORS.forEach((a,i)=>{
+    const key=(a.slot||'body')+'|'+(a.dir||'def')+'|'+(a.def||0);
+    if(seen.has(key)) duplicates.push({key,first:seen.get(key),second:i,names:[ARMORS[seen.get(key)].name,a.name]});
+    else seen.set(key,i);
+  });
+  return duplicates;
+}
+function shopReport(){
+  const errors=[];
+  const def=(game&&SHOP_TYPES.find(s=>s.id===game.shopType))||SHOP_TYPES.find(s=>s.id==='market')||SHOP_TYPES[0];
+  const stock=SHOP_STOCK[def.id]||null;
+  const opened=!!(game&&game.shopOpen);
+  if(!game) errors.push('Игра не запущена');
+  if(!stock) errors.push('Нет ассортимента для лавки '+def.id);
+  if(SHOP_STOCK.mage) errors.push('Найден устаревший ключ ассортимента mage');
+  const shopText=String(($('shopTitle')?$('shopTitle').textContent:'')+' '+($('shopList')?$('shopList').textContent:''));
+  if(/почин/i.test(shopText)) errors.push('В лавке осталось слово «Починка»');
+  const buttons=$('shopList')?Array.from($('shopList').querySelectorAll('button.act')):[];
+  const priceButtons=buttons.filter(b=>/🪙\s*\d+/.test(b.textContent||''));
+  const over=priceButtons.filter(b=>!b.disabled).map(b=>{
+    const m=String(b.textContent||'').match(/🪙\s*(\d+)/); return m?{text:b.textContent.trim(),price:Number(m[1])}:null;
+  }).filter(x=>x&&game&&game.gold<x.price).map(x=>x.text+' > '+game.gold);
+  if(over.length) errors.push('Доступна покупка дороже наличного золота: '+over.join(', '));
+  const sellables=opened?game.bag.filter(i=>!party().some(h=>Object.values(h.equip).includes(i.uid))):[];
+  let sellBlocked=true;
+  if(opened&&sellables.length){
+    const uid=sellables[0].uid, gold=game.gold, len=game.bag.length;
+    game.shopOpen=false;
+    try{ sellBlocked=!sellBagItem(uid,true)&&game.gold===gold&&game.bag.length===len; }
+    finally{ game.shopOpen=true; }
+  }
+  if(!sellBlocked) errors.push('Продажа без открытой лавки не заблокирована');
+  return {
+    ok:!errors.length, errors, open:opened, shop:def.id, title:def.title,
+    gold:game?game.gold:0, crystals:crystalCount(),
+    stockKeys:stock?Object.keys(stock):[], buyButtons:priceButtons.length,
+    disabledBuyButtons:priceButtons.filter(b=>b.disabled).length,
+    sellables:sellables.length, sellBlocked,
+    arithmetic:{priceButtons:priceButtons.length,overBudget:over.length,forgeRule:'1 + quality + level'}
+  };
+}
+function combatReport(){
+  const b=game&&game.battle, errors=[];
+  const logs=b?b.log.map(e=>({text:e.text,color:e.color,side:e.side})):[];
+  const participants=b?[].concat(party().map(h=>h.def.name),b.enemies.map(e=>e.name)):[];
+  const allLogged=!!b&&participants.every(n=>logs.some(l=>l.text.indexOf(n)>=0));
+  if(b&&!allLogged) errors.push('Не все участники записаны в журнал боя');
+  if(b&&logs.length>9) errors.push('Журнал боя превышает 9 строк');
+  return {
+    ok:!errors.length, errors, active:!!b, allLogged, participants, logs,
+    lastHit:b&&b.lastHit?{...b.lastHit}:null,
+    logWidth:Math.round(W*.66),
+    crit:party().map(h=>({hero:h.def.name,weapon:equippedWeapon(h)?equippedWeapon(h).name:'Кулаки',chance:weaponCrit(h,equippedWeapon(h))})),
+    magicPower:party().map(h=>({hero:h.def.name,power:Math.round(h.magicPower+h.bonus.magic),allowed:canCast(h)}))
+  };
+}
+function craftReport(){
+  const dups=armorDuplicates();
+  const errors=[];
+  if(dups.length) errors.push('Дубли слотов/характеристик брони: '+dups.map(d=>d.key).join(', '));
+  if(ARMORS.length<17) errors.push('Мало уникальных предметов брони');
+  const bodyText=Array.from(document.querySelectorAll('body > *'))
+    .filter(el=>el&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')
+    .map(el=>String(el.textContent||'')).join(' ');
+  if(/почин/i.test(bodyText)) errors.push('В интерфейсе осталось слово «Починка»');
+  return {
+    ok:!errors.length, errors, armorCount:ARMORS.length, armorSlots:ARMOR_SLOTS.map(s=>s.id),
+    duplicates:dups, recipes:RECIPES.length, materials:MATERIALS.length,
+    maxReforges:5, reforgeCostRule:'1 + quality + level',
+    items:game?game.bag.filter(i=>i.type==='weapon'||i.type==='armor').map(i=>({
+      name:i.name,type:i.type,quality:i.quality,reforges:i.reforges||0,upgrades:i.upgrades||0,
+      cost:forgeCost(i.type==='armor'?{quality:(i.quality===undefined?1:i.quality),reforges:i.upgrades||0}:i)
+    })):[]
+  };
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
@@ -1682,8 +2409,12 @@ window.__mm6Debug={
   tryMove:(dx,dy)=>tryMove(dx,dy),
   fleeBattle:()=>fleeBattle(),
   toggleShop:(open,type)=>toggleShop(open,type),
-  openBossChest:()=>openBossChest()
+  openBossChest:()=>openBossChest(),
+  shopReport:()=>shopReport(),
+  combatReport:()=>combatReport(),
+  craftReport:()=>craftReport()
 };
+bindSettings(); syncSettings();
 renderStart();
 
 </script>
