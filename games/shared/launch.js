@@ -63,6 +63,12 @@ export function initUnifiedLaunch(cfg) {
   let heroIdx = cfg.heroIndex || 0;
   let modeIdx = cfg.modeIndex || 0;
   let visible = true;
+  // Некоторые игры (Авантюрист) собирают отряд из нескольких героев.
+  let heroCount = Math.max(1, Math.min(heroes.length, Number(cfg.heroCount) || 1));
+  let selectedHeroes = Array.isArray(cfg.selectedHeroes) && cfg.selectedHeroes.length
+    ? cfg.selectedHeroes.slice(0, heroCount).map(i => (Number(i) + heroes.length) % heroes.length)
+    : Array.from({ length: heroCount }, (_, i) => (heroIdx + i) % heroes.length);
+  if (heroCount === 1) selectedHeroes = [heroIdx];
 
   const root = document.createElement('div');
   root.id = 'unified-launch';
@@ -80,7 +86,7 @@ export function initUnifiedLaunch(cfg) {
 
       <div class="ul-grid">
         <section class="ul-block">
-          <span class="ul-label">Выберите героя</span>
+          <span class="ul-label" id="ul-hero-label">Выберите героя</span>
           <div class="ul-carousel-row">
             <button class="ul-arrow" type="button" data-arrow="hero-prev" aria-label="Предыдущий герой">◀</button>
             <div class="ul-carousel" id="ul-hero-carousel"></div>
@@ -155,15 +161,52 @@ export function initUnifiedLaunch(cfg) {
     if (typeof cfg.onClick === 'function') cfg.onClick();
   }
 
+  function fillHeroes(except) {
+    for (let i = 0; i < heroes.length && selectedHeroes.length < heroCount; i++) {
+      if (i !== except && !selectedHeroes.includes(i)) selectedHeroes.push(i);
+    }
+  }
+
+  function toggleHero(idx) {
+    if (heroCount <= 1) return;
+    const at = selectedHeroes.indexOf(idx);
+    if (at >= 0) {
+      // Выключение героя сразу заменяет его следующим свободным, чтобы отряд оставался полным.
+      selectedHeroes.splice(at, 1);
+      fillHeroes(idx);
+    } else {
+      if (selectedHeroes.length >= heroCount) selectedHeroes.shift();
+      selectedHeroes.push(idx);
+    }
+    selectedHeroes = selectedHeroes.slice(0, heroCount);
+    heroIdx = idx;
+  }
+
+  function setHeroCount(next) {
+    const count = Math.max(1, Math.min(heroes.length, Math.round(Number(next) || 1)));
+    heroCount = count;
+    if (selectedHeroes.length > count) selectedHeroes = selectedHeroes.slice(0, count);
+    fillHeroes();
+    if (!selectedHeroes.includes(heroIdx)) heroIdx = selectedHeroes[0] || 0;
+    if (document.body.contains(root)) renderHeroCarousel();
+  }
+
   function renderHeroCarousel() {
     heroCarousel.innerHTML = '';
     const total = heroes.length;
+    const multi = heroCount > 1;
+    const label = $('#ul-hero-label');
+    if (label) label.textContent = multi
+      ? `Выберите героев (${selectedHeroes.length}/${heroCount}) · нажмите, чтобы вкл/выкл`
+      : 'Выберите героя';
     for (let offset = -1; offset <= 1; offset++) {
       const idx = (heroIdx + offset + total) % total;
       const h = heroes[idx];
+      const picked = multi && selectedHeroes.includes(idx);
       const card = document.createElement('div');
-      card.className = 'ul-card3 ' + (offset === 0 ? 'center' : 'side');
+      card.className = 'ul-card3 ' + (offset === 0 ? 'center' : 'side') + (picked ? ' ul-picked' : '');
       card.dataset.hero = String(idx);
+      card.title = multi ? (picked ? 'Нажмите, чтобы убрать из отряда' : 'Нажмите, чтобы добавить в отряд') : '';
       const emoji = document.createElement('div');
       emoji.className = 'ul-emoji';
       if (h.sprite) {
@@ -175,11 +218,19 @@ export function initUnifiedLaunch(cfg) {
       } else {
         emoji.textContent = h.emoji || '⚔️';
       }
-      const label = document.createElement('div');
-      label.className = 'ul-cname';
-      label.textContent = h.name || 'Герой';
-      card.append(emoji, label);
-      if (offset !== 0) card.onclick = () => { heroIdx = idx; playClick(); renderHeroCarousel(); };
+      const labelEl = document.createElement('div');
+      labelEl.className = 'ul-cname';
+      labelEl.textContent = h.name || 'Герой';
+      card.append(emoji, labelEl);
+      if (multi) {
+        const mark = document.createElement('div');
+        mark.className = 'ul-pick-mark';
+        mark.textContent = picked ? '✓' : '+';
+        card.appendChild(mark);
+        card.onclick = () => { toggleHero(idx); playClick(); renderHeroCarousel(); };
+      } else if (offset !== 0) {
+        card.onclick = () => { heroIdx = idx; playClick(); renderHeroCarousel(); };
+      }
       heroCarousel.appendChild(card);
     }
     const h = heroes[heroIdx] || {};
@@ -310,7 +361,7 @@ export function initUnifiedLaunch(cfg) {
     playClick();
     hide();
     try {
-      cfg.start({ heroIndex: heroIdx, modeIndex: modeIdx, name });
+      cfg.start({ heroIndex: heroIdx, heroIndexes: selectedHeroes.slice(), modeIndex: modeIdx, name });
     } catch (err) {
       console.error('Не удалось запустить игру:', err);
       show();
@@ -330,7 +381,10 @@ export function initUnifiedLaunch(cfg) {
   refreshRecords();
   refreshAchievement();
 
-  const api = { show, hide, destroy, root, get heroIndex() { return heroIdx; }, get modeIndex() { return modeIdx; } };
+  const api = { show, hide, destroy, root, setHeroCount,
+    get heroIndex() { return heroIdx; },
+    get heroIndexes() { return selectedHeroes.slice(); },
+    get modeIndex() { return modeIdx; } };
   current = api;
   window.UnifiedLaunch = api;
   return api;
