@@ -48,6 +48,7 @@ button,input,select{font-family:inherit}
 .pcard .nums b{color:#fca5a5}.pcard .nums em{color:#93c5fd;font-style:normal}
 .pcard .mini{display:flex;justify-content:space-between;color:#cbd5e1;font-size:8px;margin-top:1px}
 .pcard .mini i{font-style:normal}
+.pcard .fx{display:flex;justify-content:flex-end;gap:5px;margin-top:2px;color:#fde68a;font-size:9px;letter-spacing:.3px}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
   #controls{display:none!important}
   #stage{height:100%}
@@ -150,6 +151,28 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (max-width:620px){.invBody{flex-direction:column}.mannequin{width:100%;flex:auto}.box{padding:12px}}
+/* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
+@media (min-width:1100px) and (min-height:700px){
+  #start .box{width:min(680px,92vw)}
+  .pcard{width:132px}
+}
+@media (max-height:520px) and (orientation:landscape){
+  .overlay{padding:6px}
+  .box{max-height:98dvh;padding:10px 12px}
+  #start .box{width:min(700px,96vw)}
+  .head{flex-wrap:wrap;gap:6px}
+  h1{font-size:20px}
+  .progress{margin:6px 0;padding:6px}
+  #party{top:2px}
+  .pcard{width:104px;padding:2px 4px}
+}
+@media (max-width:520px) and (orientation:portrait){
+  .overlay{padding:8px}
+  .box{max-height:96dvh;width:96vw}
+  #start .box{width:96vw}
+  .head{gap:6px}
+  #stage{max-height:56dvh}
+}
 </style>
 </head>
 <body>
@@ -186,7 +209,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <div id="start" class="overlay">
   <div class="box">
-    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button><button class="link" id="homeBtn">Главное меню</button></div></div>
+    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button><button class="link" id="homeBtn">🎮 Выбор игр</button></div></div>
     <div class="progress">
       <svg viewBox="0 0 42 42" aria-hidden="true"><circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle></svg>
       <div><b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b><small id="achText">Победите 10 боссов на карте, чтобы замкнуть круг.</small><div id="winCounts">Боссы 0/10</div></div>
@@ -553,9 +576,30 @@ function makeHeroState(def,slot){
   const spells=restrictions.magic?[]:(DEFAULT_SPELLS[def.set]||['heal']).slice();
   return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,
     magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
-    bonus:{atk:0,def:0,magic:0},shield:0,poison:0,poisonTurns:0,statuses:[],
+    bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
     equip:{weapon:weapon.uid,body:armor.uid,armor:armor.uid,shield:null,helmet:null,legs:null,hands:null,cloak:null}};
+}
+/* Временные эффекты живут ограниченное число ходов и исчезают сами.
+   Постоянные бонусы боссов остаются в h.bonus. */
+const STATUS_ICON={shield:'🛡',atk:'⚔',def:'🛡',poison:'☠'};
+function addStatus(h,id,turns,data){
+  if(!h.statuses) h.statuses=[];
+  const cur=h.statuses.find(s=>s.id===id);
+  if(cur){ cur.turns=Math.max(cur.turns,turns); Object.assign(cur,data||{}); }
+  else h.statuses.push(Object.assign({id,turns,icon:STATUS_ICON[id]||'✦'},data||{}));
+  updateParty();
+}
+function statusSum(h,stat){ return (h.statuses||[]).reduce((s,x)=>s+(x[stat]||0),0); }
+function statusIcons(h){ return (h.statuses||[]).map(s=>(s.icon||'✦')+s.turns).join(' '); }
+function tickStatuses(h){
+  if(!h.statuses||!h.statuses.length) return;
+  h.statuses=h.statuses.filter(s=>--s.turns>0);
+  if(!h.statuses.some(s=>s.id==='poison')){ h.poison=0; h.poisonTurns=0; }
+}
+function clearStatuses(){
+  party().forEach(h=>{ h.statuses=[]; h.poison=0; h.poisonTurns=0; });
+  updateParty();
 }
 function equippedWeapon(h){ return game.bag.find(i=>i.uid===h.equip.weapon)||null; }
 function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.body)||game.bag.find(i=>i.uid===h.equip.armor)||null; }
@@ -575,12 +619,12 @@ function armorPenalty(h,a){
 }
 function heroAtk(h){
   const w=equippedWeapon(h); if(!w) return 1;
-  let a=w.dmg+h.bonus.atk+weaponPenalty(h,w);
+  let a=w.dmg+h.bonus.atk+statusSum(h,'atk')+weaponPenalty(h,w);
   if(w.enchant&&w.enchant.stat==='atk') a+=w.enchant.value;
   return Math.max(1,a);
 }
 function heroDef(h){
-  let d=armorTotal(h)+h.bonus.def+h.shield;
+  let d=armorTotal(h)+h.bonus.def+statusSum(h,'def');
   equippedArmors(h).forEach(a=>{ d+=armorPenalty(h,a); });
   const w=equippedWeapon(h);
   if(w&&w.enchant&&w.enchant.stat==='def') d+=w.enchant.value;
@@ -920,7 +964,8 @@ function updateParty(){
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
       '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
-      '<div class="mini"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i></div></div>';
+      '<div class="mini"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i></div>'+
+      (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
@@ -976,7 +1021,13 @@ function nextTurn(){
     b.turnIndex=(b.turnIndex+1)%b.order.length;
     const u=b.order[b.turnIndex];
     if(u.side==='hero'){
-      if(party()[u.idx].hp<=0) continue;
+      const h=party()[u.idx];
+      if(h.hp<=0) continue;
+      if(h.poison>0&&h.hp>0){
+        const pd=Math.min(h.poison,h.hp); h.hp-=pd;
+        pushLog('Яд снимает '+pd+' HP с '+h.def.name+'.',C_ENEMY,'enemy');
+      }
+      tickStatuses(h);
       b.turn='hero'; b.heroIdx=u.idx; b.busy=false;
       updateParty(); updateControls(); return;
     }
@@ -1051,12 +1102,9 @@ function enemyAct(b,idx){
     : m.name+' '+attackVerb(m)+' и нанес '+raw+' урона, но '+h.def.name+' защитился на '+defense+' и получил '+dmg+' урона.',C_ENEMY,'enemy');
   h.hp=Math.max(0,h.hp-dmg);
   if(m.poison&&Math.random()<.35&&h.hp>0){
-    h.poison=3; h.poisonTurns=2; pushLog(m.name+' наложил яд на '+h.def.name+'.',C_ENEMY,'enemy');
-  }
-  if(h.poison>0&&h.hp>0){
-    const pd=Math.min(h.poison,h.hp); h.hp-=pd; h.poison=Math.max(0,h.poison-1);
-    h.poisonTurns=Math.max(0,(h.poisonTurns||0)-1); if(!h.poisonTurns) h.poison=0;
-    pushLog('Яд снимает '+pd+' HP с '+h.def.name+'.',C_ENEMY,'enemy');
+    h.poison=3; h.poisonTurns=2;
+    addStatus(h,'poison',2,{icon:'☠'});
+    pushLog(m.name+' наложил яд на '+h.def.name+'.',C_ENEMY,'enemy');
   }
   if(h.hp<=0) b.killerName=m.name;
   b.anim={who:'enemy',t:1,jump:10};
@@ -1091,11 +1139,11 @@ function castSpell(id,targetIdx){
   }else if(s.heal){ h.hp=Math.min(h.maxHp,h.hp+s.heal+magic); txt=h.def.name+' лечит себя на '+(s.heal+magic)+' HP ('+tier+').'; }
   else if(s.healAll){ party().forEach(x=>{ if(x.hp>0) x.hp=Math.min(x.maxHp,x.hp+s.healAll+magic); });
     txt=h.def.name+' лечит отряд на '+(s.healAll+magic)+' HP ('+tier+').'; }
-  else if(s.shield){ h.shield+=s.shield; txt=h.def.name+' создаёт щит +'+s.shield+'.'; }
+  else if(s.shield){ addStatus(h,'shield',3,{def:s.shield,icon:'🛡'}); txt=h.def.name+' создаёт щит +'+s.shield+' на 3 хода.'; }
   else if(s.poison&&target){ target.poison=(target.poison||0)+s.poison; txt=h.def.name+' отравляет '+target.name+'.'; }
   else if(s.stun&&target){ target.stun=(target.stun||0)+s.stun; txt=h.def.name+' оглушает '+target.name+' на '+s.stun+' хода.'; }
   else if(s.def&&target){ target.defVal=Math.max(0,target.defVal+s.def); txt=h.def.name+' снижает защиту '+target.name+'.'; }
-  else if(s.atk){ h.bonus.atk+=s.atk; txt=h.def.name+' благословляет себя (+'+s.atk+' атаки).'; }
+  else if(s.atk){ addStatus(h,'atk',3,{atk:s.atk,icon:'⚔'}); txt=h.def.name+' благословляет себя (+'+s.atk+' атаки на 3 хода).'; }
   else if(s.gain){ h.mp=Math.min(h.maxMp,h.mp+s.gain); txt=h.def.name+' восстанавливает ману +'+s.gain+'.'; }
   else if(s.id==='teleport'){ closeBattleKeep(); closeSpellMenu(); toast('Прыжок: бой оставлен без штрафа.'); return true; }
   else txt=h.def.name+' применяет «'+s.name+'» ('+tier+').';
@@ -1129,11 +1177,12 @@ function fleeBattle(){
 function closeBattleKeep(){
   if(!game||!game.battle) return;
   game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
-  updateParty(); updateControls();
+  clearStatuses(); updateControls();
 }
 function finishBattle(win){
   const b=game&&game.battle; if(!b||b.end) return;
   b.end=win?'win':'lose';
+  clearStatuses();
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
   beep(win?980:120,.3); updateControls();
   if(!win){
@@ -1773,16 +1822,16 @@ function useItem(uid){
     if(it.healAll){ party().forEach(x=>x.hp=Math.min(x.maxHp,x.hp+it.healAll)); toast('Все герои лечатся.'); }
     else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(heroName(h)+': +'+it.heal+' HP.'); }
     if(it.mp) h.mp=Math.min(h.maxMp,h.mp+it.mp);
-    if(it.cure){ h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
-    if(it.def){ h.bonus.def+=it.def; toast('Защита +'+it.def+'.'); }
-    if(it.atk){ h.bonus.atk+=it.atk; toast('Атака +'+it.atk+'.'); }
+    if(it.cure){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
+    if(it.def){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
+    if(it.atk){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp-=12; if(e.hp<=0) e.alive=false; } }); toast('Мороз бьёт по врагам.'); }
   }else if(it.type==='liquid'){
     if(it.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
     else if(it.stat==='mp') h.mp=Math.min(h.maxMp,h.mp+it.value);
-    else if(it.stat==='atk') h.bonus.atk+=it.value;
-    else if(it.stat==='def') h.bonus.def+=it.value;
+    else if(it.stat==='atk') addStatus(h,'atk',3,{atk:it.value,icon:'⚔'});
+    else if(it.stat==='def') addStatus(h,'def',3,{def:it.value,icon:'🛡'});
     else if(it.stat==='poison'&&game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.poison=(x.poison||0)+it.value; });
     else if(it.stat==='light'&&game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.defVal=Math.max(0,x.defVal-it.value); });
     toast('Использовано: '+it.name);
@@ -1790,10 +1839,10 @@ function useItem(uid){
     const e=it.effect;
     if(e==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
     else if(e==='mana') h.mp=Math.min(h.maxMp,h.mp+it.value);
-    else if(e==='def') h.bonus.def+=it.value;
-    else if(e==='atk') h.bonus.atk+=it.value;
+    else if(e==='def') addStatus(h,'def',3,{def:it.value,icon:'🛡'});
+    else if(e==='atk') addStatus(h,'atk',3,{atk:it.value,icon:'⚔'});
     else if(e==='poison'){ if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.poison=(x.poison||0)+it.value; }); }
-    else if(e==='curse'){ h.poison=0; if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.defVal=Math.max(0,x.defVal-2); }); }
+    else if(e==='curse'){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.defVal=Math.max(0,x.defVal-2); }); }
     else if(e==='crystal') addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     else if(e==='slow'){ if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.speed=Math.max(1,x.speed-1); }); }
     toast('Использовано: '+it.name);
@@ -2076,7 +2125,8 @@ function drawMap(now){
   bar(18,30,126,'HP',party()[0].hp,party()[0].maxHp,'#f87171');
   bar(18,46,126,'MP',party()[0].mp,party()[0].maxMp,'#60a5fa');
   ctx.textAlign='left'; ctx.fillStyle='#fde68a'; ctx.font='10px sans-serif';
-  ctx.fillText('⚔ '+heroAtk(party()[0])+'   🛡 '+heroDef(party()[0])+'   ✨ '+Math.round(party()[0].magicPower),18,62);
+  ctx.fillText('⚔ '+heroAtk(party()[0])+'  🛡 '+heroDef(party()[0])+'  ✨ '+Math.round(party()[0].magicPower+party()[0].bonus.magic)+
+    (party()[0].statuses&&party()[0].statuses.length?'  '+statusIcons(party()[0]):''),18,62);
   drawIcon('coin',22,77,12); drawIcon('star',72,77,12);
   ctx.fillStyle='#ffe6a8'; ctx.font='10px sans-serif'; ctx.fillText(game.gold+'  ·  '+crystalCount(),30,77);
   ctx.fillStyle='#fde68a'; ctx.fillText('боссы '+game.world.bossKills+'/'+game.world.count,104,77);
@@ -2146,7 +2196,8 @@ function drawBattle(now,dt){
     bar(hpanel+10,20+i*22,194,(i===0?'1: ':'2: ')+heroName(h).slice(0,6),h.hp,h.maxHp,'#f87171');
   });
   ctx.fillStyle='#86efac'; ctx.font='9px sans-serif'; ctx.textAlign='left';
-  ctx.fillText('⚔ '+party().map(h=>heroAtk(h)).join('/')+' · 🛡 '+party().map(h=>heroDef(h)).join('/'),hpanel+10,68);
+  ctx.fillText('⚔ '+party().map(h=>heroAtk(h)).join('/')+' · 🛡 '+party().map(h=>heroDef(h)).join('/')+
+    (party().some(h=>h.statuses&&h.statuses.length)?' · '+party().map(statusIcons).filter(Boolean).join(' | '):''),hpanel+10,68);
   roundRect(W/2-66,12,132,26,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
   ctx.fillStyle=b.end?C_NEUTRAL:(b.turn==='hero'?C_HERO:C_ENEMY);

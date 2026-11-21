@@ -131,6 +131,27 @@ th{color:var(--gold)}
  .heroCard{width:76px}.heroCard .he{font-size:24px}
  #spellbar .spellBtn{font-size:11px}
 }
+/* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
+@media(min-width:1100px){#app{max-width:min(1160px,96vw)}}
+@media(max-height:520px) and (orientation:landscape){
+ #app{max-width:none;width:100%;padding:2px 4px;gap:2px}
+ #topbar{padding:2px 6px;gap:4px;font-size:12px}
+ button{padding:4px 8px;font-size:12px}
+ #spellbar .spellBtn{padding:3px 2px;font-size:11px}
+ .carousel{height:120px}
+ .hero-card.center .c-emoji{font-size:28px}
+ .mode-card.center .m-icon{font-size:24px}
+ .desc-text{min-height:20px;font-size:11px;margin-top:2px}
+ .panel{padding:10px 12px;max-height:98dvh}
+ #nameRow{margin:5px 0}
+ #startBtn{padding:7px 16px;font-size:14px}
+}
+@media(max-width:520px) and (orientation:portrait){
+ #app{height:100dvh;padding:4px}
+ .panel{max-height:96dvh;padding:12px}
+ .carousel{width:min(300px,84vw)}
+ #nameInp{width:min(180px,54vw)}
+}
 </style>
 </head>
 <body>
@@ -208,7 +229,8 @@ th{color:var(--gold)}
     <button id="mBtnRec">🏆 Рекорды</button>
    <button id="mBtnStats">📊 Статистика</button>
    <button id="mBtnSet">⚙ Настройки</button>
-   <button id="mBtnRules">❓ Условия</button>
+   <button id="mBtnGames">🎮 Выбор игр</button>
+    <button id="mBtnRules">❓ Условия</button>
  </div>
 </div></div>
 <div class="overlay" id="pauseOv"><div class="panel" style="max-width:340px;text-align:center">
@@ -1455,6 +1477,7 @@ $('bBtnStats').onclick=$('mBtnStats').onclick=()=>{if(G&&G.running)G.paused=true
 $('statDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
 $('statClear').onclick=()=>{localStorage.removeItem('lab32_stats');buildStats();};
 $('bBtnRules').onclick=$('mBtnRules').onclick=$('pRules').onclick=()=>{if(G&&G.running)G.paused=true;show('rulesOv');};
+$('mBtnGames').onclick=()=>{location.href='../../index.html';};
 $('rulesDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
 $('oSave').onclick=()=>{
  const recs=loadJSON('lab32_rec',[]);

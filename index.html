@@ -80,6 +80,29 @@
             .game-card .name { font-size: 13px; }
             .game-card .desc { font-size: 11px; }
         }
+        /* РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА */
+        @media (min-width: 1000px) {
+            h1 { font-size: 38px; }
+            .grid { max-width: 900px; gap: 18px; }
+            .game-card .icon { font-size: 50px; }
+            .game-card .name { font-size: 19px; }
+            .game-card .desc { font-size: 13px; }
+        }
+        @media (max-height: 520px) and (orientation: landscape) {
+            body { padding: 8px; }
+            h1 { font-size: 22px; margin-bottom: 4px; }
+            .grid { max-width: 820px; gap: 8px; }
+            .game-card { padding: 8px 10px; gap: 3px; }
+            .game-card .icon { font-size: 26px; }
+            .game-card .name { font-size: 13px; }
+            .game-card .desc { display: none; }
+        }
+        @media (max-width: 520px) and (orientation: portrait) {
+            body { padding: 10px; }
+            .grid { gap: 10px; }
+            .game-card { padding: 12px 8px; }
+            .game-card .desc { font-size: 10px; }
+        }
     </style>
 </head>
 <body>

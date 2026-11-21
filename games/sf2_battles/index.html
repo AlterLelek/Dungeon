@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <style>
-body { background-color: #1e1e24; margin: 0; padding: 8px 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; font-family: sans-serif; overflow-x: hidden; overflow-y: auto; touch-action: manipulation; }
+body { background-color: #1e1e24; margin: 0; padding: 8px 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; font-family: sans-serif; overflow-x: hidden; overflow-y: auto; touch-action: manipulation; }
 #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #2b2b3b 0%, #15151d 100%); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; overflow-y: auto; padding: 20px 0; box-sizing: border-box; }
 #start-screen h1 { margin: 0; font-size: 30px; text-transform: uppercase; letter-spacing: 4px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
 .big-instruction { margin: 0; font-size: 19px; line-height: 1.4; text-align: center; max-width: 340px; color: #fbbf24; font-weight: bold; text-transform: uppercase; text-shadow: 2px 2px 0 #000, 4px 4px 10px rgba(0,0,0,0.8); }
@@ -107,6 +107,50 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 #sf-toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(22px); background: #1f2937; border: 2px solid #fbbf24; color: #fde68a; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; z-index: 9500; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; max-width: 90vw; text-align: center; box-shadow: 0 6px 22px rgba(0,0,0,.6); }
 #sf-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #map-hint { color: #9ca3af; font-size: 11px; text-align: center; width: 326px; box-sizing: border-box; margin-top: 4px; }
+
+/* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
+#start-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 100%; }
+#game-wrap { width: 326px; margin: 0 auto; }
+@media (min-width: 900px) and (min-height: 640px) {
+  #start-inner { gap: 18px; }
+  #start-screen h1 { font-size: 38px; }
+  .big-instruction { font-size: 21px; }
+  .mode-btn { width: 340px; padding: 16px 22px; font-size: 20px; }
+  .carousel-container, .name-row, .records-start-row { width: 340px; }
+  .carousel { width: 260px; }
+}
+@media (max-width: 480px) and (orientation: portrait) {
+  .carousel-container, .name-row, .records-start-row { width: min(300px, 92vw); }
+  .mode-btn { width: min(300px, 92vw); padding: 12px 14px; font-size: 16px; }
+  .big-instruction { font-size: 16px; max-width: 92vw; }
+  .carousel { width: min(220px, 68vw); }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  #start-screen { padding: 6px 0; }
+  #start-inner { gap: 5px; }
+  #start-screen h1 { font-size: 20px; }
+  .big-instruction { font-size: 13px; line-height: 1.2; }
+  .carousel { height: 64px; }
+  .hero-card .c-emoji { font-size: 20px; }
+  .hero-card.center .c-emoji { font-size: 28px; }
+  .mode-card .m-icon { font-size: 16px; }
+  .mode-card.center .m-icon { font-size: 24px; }
+  .desc-text { min-height: 18px; font-size: 11px; padding: 0; }
+  .mode-btn { padding: 8px 14px; font-size: 14px; }
+  /* игровое поле рядом с кнопками — ниже по высоте, шире по экрану */
+  #game-wrap {
+    display: grid; width: min(720px, 94vw); column-gap: 10px; row-gap: 4px;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-areas: "hud hud" "btn btn" "hint hint" "field pad" "magic magic" "map map";
+  }
+  #game-wrap #hud { grid-area: hud; width: 100%; }
+  #game-wrap #btn-row { grid-area: btn; width: 100%; }
+  #game-wrap #action-hint { grid-area: hint; width: 100%; }
+  #game-wrap canvas { grid-area: field; width: 100%; height: auto; aspect-ratio: 1/1; max-width: 326px; }
+  #game-wrap .dpad { grid-area: pad; width: 100%; align-self: center; }
+  #game-wrap .magic-zone { grid-area: magic; width: 100%; }
+  #game-wrap #map-hint { grid-area: map; width: 100%; }
+}
 </style>
 </head>
 <body>
@@ -114,6 +158,7 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 <div id="splash">ПОДЗЕМЕЛЬЕ <span id="splash-ver">28</span></div>
 
 <div id="start-screen">
+<div id="start-inner">
 <h1>ПОДЗЕМЕЛЬЕ <span id="version-number">28</span></h1>
 <p class="big-instruction">Выбери героя и режим<br>игры, отважный.<br>◀ ▶ — герой, ▲ ▼ — режим, Enter — старт</p>
 
@@ -137,6 +182,8 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 </div>
 <div id="records-start-row">
 <button class="mode-btn" id="records-btn">🏆 Рекорды</button>
+<button class="mode-btn" id="games-btn">🎮 Выбор игр</button>
+</div>
 </div>
 </div>
 
@@ -147,6 +194,7 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 </div>
 <div id="sf-toast"></div>
 
+<div id="game-wrap">
 <div id="hud">
 <div class="hud-hero" style="color:#60a5fa;">
 <div class="hero-fig" id="hero-fig">⚔️</div>
@@ -196,6 +244,7 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 <button class="btn wide-row" onclick="move(0,32)">▼ S</button>
 </div>
 <div id="map-hint"></div>
+</div>
 
 <div id="shop-panel" class="panel">
 <h3>🛒 Лавка</h3>
@@ -2453,6 +2502,7 @@ return origSkipTurn();
 
 /* --- инициализация UI --- */
 document.getElementById('records-btn').addEventListener('click', function () { toggleRecords(!recordsOpen); });
+document.getElementById('games-btn').addEventListener('click', function () { location.href='../../index.html'; });
 document.getElementById('shop-tabs').addEventListener('click', function (e) {
 var b = e.target.closest('[data-tab]');
 if (b) { shopTab = b.getAttribute('data-tab'); playSound('menu'); updateShop(); }
@@ -2502,6 +2552,24 @@ window.__SF_SHARED = { D28_DATA, recordDeath, unlockRecord, recordsHTML, RECORDS
 SHOP_TABS, SERVICES, ENCHANT_LIQUIDS, reforgeCost, reforgeGain, FORGE_RULES, QUALITY };
 window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 window.dispatchEvent(new CustomEvent('sf-shared-data'));
+</script>
+<script>
+/* Масштабируем стартовый экран и игровое поле под ПК / горизонталь / вертикаль */
+(function(){
+  const el = id => document.getElementById(id);
+  function fit(){
+    const wrap=el('game-wrap'), inner=el('start-inner');
+    if(!wrap||!inner) return;
+    wrap.style.zoom=''; inner.style.zoom='';
+    const byWidth=Math.min(1.7,(window.innerWidth-16)/342);
+    const scaleGame=Math.max(.45,Math.min(byWidth,(window.innerHeight-12)/(wrap.scrollHeight||640)));
+    const scaleStart=Math.max(.45,Math.min(byWidth,(window.innerHeight-12)/(inner.scrollHeight||620)));
+    wrap.style.zoom=scaleGame.toFixed(3);
+    inner.style.zoom=scaleStart.toFixed(3);
+  }
+  window.addEventListener('resize',fit);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fit); else fit();
+})();
 </script>
 </body>
 </html>

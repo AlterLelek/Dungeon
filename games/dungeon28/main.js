@@ -177,11 +177,13 @@ function centerCamera(force = false) {
 
 function fitGameScreen() {
     const layout = viewSize();
-    const contentHeight = layout + 260; // HUD + кнопки + магия + подсказки
+    // В горизонтали телефона и на узком экране подсказки скрыты — окно ниже
+    const compact = window.innerHeight <= 520 || window.innerWidth <= 480;
+    const contentHeight = layout + (compact ? 245 : 260); // HUD + кнопки + магия + подсказки
     const scale = Math.min(
         window.innerWidth / (layout + 10),
         window.innerHeight / contentHeight,
-        2.5
+        compact ? 1.6 : 2.5
     );
     document.documentElement.style.setProperty('--game-scale', Math.max(0.4, scale).toFixed(3));
     centerCamera(true);
