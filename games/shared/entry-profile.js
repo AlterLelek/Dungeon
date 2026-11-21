@@ -58,11 +58,6 @@ function ensureStyles(){
 .dentry-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .dentry-head b{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:#fbbf24}
 .dentry-head small{font-size:9px;color:#7f8aa8;white-space:nowrap}
-.dentry-avatars{display:flex;gap:4px;flex-wrap:wrap}
-.dentry-av{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px;
-  border-radius:8px;border:1px solid #4a4a68;background:#161726;color:#fff;cursor:pointer;padding:0;transition:.15s}
-.dentry-av:hover{border-color:#fbbf24;transform:translateY(-1px)}
-.dentry-av.sel{border-color:#fbbf24;background:#3a2e12;box-shadow:0 0 10px rgba(251,191,36,.45)}
 .dentry-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .dentry-field{display:flex;flex-direction:column;gap:3px;min-width:0}
 .dentry-field label{font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:#9fb0d8}
@@ -101,7 +96,6 @@ export function mountEntryForm(opts){
   box.className = 'dentry';
   box.innerHTML =
     '<div class="dentry-head"><b>' + (o.title || 'Вход в игру') + '</b><small>сохраняется локально</small></div>' +
-    '<div class="dentry-avatars"></div>' +
     '<div class="dentry-fields">' +
       '<div class="dentry-field"><label for="dentry-nick">Ник игрока</label><input id="dentry-nick" maxlength="16" placeholder="Герой" autocomplete="nickname" spellcheck="false"></div>' +
       '<div class="dentry-field"><label for="dentry-comment">Комментарий</label><textarea id="dentry-comment" maxlength="160" placeholder="Пара слов о себе…" spellcheck="false"></textarea></div>' +
@@ -111,23 +105,14 @@ export function mountEntryForm(opts){
   const host = gameInput.closest('.name-row, .row, #nameRow') || gameInput.parentElement || document.body;
   host.insertAdjacentElement('afterend', box);
 
-  const avWrap = box.querySelector('.dentry-avatars');
   const nick = box.querySelector('#dentry-nick');
   const comment = box.querySelector('#dentry-comment');
   const counter = box.querySelector('.dentry-count');
-
-  AVATARS.forEach(em => {
-    const b = document.createElement('button');
-    b.type = 'button'; b.className = 'dentry-av'; b.textContent = em; b.title = 'Аватар ' + em;
-    b.onclick = () => saveProfile({ avatar: em });
-    avWrap.appendChild(b);
-  });
 
   const paint = () => {
     nick.value = profile.nick;
     if(document.activeElement !== comment) comment.value = profile.comment;
     counter.textContent = comment.value.length + '/160';
-    avWrap.querySelectorAll('.dentry-av').forEach(b => b.classList.toggle('sel', b.textContent === profile.avatar));
   };
   mounts.add(paint);
   paint();
