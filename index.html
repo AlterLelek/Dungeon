@@ -26,10 +26,6 @@
             font-size: 32px;
             margin-bottom: 8px;
         }
-        #entry-anchor { display: contents; }
-        #entry-anchor + .dentry { margin-bottom: 6px; }
-        .profile-note{color:#9fb0d8;font-size:12px;text-align:center;margin:0 0 10px;min-height:16px}
-        .profile-note.filled{color:#fde68a;font-style:italic}
         .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:720px;margin-top:4px}
         .game-card {
             display: flex;
@@ -88,8 +84,6 @@
 </head>
 <body>
     <h1>🎮 Игровой хаб</h1>
-    <div id="entry-anchor"><input id="hub-nick" type="hidden"></div>
-    <p class="profile-note" id="hub-comment"></p>
 
     <div class="grid">
         <a href="games/dungeon28/index.html" class="game-card">
@@ -117,22 +111,5 @@
             <span class="cta">Играть ➜</span>
         </a>
     </div>
-
-<script type="module">
-import { mountEntryForm, getProfile, saveProfile, profileComment, profileNick, profileAvatar } from './games/shared/entry-profile.js?v=5.164';
-
-mountEntryForm({ input:'#hub-nick', title:'Вход в игру' });
-
-const note = document.getElementById('hub-comment');
-function paintNote(){
-  const c = profileComment();
-  note.textContent = c ? '💬 ' + profileAvatar() + ' ' + profileNick() + ': «' + c + '»' : '';
-  note.classList.toggle('filled', !!c);
-}
-paintNote();
-document.addEventListener('dungeon-profile', paintNote);
-
-window.__hubProfile = { get:getProfile, save:saveProfile };
-</script>
 </body>
 </html>

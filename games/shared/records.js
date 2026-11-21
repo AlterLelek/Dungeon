@@ -1,6 +1,4 @@
 // Общие рекорды смерти/побед для всех игр проекта.
-import { profileBadgeHTML } from './entry-profile.js?v=5.164';
-
 const KEY = 'dungeon_records_v1';
 
 export const RECORDS = [
@@ -61,9 +59,7 @@ export function recordsList(){
 }
 
 export function recordsHTML(){
-  // Игрок видит свой ник и комментарий в любом списке рекордов.
-  const head = `<div class="dentry-rec">👤 ${profileBadgeHTML()}</div>`;
-  return head + recordsList().map(r =>
+  return recordsList().map(r =>
     `<div class="recRow ${r.got?'got':''}"><span>${r.got?'🏆':'·'}</span><span>${r.text}</span></div>`
   ).join('');
 }
