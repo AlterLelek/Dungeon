@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#05060d">
 <title>Подземелье 6</title>
 <link rel="icon" href="data:,">
+<link rel="stylesheet" href="../shared/launch.css">
 <style>
 /* ============================ ОСНОВЫ ============================ */
 :root{--gold:#fbbf24;--ink:#f3e8cf;--hero:#86efac;--enemy:#fca5a5;--neutral:#fde68a}
@@ -209,7 +210,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <div id="start" class="overlay">
   <div class="box">
-    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button><button class="link" id="homeBtn">🎮 Выбор игр</button></div></div>
+    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button></div></div>
     <div class="progress">
       <svg viewBox="0 0 42 42" aria-hidden="true"><circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle></svg>
       <div><b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b><small id="achText">Победите 10 боссов на карте, чтобы замкнуть круг.</small><div id="winCounts">Боссы 0/10</div></div>
@@ -301,7 +302,10 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BIOMES, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
-import { recordDeath, unlockRecord, recordsHTML, RECORDS } from '../shared/records.js';
+import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
+import { initAudio, startAmbient, startMusic, getTrack, setVolume, playSound } from '../dungeon28/audio.js';
+import { initUnifiedLaunch } from '../shared/launch.js';
+import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 
 /* ============================ 1. УТИЛИТЫ ============================ */
 const $ = id => document.getElementById(id);
@@ -375,18 +379,12 @@ function qualityOf(css,name){
   if(name.includes('★')) return 3; if(name.includes('++')) return 2;
   if(name.includes('+')) return 1; return 0;
 }
-const HEROES = [
-  ...D28_DATA.heroes.slice(0,5).map((h,i)=>({
-    name:h.name, set:h.set, emoji:h.emoji||'⚔️', sprite:h.sprite, hp:h.maxHp, mp:h.maxMp,
-    desc:HERO_DESC[i]||'Герой из Подземелья 28.',
-    weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
-  })),
-  ...EXTRA_HEROES.map(h=>({
-    name:h.name, set:h.set, emoji:EXTRA_EMOJI[h.name]||'🧝', sprite:h.sprite, hp:h.hp, mp:h.mp,
-    desc:h.desc||'Герой расширения.',
-    weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
-  }))
-];
+const HEROES = D28_DATA.heroes.map((h,i)=>({
+  name:h.name, key:h.key, set:h.set, emoji:h.emoji||'⚔️', sprite:h.sprite, hp:h.maxHp, mp:h.maxMp,
+  desc:h.desc||HERO_DESC[i]||'Герой из Подземелья 28.',
+  pros:h.pros||[], cons:h.cons||[], line:h.line||'',
+  weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
+}));
 function moveEveryFor(m){
   if(m.id==='spider') return 5;
   if(m.id==='mouse'||m.id==='wolf'||m.id==='siren'||m.id==='wyvern') return 6;
@@ -403,13 +401,15 @@ function combatSpeed(m){
   if(n.includes('черепаха')||n.includes('голем')||n.includes('мумия')||n.includes('зомби')) return 2;
   return 5+(m.tier||0);
 }
-const MONSTERS = [
-  ...D28_DATA.monsters.map(m=>({
-    id:m.key, name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, emoji:m.emoji,
-    poison:!!m.poison, magic:false, tier:0, gold:[2,5], colors:MONSTER_COLORS, tint:'#cbd5e1'
-  })),
-  ...EXTRA_MONSTERS.map(m=>({...m, emoji:MONSTER_EMOJI[m.id]||'👹', colors:MONSTER_COLORS, def:m.def||0}))
-].map(m=>({...m, moveEvery:moveEveryFor(m), combatSpeed:combatSpeed(m), acts:(m.id==='spider'?2:1)}));
+const MONSTER_TIERS={wolf:0,goblin:0,orc:1,troll:1,golem:2,vampire:2,mummy:2,siren:2,wyvern:3,lich:3};
+const MONSTER_GOLD={wolf:[2,4],goblin:[2,5],orc:[4,7],troll:[6,10],golem:[8,13],vampire:[9,14],mummy:[7,12],siren:[8,12],wyvern:[12,18],lich:[14,20]};
+const MAGIC_MONSTERS=['vampire','siren','wyvern','lich'];
+const MONSTERS = D28_DATA.monsters.map(m=>({
+  id:m.key, name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, emoji:m.emoji,
+  special:m.special, pros:m.pros||[], cons:m.cons||[], line:m.line||'',
+  poison:!!m.poison, magic:MAGIC_MONSTERS.includes(m.key), tier:MONSTER_TIERS[m.key]||0,
+  gold:MONSTER_GOLD[m.key]||[2,5], colors:MONSTER_COLORS, tint:'#cbd5e1'
+})).map(m=>({...m, moveEvery:moveEveryFor(m), combatSpeed:combatSpeed(m), acts:(m.id==='spider'?2:1)}));
 
 const BIOME_KEYS=['field','village','city','port','mountains'];
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
@@ -441,6 +441,7 @@ function loadSettings(){
   catch(e){ return Object.assign({},DEFAULT_SETTINGS); }
 }
 let settings=loadSettings();
+try { initAudio(); setVolume('music', 0); startAmbient(); startMusic(getTrack()); } catch (e) {}
 function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); }catch(e){} }
 function openSettings(){ $('settings').classList.remove('hidden'); if(game) game.settingsOpen=true; syncSettings(); updateControls(); }
 function closeSettings(){ $('settings').classList.add('hidden'); if(game) game.settingsOpen=false; saveSettings(); if(game) updateControls(); }
@@ -2250,7 +2251,7 @@ function selectHero(slot,d){ selHero[slot]=(selHero[slot]+d+HEROES.length)%HEROE
 $('h1Prev').onclick=()=>selectHero(0,-1); $('h1Next').onclick=()=>selectHero(0,1);
 $('h2Prev').onclick=()=>selectHero(1,-1); $('h2Next').onclick=()=>selectHero(1,1);
 $('playBtn').onclick=()=>startGame();
-$('homeBtn').onclick=goHub;
+if($('homeBtn')) $('homeBtn').onclick=goHub;
 function toggleRecords(open){
   const el=$('records');
   const show=open===undefined?el.classList.contains('hidden'):!!open;
@@ -2467,6 +2468,44 @@ window.__mm6Debug={
 };
 bindSettings(); syncSettings();
 renderStart();
+
+initUnifiedLaunch({
+  game:'mm6',
+  title:'РПГ MM6',
+  logo:'🛡️',
+  version:D28_DATA.version,
+  heroes:HERO_DOSSIERS,
+  modes:DIFFICULTY.map((d,i)=>({
+    id:d.id,
+    name:d.name,
+    short:d.name,
+    icon:['🙂','🔥','🧠'][i]||'⚔️',
+    desc:d.maps[0]+'–'+d.maps[1]+' карт · '+d.size[0]+'–'+d.size[1]+' клеток'
+  })),
+  modeLabel:'Сложность',
+  rules:RULES.mm6,
+  nameKey:'mm6_heroName',
+  catalogTarget:'#settings .box',
+  onClick:()=>playSound('collect'),
+  achievement:()=>{
+    const filled=Math.min(10,progress.boss||0);
+    return '<b>'+(progress.achieved?'ДОСТИЖЕНИЕ ПОЛУЧЕНО ✦':'ДОСТИЖЕНИЕ · КРУГ СЛАВЫ')+'</b>'+
+      '<small>'+(progress.achieved?'Круг славы замкнут: 10 боссов на карте.':'Победите 10 боссов на карте, чтобы замкнуть круг.')+'</small>'+
+      '<small>Боссы '+filled+'/10 · побед '+(progress.runs||0)+' · побегов '+(progress.flees||0)+'</small>';
+  },
+  stats:()=>{
+    let recs=[]; try{ recs=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){}
+    return '<p><b>Боссы:</b> '+(progress.boss||0)+'/10</p>'+
+      '<p><b>Побед:</b> '+(progress.runs||0)+' · <b>Побегов:</b> '+(progress.flees||0)+'</p>'+
+      '<p><b>Общих достижений:</b> '+recordsList().filter(r=>r.got).length+'/'+recordsList().length+'</p>';
+  },
+  start:({heroIndex,modeIndex,name})=>{
+    selDiff=DIFFICULTY[modeIndex]?DIFFICULTY[modeIndex].id:DIFFICULTY[1].id;
+    settings.difficulty=selDiff; saveSettings(); syncSettings();
+    $('heroName').value=name;
+    startGame(selDiff,heroIndex,(heroIndex+1)%HEROES.length);
+  }
+});
 
 </script>
 </body>

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Лабиринт Судьбы — v8.32</title>
+<link rel="stylesheet" href="../shared/launch.css">
 <style>
 :root{--gold:#e8b64c;--bg:#141422;--panel:#1e1e2e;--panel2:#262638;--txt:#e8e4d8;--red:#e05555;--green:#5fce7a;--blue:#5aa2e8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -225,11 +226,11 @@ th{color:var(--gold)}
     <button id="startBtn">▶ НАЧАТЬ ИГРУ</button>
   </div>
   <div class="btnRow">
-   <button id="mBtnShop">🛒 Лавка</button>
+   
     <button id="mBtnRec">🏆 Рекорды</button>
    <button id="mBtnStats">📊 Статистика</button>
-   <button id="mBtnSet">⚙ Настройки</button>
-   <button id="mBtnGames">🎮 Выбор игр</button>
+   
+   
     <button id="mBtnRules">❓ Условия</button>
  </div>
 </div></div>
@@ -317,19 +318,32 @@ const DEF={
   devil:{hp:85,atk:7,def:2,speed:1,steps:1,radius:6,taste:'hero',interest1:'Герой',interest2:'-',special:'Регенерация'},
   necro:{hp:90,atk:5,def:2,speed:1,steps:1,radius:10,taste:'corpse',period:6,interest1:'Трупы',interest2:'-',special:'Поднятие'},
   archer:{hp:85,atk:8,def:1,speed:1,steps:1,radius:8,taste:'hero',interest1:'Герой',interest2:'-',special:'Стрельба 2 + Вампиризм'},
+  wolf:{hp:70,atk:6,def:1,speed:2,steps:2,radius:6,taste:'hero',interest1:'Герой',interest2:'-',special:'Быстрая атака'},
+  goblin:{hp:65,atk:5,def:1,speed:2,steps:2,radius:5,taste:'coin',interest1:'Герой',interest2:'Монеты',special:'Находка монет'},
+  orc:{hp:120,atk:7,def:2,speed:1,steps:1,radius:7,taste:'hero',interest1:'Герой',interest2:'-',special:'Тяжёлый топор'},
+  troll:{hp:175,atk:9,def:3,speed:1,steps:1,radius:7,taste:'hero',interest1:'Герой',interest2:'-',special:'Долгое восстановление'},
+  golem:{hp:240,atk:8,def:7,speed:1,steps:1,radius:5,taste:'gem',interest1:'Герой',interest2:'Защита',special:'Каменная броня'},
+  vampire:{hp:145,atk:11,def:3,speed:2,steps:2,radius:8,taste:'hero',interest1:'Герой',interest2:'Жизнь',special:'Вампиризм + магия'},
+  mummy:{hp:160,atk:8,def:4,speed:1,steps:1,radius:7,taste:'hero',interest1:'Герой',interest2:'-',special:'Яд'},
+  siren:{hp:105,atk:9,def:2,speed:2,steps:2,radius:8,taste:'hero',interest1:'Герой',interest2:'Мана',special:'Магическая песнь'},
+  wyvern:{hp:210,atk:12,def:4,speed:2,steps:2,radius:9,taste:'hero',interest1:'Герой',interest2:'-',special:'Огненный выдох + магия'},
+  lich:{hp:190,atk:14,def:5,speed:1,steps:1,radius:10,taste:'hero',interest1:'Герой',interest2:'Мана',special:'Мощная магия'},
  },
  bonuses:{heal:20,shield:3,boots:15,coin:10,potion:25,spellPow:1,spellCost:1},
  pause:{monPause:0,spiderStep:1},
  anim:{particles:100,shake:60,dmgNum:true,dust:true},
  pal:0,palBright:100,flicker:60,
- sound:{sfx:true,music:true,volume:60},
+ sound:{sfx:true,music:true,volume:60,musicVol:0},
 };
 let S=null;
 function loadSettings(){
  S=JSON.parse(JSON.stringify(DEF));
  const s=loadJSON('lab32_set_v2',null);
  if(s){for(const k of ['monsters','bonuses','pause','anim','sound']){for(const m in DEF[k])Object.assign(S[k][m],(s[k]||{})[m]||{});}
-  ['pal','palBright','flicker'].forEach(k=>{if(s[k]!=null)S[k]=s[k]});}
+  ['pal','palBright','flicker'].forEach(k=>{if(s[k]!=null)S[k]=s[k]});
+   if(s.sound) Object.assign(S.sound, s.sound);
+  }
+  S.sound.sfx = true; S.sound.music = true; S.sound.musicVol = 0;
 }
 loadSettings();
 
@@ -345,6 +359,16 @@ const MON={
  devil:{name:'Черт',emoji:'😈',color:'#e05050',slow:1},
  necro:{name:'Некромант',emoji:'🧙',color:'#b070ff',slow:1},
  archer:{name:'Тёмный арбалетчик',emoji:'🦹',color:'#a090d0',slow:1},
+  wolf:{name:'Волк',emoji:'🐺',color:'#c8a070',slow:1},
+  goblin:{name:'Гоблин',emoji:'👹',color:'#7ce070',slow:1},
+  orc:{name:'Орк',emoji:'🪓',color:'#70b060',slow:1},
+  troll:{name:'Тролль',emoji:'🧌',color:'#70d0a0',slow:1},
+  golem:{name:'Голем',emoji:'🗿',color:'#a8a8b8',slow:1},
+  vampire:{name:'Вампир',emoji:'🧛',color:'#e05070',slow:1},
+  mummy:{name:'Мумия',emoji:'🧟‍♀️',color:'#d8d0a0',slow:1},
+  siren:{name:'Сирена',emoji:'🧜‍♀️',color:'#70d0e0',slow:1},
+  wyvern:{name:'Виверна',emoji:'🐉',color:'#e08050',slow:1},
+  lich:{name:'Лич',emoji:'🧙',color:'#b070ff',slow:1},
 };
 /* Те же спрайты, что в Подземелье 28. */
 const MON_SPRITES={
@@ -359,6 +383,10 @@ const MON_SPRITES={
  necro:['necromancer_0'],
  archer:['dark_archer_0']
 };
+Object.assign(MON_SPRITES,{
+ wolf:['rat_0'], goblin:['imp_0'], orc:['orc'], troll:['orge_0'], golem:['turtle_0'],
+ vampire:['demon_0'], mummy:['undead_0'], siren:['ghost_0'], wyvern:['skeleton_9'], lich:['necromancer_7']
+});
 const SPRITE_IMGS={};
 for(const k in MON_SPRITES)SPRITE_IMGS[k]=MON_SPRITES[k].map(n=>{const im=new Image();im.src='../dungeon28/assets/sprites/monsters/'+n+'.png';return im;});
 /* Те же пять героев, что и в Подземелье 28: параметры и спрайты из общей базы. */
@@ -384,6 +412,29 @@ const HEROES={
    {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
 };
+/* Пять героев расширения — те же имена и параметры, что в общей базе. */
+Object.assign(HEROES,{
+ druid:{...HEROES.mage,name:'Друид',emoji:'🌲',hp:88,atk:6,def:1,speed:165,mana:7,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Лесной маг. Лечит травой и вызывает бурю, экономя ману на заклинаниях.',
+  spells:[{k:'Z',icon:'🌪️',name:'Буря',cost:3,desc:'Вызывает бурю вокруг героя'},
+   {k:'X',icon:'💚',name:'Лечение травой',cost:3,desc:'Восстанавливает HP'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ rogue:{...HEROES.archer,name:'Разбойник',emoji:'🏹',hp:84,atk:18,def:2,speed:180,mana:3,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Быстрый удар и находка монет. Отлично начинает каждое приключение.',
+  spells:[{k:'Z',icon:'🏹',name:'Точный выстрел',cost:3,desc:'Стрела летит вперёд и бьёт первое существо'},
+   {k:'X',icon:'🪙',name:'Находка',cost:3,desc:'Даёт монеты и ускоряет героя'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ amazon:{...HEROES.archer,name:'Амазонка',emoji:'🎯',hp:86,atk:21,def:3,speed:170,mana:4,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Меткий выстрел пробивает броню даже тяжёлых монстров.',
+  spells:[{k:'Z',icon:'🎯',name:'Пробитие',cost:3,desc:'Выстрел пробивает броню цели'},
+   {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ dwarf:{...HEROES.warrior,name:'Гном-кулига',emoji:'⛏️',hp:110,atk:9,def:5,speed:130,mana:2,sprite:'../dungeon28/assets/sprites/heroes/knight_0.png',desc:'Живуч, но медлителен. Держит удар лучше всех, но не умеет колдовать.',
+  spells:[{k:'Z',icon:'⛏️',name:'Сильный удар',cost:2,desc:'Мощный удар по врагу впереди'},
+   {k:'X',icon:'🛡️',name:'Стойкость',cost:2,desc:'Временная защита и восстановление'},
+   {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
+ dwarfmage:{...HEROES.mage,name:'Гном-колдун',emoji:'💎',hp:96,atk:6,def:2,speed:155,mana:8,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Единственный гном, владеющий магией. Кристаллы усиливают его чары.',
+  spells:[{k:'Z',icon:'💎',name:'Кристалл',cost:3,desc:'Кристалл пробивает врага на расстоянии'},
+   {k:'X',icon:'🔵',name:'Магический щит',cost:3,desc:'Щит поглощает урон'},
+   {k:'C',icon:'😈',name:'Чертёнок',cost:3,desc:'Призывает чертёнка — стреляет в монстров'}]}
+});
 const MODES=[
  {id:'classic',name:'Классика',icon:'🗺',desc:'Собери все самоцветы',walls:true},
  {id:'sprint',name:'Спринт',icon:'⏱',desc:'Успей на время',walls:true},
@@ -448,7 +499,7 @@ function musicNote(){
  const f=220*Math.pow(2,MELODY[musicStep%MELODY.length]/12);
  const o=a.createOscillator(),g=a.createGain();
  o.type='triangle';o.frequency.value=f;
- g.gain.value=0.05*(S.sound.volume/100);
+ g.gain.value=0.05*(S.sound.volume/100)*(S.sound.musicVol!=null?S.sound.musicVol:1);
  o.connect(g);g.connect(a.destination);
  const t=a.currentTime;o.start(t);g.gain.setValueAtTime(g.gain.value,t);
  g.gain.exponentialRampToValueAtTime(0.001,t+0.4);o.stop(t+0.45);
@@ -1392,6 +1443,7 @@ function buildSettings(){
   toggle(mkLine(),'Звуковые эффекты',()=>s.sfx,v=>s.sfx=v);
   toggle(mkLine(),'Фоновая мелодия',()=>s.music,v=>s.music=v);
   slider(mkLine(),'Громкость %',()=>s.volume,v=>s.volume=v,0,100,5);
+  slider(mkLine(),'Громкость мелодии %',()=>s.musicVol!=null?s.musicVol:0,v=>{s.musicVol=0;},0,100,5);
  }
 }
 /* ---------- рекорды и статистика ---------- */
@@ -1465,20 +1517,20 @@ function togglePause(){
 $('btnPause').onclick=togglePause;
 $('pResume').onclick=togglePause;
 $('btnMenu').onclick=()=>{if(G)G.paused=true;show('menuOv');};
-$('pToMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');};
+$('pToMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');if(window.UnifiedLaunch)window.UnifiedLaunch.show();};
 $('btnRun').onclick=null;
-$('bBtnSet').onclick=$('mBtnSet').onclick=()=>{if(G&&G.running)G.paused=true;buildSettings();show('setOv');};
-$('setDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
+$('bBtnSet').onclick=()=>{if(G&&G.running)G.paused=true;buildSettings();show('setOv');};
+$('setDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else { show('menuOv'); if(window.UnifiedLaunch) window.UnifiedLaunch.show(); }};
 $('setReset').onclick=()=>{localStorage.removeItem('lab32_set_v2');loadSettings();buildSettings();if(G)buildSpellbar();};
 $('bBtnRec').onclick=$('mBtnRec').onclick=()=>{if(G&&G.running)G.paused=true;buildRecords();show('recOv');};
-$('recDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
+$('recDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else { show('menuOv'); if(window.UnifiedLaunch) window.UnifiedLaunch.show(); }};
 $('recClear').onclick=()=>{localStorage.removeItem('lab32_rec');buildRecords();};
 $('bBtnStats').onclick=$('mBtnStats').onclick=()=>{if(G&&G.running)G.paused=true;buildStats();show('statOv');};
-$('statDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
+$('statDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else { show('menuOv'); if(window.UnifiedLaunch) window.UnifiedLaunch.show(); }};
 $('statClear').onclick=()=>{localStorage.removeItem('lab32_stats');buildStats();};
 $('bBtnRules').onclick=$('mBtnRules').onclick=$('pRules').onclick=()=>{if(G&&G.running)G.paused=true;show('rulesOv');};
-$('mBtnGames').onclick=()=>{location.href='../../index.html';};
-$('rulesDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else show('menuOv');};
+
+$('rulesDone').onclick=()=>{hideAll();if(G&&G.running){G.paused=false;show(null);}else { show('menuOv'); if(window.UnifiedLaunch) window.UnifiedLaunch.show(); }};
 $('oSave').onclick=()=>{
  const recs=loadJSON('lab32_rec',[]);
  const name=($('recName').value||'Герой').trim();
@@ -1489,7 +1541,7 @@ $('oSave').onclick=()=>{
  $('oSave').classList.add('dis');
 };
 $('oAgain').onclick=()=>{hideAll();newGame();buildSpellbar();resize();};
-$('oMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');};
+$('oMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');if(window.UnifiedLaunch)window.UnifiedLaunch.show();};
 $('wallsChk').onchange=buildMenu;
 /* ---------- лавка: вкладки, покупки, расходники ---------- */
 const SHOP_EXTRA={
@@ -1646,7 +1698,7 @@ $('shopBody').addEventListener('change',e=>{
  if(e.target.id==='labLiquid'&&G){G.shopLiquid=e.target.value;buildShop();}
 });
 $('shopClose').onclick=closeShop;
-$('bBtnShop').onclick=$('mBtnShop').onclick=openShop;
+$('bBtnShop').onclick=openShop;
 window.__refreshLabRecords=function(){
  const html=window.recordsHTML?window.recordsHTML():'';
  ['shared-records-menu','shared-records-pause','shared-records-rec'].forEach(id=>{const el=$(id);if(el)el.innerHTML=html;});
@@ -1671,8 +1723,11 @@ window.__labState=function(){
  };
 };
 /* ---------- общая база Подземелья 28 ---------- */
-const D28_MONSTER_KEYS=['skeleton','ghost','mouse','spider','orge','zombie','turtle','devil','necro','archer'];
-const D28_HERO_KEYS=['warrior','mage','paladin','angel','archer'];
+const D28_MONSTER_KEYS=[
+ 'skeleton','ghost','mouse','spider','orge','zombie','turtle','devil','necro','archer',
+ 'wolf','goblin','orc','troll','golem','vampire','mummy','siren','wyvern','lich'
+];
+const D28_HERO_KEYS=['warrior','mage','paladin','angel','archer','druid','rogue','amazon','dwarf','dwarfmage'];
 function applyD28Data(d){
  if(!d||!d.heroes||!d.monsters)return;
  d.monsters.forEach((m,i)=>{
@@ -1685,7 +1740,7 @@ function applyD28Data(d){
  d.heroes.forEach((h,i)=>{
   const id=D28_HERO_KEYS[i]; if(!id)return;
   const old=HEROES[id]||{};
-  heroes[id]={...old,name:h.name,hp:h.maxHp,mana:h.maxMp,sprite:h.sprite};
+  heroes[id]={...old,name:h.name,hp:h.maxHp,mana:h.maxMp,sprite:h.sprite,desc:h.desc||old.desc};
  });
  Object.keys(HEROES).forEach(k=>delete HEROES[k]);
  Object.assign(HEROES,heroes);
@@ -1704,14 +1759,43 @@ buildMenu();
 resize();
 requestAnimationFrame(loop);
 show('menuOv');
+window.__labLaunch = {
+  modes: MODES.map(m => ({ id:m.id, name:m.name, icon:m.icon, desc:m.desc })),
+  click: () => beep(520, 0.04),
+  start: ({ heroIndex, modeIndex, name }) => {
+    selectHeroIdx(heroIndex);
+    selectModeIdx(modeIndex);
+    $('nameInp').value = name;
+    startGame();
+  }
+};
 </script>
 <script type="module">
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { RECORDS, recordDeath, unlockRecord, recordsHTML, recordsList } from '../shared/records.js';
 import { SHOP_TABS, QUALITY, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain } from '../shared/shop-data.js';
+import { initUnifiedLaunch } from '../shared/launch.js';
+import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 Object.assign(window, { RECORDS, recordDeath, unlockRecord, recordsHTML, recordsList, SHOP_TABS, QUALITY, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain });
 window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 if(window.__initLabShared)window.__initLabShared();
+initUnifiedLaunch({
+  game:'lab',
+  title:'ЛАБИРИНТ СУДЬБЫ',
+  logo:'🌀',
+  version:D28_DATA.version,
+  heroes:HERO_DOSSIERS,
+  modes:(window.__labLaunch && window.__labLaunch.modes) || [],
+  rules:RULES.lab,
+  nameKey:'lab32_heroName',
+  catalogTarget:'#setOv .panel',
+  onClick:()=>{ if(window.__labLaunch) window.__labLaunch.click(); },
+  stats:()=>{
+    let recs=[]; try{ recs=JSON.parse(localStorage.getItem('lab32_rec')||'[]'); }catch(e){}
+    return '<p><b>Записано рекордов:</b> '+recs.length+'</p><p><b>Общих достижений:</b> '+recordsList().filter(r=>r.got).length+'/'+recordsList().length+'</p>';
+  },
+  start:(choice)=>{ if(window.__labLaunch) window.__labLaunch.start(choice); }
+});
 </script>
 </body>
 </html>

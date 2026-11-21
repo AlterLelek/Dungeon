@@ -3,7 +3,9 @@ import { initFloor, rollCaveTint, getFloorStage } from './map.js';
 import { draw, preloadSprites, getActiveEffects } from './ui.js'; 
 import { movePlayer, skipTurn, castLightning, castHeal, castStun, castHurricane, activateAbility, setGameEndHandler } from './game.js';
 import { HEROES, WARRIOR_WEAPONS, MAGE_WEAPONS, ARCHER_WEAPONS, VERSION, ENEMY_TYPES, ENEMY_NAMES, ENEMY_BASE, DEATH_CAUSES, CELL, WORLD } from './config.js';
-import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js'; 
+import { playSound, initAudio, startMusic, startAmbient, setVolume, getVolume, getTrack, setTrack } from './audio.js';
+import { initUnifiedLaunch } from '../shared/launch.js';
+import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -275,6 +277,7 @@ setGameEndHandler(() => {
     document.getElementById(id).style.display = 'none';
   });
   renderCarousel();
+  if (window.UnifiedLaunch) window.UnifiedLaunch.show();
 });
 
 const GAME_MODES = [
@@ -812,4 +815,31 @@ document.getElementById('settings-btn').onclick = () => { playSound('menu'); doc
 document.getElementById('close-settings').onclick = () => document.getElementById('settings-panel').style.display = 'none';
 
 generateRandomName();
-preloadSprites(); 
+preloadSprites();
+
+initUnifiedLaunch({
+  game: 'd28',
+  title: 'ПОДЗЕМЕЛЬЕ 28',
+  logo: '🏰',
+  version: VERSION,
+  heroes: HERO_DOSSIERS,
+  modes: GAME_MODES.map(m => ({ id: m.id, name: m.name, short: m.short, icon: m.icon, desc: m.name })),
+  rules: RULES.d28,
+  nameKey: 'pz_heroName',
+  catalogTarget: '#settings-panel',
+  onClick: () => playSound('menu'),
+  stats: () => {
+    const records = Object.keys(state.records || {}).length;
+    const deaths = Object.values(state.deathCauses || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+    const last = state.stats || {};
+    return '<p><b>Персональные рекорды:</b> ' + records + '</p>' +
+      '<p><b>Погиб в боях:</b> ' + deaths + '</p>' +
+      '<p><b>Последняя игра:</b> убийства ' + (last.kills || 0) + ' · золото ' + (last.gold || 0) + ' · этажи ' + (last.floors || 0) + '</p>';
+  },
+  start: ({ heroIndex, modeIndex, name }) => {
+    state.heroIdx = heroIndex;
+    currentModeIdx = modeIndex;
+    state.gameMode = GAME_MODES[modeIndex].id;
+    startGame(name);
+  }
+});

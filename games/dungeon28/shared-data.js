@@ -1,3 +1,4 @@
+import { HERO_DOSSIERS, MONSTER_DOSSIERS, RULES } from '../shared/universe.js';
 import {
   VERSION,
   HEROES,
@@ -13,8 +14,11 @@ import {
 const BASE = new URL('./', import.meta.url);
 const asset = path => new URL(path, BASE).href;
 
-const HERO_KEYS = ['warrior', 'mage', 'paladin', 'angel', 'archer'];
-const MONSTER_KEYS = ['skeleton', 'ghost', 'mouse', 'spider', 'orge', 'zombie', 'turtle', 'devil', 'necro', 'archer'];
+const HERO_KEYS = ['warrior', 'mage', 'paladin', 'angel', 'archer', 'druid', 'rogue', 'amazon', 'dwarf', 'dwarfmage'];
+const MONSTER_KEYS = [
+  'skeleton', 'ghost', 'mouse', 'spider', 'orge', 'zombie', 'turtle', 'devil', 'necro', 'archer',
+  'wolf', 'goblin', 'orc', 'troll', 'golem', 'vampire', 'mummy', 'siren', 'wyvern', 'lich'
+];
 
 function normalizeWeapon(w) {
   const out = { name: w.name, css: w.css, dmg: w.dmg, cost: w.cost };
@@ -35,7 +39,8 @@ const heroes = HEROES.map((h, i) => ({
   attackRange: h.attackRange,
   sprite: h.name === 'Ангел'
     ? asset('assets/sprites/heroes/battle_angel_0.png')
-    : asset(h.skins[0])
+    : asset(h.skins[0]),
+  ...(HERO_DOSSIERS[i] || {})
 }));
 
 const monsters = ENEMY_TYPES.map((emoji, i) => ({
@@ -44,13 +49,15 @@ const monsters = ENEMY_TYPES.map((emoji, i) => ({
   name: ENEMY_NAMES[emoji],
   ...ENEMY_BASE[emoji],
   sprite: asset(MONSTER_SKINS[emoji][0]),
-  poison: emoji === '🧟'
+  poison: emoji === '🧟' || emoji === '🧟‍♀️',
+  ...(MONSTER_DOSSIERS[i] || {})
 }));
 
 export const D28_DATA = {
   version: VERSION,
   heroes,
   monsters,
+  rules: RULES,
   weapons: {
     warrior: WARRIOR_WEAPONS.map(normalizeWeapon),
     mage: MAGE_WEAPONS.map(normalizeWeapon),

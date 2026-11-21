@@ -8,7 +8,7 @@ let melodyTimer = null;
 let currentMelodyIdx = 0;
 
 const AUDIO_KEY = 'pz_audio';
-const DEFAULTS = { master: 10, music: 5, ambient: 3, sfx: 10, tempo: 600, melody: 'town' };
+const DEFAULTS = { master: 10, music: 0, ambient: 3, sfx: 10, tempo: 600, melody: 'town' };
 
 let audioSettings = { ...DEFAULTS };
 let currentTrack = audioSettings.melody;
@@ -39,6 +39,8 @@ function loadAudioSettings() {
     if (Number.isFinite(saved.tempo)) audioSettings.tempo = clamp(saved.tempo, 300, 1200);
     if (saved.melody) audioSettings.melody = saved.melody;
   } catch (e) {}
+  // Музыка есть в движке, но звучит беззвучно по общему требованию.
+  audioSettings.music = 0;
 }
 
 export function resetAudioSettings() {
@@ -100,6 +102,8 @@ function applyVolumes() {
 
 export function setVolume(type, val) {
   if (!Number.isFinite(val)) return;
+  // Музыка всегда беззвучна: ползунок остаётся в интерфейсе, но громкость не меняется.
+  if (type === 'music') val = 0;
 
   if (type === 'tempo') {
     currentTempo = clamp(val, 300, 1200);
@@ -405,7 +409,7 @@ export function playSound(type) {
       osc.connect(oscGain); oscGain.connect(sfxGain);
       oscGain.gain.setValueAtTime(0.1, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
       osc.start(now); osc.stop(now + 0.04);
-    } else if (type === 'collect') {
+    } else if (type === 'collect' || type === 'menu' || type === 'skip') {
       [880, 1320].forEach((freq, i) => {
         const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
         osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i*0.06);
@@ -413,7 +417,7 @@ export function playSound(type) {
         oscGain.gain.setValueAtTime(0.1, now + i*0.06); oscGain.gain.exponentialRampToValueAtTime(0.01, now + i*0.06 + 0.1);
         osc.start(now + i*0.06); osc.stop(now + i*0.06 + 0.1);
       });
-    } else if (type === 'magic') {
+    } else if (type === 'magic' || type === 'kill') {
       const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
       osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now);
       osc.frequency.linearRampToValueAtTime(600, now + 0.05); osc.frequency.linearRampToValueAtTime(300, now + 0.1); osc.frequency.linearRampToValueAtTime(800, now + 0.15);

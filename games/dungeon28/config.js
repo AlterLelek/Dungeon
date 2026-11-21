@@ -1,6 +1,6 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.166";
+export const VERSION = "5.167";
 export const GRID = 15;          // поле 15×15 клеток
 export const CELL = 32;
 export const WORLD = GRID * CELL; // 480px, размер игрового поля
@@ -46,18 +46,26 @@ export const ARCHER_WEAPONS = [
   {name:"Длинный лук★", css:"q-magic", dmg:16, cost:15}, {name:"Тяж. арбалет★", css:"q-magic", dmg:17, cost:16}
 ];
 
-export const ENEMY_TYPES = ["💀","👻","🐭","🕷","👺","🧟","🐢","😈","🧙‍♂️","🦹"];
+export const ENEMY_TYPES = [
+  "💀","👻","🐭","🕷","👺","🧟","🐢","😈","🧙‍♂️","🦹",
+  "🐺","👹","🪓","🧌","🗿","🧛","🧟‍♀️","🧜‍♀️","🐉","🧙"
+];
 export const ENEMY_NAMES = {
   "💀": "Скелет", "👻": "Призрак", "🐭": "Мышь", "🕷": "Паук",
-  "👺": "Огр", "🧟": "Зомби", "🐢": "Черепаха", "😈": "Черт", 
-  "🧙‍♂️": "Некромант", "🦹": "Тёмный арбалетчик"
+  "👺": "Огр", "🧟": "Зомби", "🐢": "Черепаха", "😈": "Черт",
+  "🧙‍♂️": "Некромант", "🦹": "Тёмный арбалетчик",
+  "🐺": "Волк", "👹": "Гоблин", "🪓": "Орк", "🧌": "Тролль", "🗿": "Голем",
+  "🧛": "Вампир", "🧟‍♀️": "Мумия", "🧜‍♀️": "Сирена", "🐉": "Виверна", "🧙": "Лич"
 };
 
 // Причины смерти: все монстры, их магия (яд) и прочее.
 export const ENEMY_KILLER_NAMES = {
   "💀": "убит скелетом", "👻": "убит призраком", "🐭": "убит мышью", "🕷": "убит пауком",
   "👺": "убит огром", "🧟": "убит зомби", "🐢": "убит черепахой", "😈": "убит чертом",
-  "🧙‍♂️": "убит некромантом", "🦹": "убит тёмным арбалетчиком"
+  "🧙‍♂️": "убит некромантом", "🦹": "убит тёмным арбалетчиком",
+  "🐺": "убит волком", "👹": "убит гоблином", "🪓": "убит орком", "🧌": "убит троллем",
+  "🗿": "убит големом", "🧛": "убит вампиром", "🧟‍♀️": "убит мумией",
+  "🧜‍♀️": "убит сиреной", "🐉": "убит виверной", "🧙": "убит личем"
 };
 
 export const DEATH_CAUSES = [
@@ -76,7 +84,17 @@ export const ENEMY_BASE = {
   "🐢": {hp:200, atk:3, def:8, speed:1, interest1:"Герой", interest2:"Защита", special:"Толстая защита"},
   "😈": {hp:85, atk:7, def:2, speed:1, interest1:"Герой", interest2:"-", special:"Регенерация"},
   "🧙‍♂️": {hp:90, atk:5, def:2, speed:1, interest1:"Трупы", interest2:"-", special:"Поднятие"},
-  "🦹": {hp:85, atk:8, def:1, speed:1, interest1:"Герой", interest2:"-", special:"Стрельба 2 + Вампиризм"}
+  "🦹": {hp:85, atk:8, def:1, speed:1, interest1:"Герой", interest2:"-", special:"Стрельба 2 + Вампиризм"},
+  "🐺": {hp:70, atk:6, def:1, speed:2, interest1:"Герой", interest2:"-", special:"Быстрая атака"},
+  "👹": {hp:65, atk:5, def:1, speed:2, interest1:"Герой", interest2:"Монеты", special:"Находка монет"},
+  "🪓": {hp:120, atk:7, def:2, speed:1, interest1:"Герой", interest2:"-", special:"Тяжёлый топор"},
+  "🧌": {hp:175, atk:9, def:3, speed:1, interest1:"Герой", interest2:"-", special:"Долгое восстановление"},
+  "🗿": {hp:240, atk:8, def:7, speed:1, interest1:"Герой", interest2:"Защита", special:"Каменная броня"},
+  "🧛": {hp:145, atk:11, def:3, speed:2, interest1:"Герой", interest2:"Жизнь", special:"Вампиризм + магия"},
+  "🧟‍♀️": {hp:160, atk:8, def:4, speed:1, interest1:"Герой", interest2:"-", special:"Яд"},
+  "🧜‍♀️": {hp:105, atk:9, def:2, speed:2, interest1:"Герой", interest2:"Мана", special:"Магическая песнь"},
+  "🐉": {hp:210, atk:12, def:4, speed:2, interest1:"Герой", interest2:"-", special:"Огненный выдох + магия"},
+  "🧙": {hp:190, atk:14, def:5, speed:1, interest1:"Герой", interest2:"Мана", special:"Мощная магия"}
 };
 
 export const MONSTER_SKINS = {
@@ -89,7 +107,17 @@ export const MONSTER_SKINS = {
   "🐢": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `assets/sprites/monsters/${n}.png`),
   "😈": ["demon_0","demon_1","demon_2","demon_3","imp_0","imp_1","imp_2","imp_3"].map(n => `assets/sprites/monsters/${n}.png`),
   "🧙‍♂️": ["necromancer_0","necromancer_1","necromancer_2","necromancer_3","necromancer_4","necromancer_5","necromancer_6","necromancer_7"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🦹": ["dark_archer_0","dark_archer_1","dark_archer_2","dark_archer_3"].map(n => `assets/sprites/monsters/${n}.png`)
+  "🦹": ["dark_archer_0","dark_archer_1","dark_archer_2","dark_archer_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🐺": ["rat_0"].map(n => `assets/sprites/monsters/${n}.png`),
+  "👹": ["imp_0","imp_1","imp_2","imp_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🪓": ["orc"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🧌": ["orge_0","orge_1","orge_2","orge_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🗿": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🧛": ["demon_0","demon_1","demon_2","demon_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🧟‍♀️": ["undead_0","undead_1","undead_2","undead_3","undead_4","undead_5","undead_6"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🧜‍♀️": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🐉": ["skeleton_7","skeleton_8","skeleton_9"].map(n => `assets/sprites/monsters/${n}.png`),
+  "🧙": ["necromancer_5","necromancer_6","necromancer_7"].map(n => `assets/sprites/monsters/${n}.png`)
 };
 
 export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'mana', 'lightning', 'heal', 'stun', 'hurricane'];
