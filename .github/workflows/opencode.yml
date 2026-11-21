@@ -24,4 +24,5 @@ jobs:
       - name: Run OpenCode
         uses: sst/opencode/github@latest
         with:
-          model: deepseek-v4.1-flash-free
+          model: opencode/deepseek-v4.1-flash-free
+
