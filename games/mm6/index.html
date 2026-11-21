@@ -2,983 +2,1690 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05060d">
 <title>Подземелье 6</title>
 <style>
-  * { box-sizing: border-box; }
-  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#05060d; color:#f3e8cf; font-family:"Segoe UI",Tahoma,sans-serif; }
-  #cv { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:#0a0d1c; box-shadow:0 0 70px rgba(0,0,0,.9); }
+/* ============================ ОСНОВЫ ============================ */
+:root{--gold:#fbbf24;--ink:#f3e8cf;--hero:#86efac;--enemy:#fca5a5;--neutral:#fde68a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#05060d;color:var(--ink);font-family:"Segoe UI",Tahoma,sans-serif;overscroll-behavior:none;touch-action:manipulation}
+button,input,select{font-family:inherit}
+.hidden{display:none!important}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+#stage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+#cv{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;background:#0a0d1c;box-shadow:0 0 60px rgba(0,0,0,.85)}
 
-  #start { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; overflow-y:auto;
-    background:radial-gradient(circle at 50% 10%,#2b2450 0%,#12142c 42%,#070810 100%); }
-  #start.hidden { display:none; }
-  .panel { width:min(620px,94vw); margin:16px auto; padding:18px 20px 22px; border:1px solid rgba(251,191,36,.38); border-radius:16px;
-    background:linear-gradient(160deg,rgba(20,22,44,.97),rgba(8,10,22,.98)); box-shadow:0 0 50px rgba(0,0,0,.75),inset 0 0 35px rgba(251,191,36,.05); }
-  .head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  h1 { margin:0; font-size:26px; letter-spacing:3px; color:#ffdc7a; text-shadow:0 0 18px rgba(251,191,36,.55); }
-  h1 span { color:#fff3c4; border:1px solid rgba(251,191,36,.6); border-radius:6px; padding:0 6px; font-size:20px; }
-  .linkbtn { background:transparent; border:1px solid rgba(255,255,255,.18); color:#b9bfd6; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:11px; }
-  .linkbtn:hover { border-color:#fbbf24; color:#ffe9b0; }
-  .progress { display:flex; align-items:center; gap:12px; margin:14px 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07); }
-  .progress svg { width:52px; height:52px; flex:0 0 52px; transform:rotate(-90deg); }
-  .progress circle { fill:none; stroke-width:4; }
-  .ringTrack { stroke:rgba(255,255,255,.10); }
-  #ring { stroke:#fbbf24; stroke-linecap:round; transition:stroke-dashoffset .5s ease,stroke .5s ease; filter:drop-shadow(0 0 4px rgba(251,191,36,.85)); }
-  body.achieved #ring { stroke:#7dffb2; filter:drop-shadow(0 0 7px rgba(125,255,178,.95)); }
-  .progress b { display:block; color:#ffe6a8; font-size:13px; }
-  .progress small { display:block; color:#a8afc8; font-size:11px; line-height:1.45; margin-top:2px; }
-  #winCounts { color:#fbbf24; font-weight:600; font-size:11px; margin-top:3px; }
-  h3 { margin:12px 0 6px; color:#9fb0d8; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
-  .carousel { display:flex; align-items:center; gap:8px; }
-  .arrow { width:36px; height:46px; flex:0 0 36px; border-radius:9px; border:1px solid rgba(255,255,255,.16); color:#d7dcf0; background:rgba(255,255,255,.05); cursor:pointer; font-size:16px; }
-  .arrow:hover { border-color:#fbbf24; color:#ffe9b0; }
-  .cards { flex:1; height:112px; display:flex; align-items:center; justify-content:center; gap:22px; overflow:hidden; }
-  .card { position:relative; width:128px; height:106px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; opacity:.55; transition:opacity .2s ease,transform .2s ease; }
-  .card.sel { opacity:1; transform:scale(1.05); cursor:default; }
-  .ring { position:absolute; left:50%; top:4px; width:82px; height:82px; margin-left:-41px; border:3px solid rgba(255,255,255,.20); border-radius:50%; transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease; }
-  .card.sel .ring { border-color:#ffd35e; box-shadow:0 0 14px rgba(255,211,94,.9),inset 0 0 12px rgba(255,211,94,.35); transform:scale(1.04); }
-  .card img { position:relative; width:70px; height:70px; object-fit:contain; filter:drop-shadow(0 4px 6px rgba(0,0,0,.6)); }
-  .cname { position:relative; margin-top:4px; font-size:11px; font-weight:700; color:#f4e7c6; }
-  .card.sel .cname { color:#ffe9b0; }
-  .desc { min-height:30px; margin:4px 0 0; text-align:center; font-size:11px; color:#aab4d0; line-height:1.45; }
-  .row { display:flex; gap:8px; margin-top:12px; }
-  .row input { flex:1; min-width:0; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.18); border-radius:9px; padding:10px 12px; color:#fff3d0; outline:none; }
-  .row input:focus { border-color:#fbbf24; }
-  #playBtn { padding:10px 18px; border:0; border-radius:9px; cursor:pointer; font-weight:800; color:#241704; background:linear-gradient(180deg,#ffe9a8,#f5b92c); box-shadow:0 4px 0 #8a5b0c,0 0 20px rgba(251,191,36,.35); }
-  #playBtn:active { transform:translateY(2px); box-shadow:0 2px 0 #8a5b0c; }
-  .hint { margin-top:10px; text-align:center; color:#6f7898; font-size:10px; line-height:1.5; }
+/* ============================ МОБИЛЬНЫЕ КНОПКИ ============================ */
+#controls{position:absolute;inset:0;z-index:6;pointer-events:none}
+#controls button{pointer-events:auto;touch-action:manipulation}
+.leftDock{position:absolute;left:8px;bottom:8px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:2px}
+.dpad button{border:1px solid rgba(251,191,36,.42);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;font-size:17px;font-weight:800}
+.dpad .up{grid-area:1/2}.dpad .dn{grid-area:3/2}.dpad .lf{grid-area:2/1}.dpad .rt{grid-area:2/3}
+.dpad .mid{grid-area:2/2;background:rgba(0,0,0,.22);border-color:transparent;pointer-events:none}
+.turnPair{display:flex;gap:6px;align-items:flex-end}
+.turnTri{position:relative;width:48px;height:60px;border:1px solid rgba(251,191,36,.38);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;cursor:pointer}
+.turnTri .tri{position:absolute;left:7px;top:5px;width:0;height:0;border-top:21px solid transparent;border-bottom:21px solid transparent;border-right:30px solid #fbbf24}
+.turnTri.right .tri{border-right:0;border-left:30px solid #fbbf24}
+.turnTri .lbl{position:absolute;left:0;right:0;bottom:3px;font-size:8px;text-align:center;color:#ffe9b0}
+.rightDock{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
+.rightDock button{width:48px;height:48px;border-radius:9px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.24)}
+.rightDock button.hot{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.3)}
+#party{position:absolute;z-index:4;left:50%;top:4px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
+.pcard{width:122px;padding:3px 5px;border-radius:8px;background:rgba(6,8,18,.86);border:1px solid rgba(251,191,36,.35);font-size:9px}
+.pcard.active{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.35)}
+.pcard .ptop{display:flex;align-items:center;gap:4px}
+.pcard .pemoji{font-size:17px}
+.pcard .pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.pbar{height:4px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:2px;overflow:hidden}
+.pbar i{display:block;height:100%;background:#f87171}
+.pbar.mp i{background:#60a5fa}
+@media (orientation:portrait){
+  #stage{flex:0 0 auto;width:100%;height:auto;aspect-ratio:16/9;max-height:52vh}
+  #controls{position:relative;inset:auto;flex:1 1 auto;display:flex;align-items:stretch;justify-content:space-between;padding:10px 10px calc(10px + env(safe-area-inset-bottom,0px));gap:8px}
+  .leftDock,.rightDock{position:relative;left:auto;right:auto;bottom:auto;top:auto}
+  .leftDock,.rightDock{justify-content:center}
+  .pcard{width:104px}
+}
+@media (max-height:430px) and (orientation:landscape){
+  .dpad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px)}
+  .rightDock button{width:44px;height:44px}
+  .turnTri{width:44px;height:52px}
+}
 
-  #turnPad, #buildPad { position:fixed; bottom:12px; z-index:10; display:none; gap:8px; }
-  #turnPad { left:50%; transform:translateX(-50%); }
-  #buildPad { left:12px; }
-  #turnPad.show, #buildPad.show { display:flex; }
-  #turnPad button, #buildPad button { height:46px; padding:0 12px; border-radius:10px; border:1px solid rgba(251,191,36,.45); color:#ffe9b0; background:rgba(12,14,28,.86); cursor:pointer; font-size:11px; font-weight:700; white-space:nowrap; }
-  #turnPad button:active, #buildPad button:active { transform:translateY(2px); }
-  #fleeBtn { position:fixed; right:12px; bottom:12px; z-index:12; display:none; padding:10px 14px; border-radius:10px; border:1px solid rgba(248,113,113,.6); color:#ffd5d5; background:rgba(58,12,20,.92); cursor:pointer; font-size:12px; font-weight:800; }
-  #fleeBtn.show { display:block; }
-  #fleeBtn:active { transform:translateY(2px); }
-
-  #shop { position:fixed; inset:0; z-index:30; display:none; align-items:center; justify-content:center; background:rgba(3,4,10,.82); }
-  #shop.show { display:flex; }
-  .shopPanel { width:min(640px,94vw); max-height:86vh; overflow:auto; padding:18px; border:1px solid rgba(251,191,36,.5); border-radius:14px; background:linear-gradient(160deg,#171a34,#080a18); box-shadow:0 0 50px rgba(0,0,0,.8); }
-  .shopHead { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  .shopHead h2 { margin:0; font-size:17px; color:#ffe09a; }
-  .shopSec { margin:10px 0 4px; color:#9fb0d8; font-size:10px; letter-spacing:2px; text-transform:uppercase; }
-  .shopItem { display:flex; align-items:center; gap:8px; padding:7px 9px; margin:4px 0; border:1px solid rgba(255,255,255,.10); border-radius:9px; background:rgba(255,255,255,.035); }
-  .shopItem img { width:32px; height:32px; object-fit:contain; }
-  .shopItem div { flex:1; font-size:12px; }
-  .shopItem small { display:block; color:#9aa4c2; font-size:10px; }
-  .shopItem button { border:0; border-radius:7px; padding:7px 9px; cursor:pointer; background:#fbbf24; color:#241704; font-weight:800; font-size:10px; }
-  .shopItem button.sell { background:#4b6b8a; color:#eaf4ff; }
-  .shopItem button.use { background:#547a4a; color:#efffe9; }
-  .shopItem button:disabled { background:#3a3d52; color:#838aa4; cursor:default; }
-  .shopFoot { margin-top:10px; text-align:right; font-size:11px; color:#fbbf24; }
-
-  #toast { position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(20px); z-index:60; pointer-events:none; padding:10px 18px; border-radius:20px; background:rgba(12,14,28,.94); border:1px solid rgba(251,191,36,.6); color:#ffe9b0; font-size:12px; font-weight:700; opacity:0; transition:opacity .25s,transform .25s; white-space:nowrap; }
-  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+/* ============================ ОКНА ============================ */
+.overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(3,4,10,.86);overflow:auto}
+.box{width:min(720px,96vw);max-height:92vh;overflow:auto;padding:16px;border:1px solid rgba(251,191,36,.45);border-radius:14px;background:linear-gradient(160deg,#161a33,#080a18);box-shadow:0 0 50px rgba(0,0,0,.8)}
+#start .box{width:min(560px,96vw)}
+h1{margin:0;font-size:25px;letter-spacing:3px;color:#ffdc7a;text-shadow:0 0 16px rgba(251,191,36,.5)}
+h1 span{color:#fff3c4;border:1px solid rgba(251,191,36,.6);border-radius:6px;padding:0 6px;font-size:20px}
+h2{margin:0;font-size:17px;color:#ffe09a}
+h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.link{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#b9bfd6;border-radius:8px;padding:8px 10px;min-height:36px;cursor:pointer;font-size:11px}
+.link:hover{border-color:#fbbf24;color:#ffe9b0}
+.progress{display:flex;align-items:center;gap:12px;margin:12px 0;padding:10px;border-radius:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+.progress svg{width:48px;height:48px;flex:0 0 48px;transform:rotate(-90deg)}
+.progress circle{fill:none;stroke-width:4}
+.ringTrack{stroke:rgba(255,255,255,.1)}
+#ring{stroke:#fbbf24;stroke-linecap:round;transition:stroke-dashoffset .4s}
+.achieved #ring{stroke:#7dffb2}
+.progress b{display:block;color:#ffe6a8;font-size:12px}
+.progress small{display:block;color:#a8afc8;font-size:10px;line-height:1.4;margin-top:2px}
+.diffRow{display:flex;gap:8px;flex-wrap:wrap}
+.diff{flex:1;min-width:92px;min-height:58px;border:1px solid rgba(255,255,255,.16);border-radius:10px;background:rgba(255,255,255,.04);color:#d7dcf0;cursor:pointer;font-size:12px;font-weight:700;padding:6px}
+.diff.sel{border-color:#ffd35e;background:rgba(251,191,36,.14);color:#ffe9b0;box-shadow:0 0 12px rgba(251,191,36,.25)}
+.diff small{display:block;font-weight:400;color:#a8afc8;margin-top:3px;font-size:9px}
+.heroPick{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.heroPick .card{flex:1;min-width:0;min-height:72px;display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid rgba(251,191,36,.38);border-radius:10px;background:rgba(255,255,255,.035)}
+.heroPick .big{font-size:30px;width:38px;text-align:center}
+.heroPick .card b{display:block;color:#ffe9b0;font-size:13px}
+.heroPick .card small{display:block;color:#a8afc8;font-size:10px;line-height:1.35}
+.arrow{width:44px;height:46px;flex:0 0 44px;border:1px solid rgba(255,255,255,.16);border-radius:9px;background:rgba(255,255,255,.05);color:#d7dcf0;cursor:pointer;font-size:16px}
+.row{display:flex;gap:8px;margin-top:10px}
+.row input{flex:1;min-width:0;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:10px;color:#fff3d0;outline:none}
+.row input:focus{border-color:#fbbf24}
+.play{border:0;border-radius:9px;padding:10px 18px;min-height:44px;cursor:pointer;font-weight:800;color:#241704;background:linear-gradient(180deg,#ffe9a8,#f5b92c);box-shadow:0 4px 0 #8a5b0c}
+.hint{margin-top:10px;text-align:center;color:#8b94b2;font-size:10px;line-height:1.6}
+.rowItem{display:flex;align-items:center;gap:8px;padding:7px;margin:4px 0;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:rgba(255,255,255,.035)}
+.rowItem .ic{font-size:22px;width:28px;text-align:center;flex:0 0 28px}
+.rowItem .info{flex:1;min-width:0;font-size:12px}
+.rowItem small{display:block;color:#9aa4c2;font-size:10px;line-height:1.35}
+.act{border:0;border-radius:7px;padding:7px 9px;min-height:34px;cursor:pointer;background:#fbbf24;color:#241704;font-weight:800;font-size:10px;white-space:nowrap}
+.act.sell{background:#4b6b8a;color:#eaf4ff}.act.use{background:#547a4a;color:#efffe9}.act.magic{background:#7c4bb0;color:#fff}
+.act.warn{background:#b91c1c;color:#fff}
+.act:disabled{background:#3a3d52;color:#838aa4;cursor:default}
+.sec{margin:10px 0 4px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.foot{margin-top:10px;text-align:right;font-size:11px;color:#fbbf24}
+.invBody{display:flex;gap:12px}
+.mannequin{width:172px;flex:0 0 172px;border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:9px;background:rgba(0,0,0,.25);text-align:center}
+.mannequin .face{font-size:44px;line-height:1.1}
+.mannequin .slot{margin-top:7px;padding:6px;border-radius:8px;background:rgba(255,255,255,.04);font-size:10px}
+.mannequin .slot b{display:block;color:#ffe9b0;font-size:11px}
+.mannequin .bad{color:#fca5a5;font-size:10px;margin-top:6px;line-height:1.35}
+.invRight{flex:1;min-width:0}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.tab{min-height:36px;padding:6px 9px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(255,255,255,.04);color:#c8cfe4;cursor:pointer;font-size:10px}
+.tab.sel{border-color:#fbbf24;color:#ffe9b0;background:rgba(251,191,36,.14)}
+.rewardBtn{display:block;width:100%;margin:7px 0;padding:13px;border:1px solid rgba(251,191,36,.4);border-radius:10px;background:rgba(255,255,255,.05);color:#ffe9b0;cursor:pointer;font-size:14px;font-weight:800}
+.rewardBtn:hover{background:rgba(251,191,36,.16)}
+.recList{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.recRow{display:flex;gap:8px;align-items:center;padding:6px 8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(255,255,255,.025);font-size:11px;color:#8b94b2}
+.recRow.got{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.08);color:#ffe9b0}
+.recRow span:first-child{width:16px;text-align:center;flex:0 0 16px}
+#toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (max-width:620px){.invBody{flex-direction:column}.mannequin{width:100%;flex:auto}.box{padding:12px}}
 </style>
 </head>
 <body>
-<canvas id="cv" width="640" height="360" aria-label="Игра Подземелье 6"></canvas>
-
-<div id="start">
-  <div class="panel">
-    <div class="head">
-      <h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1>
-      <button class="linkbtn" id="homeBtn">Главное меню</button>
-    </div>
-    <div class="progress">
-      <svg viewBox="0 0 42 42" aria-hidden="true">
-        <circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle>
-      </svg>
-      <div>
-        <b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b>
-        <small id="achText">5 побед в «Карте» и 5 побед в «Быстрой схватке»</small>
-        <div id="winCounts">Карта 0/5 · Схватка 0/5</div>
+<div id="app">
+  <div id="stage">
+    <canvas id="cv" width="640" height="360" aria-label="Подземелье 6"></canvas>
+    <div id="party" class="hidden"></div>
+  </div>
+  <div id="controls" class="hidden">
+    <div class="leftDock">
+      <div class="dpad" aria-label="Движение">
+        <button class="up" data-move="up" aria-label="Вперёд">▲</button>
+        <button class="lf" data-move="left" aria-label="Влево">◀</button>
+        <div class="mid"></div>
+        <button class="rt" data-move="right" aria-label="Вправо">▶</button>
+        <button class="dn" data-move="down" aria-label="Назад">▼</button>
+      </div>
+      <div class="turnPair">
+        <button class="turnTri" id="turnLeft" aria-label="Повернуть влево"><span class="tri"></span><span class="lbl">влево</span></button>
+        <button class="turnTri right" id="turnRight" aria-label="Повернуть вправо"><span class="tri"></span><span class="lbl">вправо</span></button>
       </div>
     </div>
-    <h3>Герой</h3>
-    <div class="carousel">
-      <button class="arrow" id="heroPrev" aria-label="Предыдущий герой">◀</button>
-      <div class="cards" id="heroCarousel"></div>
-      <button class="arrow" id="heroNext" aria-label="Следующий герой">▶</button>
+    <div class="rightDock">
+      <button id="btnAttack" aria-label="Атака" title="Атака [Пробел]">⚔</button>
+      <button id="btnSpell" aria-label="Заклинание" title="Заклинание [F]">✨</button>
+      <button id="btnFlee" aria-label="Бегство" title="Бегство [R]">🏃</button>
+      <button id="btnInv" aria-label="Инвентарь" title="Инвентарь [I]">🎒</button>
+      <button id="btnShop" aria-label="Магазин" title="Магазин [B]">🛒</button>
+      <button id="btnInteract" aria-label="Взаимодействие" title="Взаимодействие [Enter]">↵</button>
     </div>
-    <p class="desc" id="heroDesc"></p>
-    <h3>Режим</h3>
-    <div class="carousel">
-      <button class="arrow" id="modePrev" aria-label="Предыдущий режим">◀</button>
-      <div class="cards" id="modeCarousel"></div>
-      <button class="arrow" id="modeNext" aria-label="Следующий режим">▶</button>
-    </div>
-    <p class="desc" id="modeDesc"></p>
-    <div class="row">
-      <input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя">
-      <button id="playBtn">▶ Играть</button>
-    </div>
-    <div class="hint">◀ ▶ — герой · ▲ ▼ — режим · Enter — старт<br>WASD/стрелки — движение · Q/E (й/у) — поворот · Enter — вход в здание · B — лавка · M — меню</div>
   </div>
 </div>
 
-<div id="turnPad">
-  <button id="turnLeft" aria-label="Поворот влево">⟲ Повернуть влево</button>
-  <button id="turnRight" aria-label="Поворот вправо">⟳ Повернуть вправо</button>
-</div>
-<div id="buildPad">
-  <button id="buildShop" aria-label="Открыть лавку">🛒 Лавка [Enter]</button>
-  <button id="buildExit" aria-label="Выйти из здания">🚪 Выйти из здания</button>
-</div>
-<button id="fleeBtn" aria-label="Побег из боя">🏃 Бегство [R]</button>
-
-<div id="shop">
-  <div class="shopPanel">
-    <div class="shopHead"><h2 id="shopTitle">🛒 Лавка</h2><button class="linkbtn" id="shopClose">Закрыть [B]</button></div>
-    <div id="shopList"></div>
-    <div class="shopFoot">Золото: <b id="shopGold">0</b> · Кристаллы: <b id="shopCrystals">0</b></div>
+<div id="start" class="overlay">
+  <div class="box">
+    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="homeBtn">Главное меню</button></div></div>
+    <div class="progress">
+      <svg viewBox="0 0 42 42" aria-hidden="true"><circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle></svg>
+      <div><b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b><small id="achText">Победите 10 боссов на карте, чтобы замкнуть круг.</small><div id="winCounts">Боссы 0/10</div></div>
+    </div>
+    <h3>Отряд · первый герой</h3>
+    <div class="heroPick"><button class="arrow" id="h1Prev" aria-label="Предыдущий герой">◀</button><div class="card" id="h1Card"></div><button class="arrow" id="h1Next" aria-label="Следующий герой">▶</button></div>
+    <h3>Отряд · второй герой</h3>
+    <div class="heroPick"><button class="arrow" id="h2Prev" aria-label="Предыдущий напарник">◀</button><div class="card" id="h2Card"></div><button class="arrow" id="h2Next" aria-label="Следующий напарник">▶</button></div>
+    <h3>Сложность</h3>
+    <div class="diffRow" id="diffRow"></div>
+    <div class="row"><input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя"><button class="play" id="playBtn">▶ Играть</button></div>
+    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка · I — инвентарь · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
   </div>
 </div>
+
+<div id="records" class="overlay hidden"><div class="box" style="width:min(460px,96vw)">
+  <div class="head"><h2>🏆 Рекорды</h2><button class="link" id="recordsClose">Закрыть</button></div>
+  <div id="recordsList" class="recList"></div>
+</div></div>
+
+<div id="shop" class="overlay hidden"><div class="box">
+  <div class="head"><h2 id="shopTitle">🛒 Лавка</h2><button class="link" id="shopClose">Закрыть [B]</button></div>
+  <div class="tabs" id="shopTabs"></div>
+  <div id="shopList"></div><div class="foot">Золото: <b id="shopGold">0</b> · Кристаллы: <b id="shopCrystals">0</b></div>
+</div></div>
+
+<div id="inventory" class="overlay hidden"><div class="box">
+  <div class="head"><h2>🎒 Инвентарь</h2><button class="link" id="invClose">Закрыть [I]</button></div>
+  <div class="invBody"><div class="mannequin" id="mannequin"></div><div class="invRight"><div class="tabs" id="invTabs"></div><div id="invList"></div></div></div>
+</div></div>
+
+<div id="reward" class="overlay hidden"><div class="box" style="width:min(440px,94vw)">
+  <h2 id="rewardTitle">🏆 Награда босса</h2><p id="rewardText" style="font-size:12px;color:#a8afc8"></p><div id="rewardList"></div>
+</div></div>
+
+<div id="spellMenu" class="overlay hidden"><div class="box" style="width:min(440px,94vw)">
+  <div class="head"><h2>✨ Заклинания</h2><button class="link" id="spellClose">Отмена</button></div><div id="spellList"></div>
+</div></div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
-<script>
-(function(){
-  'use strict';
-  window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 16);
-  window.cancelAnimationFrame = id => clearTimeout(id);
-
-  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-  const W = 640, H = 360, ASSET = '../dungeon28/assets/sprites/';
-  const startScreen = document.getElementById('start'), shop = document.getElementById('shop'), toastEl = document.getElementById('toast');
-  const turnPad = document.getElementById('turnPad'), buildPad = document.getElementById('buildPad'), fleeBtn = document.getElementById('fleeBtn');
-  let toastTimer = 0;
-  function updatePads(){
-    const active=!!game, inBattle=!!(game&&game.battle&&!game.battle.end), inMap=!!(game&&game.mode==='map'), inShop=!!(game&&game.shopOpen);
-    turnPad.classList.toggle('show',active&&inMap&&!inBattle&&!inShop);
-    buildPad.classList.toggle('show',active&&inMap&&!!game.interior&&!inBattle&&!inShop);
-    fleeBtn.classList.toggle('show',active&&inBattle);
-  }
-
-  function fit(){
-    const s = Math.min(innerWidth / W, innerHeight / H);
-    cv.style.width = Math.max(1,Math.floor(W*s)) + 'px';
-    cv.style.height = Math.max(1,Math.floor(H*s)) + 'px';
-  }
-  addEventListener('resize', fit); fit();
-
-  function toast(text){
-    toastEl.textContent = text; toastEl.classList.add('show');
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
-  }
-
-  /* База Подземелья 28: герои, монстры, оружие и цены покупки не меняются. */
-  const HEROES = [
-    { name:'Воин', set:'warrior', hp:100, mp:3, atk:1, def:0, sprite:ASSET+'heroes/knight_0.png',
-      desc:'Крепкий боец из Подземелья 28. Держит строй и бьёт наверняка.',
-      weapons:[
-        {name:'Кулаки',dmg:1,cost:0,sprite:ASSET+'items/sword_0.png'},
-        {name:'Кинжал',dmg:2,cost:1,sprite:ASSET+'items/sword_1.png'},
-        {name:'Меч',dmg:3,cost:2,sprite:ASSET+'items/sword_2.png'},
-        {name:'Топор',dmg:4,cost:3,sprite:ASSET+'items/axe_0.png'},
-        {name:'Молот',dmg:5,cost:4,sprite:ASSET+'items/axe_1.png'},
-        {name:'Кинжал+',dmg:6,cost:5},{name:'Меч+',dmg:7,cost:6},{name:'Топор+',dmg:8,cost:7},{name:'Молот+',dmg:9,cost:8},
-        {name:'Кинжал++',dmg:10,cost:9},{name:'Меч++',dmg:11,cost:10},{name:'Топор++',dmg:12,cost:11},{name:'Молот++',dmg:13,cost:12},
-        {name:'Кинжал★',dmg:14,cost:13},{name:'Меч★',dmg:15,cost:14},{name:'Топор★',dmg:16,cost:15},{name:'Молот★',dmg:17,cost:16}
-      ]},
-    { name:'Маг', set:'mage', hp:80, mp:5, atk:1, def:0, sprite:ASSET+'heroes/wizard_0.png',
-      desc:'Хрупкий, но дальнобойный. Заряд маны бьёт сильнее.',
-      weapons:[
-        {name:'Кулаки',dmg:1,cost:0},{name:'Кольцо',dmg:2,cost:1},
-        {name:'Палочка',dmg:3,cost:2,sprite:ASSET+'items/staff_0.png'},
-        {name:'Амулет',dmg:4,cost:3},{name:'Книга',dmg:5,cost:4},
-        {name:'Кольцо+',dmg:6,cost:5},{name:'Палочка+',dmg:7,cost:6},{name:'Амулет+',dmg:8,cost:7},{name:'Книга+',dmg:9,cost:8},
-        {name:'Кольцо++',dmg:10,cost:9},{name:'Палочка++',dmg:11,cost:10},{name:'Амулет++',dmg:12,cost:11},{name:'Книга++',dmg:13,cost:12},
-        {name:'Кольцо★',dmg:14,cost:13},{name:'Палочка★',dmg:15,cost:14},{name:'Амулет★',dmg:16,cost:15},{name:'Книга★',dmg:17,cost:16}
-      ]}
-  ];
-
-  const MONSTERS = [
-    {name:'Скелет', hp:100, atk:5, def:0, sprite:ASSET+'monsters/skeleton_0.png'},
-    {name:'Призрак', hp:75, atk:4, def:0, sprite:ASSET+'monsters/ghost_0.png'},
-    {name:'Мышь', hp:50, atk:3, def:0, sprite:ASSET+'monsters/rat_0.png'},
-    {name:'Паук', hp:60, atk:4, def:0, sprite:ASSET+'monsters/spider_0.png'},
-    {name:'Огр', hp:130, atk:6, def:1, sprite:ASSET+'monsters/orge_0.png'},
-    {name:'Зомби', hp:150, atk:6, def:1, sprite:ASSET+'monsters/undead_0.png', poison:true},
-    {name:'Черепаха', hp:200, atk:3, def:8, sprite:ASSET+'monsters/turtle_0.png'},
-    {name:'Черт', hp:85, atk:7, def:2, sprite:ASSET+'monsters/demon_0.png'},
-    {name:'Некромант', hp:90, atk:5, def:2, sprite:ASSET+'monsters/necromancer_0.png'},
-    {name:'Тёмный арбалетчик', hp:85, atk:8, def:1, sprite:ASSET+'monsters/dark_archer_0.png'}
-  ];
-
-  const MODES = [
-    {id:'map', name:'Карта', icon:'🗺', desc:'Три региона 10×10: враги, здания, бонусы и лавки. Победи всех врагов всех регионов.'},
-    {id:'skirmish', name:'Быстрая схватка', icon:'⚔', desc:'Короткий пошаговый бой с видом из-за спины: чужак слева, герой справа.'}
-  ];
-
-  /* Новые товары. Цены покупки оружия остаются из d28; цены продажи новых вещей можно подгонять свободно. */
-  const GOODS = [
-    {id:'leather', name:'Кожаная броня', kind:'armor', armor:1, buy:4, sell:3, desc:'Защита +1'},
-    {id:'iron', name:'Железная броня', kind:'armor', armor:2, buy:8, sell:6, desc:'Защита +2'},
-    {id:'potion', name:'Зелье здоровья', kind:'item', heal:25, buy:5, sell:4, desc:'Лечит 25 HP'},
-    {id:'charm', name:'Оберег маны', kind:'item', mp:3, buy:6, sell:5, desc:'Восстанавливает 3 MP'},
-    {id:'crystal', name:'Кристалл', kind:'item', crystal:1, buy:7, sell:6, desc:'Редкий товар'},
-    {id:'coin', name:'Древняя монета', kind:'item', gold:3, buy:0, sell:3, desc:'Находка на карте'}
-  ];
-  const BUILDINGS = {
-    smith:{title:'Оружейная', accent:'#d9a441'},
-    market:{title:'Рынок', accent:'#7ec8a1'},
-    alchemy:{title:'Алхимическая лавка', accent:'#a58cff'}
-  };
-  const PICKUPS = {
-    coin:{icon:'🪙', color:'#ffd76a', label:'монеты'},
-    mana:{icon:'💧', color:'#7dd3fc', label:'ману'},
-    crystal:{icon:'🔷', color:'#a5b4fc', label:'кристалл'},
-    armor:{icon:'🛡', color:'#bde0b5', label:'броню'}
-  };
-  const DIRS = [[0,-1],[1,0],[0,1],[-1,0]];
-  const DIR_NAMES = ['север','восток','юг','запад'];
-  const TILE=32, GRASS=0, ROAD=1, TREE=2, SHOP=3, CAVE=4, WALL=5, FLOOR=6, COUNTER=7, EXIT=8;
-  const REGIONS=3;
-  const C_HERO='#86efac', C_ENEMY='#fca5a5', C_NEUTRAL='#fde68a';
-
-  const imgCache = new Map();
-  function img(src){
-    if(!src) return null;
-    if(!imgCache.has(src)){ const im = new Image(); im.src = src; imgCache.set(src, im); }
-    return imgCache.get(src);
-  }
-  HEROES.forEach(h => img(h.sprite)); MONSTERS.forEach(m => img(m.sprite));
-
-  const storeKey = 'mm6_progress_v2';
-  function loadProgress(){
-    try{
-      const p = JSON.parse(localStorage.getItem(storeKey) || '{}');
-      return { map:Math.max(0,Number(p.map)||0), skirmish:Math.max(0,Number(p.skirmish)||0), achieved:!!p.achieved };
-    }catch(e){ return {map:0,skirmish:0,achieved:false}; }
-  }
-  let progress = loadProgress();
-  function saveProgress(){ try{ localStorage.setItem(storeKey, JSON.stringify(progress)); }catch(e){} }
-
-  let phase='start', heroIdx=0, modeIdx=0, heroName='Герой', game=null, last=performance.now();
-  let audioCtx=null;
-
-  function beep(freq,dur){
-    try{
-      if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-      if(audioCtx.state==='suspended') audioCtx.resume();
-      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
-      o.type='triangle'; o.frequency.value=freq;
-      g.gain.setValueAtTime(.06,audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
-      o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+dur);
-    }catch(e){}
-  }
-  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
-  function lerp(a,b,t){ return a+(b-a)*t; }
-  function ease(t){ return t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
-  function rnd(a,b){ return a+Math.floor(Math.random()*(b-a+1)); }
-  function key(x,y){ return x+','+y; }
-  function good(id){ return GOODS.find(g=>g.id===id); }
-
-  function updateProgressUI(){
-    const mw=Math.min(5,progress.map), sw=Math.min(5,progress.skirmish), filled=Math.min(10,mw+sw);
-    const c=2*Math.PI*17, ring=document.getElementById('ring');
-    ring.style.strokeDasharray=String(c); ring.style.strokeDashoffset=String(c*(1-filled/10));
-    document.getElementById('winCounts').textContent='Карта '+mw+'/5 · Схватка '+sw+'/5';
-    if(progress.achieved){
-      document.body.classList.add('achieved');
-      document.getElementById('achTitle').textContent='ДОСТИЖЕНИЕ ПОЛУЧЕНО ✦';
-      document.getElementById('achText').textContent='Круг славы закрыт: 5 побед в карте и 5 в схватке.';
-    }else{
-      document.body.classList.remove('achieved');
-      document.getElementById('achTitle').textContent='ДОСТИЖЕНИЕ · КРУГ СЛАВЫ';
-      document.getElementById('achText').textContent='5 побед в «Карте» и 5 побед в «Быстрой схватке»';
-    }
-  }
-
-  function renderCards(){
-    const hb=document.getElementById('heroCarousel'), mb=document.getElementById('modeCarousel');
-    hb.innerHTML=''; mb.innerHTML='';
-    HEROES.forEach((h,i)=>{
-      const card=document.createElement('div');
-      card.className='card'+(i===heroIdx?' sel':'');
-      card.innerHTML='<div class="ring"></div><img src="'+h.sprite+'" alt=""><div class="cname">'+h.name+'</div>';
-      if(i!==heroIdx) card.onclick=()=>{ heroIdx=i; renderCards(); };
-      hb.appendChild(card);
-    });
-    MODES.forEach((m,i)=>{
-      const card=document.createElement('div');
-      card.className='card'+(i===modeIdx?' sel':'');
-      card.innerHTML='<div class="ring"></div><div style="position:relative;font-size:40px;line-height:70px">'+m.icon+'</div><div class="cname">'+m.name+'</div>';
-      if(i!==modeIdx) card.onclick=()=>{ modeIdx=i; renderCards(); };
-      mb.appendChild(card);
-    });
-    document.getElementById('heroDesc').textContent=HEROES[heroIdx].name+': '+HEROES[heroIdx].desc;
-    document.getElementById('modeDesc').textContent=MODES[modeIdx].desc;
-    updateProgressUI();
-  }
-  function selectHero(d){ heroIdx=(heroIdx+d+HEROES.length)%HEROES.length; renderCards(); }
-  function selectMode(d){ modeIdx=(modeIdx+d+MODES.length)%MODES.length; renderCards(); }
-  document.getElementById('heroPrev').onclick=()=>selectHero(-1);
-  document.getElementById('heroNext').onclick=()=>selectHero(1);
-  document.getElementById('modePrev').onclick=()=>selectMode(-1);
-  document.getElementById('modeNext').onclick=()=>selectMode(1);
-  document.getElementById('playBtn').onclick=startGame;
-  document.getElementById('homeBtn').onclick=goHub;
-  document.getElementById('turnLeft').onclick=()=>turnPlayer(-1);
-  document.getElementById('turnRight').onclick=()=>turnPlayer(1);
-  document.getElementById('buildShop').onclick=()=>toggleShop(true);
-  document.getElementById('buildExit').onclick=exitBuilding;
-  fleeBtn.onclick=fleeBattle;
-  document.getElementById('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();startGame();} });
-
-  function goHub(){ location.href='../../index.html'; }
-
-  function startGame(){
-    heroName=(document.getElementById('heroName').value||'').trim().slice(0,14)||'Герой';
-    const h=HEROES[heroIdx];
-    game={
-      mode:MODES[modeIdx].id, heroIdx, heroName, region:0, interior:null,
-      hero:{ hp:h.hp, maxHp:h.hp, mp:h.mp, maxMp:h.mp, weaponLevel:0, gold:0, armor:0,
-             weapons:h.weapons.map(w=>({...w,sell:Math.max(1,Math.floor((w.cost||0)*.75))})),
-             soldWeapons:[], inventory:[] },
-      player:{ x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,dir:0,face:1 },
-      map:null, buildings:{}, enemies:[], pickups:[], battle:null, theme:rnd(0,2), msg:'', shopOpen:false
-    };
-    phase='play'; startScreen.classList.add('hidden');
-    if(game.mode==='map') startRegion(); else startBattle('skirmish', MONSTERS[rnd(0,MONSTERS.length-1)]);
-    updatePads();
-  }
-
-  /* ---------- общая отрисовка ---------- */
-  function cloud(x,y,s,a){
-    ctx.save(); ctx.globalAlpha=a; ctx.fillStyle='#dfe8ff'; ctx.beginPath();
-    ctx.ellipse(x,y,34*s,10*s,0,0,6.29); ctx.ellipse(x-19*s,y+2*s,21*s,8*s,0,0,6.29); ctx.ellipse(x+17*s,y+3*s,23*s,8*s,0,0,6.29);
-    ctx.fill(); ctx.restore();
-  }
-  function sky(now){
-    const g=ctx.createLinearGradient(0,0,0,H);
-    g.addColorStop(0,'#0e1738'); g.addColorStop(.45,'#334178'); g.addColorStop(.75,'#6c5a86'); g.addColorStop(1,'#252239');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='rgba(255,246,210,.85)'; ctx.beginPath(); ctx.arc(544,52,19,0,6.29); ctx.fill();
-    for(let i=0;i<22;i++){ ctx.globalAlpha=.22+.4*Math.abs(Math.sin(now/700+i)); ctx.fillRect((i*83+31)%W,(i*47+13)%130,1.5,1.5); }
-    ctx.globalAlpha=1;
-    cloud(((now/32)%(W+220))-110,44,1.1,.20);
-    cloud(((now/47+150)%(W+260))-130,86,.85,.16);
-  }
-  function roundRect(x,y,w,h,r){
-    ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
-  }
-  function panel(x,y,w,h){ roundRect(x,y,w,h,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.45)'; ctx.lineWidth=1.5; ctx.stroke(); }
-  function bar(x,y,w,label,value,max,color){
-    ctx.fillStyle='#f4e7c6'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(label,x,y+6);
-    ctx.fillStyle='rgba(255,255,255,.10)'; roundRect(x+24,y+2,w-24,8,4); ctx.fill();
-    const r=max>0?clamp(value/max,0,1):0;
-    if(r>0){ ctx.fillStyle=color; roundRect(x+24,y+2,Math.max(3,(w-24)*r),8,4); ctx.fill(); }
-    ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.fillText(Math.max(0,Math.round(value))+'/'+Math.max(0,Math.round(max)),x+w,y+6);
-  }
-  function drawSprite(src,x,y,size,scaleX,scaleY,bend,alpha){
-    const im=img(src); ctx.save();
-    ctx.globalAlpha=alpha==null?1:alpha;
-    ctx.translate(x,y); ctx.rotate(bend||0); ctx.transform(scaleX==null?1:scaleX,0,0,scaleY==null?1:scaleY,0,0);
-    if(im&&im.complete&&im.naturalWidth) ctx.drawImage(im,-size/2,-size,size,size);
-    else{ ctx.fillStyle='#9fb2ff'; ctx.beginPath(); ctx.ellipse(0,-size*.55,size*.22,size*.38,0,0,6.29); ctx.fill(); }
-    ctx.restore();
-  }
-  function drawHeroBack(x,y,size,now,lunge,bend){
-    const h=HEROES[game.heroIdx];
-    ctx.save(); ctx.globalAlpha=.38; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(x,y+4,size*.34,size*.08,0,0,6.29); ctx.fill(); ctx.restore();
-    ctx.save(); ctx.translate(x,y); ctx.rotate(bend||0); ctx.fillStyle='rgba(20,24,50,.65)';
-    ctx.beginPath(); ctx.moveTo(-size*.24,-size*.78); ctx.quadraticCurveTo(0,-size*.92,size*.24,-size*.78);
-    ctx.lineTo(size*.30,-size*.10); ctx.quadraticCurveTo(0,size*.02,-size*.30,-size*.10); ctx.closePath(); ctx.fill(); ctx.restore();
-    drawSprite(h.sprite,x+lunge,y,size,1,1,bend,1);
-  }
-  function drawGround(horizon,base){
-    const g=ctx.createLinearGradient(0,horizon,0,H);
-    g.addColorStop(0,base[0]); g.addColorStop(1,base[1]); ctx.fillStyle=g; ctx.fillRect(0,horizon,W,H-horizon);
-  }
-  function drawRoad(horizon,topW,bottomW,c1,c2){
-    ctx.save();
-    const g=ctx.createLinearGradient(0,horizon,0,H); g.addColorStop(0,c1); g.addColorStop(1,c2);
-    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(W/2-topW/2,horizon); ctx.lineTo(W/2+topW/2,horizon);
-    ctx.lineTo(W/2+bottomW/2,H); ctx.lineTo(W/2-bottomW/2,H); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.16)'; ctx.lineWidth=2; ctx.setLineDash([14,16]);
-    for(let y=horizon+18;y<H;y+=34){ const t=(y-horizon)/(H-horizon), w=topW+(bottomW-topW)*t;
-      ctx.beginPath(); ctx.moveTo(W/2,y); ctx.lineTo(W/2,y+8); ctx.stroke(); }
-    ctx.setLineDash([]); ctx.restore();
-  }
-  function drawGrassTufts(now,count){
-    ctx.save(); ctx.strokeStyle='rgba(120,190,110,.5)'; ctx.lineWidth=1;
-    for(let i=0;i<count;i++){
-      const x=(i*97+Math.sin(now/900+i)*9)%W, y=196+((i*i*37)%158);
-      for(let k=-1;k<=1;k++){ ctx.beginPath(); ctx.moveTo(x+k*3,y); ctx.lineTo(x+k*5,y-7-Math.abs(k)*2); ctx.stroke(); }
-    }
-    ctx.restore();
-  }
-  function drawTree(x,y,s){
-    ctx.save(); ctx.fillStyle='#5b3b22'; ctx.fillRect(x-5*s,y-48*s,10*s,50*s);
-    ctx.fillStyle='#175a34'; ctx.beginPath(); ctx.arc(x,y-64*s,30*s,0,6.29); ctx.fill();
-    ctx.fillStyle='#2f8d4d'; ctx.beginPath(); ctx.arc(x-10*s,y-72*s,20*s,0,6.29); ctx.fill();
-    ctx.fillStyle='#43a85e'; ctx.beginPath(); ctx.arc(x+11*s,y-67*s,17*s,0,6.29); ctx.fill(); ctx.restore();
-  }
-  function drawOrnamentWall(x,y,w,h,base,accent){
-    ctx.save(); ctx.fillStyle=base; ctx.fillRect(x,y,w,h);
-    ctx.strokeStyle=accent; ctx.lineWidth=1; ctx.globalAlpha=.55;
-    for(let yy=y+8;yy<y+h;yy+=14){ ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke(); }
-    for(let xx=x+10;xx<x+w;xx+=22){ ctx.beginPath(); ctx.moveTo(xx,y); ctx.lineTo(xx,y+h); ctx.stroke(); }
-    ctx.globalAlpha=.8; ctx.strokeStyle=accent;
-    for(let xx=x+16;xx<x+w-8;xx+=44){ ctx.beginPath(); ctx.arc(xx,y+h-10,6,Math.PI,0); ctx.stroke(); }
-    ctx.restore();
-  }
-  function drawBuilding(x,y,s,kind){
-    const info=BUILDINGS[kind]||BUILDINGS.market, w=104*s, h=82*s;
-    drawOrnamentWall(x-w/2,y-h,w,h,'#c9b89a',info.accent);
-    ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(x-w/2-8*s,y-h); ctx.lineTo(x,y-h-34*s); ctx.lineTo(x+w/2+8*s,y-h); ctx.closePath(); ctx.fill();
-    ctx.fillStyle='#ffe6a0'; ctx.fillRect(x-30*s,y-h+18*s,20*s,18*s); ctx.fillRect(x+10*s,y-h+18*s,20*s,18*s);
-    ctx.fillStyle='#241704'; ctx.fillRect(x-12*s,y-30*s,24*s,30*s);
-    ctx.fillStyle=info.accent; ctx.font='bold '+Math.max(8,10*s)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText(info.title,x,y-h-40*s);
-  }
-  function drawSmallRing(x,y,r){
-    const filled=Math.min(10,Math.min(5,progress.map)+Math.min(5,progress.skirmish));
-    ctx.save(); ctx.lineWidth=4; ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.beginPath(); ctx.arc(x,y,r,0,6.29); ctx.stroke();
-    ctx.strokeStyle=progress.achieved?'#7dffb2':'#fbbf24'; ctx.beginPath(); ctx.arc(x,y,r,-Math.PI/2,-Math.PI/2+6.29*filled/10); ctx.stroke(); ctx.restore();
-  }
-  function fitText(text,maxW,size,color,x,y){
-    let s=size; ctx.font='bold '+s+'px sans-serif';
-    while(ctx.measureText(text).width>maxW&&s>8){ s--; ctx.font='bold '+s+'px sans-serif'; }
-    ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
-  }
-
-  /* ---------- КАРТА И РЕГИОНЫ ---------- */
-  function makeMap(region){
-    const g=[]; for(let y=0;y<10;y++){ g[y]=[]; for(let x=0;x<10;x++) g[y][x]=GRASS; }
-    for(let x=0;x<10;x++){ g[5][x]=ROAD; if(region>0) g[2][x]=ROAD; }
-    for(let y=0;y<10;y++) g[4+(region%2)][y]===undefined ? null : (g[y][4+(region%2)]=ROAD);
-    for(let y=0;y<10;y++) g[y][4+(region%2)]=ROAD;
-    const cave={x:8,y:8}, buildings=[{x:2,y:2,kind:'smith'},{x:7,y:2,kind:'alchemy'},{x:8,y:6,kind:'market'}];
-    g[cave.y][cave.x]=CAVE;
-    buildings.forEach(b=>{ g[b.y][b.x]=SHOP; game.buildings[key(b.x,b.y)]=b.kind; });
-    const reserved=new Set([key(cave.x,cave.y),...buildings.map(b=>key(b.x,b.y)),'1,8']);
-    for(let i=0;i<22;i++){ const x=rnd(0,9),y=rnd(0,9); if(g[y][x]===GRASS&&!reserved.has(key(x,y))) g[y][x]=TREE; }
-    game.cave=cave;
-    return g;
-  }
-  function makePickups(){
-    game.pickups=[];
-    const types=['coin','coin','mana','crystal','armor'];
-    for(let i=0;i<7;i++){
-      const type=types[rnd(0,types.length-1)];
-      for(let tries=0;tries<20;tries++){
-        const x=rnd(0,9), y=rnd(0,9);
-        if(game.map[y][x]===TREE||game.map[y][x]===SHOP||game.map[y][x]===CAVE) continue;
-        if(game.enemies.some(e=>e.alive&&e.x===x&&e.y===y)) continue;
-        if(game.pickups.some(p=>p.x===x&&p.y===y)) continue;
-        if(x===1&&y===8) continue;
-        game.pickups.push({x,y,type,got:false}); break;
-      }
-    }
-  }
-  function startRegion(){
-    game.interior=null; game.buildings={};
-    game.map=makeMap(game.region); game.enemies=[];
-    const spots=[[3,5],[6,5],[5,3],[5,7],[3,8],[8,2]];
-    spots.forEach((s,i)=>{
-      const m=MONSTERS[(i+rnd(0,3)+game.region)%MONSTERS.length];
-      game.enemies.push({x:s[0],y:s[1],def:m,hp:m.hp,maxHp:m.hp,alive:true,gold:rnd(2,5)});
-    });
-    Object.assign(game.player,{x:1,y:8,px:1,py:1,fromX:1,fromY:1,moveT:0,jump:0,dir:0,face:1});
-    makePickups();
-    game.msg='Регион '+(game.region+1)+'/'+REGIONS+' · врагов: '+game.enemies.length+'. Победи всех!';
-    toast('Регион '+(game.region+1)+'/'+REGIONS+' · вход в здание — Enter');
-  }
-  function nextRegion(){
-    if(game.region>=REGIONS-1){ finishRun(true); return; }
-    game.region++; game.battle=null; startRegion();
-    game.hero.hp=Math.min(game.hero.maxHp,game.hero.hp+20);
-    toast('Переход в регион '+(game.region+1)+' · +20 HP');
-  }
-  function enemyAt(x,y){ return game.enemies.find(e=>e.alive&&e.x===x&&e.y===y); }
-  function pickupAt(x,y){ return game.pickups.find(p=>!p.got&&p.x===x&&p.y===y); }
-  function addItem(id){
-    const it=game.hero.inventory.find(i=>i.id===id);
-    if(it) it.count++; else game.hero.inventory.push({id,count:1});
-  }
-  function collectPickup(p){
-    p.got=true; const info=PICKUPS[p.type];
-    if(p.type==='coin'){ const n=rnd(2,4); game.hero.gold+=n; game.msg='Находка: 🪙 '+n+'.'; }
-    else if(p.type==='mana'){ const n=rnd(2,4); game.hero.mp=Math.min(game.hero.maxMp,game.hero.mp+n); game.msg='Находка: 💧 +'+n+' MP.'; }
-    else if(p.type==='crystal'){ addItem('crystal'); game.msg='Находка: 🔷 кристалл.'; }
-    else{ addItem(rnd(0,1)?'leather':'iron'); game.msg='Находка: 🛡 броня.'; }
-    toast(game.msg); beep(720,.08);
-  }
-  function turnPlayer(d){
-    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
-    game.player.dir=(game.player.dir+d+4)%4; game.player.face=DIRS[game.player.dir][0]||1;
-    game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; beep(330,.05);
-  }
-  function relativeMove(forward,side){
-    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
-    const f=DIRS[game.player.dir], r=DIRS[(game.player.dir+1)%4];
-    tryMove(f[0]*forward+r[0]*side,f[1]*forward+r[1]*side);
-  }
-  function tryMove(dx,dy){
-    if(phase!=='play'||!game||game.mode!=='map'||game.battle||game.shopOpen||game.player.moveT>0) return;
-    const p=game.player, nx=clamp(Math.round(p.x)+dx,0,9), ny=clamp(Math.round(p.y)+dy,0,9);
-    if(game.interior){
-      const t=game.interior.grid[ny][nx];
-      if(t===COUNTER){ toggleShop(true); return; }
-      if(t===WALL){ game.msg='Стена.'; beep(120,.05); return; }
-      if(t===EXIT){ exitBuilding(); return; }
-      p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
-      return;
-    }
-    const e=enemyAt(nx,ny);
-    if(e){ startBattle('map',e); game.msg='⚠ Враг преградил путь: '+e.def.name+'. Пробел — атака · R — бегство.'; return; }
-    const tile=game.map[ny][nx];
-    if(tile===TREE){ game.msg='Дерево мешает пройти.'; beep(120,.05); return; }
-    p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; p.jump=0; beep(280,.04);
-    if(tile===SHOP){ enterBuilding(nx,ny); return; }
-    if(tile===CAVE){ game.msg='Пещера ведёт в следующий регион. Очистите текущий!'; }
-    const pk=pickupAt(nx,ny); if(pk) collectPickup(pk);
-  }
-  function tryInteract(){
-    if(!game||game.battle||game.shopOpen||game.mode!=='map') return;
-    const p=game.player, d=DIRS[p.dir], nx=Math.round(p.x)+d[0], ny=Math.round(p.y)+d[1];
-    if(game.interior){
-      if(game.interior.grid[ny]&&game.interior.grid[ny][nx]===EXIT){ exitBuilding(); return; }
-      if(game.shopOpen){ toggleShop(false); return; }
-      toggleShop(true); return;
-    }else if(nx>=0&&ny>=0&&nx<10&&ny<10&&game.map[ny][nx]===SHOP){ enterBuilding(nx,ny); }
-    else game.msg='Здесь не с чем взаимодействовать.';
-  }
-  function enterBuilding(x,y){
-    const kind=game.buildings[key(x,y)]||'market';
-    const grid=[
-      [WALL,WALL,WALL,WALL,WALL,WALL,WALL],
-      [WALL,FLOOR,FLOOR,COUNTER,FLOOR,FLOOR,WALL],
-      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
-      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
-      [WALL,FLOOR,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
-      [WALL,EXIT,FLOOR,FLOOR,FLOOR,FLOOR,WALL],
-      [WALL,WALL,WALL,WALL,WALL,WALL,WALL]
-    ];
-    game.interior={kind,grid,returnTo:{x,y},counter:{x:3,y:1},exit:{x:1,y:5}};
-    Object.assign(game.player,{x:2,y:4,px:2,py:4,fromX:2,fromY:4,moveT:0,dir:0,face:1});
-    game.msg='Вы вошли: '+(BUILDINGS[kind]||BUILDINGS.market).title+'. Кнопка «Лавка» или Enter — открыть магазин.';
-    toast(game.msg); beep(520,.1); updatePads();
-  }
-  function exitBuilding(){
-    const back=game.interior.returnTo;
-    game.interior=null;
-    Object.assign(game.player,{x:back.x,y:back.y,px:back.x,py:back.y,fromX:back.x,fromY:back.y,moveT:0});
-    game.msg='Вы вышли на карту.'; toast(game.msg); beep(360,.08); updatePads();
-  }
-  function drawMiniMap(){
-    const x=W-166,y=14,s=15;
-    panel(x-6,y-6,158,158);
-    const colors=['#2f5b38','#8a7a56','#1f6b3a','#d6b06a','#4b4a5c'];
-    for(let yy=0;yy<10;yy++) for(let xx=0;xx<10;xx++){
-      ctx.fillStyle=colors[game.map[yy][xx]]||'#2f5b38'; ctx.fillRect(x+xx*s,y+yy*s,s-1,s-1);
-    }
-    game.pickups.forEach(p=>{ if(p.got)return; ctx.fillStyle=PICKUPS[p.type].color; ctx.fillRect(x+p.x*s+5,y+p.y*s+5,5,5); });
-    game.enemies.forEach(e=>{ if(!e.alive)return; ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,4,0,6.29); ctx.fill(); });
-    ctx.save(); ctx.translate(x+Math.round(game.player.px)*s+s/2,y+Math.round(game.player.py)*s+s/2); ctx.rotate(game.player.dir*Math.PI/2);
-    ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(5,5); ctx.lineTo(-5,5); ctx.closePath(); ctx.fill(); ctx.restore();
-    ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.fillText('КАРТА '+(game.region+1)+'/'+REGIONS,x,y+160);
-  }
-  function drawMap(now){
-    sky(now); drawGround(176,['#3a5b42','#1a2a20']); drawRoad(176,18,540,'#6d6244','#3d3829'); drawGrassTufts(now,44);
-    const p=game.player, f=DIRS[p.dir], r=DIRS[(p.dir+1)%4], px=p.px, py=p.py;
-    for(let d=4;d>=1;d--){
-      for(let off=-2;off<=2;off++){
-        const tx=Math.round(px)+f[0]*d+r[0]*off, ty=Math.round(py)+f[1]*d+r[1]*off;
-        if(tx<0||ty<0||tx>9||ty>9) continue;
-        const t=game.map[ty][tx], sc=1-d*.16, sx=W/2+off*(74-d*10), sy=206+(4-d)*13;
-        if(t===ROAD){ ctx.fillStyle='rgba(150,136,92,.75)'; ctx.fillRect(sx-20*sc,sy-8*sc,40*sc,26*sc); }
-        if(t===CAVE){
-          ctx.fillStyle='#161824'; ctx.beginPath(); ctx.ellipse(sx,sy,58*sc,48*sc,0,Math.PI,0); ctx.fill(); ctx.fillRect(sx-58*sc,sy,116*sc,62*sc);
-          ctx.fillStyle='#05060b'; ctx.beginPath(); ctx.ellipse(sx,sy+22*sc,28*sc,32*sc,0,Math.PI,0); ctx.fill(); ctx.fillRect(sx-28*sc,sy+22*sc,56*sc,30*sc);
-        }
-        if(t===SHOP) drawBuilding(sx,sy,sc,game.buildings[key(tx,ty)]||'market');
-        if(t===TREE) drawTree(sx,sy,sc);
-      }
-    }
-    game.pickups.forEach(pk=>{
-      if(pk.got)return;
-      const dx=pk.x-px,dy=pk.y-py, forward=dx*f[0]+dy*f[1], side=dx*r[0]+dy*r[1];
-      if(forward<0||forward>5||Math.abs(side)>2)return;
-      const sc=1-forward*.13, x=W/2+side*(72-forward*10), y=272-forward*16;
-      ctx.save(); ctx.globalAlpha=.9; ctx.font=Math.round(22*sc)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText(PICKUPS[pk.type].icon,x,y); ctx.restore();
-    });
-    const sorted=game.enemies.filter(e=>e.alive).map(e=>{
-      const dx=e.x-px,dy=e.y-py; return {e,forward:dx*f[0]+dy*f[1],side:dx*r[0]+dy*r[1]};
-    }).filter(o=>o.forward>=-1&&o.forward<=5&&Math.abs(o.side)<=2).sort((a,b)=>b.forward-a.forward);
-    sorted.forEach(o=>{
-      const m=o.e, depth=clamp(o.forward+1,1,6), sc=(150-depth*18)/150;
-      const ex=W/2+o.side*(74-depth*8), ey=278-depth*14;
-      ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(ex,ey+4,30*sc,8*sc,0,0,6.29); ctx.fill(); ctx.restore();
-      drawSprite(m.def.sprite,ex,ey,100*sc,1,1,0,1);
-      ctx.fillStyle='#ef4444'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc,4); ctx.fillStyle='#fca5a5'; ctx.fillRect(ex-22*sc,ey-104*sc,44*sc*clamp(m.hp/m.maxHp,0,1),4);
-    });
-    drawHeroBack(W/2,344,152,now,0,Math.sin(now/460)*.008);
-
-    panel(12,12,206,76);
-    ctx.font='bold 11px sans-serif'; ctx.fillStyle='#ffe6a8'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,22,24);
-    bar(22,38,186,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
-    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Оружие: '+game.hero.weapons[game.hero.weaponLevel].name,22,56);
-    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold+'  🛡 '+game.hero.armor+'  💀 '+game.enemies.filter(e=>!e.alive).length+'/'+game.enemies.length,22,70);
-    ctx.fillStyle='#9fb0d8'; ctx.fillText('Регион '+(game.region+1)+'/'+REGIONS+' · '+(game.interior?'внутри здания':DIR_NAMES[p.dir]),22,83);
-    drawMiniMap();
-    const hx=Math.round(p.x), hy=Math.round(p.y);
-    const near=game.enemies.filter(e=>e.alive&&Math.abs(e.x-hx)+Math.abs(e.y-hy)===1)
-      .map(e=>{ const di=DIRS.findIndex(d=>d[0]===e.x-hx&&d[1]===e.y-hy); return DIR_NAMES[di]||'рядом'; });
-    if(near.length){
-      roundRect(146,298,348,20,6); ctx.fillStyle='rgba(58,12,20,.9)'; ctx.fill(); ctx.strokeStyle='rgba(248,113,113,.65)'; ctx.stroke();
-      fitText('⚠ Враг рядом: '+near.join(', ')+' — не входите в клетку',320,10,'#fca5a5',154,308);
-    }
-    roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
-    fitText(game.msg,368,11,'#f3e8cf',W/2-184,338);
-    drawSmallRing(36,H-36,14);
-  }
-  function drawInterior(now){
-    sky(now); drawGround(176,['#4a3f56','#1b1727']); drawRoad(176,90,330,'#8f7b52','#4f4330'); drawGrassTufts(now,12);
-    const i=game.interior, accent=(BUILDINGS[i.kind]||BUILDINGS.market).accent;
-    drawOrnamentWall(0,70,W,120,'#b9a374',accent);
-    ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(0,176,W,184);
-    for(let d=4;d>=1;d--){
-      const sc=1-d*.14, y=180+(4-d)*14;
-      ctx.save(); ctx.globalAlpha=.28; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(W/2,y+20,70*sc,14*sc,0,0,6.29); ctx.fill(); ctx.restore();
-      if(d===1){
-        ctx.fillStyle='#7a5433'; ctx.fillRect(W/2-62,y-48,124,48);
-        ctx.fillStyle=accent; ctx.fillRect(W/2-62,y-50,124,5);
-        ctx.fillStyle='#d9c49a'; ctx.beginPath(); ctx.ellipse(W/2,y-64,17,21,0,0,6.29); ctx.fill();
-        ctx.fillStyle='#241704'; ctx.fillRect(W/2-10,y-54,20,6);
-        ctx.fillStyle='#ffe6a0'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText('ПРИЛАВОК',W/2,y+16);
-      }
-    }
-    ctx.fillStyle='#7dffb2'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.fillText('ВЫХОД ↓',74,290);
-    drawHeroBack(W/2,344,150,now,0,Math.sin(now/460)*.008);
-    panel(12,12,220,62);
-    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.fillText((BUILDINGS[i.kind]||BUILDINGS.market).title,22,25);
-    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.fillText('Подойдите к прилавку — Enter',22,43);
-    ctx.fillStyle='#fbbf24'; ctx.fillText('🪙 '+game.hero.gold,22,59);
-    roundRect(128,326,384,24,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
-    fitText(game.msg,368,11,'#f3e8cf',W/2-184,338);
-  }
-
-  /* ---------- ЛАВКА: покупка оружия по ценам d28 + свободная продажа прочего ---------- */
-  function toggleShop(open){
-    if(!game||game.mode!=='map') return;
-    game.shopOpen=!!open; shop.classList.toggle('show',game.shopOpen); updatePads();
-    if(!game.shopOpen) return;
-    const list=document.getElementById('shopList'); list.innerHTML='';
-    const kind=game.interior?game.interior.kind:'market';
-    document.getElementById('shopTitle').textContent='🛒 '+(BUILDINGS[kind]||BUILDINGS.market).title;
-    function sec(title){
-      const h=document.createElement('div'); h.className='shopSec'; h.textContent=title; list.appendChild(h);
-    }
-    function row(name,sub,src,buttons){
-      const r=document.createElement('div'); r.className='shopItem';
-      const im=document.createElement('img'); if(src) im.src=src;
-      const info=document.createElement('div'); info.innerHTML='<b>'+name+'</b><small>'+sub+'</small>';
-      r.appendChild(im); r.appendChild(info); buttons.forEach(b=>r.appendChild(b)); list.appendChild(r);
-    }
-    function button(text,cls,onClick,disabled){
-      const b=document.createElement('button'); b.textContent=text; if(cls)b.className=cls;
-      if(disabled)b.disabled=true; else b.onclick=onClick; return b;
-    }
-    sec('Оружие — цены Подземелья 28');
-    game.hero.weapons.forEach((w,i)=>{
-      const owned=i<=game.hero.weaponLevel, equipped=i===game.hero.weaponLevel, sold=game.hero.soldWeapons.indexOf(i)>=0;
-      const sub='Урон '+w.dmg+(equipped?' · надето':owned?' · есть':'')+(owned&&!equipped&&!sold?' · продажа '+w.sell:'');
-      const btns=[];
-      if(owned&&!equipped&&!sold) btns.push(button('Продать '+w.sell,'sell',()=>{
-        game.hero.gold+=w.sell; game.hero.soldWeapons.push(i); beep(560,.09); toast('Продано: '+w.name); toggleShop(true);
-      }));
-      else if(!owned) btns.push(button('🪙 '+w.cost,'',()=>{
-        if(game.hero.gold<w.cost)return; game.hero.gold-=w.cost; game.hero.weaponLevel=i; beep(720,.12); toast('Куплено: '+w.name); toggleShop(true);
-      },game.hero.gold<w.cost));
-      else btns.push(button(equipped?'Надето':sold?'Продано':'Есть','',null,true));
-      row(w.name,sub,w.sprite,btns);
-    });
-    sec('Броня и предметы — покупка');
-    GOODS.filter(g=>g.buy>0).forEach(g=>{
-      row(g.name,g.desc,'',[button('🪙 '+g.buy,'',()=>{
-        if(game.hero.gold<g.buy)return;
-        game.hero.gold-=g.buy;
-        if(g.kind==='armor'){ game.hero.armor=Math.max(game.hero.armor,g.armor); toast('Надето: '+g.name); }
-        else{ addItem(g.id); toast('Куплено: '+g.name); }
-        beep(720,.12); toggleShop(true);
-      },game.hero.gold<g.buy)]);
-    });
-    sec('Продажа и использование');
-    if(!game.hero.inventory.length) row('Пока пусто','Находите бонусы на карте','',[button('—','',null,true)]);
-    game.hero.inventory.forEach(it=>{
-      const g=good(it.id); if(!g)return;
-      const btns=[button('Продать '+g.sell,'sell',()=>{
-        it.count--; if(it.count<=0) game.hero.inventory.splice(game.hero.inventory.indexOf(it),1);
-        game.hero.gold+=g.sell; beep(560,.09); toast('Продано: '+g.name); toggleShop(true);
-      })];
-      if(g.heal||g.mp) btns.push(button('Использовать','use',()=>{
-        if(g.heal) game.hero.hp=Math.min(game.hero.maxHp,game.hero.hp+g.heal);
-        if(g.mp) game.hero.mp=Math.min(game.hero.maxMp,game.hero.mp+g.mp);
-        it.count--; if(it.count<=0) game.hero.inventory.splice(game.hero.inventory.indexOf(it),1);
-        beep(880,.12); toast('Использовано: '+g.name); toggleShop(true);
-      }));
-      row(g.name+' ×'+it.count,g.desc,'',btns);
-    });
-    document.getElementById('shopGold').textContent=game.hero.gold;
-    document.getElementById('shopCrystals').textContent=(game.hero.inventory.find(i=>i.id==='crystal')||{count:0}).count;
-  }
-  document.getElementById('shopClose').onclick=()=>toggleShop(false);
-
-  /* ---------- БОЙ С ВИДОМ ИЗ-ЗА СПИНЫ ---------- */
-  function startBattle(source,enemy){
-    const h=HEROES[game.heroIdx];
-    const m=(enemy&&enemy.def&&typeof enemy.def==='object')?enemy.def:enemy;
-    game.battle={
-      source, enemy:enemy, monster:{name:m.name,sprite:m.sprite,atk:m.atk,def:m.def,hp:(enemy&&enemy.hp)||m.hp,maxHp:(enemy&&enemy.maxHp)||m.hp,poison:m.poison},
-      turn:'hero', busy:false, end:null, anim:null, log:[], logColor:[], char:0,
-      theme:source==='skirmish'?game.theme:rnd(0,2)
-    };
-    if(source==='skirmish'){ game.hero.hp=h.hp; game.hero.mp=h.mp; }
-    game.msg='Враг: '+m.name+'. Пробел — атака · R — бегство.';
-    pushLog(m.name+' встаёт перед вами.', C_ENEMY);
-    updatePads();
-  }
-  function pushLog(text,color){
-    if(!game||!game.battle)return;
-    const b=game.battle;
-    b.log.push(text); b.logColor.push(color||C_NEUTRAL);
-    if(b.log.length>5){ b.log.shift(); b.logColor.shift(); }
-    b.char=b.log[b.log.length-1].length;
-  }
-  function heroAttack(special){
-    const b=game&&game.battle; if(!b||b.busy||b.end||b.turn!=='hero')return;
-    if(special&&game.hero.mp<3){ toast('Не хватает маны'); return; }
-    b.busy=true;
-    const atk=game.hero.weapons[game.hero.weaponLevel].dmg+(special?8:0);
-    const dmg=Math.max(1,atk-b.monster.def)+rnd(0,2);
-    if(special)game.hero.mp=Math.max(0,game.hero.mp-3);
-    b.monster.hp=Math.max(0,b.monster.hp-dmg); if(b.enemy&&b.enemy.hp!=null)b.enemy.hp=b.monster.hp;
-    b.anim={who:'hero',t:1,jump:special?24:10};
-    pushLog((special?'ЗАРЯД! ':'Удар! ')+'Атака '+atk+' − Защита '+b.monster.def+' = '+dmg+' урона.', C_HERO);
-    beep(special?880:440,special?.15:.08);
-    setTimeout(()=>{
-      if(!game||game.battle!==b||b.end)return;
-      if(b.monster.hp<=0){ finishBattle(true); return; }
-      b.turn='enemy'; b.busy=false; setTimeout(()=>enemyTurn(b),420);
-    },620);
-  }
-  function enemyTurn(b){
-    if(!game||game.battle!==b||b.turn!=='enemy'||b.busy||b.end)return;
-    b.busy=true;
-    const dmg=Math.max(0,b.monster.atk-game.hero.armor)+rnd(0,1);
-    game.hero.hp=Math.max(0,game.hero.hp-dmg); b.anim={who:'enemy',t:1,jump:8};
-    pushLog(b.monster.name+': атака '+b.monster.atk+' − броня '+game.hero.armor+' = '+dmg+' урона.', C_ENEMY);
-    if(b.monster.poison){ game.hero.poison=3; game.hero.poisonTurns=2; pushLog(b.monster.name+' наложил яд 3 ед на 2 хода.', C_ENEMY); }
-    beep(180,.12);
-    setTimeout(()=>{
-      if(!game||game.battle!==b||b.end)return;
-      if(game.hero.poison>0){
-        const pd=Math.min(game.hero.poison,game.hero.hp); game.hero.poison=Math.max(0,game.hero.poison-1);
-        game.hero.hp-=pd; pushLog('Яд снимает '+pd+' HP.', C_ENEMY);
-        game.hero.poisonTurns=Math.max(0,(game.hero.poisonTurns||0)-1);
-        if(!game.hero.poisonTurns) game.hero.poison=0;
-      }
-      if(game.hero.hp<=0){ finishBattle(false); return; }
-      b.turn='hero'; b.busy=false;
-    },700);
-  }
-  function finishBattle(win){
-    const b=game&&game.battle; if(!b||b.end)return;
-    b.end=win?'win':'lose'; pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY);
-    beep(win?980:120,.28); updatePads();
-    setTimeout(()=>{
-      if(win){
-        game.hero.gold+=b.enemy&&b.enemy.gold?b.enemy.gold:rnd(2,5);
-        if(b.enemy&&b.enemy.alive!==undefined) b.enemy.alive=false;
-        if(rnd(0,3)===0){ addItem(rnd(0,2)?'crystal':'coin'); toast('С врага: ценная находка!'); }
-        if(b.source==='skirmish') progress.skirmish=Math.min(5,progress.skirmish+1);
-        else if(game.enemies.some(e=>e.alive)){
-          const left=game.enemies.filter(e=>e.alive).length;
-          game.battle=null; game.msg='Враг повержен! Осталось врагов: '+left+'.';
-          toast('Победа! Осталось врагов: '+left); saveProgress(); updatePads(); return;
-        }
-        saveProgress();
-      }else toast('Поражение — круг не обновлён');
-      if(win&&b.source==='map'){ nextRegion(); return; }
-      phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
-    },1700);
-  }
-  function fleeBattle(){
-    const b=game&&game.battle;
-    if(!b||b.busy||b.end)return;
-    b.busy=true;
-    beep(320,.08);
-    if(Math.random()<0.5){
-      const penalty=Math.max(2,Math.ceil(game.hero.maxHp*0.05));
-      game.hero.hp=Math.max(1,game.hero.hp-penalty);
-      pushLog('Побег удался! Потеряно '+penalty+' HP.',C_HERO);
-      beep(680,.14);
-      setTimeout(()=>{
-        if(!game||game.battle!==b)return;
-        if(b.source==='map'){
-          game.battle=null; game.msg='Вы отступили. Потеряно '+penalty+' HP. Враг остался на карте.';
-          toast(game.msg); updatePads();
-        }else{
-          phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
-          toast('Побег из схватки: −'+penalty+' HP');
-        }
-      },850);
-    }else{
-      pushLog('Побег не удался! Враг атакует.',C_ENEMY);
-      setTimeout(()=>{
-        if(!game||game.battle!==b||b.end)return;
-        b.busy=false; b.turn='enemy'; enemyTurn(b);
-      },450);
-    }
-  }
-  function drawBackdrop(now,theme){
-    sky(now);
-    if(theme===0){
-      ctx.fillStyle='#222736'; ctx.fillRect(0,176,W,184);
-      drawOrnamentWall(0,70,W,132,'#3c4356','#6b7288');
-      ctx.fillStyle='#151a26'; ctx.beginPath(); ctx.ellipse(W/2,208,170,90,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-170,208,340,88);
-      ctx.fillStyle='#05070c'; ctx.beginPath(); ctx.ellipse(W/2,268,78,60,0,Math.PI,0); ctx.fill(); ctx.fillRect(W/2-78,268,156,40);
-      drawRoad(238,60,330,'#8b7952','#5b4d34'); drawGrassTufts(now,14);
-    }else if(theme===1){
-      [[90,206,52],[210,232,74],[430,214,60],[548,244,46]].forEach((c,i)=>{
-        ctx.fillStyle=i%2?'#4b4870':'#3c4b79'; ctx.beginPath(); ctx.ellipse(c[0],c[1],c[2],c[2]*.35,0,0,6.29); ctx.fill();
-        ctx.fillStyle='#263152'; ctx.beginPath(); ctx.ellipse(c[0],c[1]+c[2]*.24,c[2]*.72,c[2]*.24,0,0,6.29); ctx.fill();
-        drawTree(c[0],c[1]-4,.22);
-      });
-      cloud(120,120,1.2,.28); cloud(390,96,1.5,.22); cloud(552,150,.9,.3);
-      drawGround(250,['#355a3c','#1a2a20']); drawRoad(250,80,360,'#7d704d','#4b4330'); drawGrassTufts(now,30);
-    }else{
-      drawGround(176,['#4a4568','#1c1a2e']); drawRoad(176,44,420,'#9a8d69','#514936');
-      drawOrnamentWall(0,70,W,132,'#b9a374','#d7c69c');
-      ctx.fillStyle='#c43c3c'; ctx.beginPath(); ctx.moveTo(W/2-184,82); ctx.lineTo(W/2,26); ctx.lineTo(W/2+184,82); ctx.closePath(); ctx.fill();
-      ctx.fillStyle='#ffe6a0'; ctx.fillRect(W/2-18,150,36,50);
-      drawTree(54,260,.55); drawTree(586,268,.48); drawGrassTufts(now,26);
-    }
-    const vig=ctx.createRadialGradient(W/2,H/2,80,W/2,H/2,380); vig.addColorStop(0,'rgba(0,0,0,0)'); vig.addColorStop(1,'rgba(0,0,0,.55)'); ctx.fillStyle=vig; ctx.fillRect(0,0,W,H);
-  }
-  function drawBattle(now,dt){
-    const b=game.battle; drawBackdrop(now,b.theme);
-    let hl=0,el=0,hj=0,ej=0,hbend=0,ebend=0;
-    if(b.anim){
-      b.anim.t=Math.max(0,b.anim.t-dt/620); const p=1-b.anim.t, v=Math.sin(Math.PI*p);
-      if(b.anim.who==='hero'){ hj=v*b.anim.jump; hbend=-v*.10; }
-      else{ ej=v*b.anim.jump; ebend=v*.12; el=v*16; }
-      if(b.anim.t<=0)b.anim=null;
-    }
-    const m=b.monster, sc=clamp(180/(m.maxHp+80)+.55,.7,1.25);
-    ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(172,288,40*sc,10*sc,0,0,6.29); ctx.fill(); ctx.restore();
-    drawSprite(m.sprite,172+el,288,132*sc,1,1,ebend,1);
-    drawHeroBack(468+hj,352,160,now,0,hbend);
-
-    panel(W-232,12,220,56);
-    ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(game.heroName+' · '+HEROES[game.heroIdx].name,W-222,24);
-    bar(W-222,38,200,'HP',game.hero.hp,game.hero.maxHp,'#f87171');
-    bar(W-222,54,200,'MP',game.hero.mp,game.hero.maxMp,'#60a5fa');
-    panel(12,12,220,44); ctx.fillStyle='#ffb4b4'; ctx.font='bold 11px sans-serif'; ctx.fillText(m.name,22,25);
-    bar(22,38,200,'HP',m.hp,m.maxHp,'#ef4444');
-    roundRect(W/2-54,12,108,26,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
-    ctx.fillStyle=b.turn==='hero'?'#ffe6a8':'#fca5a5'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':'ПОРАЖЕНИЕ'):(b.turn==='hero'?'ТВОЙ ХОД':'ХОД ВРАГА'),W/2,26);
-
-    b.char=b.log.length?b.log[b.log.length-1].length:0;
-    const lines=b.log.slice(-5), colors=(b.logColor||[]).slice(-5);
-    roundRect(30,244,580,88,8); ctx.fillStyle='rgba(5,7,15,.94)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.stroke();
-    ctx.fillStyle='#fbbf24'; ctx.font='bold 13px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('✦',42,258);
-    for(let i=0;i<5;i++) fitText(lines[i]||'',548,11,colors[i]||C_NEUTRAL,60,258+i*16);
-    roundRect(150,218,340,22,7); ctx.fillStyle='rgba(6,8,18,.78)'; ctx.fill();
-    ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText('Пробел/клик — удар · F — заряд ('+game.hero.mp+' MP) · R — бегство',W/2,229);
-    drawSmallRing(W/2,H-18,11);
-  }
-
-  function loop(now){
-    requestAnimationFrame(loop);
-    const dt=Math.min(50,now-last); last=now;
-    if(phase!=='play'||!game)return;
-    if(game.battle) drawBattle(now,dt);
-    else if(game.mode==='map'){
-      const p=game.player;
-      if(p.moveT>0){
-        p.moveT=Math.max(0,p.moveT-dt/230); const t=ease(1-p.moveT);
-        p.px=lerp(p.fromX,p.x,t); p.py=lerp(p.fromY,p.y,t); p.jump=Math.sin(Math.PI*t)*16;
-      }
-      if(game.interior) drawInterior(now); else drawMap(now);
-    }else drawBattle(now,dt);
-  }
-  requestAnimationFrame(loop);
-
-  document.addEventListener('keydown',e=>{
-    if(phase==='start'){
-      const typing=e.target&&e.target.id==='heroName';
-      if(typing&&e.key!=='Enter')return;
-      if(e.key==='ArrowLeft'){e.preventDefault();selectHero(-1);}
-      else if(e.key==='ArrowRight'){e.preventDefault();selectHero(1);}
-      else if(e.key==='ArrowUp'){e.preventDefault();selectMode(-1);}
-      else if(e.key==='ArrowDown'){e.preventDefault();selectMode(1);}
-      else if(e.key==='Enter'){e.preventDefault();startGame();}
-      return;
-    }
-    const k=e.key.toLowerCase();
-    if(k==='m'||k==='ь'||e.key==='Escape'){ e.preventDefault(); if(game&&game.shopOpen)toggleShop(false); else goHub(); return; }
-    if((k==='b'||k==='б')&&!game.battle){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
-    if(game&&game.shopOpen)return;
-    if(game&&game.battle){
-      if(!game.battle.end&&(e.key===' '||e.key==='Enter')){e.preventDefault();heroAttack(false);}
-      else if(!game.battle.end&&(k==='f'||k==='а')){e.preventDefault();heroAttack(true);}
-      else if(!game.battle.end&&(k==='r'||k==='к')){e.preventDefault();fleeBattle();}
-      return;
-    }
-    if(game&&game.mode==='map'){
-      if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
-      if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
-      if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
-      const rel = ({ArrowUp:[1,0],w:[1,0],ц:[1,0],ArrowDown:[-1,0],s:[-1,0],ы:[-1,0],ArrowLeft:[0,-1],a:[0,-1],ф:[0,-1],ArrowRight:[0,1],d:[0,1],в:[0,1]})[e.key]||
-                  ({ArrowUp:[1,0],w:[1,0],ц:[1,0],ArrowDown:[-1,0],s:[-1,0],ы:[-1,0],ArrowLeft:[0,-1],a:[0,-1],ф:[0,-1],ArrowRight:[0,1],d:[0,1],в:[0,1]})[k];
-      if(rel){ e.preventDefault(); relativeMove(rel[0],rel[1]); }
-    }
-  });
-  cv.addEventListener('pointerdown',()=>{ if(game&&game.battle)heroAttack(false); });
-
-  function finishRun(win){
-    if(!game)return;
-    if(win){
-      progress.map=Math.min(5,progress.map+1);
-      if(progress.map>=5&&progress.skirmish>=5&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы закрыт!'); }
-      else toast('Все регионы очищены! Карта '+progress.map+'/5');
-      saveProgress();
-    }
-    phase='start'; game=null; startScreen.classList.remove('hidden'); updatePads(); renderCards();
-  }
-
-  function applyD28Data(d){
-    if(!d||!d.heroes||!d.monsters||!d.weapons)return;
-    const desc={}; HEROES.forEach(h=>desc[h.name]=h.desc);
-    HEROES.splice(0,HEROES.length,...d.heroes.slice(0,2).map(h=>({
-      name:h.name, set:h.set, hp:h.maxHp, mp:h.maxMp, atk:1, def:0, sprite:h.sprite,
-      desc:desc[h.name]||'Герой из Подземелья 28.',
-      weapons:d.weapons[h.set].map(w=>({...w,sell:Math.max(1,Math.floor((w.cost||0)*.75))}))
-    })));
-    MONSTERS.splice(0,MONSTERS.length,...d.monsters.map(m=>({
-      name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, poison:m.poison
-    })));
-    heroIdx=Math.min(heroIdx,HEROES.length-1);
-    imgCache.clear();
-    HEROES.forEach(h=>{ img(h.sprite); h.weapons.forEach(w=>img(w.sprite)); }); MONSTERS.forEach(m=>img(m.sprite));
-    renderCards();
-  }
-  window.addEventListener('d28-data',e=>applyD28Data(e.detail));
-
-  window.__mm6State = function(){ return game; };
-  renderCards();
-})();
-</script>
 <script type="module">
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, HERBS, RECIPES, LIQUIDS, SCROLLS, ARMORS, CLASS_PENALTY, SHOP_TYPES, BIOMES, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS } from './data.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
-window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
+import { recordDeath, unlockRecord, recordsHTML, RECORDS } from '../shared/records.js';
+
+/* ============================ 1. УТИЛИТЫ ============================ */
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const W = 640, H = 360;
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const ckey = (x,y) => x+','+y;
+let uidSeq = 0;
+const uid = () => 'i'+(++uidSeq);
+function fitText(text,maxW,size,color,x,y){
+  let s=size; ctx.font='bold '+s+'px sans-serif';
+  while(ctx.measureText(text).width>maxW && s>8){ s--; ctx.font='bold '+s+'px sans-serif'; }
+  ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
+}
+function roundRect(x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function panel(x,y,w,h){ roundRect(x,y,w,h,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill(); ctx.strokeStyle='rgba(251,191,36,.4)'; ctx.lineWidth=1.5; ctx.stroke(); }
+function bar(x,y,w,label,value,max,color){
+  ctx.font='bold 9px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle='#f4e7c6'; ctx.fillText(label,x,y+6);
+  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(x+24,y+2,w-24,8,4); ctx.fill();
+  const r=max>0?clamp(value/max,0,1):0;
+  if(r>0){ ctx.fillStyle=color; roundRect(x+24,y+2,Math.max(3,(w-24)*r),8,4); ctx.fill(); }
+  ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.fillText(Math.max(0,Math.round(value))+'/'+Math.max(0,Math.round(max)),x+w,y+6);
+}
+let toastTimer=0;
+function toast(text){ const t=$('toast'); t.textContent=text; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+function beep(freq,dur){ try{
+  if(!game) return;
+  const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+  if(!game.audio) game.audio=new AC(); const ac=game.audio;
+  if(ac.state==='suspended') ac.resume();
+  const o=ac.createOscillator(), g=ac.createGain(); o.type='triangle'; o.frequency.value=freq;
+  g.gain.setValueAtTime(.05,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);
+  o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur);
+}catch(e){} }
+function record(id){ const r=GAME_RECORDS.find(x=>x.id===id); return r?r.text:''; }
+function recordAnnounce(id,got){
+  if(!got) return;
+  const r=id?RECORDS.find(x=>x.id===id):null;
+  toast('🏆 Рекорд: '+(r?r.text:'новое достижение'));
+}
+
+/* ============================ 2. КАНОНИЧЕСКИЕ ДАННЫЕ D28 + РАСШИРЕНИЕ ============================ */
+const HERO_DESC=[
+  'Крепкий боец из Подземелья 28. Держит строй и бьёт наверняка.',
+  'Хрупкий, но дальнобойный. Заряд маны бьёт сильнее.',
+  'Паладин: молитва лечит и снимает яд.',
+  'Ангел: свет пробивает нежить.',
+  'Следопыт: быстрая стрельба и ловкость.'
+];
+const EXTRA_EMOJI={'Друид':'🌲','Разбойник':'🏹','Жрец':'🔆','Амазонка':'🎯','Гном-кулига':'⛏️'};
+const MONSTER_EMOJI={wolf:'🐺',goblin:'👺',orc:'👹',troll:'🧌',golem:'🗿',vampire:'🧛',mummy:'🧟',siren:'🧜',wyvern:'🐉',lich:'☠️'};
+function weaponKind(name){
+  const n=name.toLowerCase();
+  if(n.includes('лук')||n.includes('арбалет')) return 'bow';
+  if(n.includes('топор')) return 'axe';
+  if(n.includes('молот')) return 'hammer';
+  if(n.includes('посох')||n.includes('палочк')||n.includes('книга')||n.includes('кольцо')||n.includes('амулет')) return 'staff';
+  if(n.includes('кинжал')) return 'dagger';
+  return 'sword';
+}
+function qualityOf(css,name){
+  if(css&&css.includes('magic')) return 3;
+  if(css&&css.includes('gold')) return 2;
+  if(css&&css.includes('rusty')) return 0;
+  if(name.includes('★')) return 3; if(name.includes('++')) return 2;
+  if(name.includes('+')) return 1; return 0;
+}
+const HEROES = [
+  ...D28_DATA.heroes.slice(0,5).map((h,i)=>({
+    name:h.name, set:h.set, emoji:h.emoji||'⚔️', sprite:h.sprite, hp:h.maxHp, mp:h.maxMp,
+    desc:HERO_DESC[i]||'Герой из Подземелья 28.',
+    weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
+  })),
+  ...EXTRA_HEROES.map(h=>({
+    name:h.name, set:h.set, emoji:EXTRA_EMOJI[h.name]||'🧝', sprite:h.sprite, hp:h.hp, mp:h.mp,
+    desc:h.desc||'Герой расширения.',
+    weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
+  }))
+];
+function moveEveryFor(m){
+  if(m.id==='spider') return 5;
+  if(m.id==='mouse'||m.id==='wolf'||m.id==='siren'||m.id==='wyvern') return 6;
+  if(m.id==='zombie'||m.id==='mummy'||m.id==='golem') return 12;
+  if(m.id==='turtle') return 15;
+  return 8+(m.tier||0);
+}
+function combatSpeed(m){
+  const n=m.name.toLowerCase();
+  if(n.includes('паук')) return 10;
+  if(n.includes('волк')||n.includes('сирена')) return 9;
+  if(n.includes('виверна')||n.includes('мышь')||n.includes('гоблин')) return 8;
+  if(n.includes('орк')||n.includes('вампир')||n.includes('черт')) return 7;
+  if(n.includes('черепаха')||n.includes('голем')||n.includes('мумия')||n.includes('зомби')) return 2;
+  return 5+(m.tier||0);
+}
+const MONSTERS = [
+  ...D28_DATA.monsters.map(m=>({
+    id:m.key, name:m.name, hp:m.hp, atk:m.atk, def:m.def, sprite:m.sprite, emoji:m.emoji,
+    poison:!!m.poison, magic:false, tier:0, gold:[2,5], colors:MONSTER_COLORS, tint:'#cbd5e1'
+  })),
+  ...EXTRA_MONSTERS.map(m=>({...m, emoji:MONSTER_EMOJI[m.id]||'👹', colors:MONSTER_COLORS, def:m.def||0}))
+].map(m=>({...m, moveEvery:moveEveryFor(m), combatSpeed:combatSpeed(m), acts:(m.id==='spider'?2:1)}));
+
+const BIOME_KEYS=['field','village','city','port','mountains'];
+const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
+const DIR_NAMES=['север','восток','юг','запад'];
+const C_HERO='#86efac', C_ENEMY='#fca5a5', C_NEUTRAL='#fde68a';
+const DEFAULT_SPELLS={
+  warrior:['heal','bless','stun'], mage:['fire','ice','heal','shield','lightning'],
+  archer:['poison','wind','heal'], paladin:['heal','light','bless'], angel:['light','heal','shield']
+};
+const spell = id => SPELLS.find(s=>s.id===id);
+const herb = id => HERBS.find(h=>h.id===id);
+const liquid = id => LIQUIDS.find(l=>l.id===id);
+const scroll = id => SCROLLS.find(s=>s.id===id);
+const LIQUID_NAME={liquid_hp:'здоровья',liquid_mp:'маны',liquid_atk:'ярости',liquid_def:'камня',liquid_poison:'яда',liquid_light:'света'};
+const STORE_KEY='mm6_progress_v3';
+function loadProgress(){
+  try{ const p=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');
+    return { boss:Math.max(0,Number(p.boss)||0), runs:Math.max(0,Number(p.runs)||0),
+      flees:Math.max(0,Number(p.flees)||0), achieved:!!p.achieved };
+  }catch(e){ return {boss:0,runs:0,flees:0,achieved:false}; }
+}
+function saveProgress(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(progress)); }catch(e){} }
+let progress=loadProgress();
+
+/* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
+let game=null, phase='start', last=performance.now();
+let selHero=[0,1], selDiff='normal', heroNameText='Герой', pickHeroTab=0;
+let invTab='Общий';
+
+function makeItem(o){
+  return Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
+}
+function makeHeroState(def,slot){
+  const w=def.weapons[0];
+  const weapon=makeItem({type:'weapon',name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
+    sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality===undefined?1:w.quality,
+    wkind:w.kind||'sword',reforges:0,enchant:null,icon:'⚔'});
+  const armor=makeItem({type:'armor',name:'Тряпичная одежда',def:0,cost:0,sell:1,armorDef:0,icon:'🛡'});
+  game.bag.push(weapon,armor);
+  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,
+    bonus:{atk:0,def:0,magic:0},shield:0,poison:0,poisonTurns:0,
+    spells:(DEFAULT_SPELLS[def.set]||['heal']).slice(),
+    equip:{weapon:weapon.uid,armor:armor.uid}};
+}
+function equippedWeapon(h){ return game.bag.find(i=>i.uid===h.equip.weapon)||null; }
+function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.armor)||null; }
+function weaponPenalty(h,w){
+  const table=CLASS_PENALTY[h.def.set]||{};
+  return table[w&&w.wkind]||0;
+}
+function armorPenalty(h,a){
+  const table=CLASS_PENALTY[h.def.set]||{};
+  return (a&&a.armorDef>=7&&table.armor7)||0;
+}
+function heroAtk(h){
+  const w=equippedWeapon(h); if(!w) return 1;
+  let a=w.dmg+h.bonus.atk+weaponPenalty(h,w);
+  if(w.enchant&&w.enchant.stat==='atk') a+=w.enchant.value;
+  return Math.max(1,a);
+}
+function heroDef(h){
+  const a=equippedArmor(h); let d=(a?a.armorDef:0)+h.bonus.def+armorPenalty(h,a)+h.shield;
+  const w=equippedWeapon(h);
+  if(w&&w.enchant&&w.enchant.stat==='def') d+=w.enchant.value;
+  return Math.max(0,d);
+}
+function party(){ return game?game.party:[]; }
+function aliveHeroes(){ return party().filter(h=>h.hp>0); }
+
+function startGame(diffId,a,b){
+  const d=DIFFICULTY.find(x=>x.id===(diffId||selDiff))||DIFFICULTY[1];
+  const i1=clamp(Number.isInteger(a)?a:selHero[0],0,HEROES.length-1);
+  let i2=clamp(Number.isInteger(b)?b:selHero[1],0,HEROES.length-1);
+  if(i2===i1) i2=(i2+1)%HEROES.length;
+  selHero=[i1,i2]; selDiff=d.id;
+  heroNameText=($('heroName').value||'').trim().slice(0,14)||'Герой';
+  game={difficulty:d.id,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
+    battle:null,shopType:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,
+    msg:'',audio:null,nearShop:null,totalTurns:0};
+  game.party=[makeHeroState(HEROES[i1],0),makeHeroState(HEROES[i2],1)];
+  game.world=generateWorld(d.id);
+  setMap(0,null);
+  game.msg='Добро пожаловать! Ищите босса в дальнем углу карты.';
+  phase='play';
+  $('start').classList.add('hidden');
+  $('records').classList.add('hidden');
+  $('controls').classList.remove('hidden');
+  $('party').classList.remove('hidden');
+  updateParty(); updateControls();
+  toast('Сложность: '+d.name+' · карт: '+game.world.count);
+  beep(540,.12);
+  return game;
+}
+
+/* ============================ 4. МИР: КАРТЫ, ДОРОГИ, БИОМЫ ============================ */
+function generateWorld(diffId){
+  const d=DIFFICULTY.find(x=>x.id===diffId)||DIFFICULTY[1];
+  const count=rnd(d.maps[0],d.maps[1]);
+  const cands=LAYOUTS.filter(l=>l[0]*l[1]>=count).sort((a,b)=>a[0]*a[1]-b[0]*b[1]);
+  const layout=pick(cands.slice(0,Math.min(3,cands.length)))||LAYOUTS[LAYOUTS.length-1];
+  const cols=layout[0],rows=layout[1];
+  const slots=[];
+  for(let y=0;y<rows;y++) for(let x=0;x<cols;x++) if(slots.length<count) slots.push({gx:x,gy:y});
+  const pos={}; slots.forEach((s,i)=>pos[s.gx+','+s.gy]=i);
+  const maps=slots.map((s,i)=>generateMap(i,count,s,d,pos,cols,rows));
+  return {difficulty:d.id,cols,rows,count,layout,maps,current:0,turn:0,bossKills:0};
+}
+function emptyCells(size){
+  const g=[]; for(let y=0;y<size;y++){ g[y]=[]; for(let x=0;x<size;x++) g[y][x]={t:'grass'}; } return g;
+}
+function generateMap(i,total,slot,d,pos,cols,rows){
+  const size=rnd(d.size[0],d.size[1]);
+  const biome=BIOME_KEYS[i%BIOME_KEYS.length];
+  const cells=emptyCells(size);
+  const cx=Math.floor(size/2),cy=Math.floor(size/2);
+  for(let x=0;x<size;x++) cells[cy][x]={t:'road'};
+  for(let y=0;y<size;y++) cells[y][cx]={t:'road'};
+  DIRS.forEach((v,dir)=>{
+    const ni=pos[(slot.gx+v[0])+','+(slot.gy+v[1])];
+    if(ni===undefined) return;
+    let x=cx,y=cy;
+    if(dir===0) y=0; if(dir===2) y=size-1; if(dir===1) x=size-1; if(dir===3) x=0;
+    cells[y][x]={t:'gate',dir,to:ni,biome:BIOME_KEYS[ni%BIOME_KEYS.length],
+      bname:BIOMES[BIOME_KEYS[ni%BIOME_KEYS.length]].name};
+  });
+  const farX=slot.gx<cols/2?size-2:1, farY=slot.gy<rows/2?size-2:1;
+  if(Math.abs(farX-cx)<2) farX=cx===size-2?1:size-2;
+  if(Math.abs(farY-cy)<2) farY=cy===size-2?1:size-2;
+  cells[farY][farX]={t:'boss',opened:false};
+  const chestX=clamp(farX+(farX>cx?-1:1),0,size-1);
+  if(cells[farY][chestX].t==='grass') cells[farY][chestX]={t:'chest',boss:true,opened:false};
+  const shopA=SHOP_TYPES[i%SHOP_TYPES.length].id;
+  const shopB=size>=14?SHOP_TYPES[(i+2)%SHOP_TYPES.length].id:null;
+  const occupied=new Set([ckey(cx,cy),ckey(farX,farY),ckey(chestX,farY)]);
+  function freeSpot(minDist){
+    for(let k=0;k<160;k++){
+      const x=rnd(0,size-1),y=rnd(0,size-1);
+      if(occupied.has(ckey(x,y))) continue;
+      if(cells[y][x].t!=='grass'&&cells[y][x].t!=='road') continue;
+      if(minDist&&Math.abs(x-cx)+Math.abs(y-cy)<minDist) continue;
+      occupied.add(ckey(x,y)); return {x,y};
+    }
+    return null;
+  }
+  [shopA,shopB].forEach(kind=>{
+    if(!kind) return; const s=freeSpot(2); if(s) cells[s.y][s.x]={t:'shop',kind};
+  });
+  const decoCount=Math.floor(size*size*.18);
+  for(let k=0;k<decoCount;k++){
+    const s=freeSpot(2); if(!s) break;
+    let t='tree';
+    if(biome==='port'&&Math.random()<.55) t='water';
+    else if(biome==='mountains'&&Math.random()<.7) t='rock';
+    else if((biome==='village'||biome==='city')&&Math.random()<.55) t='house';
+    cells[s.y][s.x]={t};
+  }
+  const treasureCount=rnd(2,4);
+  for(let k=0;k<treasureCount;k++){
+    const s=freeSpot(2); if(!s) break;
+    const tp=pick(TREASURES);
+    cells[s.y][s.x]={t:'treasure',item:tp};
+  }
+  for(let k=0;k<rnd(1,2);k++){
+    const s=freeSpot(3); if(!s) break;
+    cells[s.y][s.x]={t:'chest',boss:false,opened:false};
+  }
+  const tier=i===0?0:Math.min(3,Math.floor(i/Math.max(1,total-1)*3)+(d.tier>0?1:0));
+  const bossPool=i===total-1?MONSTERS.filter(m=>m.tier>=2):MONSTERS.filter(m=>m.tier>=Math.min(2,tier));
+  const bossDef=pick(bossPool.length?bossPool:MONSTERS);
+  const boss=spawnMonster(bossDef,tier,farX,farY,'gold',true);
+  boss.name='Босс · '+bossDef.name;
+  boss.hp=Math.round(boss.hp*1.7); boss.maxHp=boss.hp;
+  boss.atk+=4+tier*2; boss.defVal+=3+tier; boss.magic=true; boss.magicBonus=2+tier;
+  const firstPool=MONSTERS.filter(m=>m.id==='mouse'||m.id==='turtle');
+  const pool=i===0?firstPool:MONSTERS.filter(m=>m.tier<=tier);
+  const mons=[];
+  for(let k=0;k<d.monsters+(i>2?1:0);k++){
+    const s=freeSpot(4); if(!s) break;
+    mons.push(spawnMonster(pick(pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
+  }
+  return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},
+    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops:[shopA,shopB].filter(Boolean),tier};
+}
+function spawnMonster(def,tier,x,y,variantId,isBoss,allowVariant){
+  const color=MONSTER_COLORS.find(c=>c.id===variantId)||
+    (allowVariant!==false&&Math.random()<.4?pick(MONSTER_COLORS):null);
+  const mul=color||{hp:1,atk:1,def:1,speed:1,gold:1,tint:def.tint||'#cbd5e1'};
+  const hp=Math.round(def.hp*mul.hp*(1+tier*.18));
+  return {def,name:(color?color.name+' ':'')+def.name,tint:color?color.tint:(def.tint||'#cbd5e1'),
+    hp,maxHp:hp,atk:Math.round(def.atk*mul.atk+tier*(isBoss?2:1)),defVal:Math.round((def.def||0)*mul.def+tier*.5),
+    speed:Math.round(def.combatSpeed*mul.speed),acts:def.acts,moveEvery:def.moveEvery,moveT:0,
+    magic:!!(def.magic||(color&&color.magic)),poison:!!(def.poison||(color&&color.poison)),
+    gold:[Math.round(def.gold[0]*mul.gold),Math.round(def.gold[1]*mul.gold)],
+    x,y,alive:true,stun:0,isBoss:!!isBoss,magicBonus:0};
+}
+function currentMap(){ return game?game.world.maps[game.world.current]:null; }
+function markSeen(map,x,y){
+  for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+    const nx=x+dx,ny=y+dy;
+    if(nx>=0&&ny>=0&&nx<map.size&&ny<map.size) map.seen.add(ckey(nx,ny));
+  }
+}
+function setMap(index,fromDir){
+  const w=game.world; w.current=index;
+  const m=w.maps[index];
+  let px=m.entry.x,py=m.entry.y,dir=0;
+  if(fromDir!==null){
+    const opp=(fromDir+2)%4;
+    for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
+      const c=m.cells[y][x];
+      if(c.t==='gate'&&c.dir===opp){ px=x; py=y; dir=fromDir; }
+    }
+  }
+  Object.assign(game.player,{x:px,y:py,px,py,fromX:px,fromY:py,moveT:0,dir});
+  markSeen(m,px,py);
+  game.nearShop=null;
+  game.msg='Локация '+(index+1)+'/'+w.count+' · '+BIOMES[m.biome].name+'.';
+}
+function enemyAt(x,y){ const m=currentMap(); return m.monsters.find(e=>e.alive&&e.x===x&&e.y===y)||null; }
+function isBlocking(c){ return ['tree','water','rock','house','shop','boss'].includes(c.t); }
+function battleGroup(seed){
+  const m=currentMap();
+  const list=m.monsters.filter(e=>e.alive&&Math.max(Math.abs(e.x-game.player.x),Math.abs(e.y-game.player.y))<=2);
+  if(seed&&!list.includes(seed)) list.unshift(seed);
+  return list;
+}
+
+function relativeMove(forward,side){
+  if(!game||phase!=='play') return;
+  const f=DIRS[game.player.dir], r=DIRS[(game.player.dir+1)%4];
+  tryMove(f[0]*forward+r[0]*side,f[1]*forward+r[1]*side);
+}
+function turnPlayer(d){
+  if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
+  game.player.dir=(game.player.dir+d+4)%4;
+  game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; beep(330,.05);
+}
+function tryMove(dx,dy){
+  if(phase!=='play'||!game||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
+  if(game.player.moveT>0) return;
+  const m=currentMap(), p=game.player;
+  const nx=p.x+dx, ny=p.y+dy;
+  if(nx<0||ny<0||nx>=m.size||ny>=m.size){ game.msg='Край карты.'; return; }
+  const e=enemyAt(nx,ny);
+  if(e){ startBattle(battleGroup(e),null); game.msg='Враги преградили путь: '+battleGroup(e).map(x=>x.name).join(', ')+'.'; return; }
+  const c=m.cells[ny][nx];
+  if(isBlocking(c)){
+    if(c.t==='boss'){ startBattle([m.boss.def,...battleGroup(null)],m); return; }
+    if(c.t==='shop'){ openShop(c.kind); return; }
+    game.msg='Проход закрыт.'; beep(120,.05); return;
+  }
+  p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
+  if(c.t==='gate'){
+    const to=c.to, nd=c.dir, back=(nd+2)%4;
+    game.world.current=to;
+    const nm=game.world.maps[to];
+    let gx=p.x,gy=p.y;
+    for(let y=0;y<nm.size;y++) for(let x=0;x<nm.size;x++){
+      const gc=nm.cells[y][x];
+      if(gc.t==='gate'&&gc.dir===back){ gx=x; gy=y; }
+    }
+    Object.assign(game.player,{x:gx,y:gy,px:gx,py:gy,fromX:gx,fromY:gy,moveT:0,dir:nd});
+    markSeen(nm,gx,gy);
+    game.msg='Дорога привела в '+BIOMES[nm.biome].name+'.';
+    toast('Переход: '+BIOMES[nm.biome].name); beep(620,.14);
+    updateParty(); return;
+  }
+  if(c.t==='treasure'){ collectTreasure(c); c.t='grass'; }
+  if(c.t==='chest'){ openSmallChest(c); }
+  afterStep();
+}
+function afterStep(){
+  const m=currentMap(); markSeen(m,game.player.x,game.player.y);
+  game.world.turn++; game.totalTurns++;
+  m.monsters.forEach(e=>{
+    if(!e.alive) return;
+    e.moveT++;
+    if(e.moveT<e.moveEvery) return;
+    e.moveT=0;
+    const dx=game.player.x-e.x, dy=game.player.y-e.y;
+    let sx=0,sy=0;
+    if(Math.abs(dx)>Math.abs(dy)&&dx) sx=Math.sign(dx);
+    else if(dy) sy=Math.sign(dy);
+    else if(dx) sx=Math.sign(dx);
+    if(Math.random()<.3){ sx=sx?-0:sx; }
+    const nx=e.x+sx,ny=e.y+sy;
+    if(nx<0||ny<0||nx>=m.size||ny>=m.size) return;
+    const c=m.cells[ny][nx];
+    if(isBlocking(c)||enemyAt(nx,ny)) return;
+    e.x=nx; e.y=ny;
+    if(nx===game.player.x&&ny===game.player.y){ startBattle(battleGroup(e),null); return; }
+  });
+  updateParty();
+}
+function addItem(o){
+  const found=game.bag.find(i=>i.id&&i.id===o.id&&i.type===o.type);
+  if(found&&o.count!==undefined){ found.count+=o.count||1; return found; }
+  const it=makeItem(o); game.bag.push(it); return it;
+}
+function collectTreasure(c){
+  const t=c.item, d=game.world.difficulty;
+  const gm=DIFFICULTY.find(x=>x.id===d)||DIFFICULTY[1];
+  if(t.kind==='gold'){ const n=Math.round(rnd(t.min,t.max)*gm.gold); game.gold+=n; game.msg='Находка: 🪙 '+n+'.'; }
+  else if(t.kind==='herb'){ const h=pick(HERBS); addItem({id:h.id,type:'herb',name:h.name,icon:h.icon,desc:h.desc,cost:2,sell:1,effect:h.effect,value:h.value}); game.msg='Находка: '+h.icon+' '+h.name+'.'; }
+  else if(t.kind==='crystal'){ addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6}); game.msg='Находка: 💎 кристалл.'; }
+  else if(t.kind==='scroll'){ const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)}); game.msg='Находка: 📜 '+s.name+'.'; }
+  else if(t.kind==='weapon'){
+    const h=party()[0], base=h.def.weapons[0];
+    const it=addItem({type:'weapon',name:t.name,dmg:t.level+1,baseDmg:t.level+1,cost:t.level*2,sell:t.level,
+      quality:Math.min(3,t.level),wkind:weaponKind(t.name),reforges:0,enchant:null,icon:'⚔'});
+    game.msg='Находка: ⚔ '+it.name+'.';
+  }else if(t.kind==='armor'){
+    const a=ARMORS[Math.min(ARMORS.length-1,t.level+1)];
+    addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,sell:Math.max(1,Math.floor(a.cost*.5)),icon:'🛡'});
+    game.msg='Находка: 🛡 '+a.name+'.';
+  }else{
+    const id=t.id==='coin'?'coin':t.id;
+    addItem({id,type:'potion',name:t.name,icon:t.icon,cost:5,sell:3,heal:t.id==='potion_hp'?40:0,mp:t.id==='potion_mp'?15:0});
+    game.msg='Находка: '+t.icon+' '+t.name+'.';
+  }
+  toast(game.msg); beep(760,.1);
+}
+function openSmallChest(c){
+  if(c.opened) return; c.opened=true;
+  const gold=rnd(3,8); game.gold+=gold;
+  if(Math.random()<.5){ const h=pick(HERBS); addItem({id:h.id,type:'herb',name:h.name,icon:h.icon,desc:h.desc,effect:h.effect,value:h.value,cost:2,sell:1}); }
+  game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); beep(820,.12);
+}
+function openBossChest(){
+  const m=currentMap(); if(!m||!m.boss.dead){ toast('Сначала победите босса.'); return false; }
+  const c=m.cells[m.boss.y][m.boss.x];
+  const near=Math.abs(game.player.x-m.boss.x)+Math.abs(game.player.y-m.boss.y)<=2;
+  if(!near){ toast('Подойдите к золотому сундуку.'); return false; }
+  if(c.bossOpened){ toast('Сундук уже пуст.'); return false; }
+  c.bossOpened=true;
+  const gold=rnd(18,34), gm=DIFFICULTY.find(x=>x.id===game.world.difficulty)||DIFFICULTY[1];
+  const amount=Math.round(gold*gm.gold); game.gold+=amount;
+  addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6,count:2});
+  const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)});
+  const liq=pick(LIQUIDS); addItem({id:liq.id,type:'liquid',name:liq.name,icon:liq.icon,color:liq.color,stat:liq.stat,value:liq.value,cost:9,sell:5});
+  game.msg='Золотой сундук: 🪙 '+amount+', 💎×2, 📜, 🧴.';
+  toast('Золотой сундук открыт!'); beep(980,.3);
+  return true;
+}
+function tryInteract(){
+  if(!game||phase!=='play') return;
+  if(game.battle){ heroAttack(); return; }
+  if(game.shopOpen){ toggleShop(false); return; }
+  if(game.invOpen){ toggleInventory(false); return; }
+  const m=currentMap(), p=game.player;
+  const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
+  const here=m.cells[p.y][p.x];
+  if(here.t==='shop'){ openShop(here.kind); return; }
+  if(here.t==='chest'&&!here.opened){ openSmallChest(here); return; }
+  if(Math.abs(p.x-m.boss.x)+Math.abs(p.y-m.boss.y)<=2&&m.boss.dead){ openBossChest(); return; }
+  if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop'){ openShop(m.cells[ny][nx].kind); return; }
+  game.msg='Здесь не с чем взаимодействовать.';
+}
+
+/* ============================ 5. ВЕРХНЯЯ ПОЛОСА ОТРЯДА ============================ */
+function updateParty(){
+  if(!game) return;
+  const active=game.battle&&game.battle.turn==='hero'?game.battle.heroIdx:0;
+  $('party').innerHTML=game.party.map((h,i)=>{
+    const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
+    return '<div class="pcard'+(i===active?' active':'')+'"><div class="ptop"><span class="pemoji">'+h.def.emoji+'</span>'+
+      '<span class="pname">'+(i===0?heroNameText:h.def.name)+'</span><span>'+Math.max(0,Math.round(h.hp))+'</span></div>'+
+      '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div></div>';
+  }).join('');
+  $('shopGold').textContent=game.gold;
+  $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+}
+function updateControls(){
+  if(!game) return;
+  const hide=phase!=='play'||game.shopOpen||game.invOpen||game.reward||game.spellOpen;
+  $('controls').classList.toggle('hidden',!game||phase!=='play');
+  $('btnAttack').classList.toggle('hot',!!game.battle&&game.battle.turn==='hero');
+  $('btnSpell').classList.toggle('hot',!!game.battle&&game.battle.turn==='hero');
+  $('btnFlee').classList.toggle('hot',!!game.battle);
+  void hide;
+}
+
+/* ============================ 6. ГРУППОВОЙ БОЙ ============================ */
+function startBattle(list,mapRef){
+  if(!game||phase!=='play'||game.battle) return null;
+  const enemies=list.filter(e=>e&&e.alive);
+  if(!enemies.length) return null;
+  const b={enemies,fromMap:!mapRef,map:mapRef,order:[],turnIndex:-1,turn:'hero',heroIdx:0,
+    busy:false,end:null,log:[],anim:null,boss:mapRef?mapRef.boss.def:null};
+  game.battle=b;
+  const units=[];
+  party().forEach((h,i)=>units.push({side:'hero',idx:i,speed:6+Math.floor(h.bonus.magic/2),tie:i}));
+  enemies.forEach((e,i)=>units.push({side:'enemy',idx:i,speed:e.speed,tie:10+i}));
+  units.sort((a,b)=>(b.speed-a.speed)||(a.tie-b.tie));
+  units.forEach(u=>{ const n=(u.side==='enemy'&&enemies[u.idx].acts===2)?2:1;
+    for(let k=0;k<n;k++) b.order.push({...u}); });
+  pushLog('Встреча: '+enemies.map(e=>e.name).join(', ')+'.',C_NEUTRAL,'neutral');
+  game.msg='Бой! Пробел — атака · F — магия · R — бегство.';
+  nextTurn(); updateParty(); updateControls(); beep(420,.12);
+  return b;
+}
+function pushLog(text,color,side){
+  const b=game&&game.battle; if(!b) return;
+  b.log.push({text,color:color||C_NEUTRAL,side:side||'neutral'});
+
+  if(b.log.length>5) b.log.shift();
+}
+function checkBattleEnd(){
+  const b=game&&game.battle; if(!b||b.end) return true;
+  if(!aliveHeroes().length){ finishBattle(false); return true; }
+  if(!b.enemies.some(e=>e.alive)){ finishBattle(true); return true; }
+  return false;
+}
+function nextTurn(){
+  const b=game&&game.battle; if(!b||b.end) return;
+  let guard=0;
+  while(guard++<b.order.length*2+2){
+    b.turnIndex=(b.turnIndex+1)%b.order.length;
+    const u=b.order[b.turnIndex];
+    if(u.side==='hero'){
+      if(party()[u.idx].hp<=0) continue;
+      b.turn='hero'; b.heroIdx=u.idx; b.busy=false;
+      updateParty(); updateControls(); return;
+    }
+    const m=b.enemies[u.idx];
+    if(!m||!m.alive) continue;
+    if(m.stun>0){ m.stun--; pushLog(m.name+' пропускает ход.',C_NEUTRAL,'neutral'); continue; }
+    b.turn='enemy'; b.busy=true; updateParty(); updateControls();
+    setTimeout(()=>enemyAct(b,u.idx),520); return;
+  }
+  checkBattleEnd();
+}
+function heroAttack(){
+  const b=game&&game.battle; if(!b||b.end||b.busy||b.turn!=='hero') return;
+  const h=party()[b.heroIdx]; if(!h||h.hp<=0) return;
+  const target=b.enemies.find(e=>e.alive); if(!target) return;
+  b.busy=true;
+  const w=equippedWeapon(h);
+  let atk=heroAtk(h);
+  if(w&&w.enchant){
+    if(w.enchant.stat==='light'&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) atk+=w.enchant.value;
+  }
+  const dmg=Math.max(1,atk-Math.max(0,target.defVal)+rnd(0,2));
+  target.hp=Math.max(0,target.hp-dmg);
+  b.anim={who:'hero',t:1,jump:12};
+  pushLog(h.def.name+': удар по '+target.name+' — '+dmg+' урона.',C_HERO,'hero');
+  if(w&&w.enchant){
+    const en=w.enchant;
+    if(en.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+en.value);
+    if(en.stat==='mp') h.mp=Math.min(h.maxMp,h.mp+en.value);
+    if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
+  }
+  if(target.hp<=0){ target.alive=false; pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
+  beep(440,.09); updateParty();
+  if(checkBattleEnd()) return;
+  setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
+}
+function enemyAct(b,idx){
+  if(!game||game.battle!==b||b.end) return;
+  const m=b.enemies[idx]; if(!m||!m.alive) return;
+  const targets=aliveHeroes(); if(!targets.length){ finishBattle(false); return; }
+  const h=pick(targets);
+  let dmg;
+  if(m.magic&&Math.random()<.35){
+    dmg=Math.max(1,Math.round(m.atk+m.magicBonus-h.bonus.def*.5)+rnd(0,2));
+    pushLog(m.name+': чары на '+h.def.name+' — '+dmg+' урона.',C_ENEMY,'enemy');
+  }else{
+    dmg=Math.max(0,m.atk-heroDef(h)+rnd(0,1));
+    pushLog(m.name+': удар по '+h.def.name+' — '+dmg+' урона.',C_ENEMY,'enemy');
+  }
+  h.hp=Math.max(0,h.hp-dmg);
+  if(m.poison&&Math.random()<.35&&h.hp>0){
+    h.poison=3; h.poisonTurns=2; pushLog(m.name+' наложил яд на '+h.def.name+'.',C_ENEMY,'enemy');
+  }
+  if(h.poison>0&&h.hp>0){
+    const pd=Math.min(h.poison,h.hp); h.hp-=pd; h.poison=Math.max(0,h.poison-1);
+    h.poisonTurns=Math.max(0,(h.poisonTurns||0)-1); if(!h.poisonTurns) h.poison=0;
+    pushLog('Яд снимает '+pd+' HP с '+h.def.name+'.',C_ENEMY,'enemy');
+  }
+  if(h.hp<=0) b.killerName=m.name;
+  b.anim={who:'enemy',t:1,jump:10};
+  beep(180,.12); updateParty();
+  if(checkBattleEnd()) return;
+  setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
+}
+function castSpell(id,targetIdx){
+  const b=game&&game.battle;
+  if(!b||b.end){ toast('Заклинания доступны в бою.'); return false; }
+  if(b.turn!=='hero'||b.busy){ toast('Сейчас не ваш ход.'); return false; }
+  const s=spell(id); if(!s) return false;
+  const h=party()[b.heroIdx];
+  if(!h||h.spells.indexOf(id)<0){ toast('Заклинание не изучено.'); return false; }
+  if(h.mp<s.mp){ toast('Не хватает маны: нужно '+s.mp+'.'); return false; }
+  h.mp-=s.mp;
+  const target=b.enemies[Number.isInteger(targetIdx)?targetIdx:b.enemies.findIndex(e=>e.alive)]||b.enemies.find(e=>e.alive);
+  let txt='';
+  if(s.power){
+    let dmg=s.power+h.bonus.magic;
+    if(s.undead&&target&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) dmg*=2;
+    const victims=s.aoe?b.enemies.filter(e=>e.alive):[target].filter(Boolean);
+    victims.forEach(v=>{ v.hp=Math.max(0,v.hp-dmg); if(v.hp<=0) v.alive=false;
+      if(s.id==='ice') v.slow=(v.slow||0)+1;
+      if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
+    });
+    txt=h.def.name+' применяет «'+s.name+'» — '+Math.round(dmg)+' урона'+(s.aoe?' по всем врагам':'')+'.';
+  }else if(s.heal){ h.hp=Math.min(h.maxHp,h.hp+s.heal); txt=h.def.name+' лечит себя на '+s.heal+' HP.'; }
+  else if(s.shield){ h.shield+=s.shield; txt=h.def.name+' создаёт щит +'+s.shield+'.'; }
+  else if(s.poison&&target){ target.poison=(target.poison||0)+s.poison; txt=h.def.name+' отравляет '+target.name+'.'; }
+  else if(s.stun&&target){ target.stun=(target.stun||0)+s.stun; txt=h.def.name+' оглушает '+target.name+' на '+s.stun+' хода.'; }
+  else if(s.def&&target){ target.defVal=Math.max(0,target.defVal+s.def); txt=h.def.name+' снижает защиту '+target.name+'.'; }
+  else if(s.atk){ h.bonus.atk+=s.atk; txt=h.def.name+' благословляет себя (+'+s.atk+' атаки).'; }
+  else if(s.gain){ h.mp=Math.min(h.maxMp,h.mp+s.gain); txt=h.def.name+' восстанавливает ману +'+s.gain+'.'; }
+  else if(s.id==='teleport'){ closeBattleKeep(); closeSpellMenu(); toast('Прыжок: бой оставлен без штрафа.'); return true; }
+  else txt=h.def.name+' применяет «'+s.name+'».';
+  pushLog(txt,C_HERO,'hero');
+  b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
+  closeSpellMenu(); updateParty();
+  if(checkBattleEnd()) return true;
+  setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
+  return true;
+}
+function fleeBattle(){
+  const b=game&&game.battle; if(!b||b.end) return false;
+  if(Math.random()<.5){
+    const maxSum=party().reduce((s,h)=>s+h.maxHp,0);
+    const loss=Math.max(2,Math.ceil(maxSum*.05));
+    let left=loss;
+    party().forEach(h=>{ if(h.hp<=0||left<=0) return;
+      const part=Math.min(h.hp,Math.max(1,Math.ceil(left/2))); h.hp-=part; left-=part; });
+    b.end='flee';
+    pushLog('Побег удался! Потеряно '+loss+' HP.',C_HERO,'hero');
+    recordAnnounce('flee_mm6',unlockRecord('flee_mm6'));
+    progress.flees++; saveProgress(); updateParty(); beep(680,.16);
+    setTimeout(closeBattleKeep,650);
+    return true;
+  }
+  pushLog('Побег не удался — враг атакует!',C_NEUTRAL,'neutral');
+  const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive).sort((a,b)=>b.e.speed-a.e.speed);
+  if(live.length){ b.busy=false; b.turn='enemy'; enemyAct(b,live[0].i); }
+  return false;
+}
+function closeBattleKeep(){
+  if(!game||!game.battle) return;
+  game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
+  updateParty(); updateControls();
+}
+function finishBattle(win){
+  const b=game&&game.battle; if(!b||b.end) return;
+  b.end=win?'win':'lose';
+  pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
+  beep(win?980:120,.3); updateControls();
+  if(!win){
+    const killer=b.killerName||(b.enemies.find(e=>e.alive)||b.enemies[0]||{}).name||'враг';
+    recordAnnounce(null,recordDeath('mm6',killer));
+    setTimeout(()=>finishRun(false),1500); return;
+  }
+  const gold=b.enemies.filter(e=>e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0)
+    +b.enemies.filter(e=>!e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0);
+  game.gold+=gold;
+  b.enemies.forEach(e=>{ if(!e.isBoss) e.alive=false; });
+  if(b.boss&&b.map){
+    recordAnnounce('boss_mm6',unlockRecord('boss_mm6'));
+    const m=b.map; m.boss.dead=true;
+    game.world.bossKills++; progress.boss=Math.min(10,progress.boss+1);
+    if(progress.boss>=10&&!progress.achieved){ progress.achieved=true; toast('ДОСТИЖЕНИЕ: Круг славы замкнут!'); }
+    saveProgress();
+    pushLog('Босс повержен! Выберите награду.',C_NEUTRAL,'neutral');
+    setTimeout(()=>showBossReward(m,b.boss),900);
+  }else{
+    game.msg='Победа! Получено 🪙 '+gold+'.';
+    setTimeout(()=>{ if(game&&game.battle===b){ game.battle=null; updateParty(); updateControls(); toast('Победа! 🪙 '+gold); } },1100);
+  }
+  updateParty();
+}
+function showBossReward(m,boss){
+  if(!game) return;
+  game.reward={mapIndex:m.index,final:m.index===game.world.count-1};
+  $('rewardTitle').textContent='🏆 '+boss.name+' повержен';
+  $('rewardText').textContent='Выберите награду для всего отряда. После выбора откроется золотой сундук.';
+  $('rewardList').innerHTML=BOSS_BONUSES.map(b=>'<button class="rewardBtn" data-bonus="'+b.id+'">'+b.icon+' '+b.name+' ('+(b.id==='atk'?'+'+b.value+' атаки':b.id==='def'?'+'+b.value+' защиты':'+'+b.value+' магии')+')</button>').join('');
+  $('rewardList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>chooseReward(btn.dataset.bonus));
+  $('reward').classList.remove('hidden'); updateControls(); beep(1040,.25);
+}
+function chooseReward(id){
+  if(!game||!game.reward) return;
+  const b=BOSS_BONUSES.find(x=>x.id===id)||BOSS_BONUSES[0];
+  party().forEach(h=>{
+    if(id==='atk') h.bonus.atk+=b.value;
+    else if(id==='def') h.bonus.def+=b.value;
+    else { h.bonus.magic+=b.value; h.maxMp+=Math.ceil(b.value/2); h.mp=Math.min(h.maxMp,h.mp+Math.ceil(b.value/2)); }
+  });
+  const m=game.world.maps[game.reward.mapIndex], final=game.reward.final;
+  $('reward').classList.add('hidden'); game.reward=null;
+  const bx=m.boss.x,by=m.boss.y;
+  let placed=false;
+  for(const d of DIRS){
+    const nx=bx+d[0],ny=by+d[1];
+    if(nx<0||ny<0||nx>=m.size||ny>=m.size) continue;
+    if(['grass','road','gate','treasure'].includes(m.cells[ny][nx].t)){
+      Object.assign(game.player,{x:nx,y:ny,px:nx,py:ny,fromX:nx,fromY:ny,moveT:0}); placed=true; break;
+    }
+  }
+  if(!placed){ Object.assign(game.player,{x:bx,y:by,px:bx,py:by,fromX:bx,fromY:by,moveT:0}); }
+  markSeen(m,game.player.x,game.player.y);
+  if(game.battle){ game.battle=null; }
+  toast('Награда получена: '+b.name);
+  openBossChest(); updateParty(); updateControls();
+  game.msg=b.name+' · награда отряда получена.';
+  if(final) setTimeout(()=>finishRun(true),900);
+}
+function finishRun(win){
+  if(!game) return;
+  if(win){ progress.runs++; saveProgress(); toast('Мир очищен! Все боссы побеждены.'); }
+  else toast(record('kill_zombie_mm6')||'Отряд пал. Попробуйте снова.');
+  phase='start'; game=null;
+  $('controls').classList.add('hidden'); $('party').classList.add('hidden');
+  ['shop','inventory','reward','spellMenu'].forEach(id=>$(id).classList.add('hidden'));
+  $('start').classList.remove('hidden'); renderStart();
+}
+
+/* ============================ 7. МЕНЮ ЗАКЛИНАНИЙ ============================ */
+function openSpellMenu(){
+  if(!game||phase!=='play') return;
+  $('spellMenu').classList.remove('hidden'); game.spellOpen=true;
+  const b=game.battle;
+  if(!b){ $('spellList').innerHTML='<p class="sec">Заклинания можно применять только в бою.</p>'; updateControls(); return; }
+  const h=party()[b.heroIdx];
+  $('spellList').innerHTML=h.spells.map(id=>{
+    const s=spell(id); if(!s) return '';
+    return '<div class="rowItem"><span class="ic">'+s.icon+'</span><div class="info"><b>'+s.name+'</b><small>'+s.desc+'</small></div>'+
+      '<button class="act magic" data-spell="'+s.id+'"'+(h.mp<s.mp||b.turn!=='hero'?' disabled':'')+'>'+s.mp+' MP</button></div>';
+
+  }).join('')||'<p class="sec">Заклинаний пока нет.</p>';
+  $('spellList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>castSpell(btn.dataset.spell));
+  updateControls();
+}
+function closeSpellMenu(){ $('spellMenu').classList.add('hidden'); if(game) game.spellOpen=false; updateControls(); }
+
+/* ============================ 8. ПЯТЬ ЛАВОК ============================ */
+function openShop(type){
+  if(!game||phase!=='play'||game.battle) return;
+  game.shopType=type||game.shopType||'market';
+  game.shopOpen=true; $('shop').classList.remove('hidden');
+  renderShop(); updateControls(); beep(520,.1);
+}
+function toggleShop(open,type){
+  if(!game||phase!=='play') return;
+  if(open===false){ game.shopOpen=false; $('shop').classList.add('hidden'); updateControls(); return; }
+  const ids=SHOP_TYPES.map(s=>s.id);
+  const wanted=(ids.indexOf(open)>=0?open:null)||(ids.indexOf(type)>=0?type:null)||game.shopType||'market';
+  openShop(wanted);
+}
+function shopSec(title){ const d=document.createElement('div'); d.className='sec'; d.textContent=title; $('shopList').appendChild(d); }
+function shopButton(text,fn,disabled,cls){
+  const b=document.createElement('button'); b.className='act'+(cls?' '+cls:''); b.textContent=text;
+  if(disabled) b.disabled=true; else b.onclick=fn; return b;
+}
+function shopRow(icon,name,sub,buttons){
+  const r=document.createElement('div'); r.className='rowItem';
+  r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b>'+name+'</b><small>'+sub+'</small></div>';
+  buttons.forEach(b=>r.appendChild(b)); $('shopList').appendChild(r);
+}
+function forgeCost(it){ return (QUALITY[it.quality]||QUALITY[0]).forgeCost+(it.reforges+1); }
+function renderShop(){
+  if(!game) return;
+  const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[4];
+  $('shopTitle').textContent=def.icon+' '+def.title;
+  $('shopTabs').innerHTML=SHOP_TYPES.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
+  $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
+  $('shopList').innerHTML='';
+  const h=party()[game.invHero||0];
+  const basicPotion=()=>shopRow('🧪','Зелье жизни','Лечит 40 HP',[shopButton('🪙 6',()=>{
+    if(game.gold<6) return; game.gold-=6; addItem({id:'potion_hp',type:'potion',name:'Зелье жизни',icon:'🧪',heal:40,cost:6,sell:3});
+    beep(720,.1); renderShop(); updateParty();
+  },game.gold<6)]);
+  if(game.shopType==='weapons'){
+    shopSec('Оружие — цены Подземелья 28');
+    h.def.weapons.forEach(w=>{
+      shopRow('⚔',w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name,[
+        shopButton('🪙 '+w.cost,()=>{
+          if(game.gold<w.cost) return; game.gold-=w.cost;
+          const it=addItem({type:'weapon',name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
+            sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality,wkind:w.kind,reforges:0,enchant:null,icon:'⚔'});
+          h.equip.weapon=it.uid; toast('Куплено и надето: '+w.name); beep(760,.12); renderShop(); updateParty();
+        },game.gold<w.cost)
+      ]);
+    });
+    shopSec('Перековка · только качество «Острое» и выше');
+    game.bag.filter(i=>i.type==='weapon').forEach(it=>{
+      const cost=forgeCost(it), ok=it.quality>=1&&it.reforges<5&&game.gold>=cost;
+      shopRow('🔨',it.name,'Качество: '+QUALITY[it.quality].name+' · перековок '+it.reforges+'/5',[
+        shopButton('🪙 '+cost+' перековать',()=>{ forgeItem(it.uid); renderShop(); },!ok)
+      ]);
+    });
+    shopSec('Базовые товары'); basicPotion();
+  }else if(game.shopType==='armor'){
+    shopSec('Броня · 17 предметов');
+    ARMORS.forEach((a,i)=>{
+      shopRow('🛡',a.name,'Защита +'+a.def+' · '+(a.set==='any'?'любой класс':a.set)+' · 🪙 '+a.cost,[
+        shopButton('🪙 '+a.cost,()=>{
+          if(game.gold<a.cost) return; game.gold-=a.cost;
+          const it=addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,
+            sell:Math.max(1,Math.floor(a.cost*.5)),icon:'🛡',set:a.set});
+          h.equip.armor=it.uid; toast('Надето: '+a.name); beep(740,.12); renderShop(); updateParty();
+        },game.gold<a.cost)
+      ]);
+    });
+    shopSec('Починка');
+    const armor=equippedArmor(h);
+    shopRow('🧵',armor?armor.name:'Нет брони','Починка даёт +1 защиты',[shopButton('🪙 4',()=>{
+      if(game.gold<4||!armor) return; game.gold-=4; armor.armorDef=(armor.armorDef||0)+1;
+      toast('Броня починена: +1'); renderShop(); updateParty();
+    },game.gold<4||!armor)]);
+    shopSec('Базовые товары'); basicPotion();
+  }else if(game.shopType==='magic'){
+    shopSec('Свитки');
+    SCROLLS.forEach(s=>shopRow(s.icon,s.name,'Заклинание: '+(spell(s.spell)||{}).name,[
+      shopButton('🪙 '+s.cost,()=>{
+        if(game.gold<s.cost) return; game.gold-=s.cost;
+        addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)});
+        toast('Куплен: '+s.name); renderShop();
+      },game.gold<s.cost)
+    ]));
+    shopSec('Заклинания для отряда');
+    SPELLS.forEach((s,i)=>{
+      const cost=8+i*2, known=h.spells.includes(s.id);
+      shopRow(s.icon,s.name,s.desc+' · '+s.mp+' MP',[shopButton(known?'Изучено':'🪙 '+cost+' выучить',()=>{
+        if(game.gold<cost) return; game.gold-=cost; h.spells.push(s.id);
+        toast('Изучено: '+s.name); renderShop();
+      },known||game.gold<cost)]);
+    });
+    shopSec('Зелья'); basicPotion();
+    shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 7',()=>{
+      if(game.gold<7) return; game.gold-=7;
+      addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:7,sell:3}); renderShop();
+    },game.gold<7)]);
+  }else if(game.shopType==='jeweler'){
+    shopSec('Кристаллы и жидкости');
+    shopRow('💎','Кристалл','Для зачарования',[shopButton('🪙 7',()=>{
+      if(game.gold<7) return; game.gold-=7;
+      addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6}); renderShop(); updateParty();
+    },game.gold<7)]);
+    LIQUIDS.forEach(l=>shopRow(l.icon,l.name,'Эффект: '+l.stat+' +'+l.value,[
+      shopButton('🪙 9',()=>{
+        if(game.gold<9) return; game.gold-=9;
+        addItem({id:l.id,type:'liquid',name:l.name,icon:l.icon,color:l.color,stat:l.stat,value:l.value,cost:9,sell:5});
+        toast('Куплено: '+l.name); renderShop();
+      },game.gold<9)
+    ]));
+    shopSec('Перековка + зачарование кристаллом');
+    const options='<select data-liq>'+LIQUIDS.map(l=>'<option value="'+l.id+'">'+l.name+'</option>').join('')+'</select>';
+    game.bag.filter(i=>i.type==='weapon').forEach(it=>{
+      const row=document.createElement('div'); row.className='rowItem';
+      const cost=forgeCost(it)+2;
+      const crystals=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+      const haveLiq=LIQUIDS.some(l=>game.bag.some(i=>i.type==='liquid'&&i.id===l.id));
+      row.innerHTML='<span class="ic">💍</span><div class="info"><b>'+it.name+'</b><small>'+options+' · 🪙 '+cost+' · 💎 1</small></div>';
+      row.appendChild(shopButton('Зачаровать',()=>{
+        const sel=row.querySelector('select');
+        enchantItem(it.uid,sel.value,true); renderShop();
+      },!(it.quality>=1&&it.reforges<5&&game.gold>=cost&&crystals>0&&haveLiq)));
+      $('shopList').appendChild(row);
+    });
+    shopSec('Рецепты трав'); renderRecipeRows(true);
+  }else{
+    shopSec('Травы');
+    HERBS.forEach(x=>shopRow(x.icon,x.name,x.desc+' · 🪙 2',[shopButton('🪙 2',()=>{
+      if(game.gold<2) return; game.gold-=2;
+      addItem({id:x.id,type:'herb',name:x.name,icon:x.icon,desc:x.desc,effect:x.effect,value:x.value,cost:2,sell:1});
+      renderShop();
+    },game.gold<2)]));
+    shopSec('Еда и зелья'); basicPotion();
+    shopRow('🥖','Хлеб','Восстанавливает 12 HP',[shopButton('🪙 3',()=>{
+      if(game.gold<3) return; game.gold-=3;
+      addItem({id:'bread',type:'potion',name:'Хлеб',icon:'🥖',heal:12,cost:3,sell:2}); renderShop();
+    },game.gold<3)]);
+    shopSec('Продажа товаров');
+    if(!game.bag.length) shopRow('•','Пока пусто','Находите предметы на карте',[shopButton('—',null,true)]);
+    game.bag.filter(i=>i.uid!==h.equip.weapon&&i.uid!==h.equip.armor).forEach(it=>{
+      shopRow(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),'Цена продажи: 🪙 '+it.sell,
+        [shopButton('Продать '+it.sell,()=>{ sellBagItem(it.uid,true); renderShop(); },false,'sell')]);
+    });
+  }
+  $('shopGold').textContent=game.gold;
+  $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+  updateParty();
+}
+function forgeItem(uid){
+  const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
+  if(it.quality<1){ toast('Ржавое оружие нельзя перековать.'); return false; }
+  if(it.reforges>=5){ toast('Достигнут предел перековок (5).'); return false; }
+  const cost=forgeCost(it);
+  if(game.gold<cost){ toast('Не хватает золота.'); return false; }
+  game.gold-=cost; it.reforges++;
+  const inc=Math.max(1,Math.ceil(it.baseDmg/5)); it.dmg+=inc;
+  toast('Перековка: '+it.name+' +'+inc+' урона'); beep(660,.14); updateParty(); return true;
+}
+function enchantItem(uid,liquidId,withCrystal){
+  const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
+  const liq=liquid(liquidId); if(!liq) return false;
+  if(it.quality<1||it.reforges>=5){ toast('Оружие нельзя зачаровать.'); return false; }
+  const liqItem=game.bag.find(i=>i.type==='liquid'&&i.id===liquidId);
+  if(!liqItem){ toast('Нет жидкости: '+liq.name); return false; }
+  const cost=forgeCost(it)+(withCrystal?2:4);
+  const cr=game.bag.find(i=>i.type==='crystal');
+  if(withCrystal&&!cr){ toast('Нет кристалла.'); return false; }
+  if(game.gold<cost){ toast('Не хватает золота.'); return false; }
+  game.gold-=cost; liqItem.count=(liqItem.count||1)-1;
+  if(liqItem.count<=0) game.bag.splice(game.bag.indexOf(liqItem),1);
+  if(withCrystal){ forgeItemFree(it); cr.count=(cr.count||1)-1; if(cr.count<=0) game.bag.splice(game.bag.indexOf(cr),1); }
+  it.enchant={id:liq.id,stat:liq.stat,value:liq.value,color:liq.color};
+  const base=it.baseName||it.name.replace(/ [^ ]+$/,'');
+  it.baseName=base;
+  it.name=base+' '+(LIQUID_NAME[liq.id]||liq.stat);
+  toast('Зачарование: '+it.name); beep(880,.18); updateParty(); return true;
+}
+function forgeItemFree(it){
+  if(it.reforges>=5) return;
+  it.reforges++; it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
+}
+function sellBagItem(uid,silent){
+  const i=game.bag.find(x=>x.uid===uid); if(!i) return;
+  const gain=Math.max(1,i.sell||1)*(i.count||1); game.gold+=gain;
+  party().forEach(h=>{ if(h.equip.weapon===uid) h.equip.weapon=null; if(h.equip.armor===uid) h.equip.armor=null; });
+  game.bag.splice(game.bag.indexOf(i),1);
+  if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); beep(560,.08); }
+  updateParty();
+}
+function renderRecipeRows(inShop){
+  RECIPES.forEach(r=>{
+    const have=r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0));
+    const row=document.createElement('div'); row.className='rowItem';
+    row.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b>'+r.name+'</b><small>'+r.need.map(id=>(herb(id)||{}).name).join(' + ')+'</small></div>';
+    const b=document.createElement('button'); b.className='act'; b.textContent='Создать'; b.disabled=!have;
+    b.onclick=()=>{ craftRecipe(r); if(inShop) renderShop(); else renderInventory(); };
+    row.appendChild(b); $('shopList').appendChild(row);
+  });
+}
+function craftRecipe(r){
+  if(!r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0))){ toast('Не хватает трав.'); return false; }
+  r.need.forEach(id=>{ const it=game.bag.find(i=>i.type==='herb'&&i.id===id); it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); });
+  const eff={potion_hp:{heal:45},potion_mp:{mp:18},antidote:{cure:true},stone_skin:{def:5},
+    battle_draught:{atk:4},crystal_tonic:{crystal:1},frost_flask:{frost:true},greater_heal:{healAll:60}}[r.give.id]||{};
+  addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
+  toast('Создано: '+r.name+' ×'+r.give.count); beep(840,.16); updateParty(); return true;
+}
+
+/* ============================ 9. ИНВЕНТАРЬ ============================ */
+const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Свитки','Сундуки'];
+function toggleInventory(open){
+  if(!game||phase!=='play') return;
+  game.invOpen=!!open;
+  $('inventory').classList.toggle('hidden',!game.invOpen);
+  if(game.invOpen) renderInventory();
+  updateControls(); beep(400,.06);
+}
+function renderInventory(){
+  if(!game) return;
+  renderMannequin();
+  $('invTabs').innerHTML=INV_TABS.map(t=>'<button class="tab'+(t===invTab?' sel':'')+'" data-tab="'+t+'">'+t+'</button>').join('');
+  $('invTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ invTab=b.dataset.tab; renderInventory(); });
+  const h=party()[game.invHero||0], list=$('invList'); list.innerHTML='';
+  const row=(icon,name,sub,buttons)=>{
+    const r=document.createElement('div'); r.className='rowItem';
+    r.innerHTML='<span class="ic">'+icon+'</span><div class="info"><b>'+name+'</b><small>'+sub+'</small></div>';
+    buttons.forEach(b=>r.appendChild(b)); list.appendChild(r);
+  };
+  const btn=(text,fn,cls,disabled)=>{
+    const b=document.createElement('button'); b.className='act'+(cls?' '+cls:'');
+    b.textContent=text; if(disabled) b.disabled=true; else b.onclick=fn; return b;
+  };
+  const sec=t=>{ const d=document.createElement('div'); d.className='sec'; d.textContent=t; list.appendChild(d); };
+  if(invTab==='Общий'){
+    sec('Отряд');
+    party().forEach((x,i)=>row(x.def.emoji,(i===0?heroNameText:x.def.name),
+      'HP '+Math.round(x.hp)+'/'+x.maxHp+' · MP '+Math.round(x.mp)+'/'+x.maxMp+' · бонус А'+x.bonus.atk+' З'+x.bonus.def+' М'+x.bonus.magic,[]));
+    sec('Ресурсы');
+    row('🪙','Золото','На покупки и перековку',[]);
+    row('💎','Кристаллы',String(game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0)),[]);
+    sec('Быстрые действия');
+    row('🧪','Использовать зелье','Лечение и мана',[
+      btn('Лечение',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.heal); if(it) useItem(it.uid); },'use',!game.bag.some(i=>i.type==='potion'&&i.heal)),
+      btn('Мана',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.mp); if(it) useItem(it.uid); },'use',!game.bag.some(i=>i.type==='potion'&&i.mp))
+    ]);
+  }else if(invTab==='Оружие'){
+    sec('Оружие отряда');
+    game.bag.filter(i=>i.type==='weapon').forEach(it=>{
+      const pen=weaponPenalty(h,it), eq=Object.values(h.equip).includes(it.uid);
+      row('⚔',it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+it.reforges+'/5'+
+        (it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+(pen?' · ⚠ штраф '+pen:''),[
+        btn(eq?'Надето':'Надеть',()=>{ h.equip.weapon=it.uid; renderInventory(); updateParty(); },'use',eq),
+        btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')
+      ]);
+    });
+  }else if(invTab==='Броня'){
+    sec('Доспехи');
+    game.bag.filter(i=>i.type==='armor').forEach(it=>{
+      const pen=armorPenalty(h,it), eq=h.equip.armor===it.uid;
+      row('🛡',it.name,'Защита +'+(it.armorDef||0)+(pen?' · ⚠ штраф '+pen:''),[
+        btn(eq?'Надето':'Надеть',()=>{ h.equip.armor=it.uid; renderInventory(); updateParty(); },'use',eq),
+        btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')
+      ]);
+    });
+  }else if(invTab==='Магия'){
+    sec('Изучённые заклинания');
+    h.spells.forEach(id=>{ const s=spell(id); if(s) row(s.icon,s.name,s.desc+' · '+s.mp+' MP',[]); });
+    sec('Зелья');
+    game.bag.filter(i=>i.type==='potion').forEach(it=>row(it.icon||'🧪',it.name+(it.count>1?' ×'+it.count:''),
+      'Цена: 🪙 '+it.sell,[btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),
+      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
+  }else if(invTab==='Травы'){
+    sec('Травы');
+    game.bag.filter(i=>i.type==='herb').forEach(it=>row(it.icon||'🌿',it.name+(it.count>1?' ×'+it.count:''),it.desc||'',[
+      btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),
+      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
+    sec('Рецепты'); renderRecipeRowsTo(list);
+  }else if(invTab==='Свитки'){
+    sec('Свитки');
+    game.bag.filter(i=>i.type==='scroll').forEach(it=>row(it.icon||'📜',it.name+(it.count>1?' ×'+it.count:''),
+      'Заклинание: '+((spell(it.spell)||{}).name||'?'),[
+      btn('Изучить',()=>{ if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
+        it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); renderInventory(); },'magic'),
+      btn('Продать '+it.sell,()=>{ sellBagItem(it.uid); renderInventory(); },'sell')]));
+  }else{
+    sec('Сундуки');
+    game.bag.filter(i=>i.type==='chest').forEach(it=>row('🧰',it.name+(it.count>1?' ×'+it.count:''),'Нажмите «Открыть»',[
+      btn('Открыть',()=>{ useItem(it.uid); renderInventory(); },'use')]));
+    if(!game.bag.some(i=>i.type==='chest')) row('🧰','Пусто','Сундуки находятся на карте',[]);
+  }
+}
+function renderRecipeRowsTo(list){
+  RECIPES.forEach(r=>{
+    const have=r.need.every(id=>game.bag.some(i=>i.type==='herb'&&i.id===id&&(i.count||1)>0));
+    const rEl=document.createElement('div'); rEl.className='rowItem';
+    rEl.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b>'+r.name+'</b><small>'+r.need.map(id=>(herb(id)||{}).name).join(' + ')+'</small></div>';
+    const b=document.createElement('button'); b.className='act'; b.textContent='Создать'; b.disabled=!have;
+    b.onclick=()=>{ craftRecipe(r); renderInventory(); }; rEl.appendChild(b); list.appendChild(rEl);
+  });
+}
+function renderMannequin(){
+  const h=party()[game.invHero||0];
+  const w=equippedWeapon(h), a=equippedArmor(h);
+  const pen=w?weaponPenalty(h,w):0, apen=a?armorPenalty(h,a):0;
+  $('mannequin').innerHTML='<div style="display:flex;gap:4px;justify-content:center">'+
+    party().map((x,i)=>'<button class="tab'+(i===(game.invHero||0)?' sel':'')+'" data-h="'+i+'" style="min-height:30px">'+x.def.emoji+'</button>').join('')+'</div>'+
+    '<div class="face">'+h.def.emoji+'</div><b style="color:#ffe9b0;font-size:12px">'+(game.invHero===0?heroNameText:h.def.name)+'</b>'+
+    '<div class="slot">⚔ Оружие<br><b>'+(w?w.name:'—')+'</b></div>'+
+    '<div class="slot">🛡 Броня<br><b>'+(a?a.name:'—')+'</b></div>'+
+    '<div class="slot">Атака '+heroAtk(h)+' · Защита '+heroDef(h)+'</div>'+
+    ((pen||apen)?'<div class="bad">⚠ Несоответствие класса: '+(pen?'−'+pen+' атаки':'')+(pen&&apen?', ':'')+(apen?'−'+apen+' защиты':'')+'</div>':'');
+  $('mannequin').querySelectorAll('button').forEach(b=>b.onclick=()=>{ game.invHero=Number(b.dataset.h); renderInventory(); });
+}
+function useItem(uid){
+  if(!game||!uid) return false;
+  const it=game.bag.find(i=>i.uid===uid); if(!it) return false;
+  const h=party()[game.invHero||0];
+  if(it.type==='potion'){
+    if(it.healAll){ party().forEach(x=>x.hp=Math.min(x.maxHp,x.hp+it.healAll)); toast('Все герои лечатся.'); }
+    else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(h.def.name+': +'+it.heal+' HP.'); }
+    if(it.mp) h.mp=Math.min(h.maxMp,h.mp+it.mp);
+    if(it.cure){ h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
+    if(it.def){ h.bonus.def+=it.def; toast('Защита +'+it.def+'.'); }
+    if(it.atk){ h.bonus.atk+=it.atk; toast('Атака +'+it.atk+'.'); }
+    if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
+    if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp-=12; if(e.hp<=0) e.alive=false; } }); toast('Мороз бьёт по врагам.'); }
+  }else if(it.type==='herb'){
+    const e=it.effect;
+    if(e==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
+    else if(e==='mana') h.mp=Math.min(h.maxMp,h.mp+it.value);
+    else if(e==='def') h.bonus.def+=it.value;
+    else if(e==='atk') h.bonus.atk+=it.value;
+    else if(e==='poison'){ if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.poison=(x.poison||0)+it.value; }); }
+    else if(e==='curse'){ h.poison=0; if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.defVal=Math.max(0,x.defVal-2); }); }
+    else if(e==='crystal') addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
+    else if(e==='slow'){ if(game.battle) game.battle.enemies.forEach(x=>{ if(x.alive) x.speed=Math.max(1,x.speed-1); }); }
+    toast('Использовано: '+it.name);
+  }else if(it.type==='scroll'){
+    if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
+    else if(game.battle){ castSpell(it.spell); }
+  }else if(it.type==='chest'){
+    game.gold+=rnd(5,12); addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
+    toast('Сундук: золото и кристалл.');
+  }else{ toast('Этот предмет нельзя использовать.'); return false; }
+  it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1);
+  beep(760,.1); updateParty(); return true;
+}
+
+/* ============================ 10. ПРОЦЕДУРНАЯ ГРАФИКА ============================ */
+function drawSky(biome,now){
+  const colors={field:['#101c3c','#435c8a','#8d6f62'],village:['#171a38','#5a4a72','#a06b55'],
+    city:['#0d1330','#3e4b74','#7d6a8c'],port:['#0a1c3a','#255f83','#7db2bd'],mountains:['#120e2a','#494064','#a06a6a']};
+  const c=colors[biome]||colors.field;
+  const g=ctx.createLinearGradient(0,0,0,190);
+  g.addColorStop(0,c[0]); g.addColorStop(.55,c[1]); g.addColorStop(1,c[2]);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,190);
+  ctx.fillStyle='rgba(255,243,205,.85)'; ctx.beginPath(); ctx.arc(528,48,16,0,6.29); ctx.fill();
+  for(let i=0;i<18;i++){ ctx.globalAlpha=.15+.35*Math.abs(Math.sin(now/800+i)); ctx.fillRect((i*91+29)%W,(i*53+17)%100,1.5,1.5); }
+  ctx.globalAlpha=1;
+}
+function drawGround(biome){
+  const b=BIOMES[biome]||BIOMES.field;
+  const g=ctx.createLinearGradient(0,150,0,H); g.addColorStop(0,b.ground[0]); g.addColorStop(1,b.ground[1]);
+  ctx.fillStyle=g; ctx.fillRect(0,150,W,H-150);
+}
+function drawCellPatch(sx,sy,sc,cell,biome,alpha){
+  ctx.save(); ctx.globalAlpha=alpha;
+  const b=BIOMES[biome]||BIOMES.field;
+  const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss';
+  ctx.fillStyle=road?b.road:b.ground[0];
+  ctx.beginPath(); ctx.moveTo(sx-52*sc,sy+12*sc); ctx.lineTo(sx+52*sc,sy+12*sc);
+  ctx.lineTo(sx+66*sc,sy+30*sc); ctx.lineTo(sx-66*sc,sy+30*sc); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
+  if(road){ ctx.fillStyle=b.roadDark; ctx.fillRect(sx-2*sc,sy+13*sc,4*sc,16*sc); }
+  ctx.restore();
+}
+function drawTree(x,y,s,b){
+  ctx.save(); ctx.fillStyle='#5b3b22'; ctx.fillRect(x-4*s,y-44*s,8*s,46*s);
+  ctx.fillStyle=(b&&b.tree)||'#175a34'; ctx.beginPath(); ctx.arc(x,y-60*s,28*s,0,6.29); ctx.fill();
+  ctx.fillStyle='#3f9e58'; ctx.beginPath(); ctx.arc(x-9*s,y-68*s,18*s,0,6.29); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11*s,y-63*s,15*s,0,6.29); ctx.fill(); ctx.restore();
+}
+function drawRock(x,y,s,b){
+  ctx.save(); ctx.fillStyle=(b&&b.rock)||'#8b8b93';
+  ctx.beginPath(); ctx.moveTo(x-26*s,y); ctx.lineTo(x-16*s,y-32*s); ctx.lineTo(x+6*s,y-42*s);
+  ctx.lineTo(x+24*s,y-18*s); ctx.lineTo(x+28*s,y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(x-16*s,y-32*s); ctx.lineTo(x+6*s,y-42*s); ctx.lineTo(x+2*s,y-20*s); ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function drawWater(x,y,s,b){
+  ctx.save(); ctx.fillStyle=(b&&b.water)||'#2b5d8a';
+  ctx.beginPath(); ctx.ellipse(x,y,54*s,15*s,0,0,6.29); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1.2;
+  for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(x,y+((i-1)*6*s),38*s-i*9*s,5*s,0,0,Math.PI); ctx.stroke(); }
+  ctx.restore();
+}
+function drawHouse(x,y,s,kind){
+  const titles={weapons:'Оружейная',armor:'Бронница',magic:'Магазия',jeweler:'Ювелир',market:'Рынок'};
+  const accents={weapons:'#f87171',armor:'#60a5fa',magic:'#c084fc',jeweler:'#34d399',market:'#fbbf24'};
+  const accent=accents[kind]||accents.market;
+  ctx.save(); ctx.fillStyle='#c9b89a'; ctx.fillRect(x-42*s,y-58*s,84*s,58*s);
+  ctx.strokeStyle=accent; ctx.lineWidth=1.2*s; ctx.strokeRect(x-42*s,y-58*s,84*s,58*s);
+  ctx.fillStyle='#7e3f2e'; ctx.beginPath(); ctx.moveTo(x-50*s,y-58*s); ctx.lineTo(x,y-86*s); ctx.lineTo(x+50*s,y-58*s); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#ffe6a0'; ctx.fillRect(x-26*s,y-46*s,16*s,15*s); ctx.fillRect(x+10*s,y-46*s,16*s,15*s);
+  ctx.fillStyle='#241704'; ctx.fillRect(x-11*s,y-26*s,22*s,26*s);
+  ctx.fillStyle=accent; ctx.font='bold '+Math.max(7,9*s)+'px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(titles[kind]||'Дом',x,y-92*s); ctx.restore();
+}
+function drawChestArt(x,y,s,gold){
+  ctx.save(); const w=42*s,h=26*s;
+  ctx.fillStyle='#3b2412'; roundRect(x-w/2,y-h,w,h,3*s); ctx.fill();
+  ctx.fillStyle=gold?'#d4a72c':'#7a5230'; ctx.fillRect(x-w/2,y-h*.75,w,h*.75);
+  ctx.strokeStyle=gold?'#ffe9a8':'#c8a06a'; ctx.lineWidth=2*s; ctx.strokeRect(x-w/2,y-h,w,h);
+  ctx.fillStyle=gold?'#fff1b0':'#e6c27a'; ctx.fillRect(x-4*s,y-h*.72,8*s,12*s);
+  ctx.restore();
+}
+function drawTreasureArt(x,y,s,t){
+  ctx.save(); ctx.shadowColor='#ffe9a8'; ctx.shadowBlur=12*s;
+  ctx.font=Math.round(24*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(t.icon||'•',x,y-10*s); ctx.restore();
+}
+function drawGateSign(x,y,s,dir,playerDir,bname){
+  const rel=(dir-playerDir+4)%4;
+  const arrows=['↑','→','↓','←'];
+  ctx.save();
+  ctx.fillStyle='#6b4a26'; roundRect(x-26*s,y-42*s,52*s,20*s,3*s); ctx.fill();
+  ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5*s; ctx.stroke();
+  ctx.fillStyle='#ffe9b0'; ctx.font='bold '+Math.max(8,11*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(arrows[rel]+' '+bname,x,y-32*s);
+  ctx.restore();
+}
+function drawMonsterArt(x,y,s,m,now){
+  ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(x,y+4,30*s,7*s,0,0,6.29); ctx.fill(); ctx.restore();
+  const bob=Math.sin(now/420+x)*3*s;
+  ctx.save(); ctx.fillStyle=m.tint||'#cbd5e1';
+  ctx.beginPath(); ctx.moveTo(x-22*s,y); ctx.lineTo(x-16*s,y-52*s+bob); ctx.lineTo(x,y-66*s+bob);
+  ctx.lineTo(x+16*s,y-52*s+bob); ctx.lineTo(x+22*s,y); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.arc(x-7*s,y-46*s+bob,3*s,0,6.29); ctx.arc(x+7*s,y-46*s+bob,3*s,0,6.29); ctx.fill();
+  if(m.magic){ ctx.strokeStyle='#fbbf24'; ctx.lineWidth=2*s; ctx.beginPath(); ctx.arc(x,y-70*s+bob,9*s,0,6.29); ctx.stroke(); }
+  ctx.restore();
+  ctx.save(); ctx.font=Math.round(30*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(m.def&&m.def.emoji?m.def.emoji:(m.emoji||'👹'),x,y-44*s+bob); ctx.restore();
+  const hpw=44*s;
+  ctx.fillStyle='#3a1218'; ctx.fillRect(x-hpw/2,y-72*s,hpw,4*s);
+  ctx.fillStyle='#ef4444'; ctx.fillRect(x-hpw/2,y-72*s,hpw*clamp(m.hp/m.maxHp,0,1),4*s);
+  if(m.isBoss){ ctx.fillStyle='#fbbf24'; ctx.font='bold '+Math.max(8,9*s)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('★ БОСС',x,y-78*s); }
+}
+function drawHeroFigure(x,y,s,h,now){
+  const bounce=Math.sin(now/460)*2*s;
+  ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(x,y+3,30*s,7*s,0,0,6.29); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(x,y+bounce);
+  ctx.fillStyle='#28304e'; ctx.beginPath(); ctx.moveTo(-20*s,-54*s); ctx.quadraticCurveTo(0,-70*s,20*s,-54*s);
+  ctx.lineTo(24*s,0); ctx.quadraticCurveTo(0,8*s,-24*s,0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#52608e'; ctx.fillRect(-18*s,-56*s,36*s,22*s);
+  const w=equippedWeapon(h);
+  ctx.fillStyle=w&&w.enchant?w.enchant.color:'#d8c58d';
+  ctx.fillRect(19*s,-48*s,5*s,34*s); ctx.fillRect(14*s,-52*s,15*s,4*s);
+  ctx.restore();
+  ctx.save(); ctx.font=Math.round(45*s)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(h.def.emoji,x,y-42*s+bounce); ctx.restore();
+}
+
+/* ============================ 11. КАРТА: ТУМАН И ПСЕВДО-3D ============================ */
+function drawMiniMap(m){
+  const size=112, x=W-size-12, y=12;
+  panel(x-4,y-4,size+8,size+22);
+  const s=size/m.size;
+  ctx.fillStyle='rgba(0,0,0,.65)'; ctx.fillRect(x,y,size,size);
+  const p=game.player;
+  for(let yy=0;yy<m.size;yy++) for(let xx=0;xx<m.size;xx++){
+    if(!m.seen.has(ckey(xx,yy))) continue;
+    const c=m.cells[yy][xx];
+    const visible=Math.max(Math.abs(xx-p.x),Math.abs(yy-p.y))<=2;
+    ctx.globalAlpha=visible?1:.34;
+    ctx.fillStyle=c.t==='water'?'#1d4ed8':c.t==='rock'?'#a1a1aa':
+      c.t==='tree'?'#2f8d4d':(c.t==='road'||c.t==='gate')?'#b09a6b':
+      c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':(BIOMES[m.biome]||BIOMES.field).ground[0];
+    ctx.fillRect(x+xx*s,y+yy*s,Math.max(1,s-1),Math.max(1,s-1));
+  }
+  ctx.globalAlpha=1;
+  m.monsters.forEach(e=>{ if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
+    ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,Math.max(2,s*.3),0,6.29); ctx.fill(); });
+  ctx.save(); ctx.translate(x+p.px*s+s/2,y+p.py*s+s/2); ctx.rotate(p.dir*Math.PI/2);
+  ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
+  ctx.fillStyle='#ffe6a8'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count,x,y+size+11);
+}
+function drawMap(now){
+  const m=currentMap(), p=game.player, b=BIOMES[m.biome];
+  drawSky(m.biome,now); drawGround(m.biome);
+  const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
+  const px=p.px,py=p.py;
+  for(let d=2;d>=1;d--){
+    for(let side=-2;side<=2;side++){
+      const x=Math.round(px)+f[0]*d+r[0]*side, y=Math.round(py)+f[1]*d+r[1]*side;
+      if(x<0||y<0||x>=m.size||y>=m.size) continue;
+      if(!m.seen.has(ckey(x,y))) continue;
+      const sc=d===1?1:.62;
+      const sx=W/2+side*(d===1?96:60);
+      const sy=d===1?272:210;
+      const cell=m.cells[y][x];
+      drawCellPatch(sx,sy,sc,cell,m.biome,1);
+      if(cell.t==='tree') drawTree(sx,sy,sc,b);
+      else if(cell.t==='rock') drawRock(sx,sy,sc,b);
+      else if(cell.t==='water') drawWater(sx,sy,sc,b);
+      else if(cell.t==='house') drawHouse(sx,sy,sc,'market');
+      else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind);
+      else if(cell.t==='gate') drawGateSign(sx,sy,sc,cell.dir,p.dir,cell.bname);
+      else if(cell.t==='chest') drawChestArt(sx,sy,sc,!!cell.boss);
+      else if(cell.t==='treasure') drawTreasureArt(sx,sy,sc,cell.item);
+      else if(cell.t==='boss'){
+        if(!m.boss.dead) drawMonsterArt(sx,sy,sc,m.boss.def,now);
+        else drawChestArt(sx,sy,sc,true);
+      }
+    }
+  }
+  m.monsters.forEach(e=>{
+    if(!e.alive) return;
+    const dx=e.x-px,dy=e.y-py,forward=dx*f[0]+dy*f[1],side=dx*r[0]+dy*r[1];
+    if(forward<0||forward>2||Math.abs(side)>2) return;
+    if(!m.seen.has(ckey(e.x,e.y))) return;
+    const sc=forward===0?1.05:(forward===1?1:.62);
+    const sx=W/2+side*(forward===0?96:(forward===1?96:60));
+    const sy=forward===0?320:(forward===1?272:210);
+    drawMonsterArt(sx,sy,sc,e,now);
+  });
+  drawHeroFigure(W/2,344,.86,party()[0],now);
+  panel(10,10,202,68);
+  ctx.fillStyle='#ffe6a8'; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  fitText(heroNameText+' · '+party()[0].def.name,186,11,'#ffe6a8',18,22);
+  bar(18,34,180,'HP',party()[0].hp,party()[0].maxHp,'#f87171');
+  bar(18,50,180,'MP',party()[0].mp,party()[0].maxMp,'#60a5fa');
+  ctx.fillStyle='#fbbf24'; ctx.font='10px sans-serif';
+  ctx.fillText('🪙 '+game.gold+' · боссы '+game.world.bossKills+'/'+game.world.count,18,66);
+  drawMiniMap(m);
+  const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
+  if(near.length){
+    roundRect(12,296,300,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
+    ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
+    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',284,10,C_ENEMY,20,307);
+  }
+  roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
+  ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
+  fitText(game.msg,372,11,'#f3e8cf',134,339);
+  ctx.fillStyle='#9fb0d8'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот',12,H-8);
+}
+
+/* ============================ 12. ОТОБРАЖЕНИЕ БОЯ ============================ */
+function fitMono(text,maxW,size,color,x,y){
+  let s=size; ctx.font=s+'px monospace';
+  while(ctx.measureText(text).width>maxW&&s>8){ s--; ctx.font=s+'px monospace'; }
+  ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
+}
+function drawBattle(now,dt){
+  const b=game.battle;
+  const m=currentMap(); drawSky(m?m.biome:'field',now); drawGround(m?m.biome:'field');
+  ctx.save(); ctx.globalAlpha=.22; ctx.fillStyle='#000'; ctx.fillRect(0,196,W,164); ctx.restore();
+  for(let i=0;i<5;i++){ ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle=(BIOMES[m?m.biome:'field']||BIOMES.field).accent;
+    ctx.fillRect((i*147+40)%W,182+((i*23)%16),2,120); ctx.restore(); }
+  let hj=0,ej=0;
+  if(b.anim){ b.anim.t=Math.max(0,b.anim.t-dt/520);
+    const v=Math.sin(Math.PI*(1-b.anim.t));
+    if(b.anim.who==='hero') hj=v*b.anim.jump; else ej=v*b.anim.jump;
+    if(b.anim.t<=0) b.anim=null;
+  }
+  b.enemies.forEach((e,i)=>{
+    if(!e.alive) return;
+    const x=118+i*104+ej, y=276;
+    drawMonsterArt(x,y,1.12,e,now);
+  });
+  party().forEach((h,i)=>{
+    if(h.hp<=0) return;
+    drawHeroFigure(470+i*72+hj,322-i*10,.9,h,now);
+    ctx.fillStyle='#f4e7c6'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(h.def.name,470+i*72+hj,332-i*10);
+  });
+  const e=b.enemies.find(x=>x.alive)||b.enemies[0];
+  panel(10,10,212,44);
+  ctx.fillStyle=C_ENEMY; ctx.font='bold 11px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  fitText(e.name+(b.enemies.length>1?' и др.':''),196,11,C_ENEMY,20,22);
+  bar(20,36,192,'HP',e.hp,e.maxHp,'#ef4444');
+  panel(W-224,10,214,62);
+  party().forEach((h,i)=>{
+    bar(W-214,20+i*22,194,(i===0?'1: ':'2: ')+h.def.name.slice(0,6),h.hp,h.maxHp,'#f87171');
+  });
+  roundRect(W/2-66,12,132,26,7); ctx.fillStyle='rgba(6,8,18,.86)'; ctx.fill();
+  ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.stroke();
+  ctx.fillStyle=b.end?C_NEUTRAL:(b.turn==='hero'?C_HERO:C_ENEMY);
+  ctx.font='bold 10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(b.end?(b.end==='win'?'ПОБЕДА':b.end==='lose'?'ПОРАЖЕНИЕ':'ОТСТУПЛЕНИЕ'):
+    (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
+  roundRect(28,244,584,92,8); ctx.fillStyle='rgba(5,7,15,.95)'; ctx.fill();
+  ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
+  const lines=b.log.slice(-5);
+  lines.forEach((entry,i)=>{
+    const text=entry.side==='hero'?('          '+entry.text):entry.text;
+    fitMono(text,560,11,entry.color,42,258+i*16);
+  });
+  roundRect(140,216,360,22,7); ctx.fillStyle='rgba(6,8,18,.82)'; ctx.fill();
+  ctx.fillStyle='#aab4d0'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  const h=b.turn==='hero'?party()[b.heroIdx]:party()[0];
+  ctx.fillText('Пробел — атака · F — магия ('+Math.round(h.mp)+' MP) · R — бегство · I — инвентарь',W/2,227);
+  ctx.fillStyle='#9fb0d8'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Порядок хода: '+b.order.map(u=>u.side==='hero'?party()[u.idx].def.name.slice(0,4):'⚔').join(' → ').slice(0,80),10,H-8);
+}
+
+/* ============================ 13. СТАРТОВЫЙ ЭКРАН ============================ */
+function updateProgressUI(){
+  const c=2*Math.PI*17, ring=$('ring');
+  const filled=Math.min(10,progress.boss);
+  ring.style.strokeDasharray=String(c); ring.style.strokeDashoffset=String(c*(1-filled/10));
+  document.body.classList.toggle('achieved',!!progress.achieved);
+  $('achTitle').textContent=progress.achieved?'ДОСТИЖЕНИЕ ПОЛУЧЕНО ✦':'ДОСТИЖЕНИЕ · КРУГ СЛАВЫ';
+  $('achText').textContent=progress.achieved?'Круг славы замкнут: 10 боссов на карте.':
+    'Победите 10 боссов на карте, чтобы замкнуть круг.';
+  $('winCounts').textContent='Боссы '+filled+'/10 · побед '+progress.runs+' · побегов '+progress.flees;
+}
+function renderHeroPick(slot){
+  const h=HEROES[selHero[slot]];
+  $(slot===0?'h1Card':'h2Card').innerHTML='<span class="big">'+h.emoji+'</span><div style="min-width:0"><b>'+h.name+'</b><small>'+h.desc.slice(0,110)+'<br>HP '+h.hp+' · MP '+h.mp+' · '+h.weapons.length+' видов оружия</small></div>';
+}
+function renderDiff(){
+  $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
+    '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · '+d.size[0]+'–'+d.size[1]+' клеток</small></button>').join('');
+  $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); beep(420,.05); });
+}
+function renderStart(){ updateProgressUI(); renderHeroPick(0); renderHeroPick(1); renderDiff(); }
+
+/* ============================ 14. СОБЫТИЯ И УПРАВЛЕНИЕ ============================ */
+function goHub(){ location.href='../../index.html'; }
+function selectHero(slot,d){ selHero[slot]=(selHero[slot]+d+HEROES.length)%HEROES.length;
+  if(selHero[0]===selHero[1]) selHero[slot]=(selHero[slot]+d+HEROES.length)%HEROES.length; renderHeroPick(slot); }
+$('h1Prev').onclick=()=>selectHero(0,-1); $('h1Next').onclick=()=>selectHero(0,1);
+$('h2Prev').onclick=()=>selectHero(1,-1); $('h2Next').onclick=()=>selectHero(1,1);
+$('playBtn').onclick=()=>startGame();
+$('homeBtn').onclick=goHub;
+function toggleRecords(open){
+  const el=$('records');
+  const show=open===undefined?el.classList.contains('hidden'):!!open;
+  el.classList.toggle('hidden',!show);
+  if(show) $('recordsList').innerHTML=recordsHTML();
+}
+$('recordsBtn').onclick=()=>toggleRecords();
+$('recordsClose').onclick=()=>toggleRecords(false);
+$('shopClose').onclick=()=>toggleShop(false);
+$('invClose').onclick=()=>toggleInventory(false);
+$('spellClose').onclick=closeSpellMenu;
+$('turnLeft').onclick=()=>turnPlayer(-1); $('turnRight').onclick=()=>turnPlayer(1);
+document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.move;
+  if(k==='up') relativeMove(1,0); if(k==='down') relativeMove(-1,0);
+  if(k==='left') relativeMove(0,-1); if(k==='right') relativeMove(0,1);
+});
+$('btnAttack').onclick=()=>{ if(game&&game.battle) heroAttack(); else tryInteract(); };
+$('btnSpell').onclick=openSpellMenu;
+$('btnFlee').onclick=fleeBattle;
+$('btnInv').onclick=()=>toggleInventory(!(game&&game.invOpen));
+$('btnShop').onclick=()=>toggleShop(!(game&&game.shopOpen));
+$('btnInteract').onclick=tryInteract;
+$('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); startGame(); } });
+cv.addEventListener('pointerdown',()=>{ if(game&&game.battle) heroAttack(); });
+
+const MOVE_KEYS={arrowup:[1,0],w:[1,0],ц:[1,0],arrowdown:[-1,0],s:[-1,0],ы:[-1,0],
+  arrowleft:[0,-1],a:[0,-1],ф:[0,-1],arrowright:[0,1],d:[0,1],в:[0,1]};
+document.addEventListener('keydown',e=>{
+  if(phase==='start'){
+    if(e.target&&e.target.tagName==='INPUT'){ if(e.key==='Enter'){ e.preventDefault(); startGame(); } return; }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); selectHero(0,-1); }
+    else if(e.key==='ArrowRight'){ e.preventDefault(); selectHero(0,1); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); selectHero(1,-1); }
+    else if(e.key==='ArrowDown'){ e.preventDefault(); selectHero(1,1); }
+    else if(e.key==='Enter'){ e.preventDefault(); startGame(); }
+    return;
+  }
+  if(!game) return;
+  const k=e.key.toLowerCase();
+  if(k==='m'||k==='ь'||e.key==='Escape'){
+    e.preventDefault();
+    if(game.spellOpen) closeSpellMenu();
+    else if(game.invOpen) toggleInventory(false);
+    else if(game.shopOpen) toggleShop(false);
+    else if(game.reward) return;
+    else goHub(); return;
+  }
+  if(k==='i'||k==='ш'||k==='і'){ e.preventDefault(); toggleInventory(!game.invOpen); return; }
+  if(game.invOpen) return;
+  if(k==='b'||k==='б'){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
+  if(game.shopOpen||game.reward) return;
+  if(game.spellOpen){
+    if(/^[1-9]$/.test(e.key)){ const b=game.battle; if(b&&b.turn==='hero'){
+      const h=party()[b.heroIdx], id=h.spells[Number(e.key)-1]; if(id) castSpell(id); } }
+    return;
+  }
+  if(game.battle){
+    if(e.key===' '){ e.preventDefault(); heroAttack(); }
+    else if(k==='f'||k==='а'){ e.preventDefault(); openSpellMenu(); }
+    else if(k==='r'||k==='к'){ e.preventDefault(); fleeBattle(); }
+    else if(/^[1-9]$/.test(e.key)){ const h=party()[game.battle.heroIdx], id=h.spells[Number(e.key)-1]; if(id) castSpell(id); }
+    return;
+  }
+  if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
+  if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
+  if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
+  const mv=MOVE_KEYS[k]; if(mv){ e.preventDefault(); relativeMove(mv[0],mv[1]); }
+});
+
+/* ============================ 15. ГЛАВНЫЙ ЦИКЛ И ДОСТУП ДЛЯ ТЕСТОВ ============================ */
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min(50,now-last); last=now;
+  if(phase!=='play'||!game) return;
+  if(game.player.moveT>0){
+    const p=game.player;
+    p.moveT=Math.max(0,p.moveT-dt/220);
+    const t=1-p.moveT;
+    p.px=p.fromX+(p.x-p.fromX)*t; p.py=p.fromY+(p.y-p.fromY)*t;
+  }
+  if(game.battle) drawBattle(now,dt); else drawMap(now);
+}
+requestAnimationFrame(loop);
+window.__mm6State=()=>game;
+window.__mm6Debug={
+  startGame:(diff,a,b)=>startGame(diff,a,b),
+  startBattle:(which)=>{
+    if(!game||game.battle) return null;
+    const m=currentMap();
+    let list=battleGroup(null);
+    if(which==='boss') list=[m.boss.def,...list];
+    else if(!list.length) list=[m.monsters.find(e=>e.alive)||m.boss.def];
+    return startBattle(list,list[0]===m.boss.def?m:null);
+  },
+  castSpell:(id,target)=>castSpell(id,target),
+  tryMove:(dx,dy)=>tryMove(dx,dy),
+  fleeBattle:()=>fleeBattle(),
+  toggleShop:(open,type)=>toggleShop(open,type),
+  openBossChest:()=>openBossChest()
+};
+renderStart();
+
 </script>
 </body>
 </html>

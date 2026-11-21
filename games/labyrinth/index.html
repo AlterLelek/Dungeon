@@ -90,6 +90,27 @@ button.dis{opacity:.4;pointer-events:none}
 .setLine select{background:#111;color:var(--txt);border:1px solid #4a4a68;border-radius:6px;padding:3px}
 .tgl{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px}
 .tgl input{accent-color:var(--gold)}
+/* Лавка и общие рекорды */
+.shopGold{text-align:center;color:var(--gold);font-size:14px;margin-bottom:6px}
+#shopOv .panel{max-width:620px}
+.shopTab{padding:5px 9px;font-size:12px}
+.shopTab.sel{border-color:var(--gold);background:#3a3a20;color:var(--gold)}
+.shopItem{display:flex;align-items:center;gap:8px;border-bottom:1px solid #33334a;padding:6px 2px;font-size:13px}
+.shopItem .siInfo{flex:1;min-width:0}
+.shopItem .siName{color:var(--txt);font-weight:600}
+.shopItem .siDesc{color:#9a9ab8;font-size:11px;line-height:1.25}
+.shopItem .siPrice{color:var(--gold);flex:0 0 auto;font-size:12px}
+.shopItem button{flex:0 0 auto;padding:5px 9px;font-size:12px}
+.shopItem button:disabled{opacity:.38;cursor:not-allowed;pointer-events:none}
+.shopNote{color:#9a9ab8;font-size:11px;line-height:1.4;margin:6px 0}
+.shopSummary{margin:4px 0 8px;padding:7px 9px;background:#222236;border:1px solid #3a3a52;border-radius:8px;font-size:12px;line-height:1.45}
+.shopSelect{background:#111;color:var(--txt);border:1px solid #4a4a68;border-radius:6px;padding:4px;font-size:12px;max-width:100%}
+.recMini{margin-top:8px;border:1px solid #3a3a52;border-radius:8px;background:#1a1a28;font-size:11px}
+.recMini summary{cursor:pointer;color:var(--gold);padding:5px 8px;text-align:center}
+.recMini .recBody{max-height:118px;overflow-y:auto;padding:0 8px 6px}
+.recRow{display:flex;gap:6px;align-items:baseline;padding:2px 0;color:#9a9ab8;line-height:1.25}
+.recRow.got{color:var(--gold)}
+.recRow span:first-child{flex:0 0 12px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:5px 6px;border-bottom:1px solid #33334a;text-align:center}
 th{color:var(--gold)}
@@ -120,6 +141,7 @@ th{color:var(--gold)}
    <span class="chip">✨<span class="bar" id="manaBar"><i></i></span></span>
    <span class="chip" id="shieldChip"></span>
    <span class="chip">Очки: <b id="scoreTxt">0</b></span>
+    <span class="chip">💰 <b id="goldTxt">0</b></span>
    <span class="chip">💎 <span id="gemTxt">0/0</span></span>
    <span class="chip">Уровень: <b id="lvlTxt">1</b></span>
    <span class="chip" id="timeChip"></span>
@@ -142,6 +164,7 @@ th{color:var(--gold)}
  <div id="spellbar"></div>
  <div id="spellHint"></div>
  <div id="bottombar">
+    <button id="bBtnShop">🛒 Лавка</button>
    <button id="bBtnRec">🏆 Рекорды</button>
    <button id="bBtnStats">📊 Статистика</button>
    <button id="bBtnSet">⚙ Настройки</button>
@@ -172,18 +195,27 @@ th{color:var(--gold)}
  </div>
  <div class="secTitle" id="fieldTitle">📐 Поле</div>
  <div class="rowCenter" id="fieldRow"></div>
+  <details class="recMini" id="recMenuMini">
+   <summary>🏆 Общие рекорды <span id="recMenuCount"></span></summary>
+   <div class="recBody" id="shared-records-menu"></div>
+  </details>
  <div id="nameRow"><span>Имя героя:</span><input id="nameInp" maxlength="14" placeholder="Герой"></div>
   <div class="btnRow" style="justify-content:center">
     <button id="startBtn">▶ НАЧАТЬ ИГРУ</button>
   </div>
   <div class="btnRow">
-   <button id="mBtnRec">🏆 Рекорды</button>
+   <button id="mBtnShop">🛒 Лавка</button>
+    <button id="mBtnRec">🏆 Рекорды</button>
    <button id="mBtnStats">📊 Статистика</button>
    <button id="mBtnSet">⚙ Настройки</button>
    <button id="mBtnRules">❓ Условия</button>
  </div>
 </div></div>
 <div class="overlay" id="pauseOv"><div class="panel" style="max-width:340px;text-align:center">
+  <details class="recMini" id="recPauseMini">
+   <summary>🏆 Общие рекорды</summary>
+   <div class="recBody" id="shared-records-pause"></div>
+  </details>
  <h2>⏸ Пауза</h2>
  <div class="btnRow" style="flex-direction:column">
   <button id="pResume">▶ Продолжить</button>
@@ -210,8 +242,18 @@ th{color:var(--gold)}
 <div class="overlay" id="recOv"><div class="panel">
  <h2>🏆 Таблица рекордов (топ-10)</h2>
  <div id="recBody"></div>
+  <h3>Достижения</h3>
+  <div id="shared-records-rec" class="recBody"></div>
  <div class="btnRow"><button id="recClear">🗑 Очистить</button><button id="recDone">✔ Готово</button></div>
 </div></div>
+<div class="overlay" id="shopOv"><div class="panel">
+  <h2>🛒 Лавка Лабиринта</h2>
+  <div class="shopGold" id="shopGold">💰 Золото: 0</div>
+  <div class="shopSummary" id="shopSummary"></div>
+  <div class="tabRow" id="shopTabs"></div>
+  <div id="shopBody"></div>
+  <div class="btnRow"><button id="shopClose">✔ Закрыть</button></div>
+ </div></div>
 <div class="overlay" id="statOv"><div class="panel">
  <h2>📊 Статистика</h2>
  <div class="statGrid" id="statBody"></div>
@@ -457,7 +499,9 @@ function newGame(){
  G={lvl:1,score:0,gems:0,gemsNeed:0,kills:0,steps:0,paused:false,running:false,time:0,
   hero:null,monsters:[],allies:[],corpses:[],projs:[],parts:[],rings:[],texts:[],
   monTimer:0,tick:0,shake:0,hurtT:0,vis:new Set(),explored:new Set(),waveT:0,
-  fade:null,won:false,levelT:0};
+  fade:null,won:false,levelT:0,
+  gold:0,inventory:[],shopOpen:false,shopTab:'weapons',lastKiller:null,
+  forge:{quality:0,reforge:0,enchant:null,poison:0,weaponClass:0}};
  const H=HEROES[curHero];
  G.hero={type:curHero,x:0,y:0,hp:H.hp,maxHp:H.hp,atk:H.atk,def:H.def,speed:H.speed,mana:H.mana,maxMana:H.mana,
   shield:0,rage:0,boots:0,face:[1,0],flash:0,px:0,py:0,moveT:0,name:($('nameInp').value||'Герой').trim()||'Герой'};
@@ -540,7 +584,7 @@ function tryMove(dx,dy){
 }
 function takeBonus(it){
  const h=G.hero,b=S.bonuses;
- if(it.kind==='coin'){G.score+=b.coin;addText((it.x+0.5)*TS,(it.y+0.2)*TS,'+'+b.coin,'#ffd060');SFX.coin();}
+ if(it.kind==='coin'){G.score+=b.coin;G.gold+=b.coin;addText((it.x+0.5)*TS,(it.y+0.2)*TS,'+'+b.coin,'#ffd060');SFX.coin();}
  if(it.kind==='heart'){h.hp=Math.min(h.maxHp,h.hp+b.heal);addText((it.x+0.5)*TS,(it.y+0.2)*TS,'+'+b.heal,'#ff7070');addParts((it.x+0.5)*TS,(it.y+0.5)*TS,'#ff6060',10,50);SFX.heal();}
  if(it.kind==='shield'){h.shield+=b.shield;addText((it.x+0.5)*TS,(it.y+0.2)*TS,'🛡+'+b.shield,'#70c0ff');SFX.heal();}
  if(it.kind==='boots'){h.boots=b.boots;addText((it.x+0.5)*TS,(it.y+0.2)*TS,'👟 ускорение!','#90ffb0');SFX.heal();}
@@ -559,7 +603,7 @@ function heroAttack(){
   if(m.dying)continue;
   if(m.x===tx&&m.y===ty){
    hitAny=true;
-   const dmg=Math.max(1,Math.round(baseAtk*rand(0.85,1.2)-m.def));
+   const dmg=Math.max(1,Math.round(baseAtk*rand(0.85,1.2)-m.def)+(G.forge&&G.forge.poison||0));
    damageMonster(m,dmg,'#fff');
   }
  }
@@ -603,6 +647,7 @@ function heroHurt(dmg){
  updateHUD();
 }
 function monsterAttack(m){
+  if(G)G.lastKiller=MON[m.type].name;
  const dmg=Math.max(1,Math.round(m.atk*rand(0.8,1.2)-G.hero.def));
  heroHurt(dmg);
  addParts((m.x+0.5)*TS,(m.y+0.5)*TS,'#ff5050',8,60);
@@ -823,6 +868,9 @@ function endGame(win){
  const st=loadJSON('lab32_stats',{games:0,wins:0,kills:0,gems:0,best:0});
  st.games++;if(win)st.wins++;st.kills+=G.kills;st.gems+=G.gems;
  st.best=Math.max(st.best,G.score);saveJSON('lab32_stats',st);
+  if(win){if(window.unlockRecord)window.unlockRecord('win_labyrinth');}
+  else if(window.recordDeath)window.recordDeath('labyrinth',(G&&G.lastKiller)||'неизвестный монстр');
+  if(window.__refreshLabRecords)window.__refreshLabRecords();
  $('overTitle').textContent=win?'🎉 ПОБЕДА!':'Игра окончена';
  $('overMsg').textContent=win?('Ты прошёл все 5 уровней! Очки: '+G.score):('Очки: '+G.score+' · Уровень: '+G.lvl+' · Убийств: '+G.kills);
  $('recName').value=$('nameInp').value||G.hero.name;
@@ -1136,6 +1184,7 @@ function updateHUD(){
  $('manaBar').firstElementChild.style.width=(100*h.mana/h.maxMana)+'%';
  $('shieldChip').textContent=h.shield>0?('🛡 '+h.shield):'';
  $('scoreTxt').textContent=G.score;
+  if($('goldTxt'))$('goldTxt').textContent=G.gold||0;
  $('gemTxt').textContent=G.gems+'/'+G.gemsNeed;
  $('lvlTxt').textContent=G.lvl;
  const tc=$('timeChip');
@@ -1333,6 +1382,7 @@ function buildRecords(){
   html+='<tr><td>'+(i+1)+'</td><td>'+r.name+'</td><td><b>'+r.score+'</b></td><td>'+r.mode+'</td><td>'+r.date+'</td></tr>';
  });
  $('recBody').innerHTML=html+'</table>';
+  if(window.__refreshLabRecords)window.__refreshLabRecords();
 }
 function buildStats(){
  const st=loadJSON('lab32_stats',{games:0,wins:0,kills:0,gems:0,best:0});
@@ -1345,6 +1395,7 @@ function buildStats(){
 }
 /* ---------- управление ---------- */
 document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&G&&G.shopOpen){e.preventDefault();closeShop();return;}
  if($('menuOv').classList.contains('show')){
   const mk=e.key.toLowerCase();
   if(e.target&&e.target.id==='nameInp'){if(mk==='enter'){e.preventDefault();startGame();}return;}
@@ -1417,6 +1468,185 @@ $('oSave').onclick=()=>{
 $('oAgain').onclick=()=>{hideAll();newGame();buildSpellbar();resize();};
 $('oMenu').onclick=()=>{stopMusic();G=null;buildMenu();show('menuOv');};
 $('wallsChk').onchange=buildMenu;
+/* ---------- лавка: вкладки, покупки, расходники ---------- */
+const SHOP_EXTRA={
+ weapon_sharp:{name:'Заточка клинка',desc:'+2 к силе героя',cost:5},
+ weapon_master:{name:'Мастерский клинок',desc:'+5 к силе героя',cost:12},
+ armor_hide:{name:'Кожаная броня',desc:'+2 защиты',cost:4},
+ armor_plate:{name:'Латная броня',desc:'+4 защиты',cost:9},
+ armor_shield:{name:'Щит стража',desc:'+5 щита',cost:8}
+};
+function shopSvc(tab,id){return ((window.SERVICES||{})[tab]||[]).find(s=>s.id===id)||{};}
+function shopQuality(){return (window.QUALITY||[])[G?G.forge.quality:0]||'Ржавое';}
+function shopPrice(tab,id){
+ if(SHOP_EXTRA[id])return SHOP_EXTRA[id].cost;
+ if(id==='reforge')return (window.reforgeCost?window.reforgeCost(G.forge.quality,G.forge.reforge):1+G.forge.quality+G.forge.reforge);
+ if(id==='combo')return (shopSvc('jeweler','enchant').cost||1)+(shopSvc('jeweler','socket').cost||2)+shopPrice('forge','reforge');
+ return shopSvc(tab,id).cost||0;
+}
+function shopReason(tab,id){
+ const F=window.FORGE_RULES||{minQuality:1,maxReforge:5};
+ if(id==='reforge'){
+  if(G.forge.quality<F.minQuality)return 'Нужно качество «Острое» и выше';
+  if(G.forge.reforge>=F.maxReforge)return 'Максимум перековок: 5';
+ }
+ if(id==='to_metal'&&G.forge.quality>0)return 'Уже металлическое оружие';
+ if(id==='combo'){const r=shopReason('forge','reforge');if(r)return r;}
+ return G.gold<shopPrice(tab,id)?'Недостаточно золота':'';
+}
+function shopRow(tab,id,name,desc){
+ const reason=shopReason(tab,id),cost=shopPrice(tab,id);
+ return '<div class="shopItem"><div class="siInfo"><div class="siName">'+name+'</div><div class="siDesc">'+desc+'</div></div>'+
+  '<span class="siPrice">'+cost+' 💰</span><button data-shop="'+id+'" data-tab="'+tab+'"'+(reason?' disabled title="'+reason+'"':'')+'>'+(reason?'—':'Купить')+'</button></div>';
+}
+function shopSummary(){
+ const f=G.forge,F=window.FORGE_RULES||{maxReforge:5};
+ const items=(G.inventory||[]).map((it,i)=>it.name+(it.kind==='use'?' <button data-use="'+i+'" style="padding:2px 6px;font-size:10px">Использовать</button>':'')).join(' · ')||'пусто';
+ return '⚔ '+shopQuality()+' · перековок '+f.reforge+'/'+F.maxReforge+' · зачарование: '+(f.enchant||'нет')+
+  (f.poison?' · ☠ +'+f.poison:'')+'<br>🎒 '+items;
+}
+function buildShop(){
+ const tabs=$('shopTabs');tabs.innerHTML='';
+ if(!G){
+  $('shopBody').innerHTML='<div class="shopNote">Начни игру, чтобы открыть лавку. Золото приходит с монет 💰.</div>';
+  $('shopGold').textContent='💰 Золото: 0';$('shopSummary').textContent='';return;
+ }
+ (window.SHOP_TABS||[]).forEach(t=>{
+  const b=document.createElement('button');b.className='shopTab'+(G.shopTab===t.id?' sel':'');
+  b.textContent=t.icon+' '+t.name;b.onclick=()=>{G.shopTab=t.id;buildShop();};tabs.appendChild(b);
+ });
+ const tab=G.shopTab;let html='';
+ if(tab==='weapons'){
+  html='<div class="shopNote">Оружие героя: '+((HEROES[curHero]||{}).name||'')+'. Сила растёт вместе с героем.</div>';
+  Object.keys(SHOP_EXTRA).filter(k=>k.indexOf('weapon_')===0).forEach(k=>{
+   const it=SHOP_EXTRA[k];html+=shopRow('weapons',k,it.name,it.desc);
+  });
+ } else if(tab==='armor'){
+  Object.keys(SHOP_EXTRA).filter(k=>k.indexOf('armor_')===0).forEach(k=>{
+   const it=SHOP_EXTRA[k];html+=shopRow('armor',k,it.name,it.desc);
+  });
+ } else if(tab==='magic'){
+  ((window.SERVICES||{}).magic||[]).forEach(s=>{html+=shopRow('magic',s.id,s.name,s.desc);});
+ } else if(tab==='jeweler'){
+  html='<div class="shopNote">Выбери жидкость, затем кристалл или совмещённое улучшение с кузницей.</div>';
+  html+='<select class="shopSelect" id="labLiquid">'+(window.ENCHANT_LIQUIDS||[]).map(l=>
+   '<option value="'+l.id+'"'+(l.id===(G.shopLiquid||'')?' selected':'')+'>'+l.name+' (+'+l.value+')</option>').join('')+'</select>';
+  html+=shopRow('jeweler','enchant','Украшение кристаллом',(shopSvc('jeweler','enchant').desc||'')+' · выбранная жидкость');
+  html+=shopRow('jeweler','socket','Вставка камня',(shopSvc('jeweler','socket').desc||'')+' · эффект жидкости');
+  html+=shopRow('jeweler','combo','Перековка + зачарование','Совместить кузню и ювелира в одном оружии');
+ } else if(tab==='market'){
+  ((window.SERVICES||{}).market||[]).forEach(s=>{html+=shopRow('market',s.id,s.name,s.desc);});
+ } else if(tab==='forge'){
+  const F=window.FORGE_RULES||{};
+  html='<div class="shopNote">'+(F.note||'')+'</div>';
+  html+=shopRow('forge','to_metal','Перековка в металл',(shopSvc('forge','to_metal').desc||'')+' · текущее: '+shopQuality());
+  const base=(HEROES[curHero]||{}).atk||1,gain=window.reforgeGain?window.reforgeGain(base):Math.max(1,Math.floor(base/5));
+  html+=shopRow('forge','reforge','Перековка','+'+gain+' силы · '+G.forge.reforge+'/'+(F.maxReforge||5));
+  html+=shopRow('forge','new_weapon','Новое оружие',(shopSvc('forge','new_weapon').desc||'')+' · класс '+G.forge.weaponClass);
+ }
+ $('shopBody').innerHTML=html;
+ $('shopGold').textContent='💰 Золото: '+G.gold;
+ $('shopSummary').innerHTML=shopSummary();
+}
+function applyLiquid(id){
+ const liq=(window.ENCHANT_LIQUIDS||[]).find(l=>l.id===id)||(window.ENCHANT_LIQUIDS||[])[0];
+ if(!liq)return;const h=G.hero;
+ if(liq.stat==='hp'){h.maxHp+=liq.value;h.hp+=liq.value;}
+ else if(liq.stat==='mp'){h.maxMana+=liq.value;h.mana+=liq.value;}
+ else if(liq.stat==='atk')h.atk+=liq.value;
+ else if(liq.stat==='def')h.def+=liq.value;
+ else if(liq.stat==='poison')G.forge.poison+=liq.value;
+ else if(liq.stat==='light')h.shield+=liq.value;
+ G.forge.enchant=liq.name;
+ G.inventory.push({id:liq.id,name:liq.name,kind:'enchant'});
+}
+function reforgeIt(){
+ const base=(HEROES[curHero]||{}).atk||1;
+ G.hero.atk+=window.reforgeGain?window.reforgeGain(base):Math.max(1,Math.floor(base/5));
+ G.forge.reforge++;
+}
+function buy(id){
+ if(!G||!G.shopOpen)return;
+ if(shopReason(G.shopTab,id))return;
+ G.gold-=shopPrice(G.shopTab,id);
+ const h=G.hero;
+ if(id==='reforge')reforgeIt();
+ else if(id==='to_metal')G.forge.quality=Math.min(((window.QUALITY||[]).length-1),G.forge.quality+1);
+ else if(id==='new_weapon'){h.atk+=2;G.forge.weaponClass++;}
+ else if(id==='weapon_sharp')h.atk+=2;
+ else if(id==='weapon_master')h.atk+=5;
+ else if(id==='armor_hide')h.def+=2;
+ else if(id==='armor_plate')h.def+=4;
+ else if(id==='armor_shield')h.shield+=5;
+ else if(id==='chest_small'){
+  const gain=3+Math.floor(Math.random()*8);G.gold+=gain;h.hp=Math.min(h.maxHp,h.hp+5);toast('🧰 Сундук: +'+gain+' 💰');
+ } else if(id==='enchant'||id==='socket'||id==='combo'){
+  if(id==='combo')reforgeIt();
+  applyLiquid(G.shopLiquid);
+ } else {
+  const s=shopSvc(G.shopTab,id);
+  G.inventory.push({id:id,name:s.name||id,desc:s.desc||'',kind:'use'});
+ }
+ SFX.coin();toast('🛒 Куплено!');buildShop();updateHUD();
+}
+function use(i){
+ if(!G)return;const it=G.inventory[i];if(!it||it.kind!=='use')return;
+ const h=G.hero;
+ if(it.id==='potion_hp')h.hp=Math.min(h.maxHp,h.hp+25);
+ else if(it.id==='potion_mp')h.mana=Math.min(h.maxMana,h.mana+6);
+ else if(it.id==='scroll_heal')h.hp=Math.min(h.maxHp,h.hp+20);
+ else if(it.id==='herb_mint')h.mana=Math.min(h.maxMana,h.mana+3);
+ else if(it.id==='herb_sage')h.hp=Math.min(h.maxHp,h.hp+12);
+ else if(it.id==='scroll_fire'){
+  let bm=null,bd=99;
+  for(const m of G.monsters){if(m.dying)continue;const d=dist(m.x,m.y,h.x,h.y);if(d<bd){bd=d;bm=m;}}
+  if(bm){damageMonster(bm,12,'#ff9040');addRing((bm.x+0.5)*TS,(bm.y+0.5)*TS,TS,'#ff9040');}
+  else toast('Нет цели для свитка');
+ }
+ G.inventory.splice(i,1);SFX.heal();toast('Использовано: '+it.name);buildShop();updateHUD();
+}
+function openShop(){
+ if(G){G._pausedBeforeShop=G.paused;G.paused=true;G.shopOpen=true;}
+ buildShop();show('shopOv');
+}
+function closeShop(){
+ if(G){G.shopOpen=false;G.paused=!!G._pausedBeforeShop;}
+ hideAll();
+ if(G&&G.paused&&G.running)show('pauseOv');
+ else if(!G)show('menuOv');
+}
+$('shopBody').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-shop]');if(b&&!b.disabled){buy(b.dataset.shop);return;}
+ const u=e.target.closest('button[data-use]');if(u)use(+u.dataset.use);
+});
+$('shopBody').addEventListener('change',e=>{
+ if(e.target.id==='labLiquid'&&G){G.shopLiquid=e.target.value;buildShop();}
+});
+$('shopClose').onclick=closeShop;
+$('bBtnShop').onclick=$('mBtnShop').onclick=openShop;
+window.__refreshLabRecords=function(){
+ const html=window.recordsHTML?window.recordsHTML():'';
+ ['shared-records-menu','shared-records-pause','shared-records-rec'].forEach(id=>{const el=$(id);if(el)el.innerHTML=html;});
+ const got=(window.recordsList?window.recordsList():[]).filter(r=>r.got).length;
+ const c=$('recMenuCount');if(c)c.textContent=got+'/'+(window.RECORDS||[]).length;
+};
+window.__initLabShared=function(){window.__refreshLabRecords();};
+window.__labState=function(){
+ const F=window.FORGE_RULES||{};
+ return {
+  running:!!(G&&G.running),paused:!!(G&&G.paused),shopOpen:!!(G&&G.shopOpen),shopTab:G?G.shopTab:null,
+  gold:G?G.gold:0,
+  hero:G&&G.hero?{name:G.hero.name,hp:G.hero.hp,atk:G.hero.atk,def:G.hero.def}:null,
+  forge:G?{quality:shopQuality(),reforges:G.forge.reforge,max:F.maxReforge,enchant:G.forge.enchant,poison:G.forge.poison}:null,
+  inventory:G?G.inventory.map(i=>i.id):[],
+  lastKiller:G?G.lastKiller:null,
+  recordsUnlocked:(window.recordsList?window.recordsList():[]).filter(r=>r.got).map(r=>r.id),
+  globals:{RECORDS:!!window.RECORDS,recordDeath:typeof window.recordDeath,recordsHTML:typeof window.recordsHTML,
+   SHOP_TABS:(window.SHOP_TABS||[]).length,SERVICES:Object.keys(window.SERVICES||{}),
+   ENCHANT_LIQUIDS:(window.ENCHANT_LIQUIDS||[]).length,FORGE_RULES:!!window.FORGE_RULES,
+   reforgeCost:typeof window.reforgeCost,reforgeGain:typeof window.reforgeGain}
+ };
+};
 /* ---------- общая база Подземелья 28 ---------- */
 const D28_MONSTER_KEYS=['skeleton','ghost','mouse','spider','orge','zombie','turtle','devil','necro','archer'];
 const D28_HERO_KEYS=['warrior','mage','paladin','angel','archer'];
@@ -1454,7 +1684,11 @@ show('menuOv');
 </script>
 <script type="module">
 import { D28_DATA } from '../dungeon28/shared-data.js';
+import { RECORDS, recordDeath, unlockRecord, recordsHTML, recordsList } from '../shared/records.js';
+import { SHOP_TABS, QUALITY, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain } from '../shared/shop-data.js';
+Object.assign(window, { RECORDS, recordDeath, unlockRecord, recordsHTML, recordsList, SHOP_TABS, QUALITY, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain });
 window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
+if(window.__initLabShared)window.__initLabShared();
 </script>
 </body>
 </html>

@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <title>Подземелье</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Общие рекорды и расширенная лавка — только в этом файле, без правок style.css */
+    #shared-rec-login { margin-top: 10px; border: 1px solid rgba(255,255,255,.14); border-radius: 8px; background: rgba(0,0,0,.22); }
+    #shared-rec-login summary { cursor: pointer; padding: 6px 9px; color: #fbbf24; font-size: 12px; text-align: center; }
+    .shared-rec-body { max-height: 132px; overflow-y: auto; padding: 0 8px 7px; }
+    .shared-rec-body .recRow { display: flex; gap: 7px; align-items: baseline; padding: 2px 0; font-size: 11px; line-height: 1.25; color: #9ca3af; }
+    .shared-rec-body .recRow.got { color: #fbbf24; }
+    .shared-rec-body .recRow span:first-child { flex: 0 0 12px; }
+    #shared-rec-count { color: #9ca3af; }
+    #shop-panel { max-width: 420px; }
+    .shop-tab-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 9px; }
+    .shop-tab { background: #262637; border: 1px solid #4b5563; color: #cbd5e1; border-radius: 6px; padding: 4px 7px; font-size: 11px; cursor: pointer; }
+    .shop-tab.sel { border-color: #fbbf24; color: #fbbf24; background: #3a3018; }
+    .shop-view { display: none; }
+    .shop-view.active { display: block; }
+    .shop-item { display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 6px 5px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 12px; }
+    .shop-item .si-info { flex: 1; min-width: 0; }
+    .shop-item .si-name { color: #e5e7eb; font-weight: 600; }
+    .shop-item .si-desc { color: #9ca3af; font-size: 10px; line-height: 1.25; }
+    .shop-item .si-price { flex: 0 0 auto; color: #fbbf24; font-size: 11px; }
+    .shop-item .buy-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .shop-note { color: #9ca3af; font-size: 10px; line-height: 1.35; margin: 6px 0; }
+    .shop-select { background: #111827; color: #e5e7eb; border: 1px solid #4b5563; border-radius: 5px; font-size: 11px; padding: 3px; max-width: 140px; }
+    .shop-summary { margin-top: 8px; padding: 6px; border: 1px solid rgba(255,255,255,.1); border-radius: 6px; color: #cbd5e1; font-size: 11px; line-height: 1.4; background: rgba(0,0,0,.2); }
+  </style>
 </head>
 <body>
   <div id="app">
@@ -52,6 +77,11 @@
         </div>
 
         <div id="error-msg" class="error-msg" role="alert" aria-live="assertive"></div>
+
+        <details id="shared-rec-login">
+          <summary>🏆 Рекорды похождений <span id="shared-rec-count">0/0</span></summary>
+          <div id="shared-records-login" class="shared-rec-body"></div>
+        </details>
       </div>
     </div>
 
@@ -121,22 +151,40 @@
   <div id="shop-panel" class="panel" style="display:none;">
     <h3>🛒 Лавка</h3>
     <div id="shop-gold">В кармане: 0 золота</div>
-    <div class="panel-row">
-      <span id="shop-wpn-label"></span>
-      <span id="shop-wpn-cost"></span>
-      <button id="shop-wpn-btn" class="buy-btn">Купить</button>
+    <div class="shop-tab-row" id="shop-tabs"></div>
+
+    <div class="shop-view active" id="shop-view-weapons">
+      <div id="shop-stock-weapons"></div>
+      <div class="panel-row" id="shop-legacy-wpn">
+        <span id="shop-wpn-label"></span>
+        <span id="shop-wpn-cost"></span>
+        <button id="shop-wpn-btn" class="buy-btn">Купить</button>
+      </div>
     </div>
-    <div class="panel-row">
-      <span>🛡️ Броня +1</span>
-      <span id="shop-shd-cost"></span>
-      <button id="shop-shd-btn" class="buy-btn">Купить</button>
+
+    <div class="shop-view" id="shop-view-armor">
+      <div id="shop-stock-armor"></div>
+      <div class="panel-row" id="shop-legacy-shd">
+        <span>🛡️ Броня +1</span>
+        <span id="shop-shd-cost"></span>
+        <button id="shop-shd-btn" class="buy-btn">Купить</button>
+      </div>
     </div>
+
+    <div class="shop-view" id="shop-view-magic"><div id="shop-stock-magic"></div></div>
+    <div class="shop-view" id="shop-view-jeweler"><div id="shop-stock-jeweler"></div></div>
+    <div class="shop-view" id="shop-view-market"><div id="shop-stock-market"></div></div>
+    <div class="shop-view" id="shop-view-forge"><div id="shop-stock-forge"></div></div>
+
+    <div class="shop-summary" id="shop-summary"></div>
     <button id="close-shop" class="close-panel">Закрыть</button>
   </div>
 
   <div id="records-panel" class="panel" style="display:none;">
     <h3>🏆 Рекорды</h3>
     <div id="rec-list"></div>
+    <div class="rec-subtitle">🏆 Общие достижения</div>
+    <div id="shared-records-game" class="shared-rec-body"></div>
     <button id="close-records" class="close-panel">Закрыть</button>
   </div>
 
@@ -269,5 +317,256 @@
   </div>
 
   <script type="module" src="main.js"></script>
+  <script type="module">
+    import { state } from './state.js';
+    import { ENEMY_NAMES } from './config.js';
+    import { playSound } from './audio.js';
+    import { RECORDS, recordDeath, unlockRecord, recordsHTML, recordsList } from '../shared/records.js';
+    import { SHOP_TABS, QUALITY, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain } from '../shared/shop-data.js';
+
+    // Общие данные доступны и остальной странице (проверка через window).
+    Object.assign(window, { RECORDS, recordDeath, unlockRecord, recordsHTML, SHOP_TABS, SERVICES, ENCHANT_LIQUIDS, FORGE_RULES, reforgeCost, reforgeGain });
+
+    const $ = id => document.getElementById(id);
+    const shopPanel = $('shop-panel');
+    const CSS_QUALITY = { 'q-rusty': 0, 'q-normal': 1, 'q-gold': 2, 'q-magic': 3, 'q-enchanted': 4, 'q-legendary': 4 };
+    const EXTRA_PRICES = { weapon_sharp: 5, weapon_master: 11, armor_hide: 4, armor_plate: 9, armor_shield: 8 };
+    const originalDmg = new Map();
+    const upgrades = new Map();
+    let currentTab = 'weapons';
+    let selectedLiquid = ENCHANT_LIQUIDS[0] && ENCHANT_LIQUIDS[0].id;
+    let lastKiller = '', lastDeath = null, prevActive = false, ticks = 0, lastSig = '';
+
+    const curWeapon = () => state.weapons && state.weapons[state.weaponLevel];
+    function curUp(w){
+      if(!w) return null;
+      if(!upgrades.has(w)) upgrades.set(w, { reforge:0, qualityBoost:0, extraDmg:0, enchantAtk:0, enchant:null, liquid:null });
+      return upgrades.get(w);
+    }
+    function capture(w){ if(w && !originalDmg.has(w)) originalDmg.set(w, w.dmg); }
+    function qualityOf(w){
+      if(!w) return 0;
+      const up = upgrades.get(w);
+      const base = CSS_QUALITY[w.css] == null ? 1 : CSS_QUALITY[w.css];
+      return Math.min(QUALITY.length - 1, base + (up && up.qualityBoost ? up.qualityBoost : 0));
+    }
+    function applyWeaponDmg(w){
+      if(!w) return;
+      capture(w);
+      const up = curUp(w), base = originalDmg.get(w);
+      w.dmg = base + up.reforge * reforgeGain(base) + up.extraDmg + up.enchantAtk;
+    }
+    function svc(tab, id){ return (SERVICES[tab] || []).find(s => s.id === id) || {}; }
+    const maxHp = () => (state.devSettings && state.devSettings.heroes[state.heroIdx] || {}).maxHp || 100;
+
+    function priceFor(tab, act){
+      if(act === 'new_weapon') return state.weaponLevel + 1; // исходная цена d28 не меняется
+      if(EXTRA_PRICES[act] != null) return EXTRA_PRICES[act];
+      if(act === 'reforge') return reforgeCost(qualityOf(curWeapon()), (curUp(curWeapon()) || {}).reforge || 0);
+      if(act === 'combo') return (svc('jeweler','enchant').cost || 1) + (svc('jeweler','socket').cost || 2);
+      return svc(tab, act).cost || 0;
+    }
+
+    function reforgeState(){
+      const w = curWeapon(), up = curUp(w);
+      if(!w || !up) return { ok:false, reason:'Нет оружия' };
+      const q = qualityOf(w);
+      if(q < FORGE_RULES.minQuality) return { ok:false, reason:'Нужно качество «Острое» и выше' };
+      if(up.reforge >= FORGE_RULES.maxReforge) return { ok:false, reason:'Максимум перековок: 5' };
+      return { ok:true, q, cost:reforgeCost(q, up.reforge) };
+    }
+
+    function enchantWeapon(w, up, liquidId){
+      const liq = ENCHANT_LIQUIDS.find(l => l.id === liquidId) || ENCHANT_LIQUIDS[0];
+      if(!liq) return;
+      capture(w);
+      if(up.enchantAtk){ up.enchantAtk = 0; }
+      up.enchant = liq;
+      up.liquid = liq.name;
+      if(liq.stat === 'atk'){ up.enchantAtk = liq.value; applyWeaponDmg(w); }
+      else if(liq.stat === 'hp') state.playerHp = Math.min(maxHp(), state.playerHp + liq.value);
+      else if(liq.stat === 'mp') state.playerMp += liq.value;
+      else if(liq.stat === 'def' || liq.stat === 'light') state.permanentShield += liq.value;
+      else if(liq.stat === 'poison') up.poison = (up.poison || 0) + liq.value;
+    }
+
+    function perform(tab, act, liquidId){
+      const w = curWeapon(), up = curUp(w);
+      if(act === 'new_weapon'){
+        const next = state.weapons[state.weaponLevel + 1];
+        if(!next || state.goldCount < state.weaponLevel + 1) return;
+        $('shop-wpn-btn').click(); //Original d28 purchase path and price.
+        playSound('collect'); renderShop(); return;
+      }
+      const rf = reforgeState();
+      if(act === 'combo' && !rf.ok) return;
+      let cost = priceFor(tab, act);
+      if(act === 'combo') cost += rf.cost; // цена уже включает кристалл и жидкость
+      if(state.goldCount < cost) return;
+      state.goldCount -= cost;
+      switch(act){
+        case 'reforge':
+          capture(w); up.reforge++; applyWeaponDmg(w); break;
+        case 'to_metal':
+          if(qualityOf(w) > 0){ state.goldCount += cost; return; }
+          up.qualityBoost = 1; break;
+        case 'weapon_sharp': capture(w); up.extraDmg += 2; applyWeaponDmg(w); break;
+        case 'weapon_master': capture(w); up.extraDmg += 5; applyWeaponDmg(w); break;
+        case 'armor_hide': state.permanentShield += 2; break;
+        case 'armor_plate': state.permanentShield += 4; break;
+        case 'armor_shield': state.permanentShield += 5; break;
+        case 'potion_hp': state.playerHp = Math.min(maxHp(), state.playerHp + 25); break;
+        case 'potion_mp': state.playerMp += 6; break;
+        case 'scroll_fire': state.spellLightning++; break;
+        case 'scroll_heal': state.spellHeal++; break;
+        case 'herb_mint': state.playerMp += 3; break;
+        case 'herb_sage': state.playerHp = Math.min(maxHp(), state.playerHp + 12); break;
+        case 'chest_small': state.goldCount += 3 + Math.floor(Math.random() * 8); state.playerHp = Math.min(maxHp(), state.playerHp + 5); break;
+        case 'enchant': case 'socket': enchantWeapon(w, up, liquidId); break;
+        case 'combo':
+          capture(w); up.reforge++; applyWeaponDmg(w);
+          enchantWeapon(w, up, liquidId); break;
+        default: state.goldCount += cost; return;
+      }
+      playSound('collect');
+      renderShop();
+    }
+
+    function esc(s){ return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+    function row(tab, act, name, desc, reason, priceOverride){
+      const cost = priceOverride == null ? priceFor(tab, act) : priceOverride;
+      const dis = reason || (state.goldCount < cost ? 'Недостаточно золота' : '');
+      return '<div class="shop-item"><div class="si-info"><div class="si-name">' + name + '</div><div class="si-desc">' + desc + '</div></div>' +
+        '<span class="si-price">' + (cost || '—') + ' зл</span>' +
+        '<button class="buy-btn" data-buy="' + act + '" data-tab="' + tab + '"' + (dis ? ' disabled title="' + esc(dis) + '"' : '') + '>' + (dis ? '—' : 'Купить') + '</button></div>';
+    }
+
+    function liquidSelect(){
+      return '<div class="shop-note">Кристалл/жидкость для украшения:</div><select class="shop-select" id="d28-liquid">' +
+        ENCHANT_LIQUIDS.map(l => '<option value="' + l.id + '"' + (l.id === selectedLiquid ? ' selected' : '') + '>' + l.name + ' (+' + l.value + ')</option>').join('') + '</select>';
+    }
+
+    function renderStock(tab){
+      const rf = reforgeState(), w = curWeapon(), up = curUp(w) || {};
+      let html = '';
+      if(tab === 'weapons'){
+        html += '<div class="shop-note">Оружие покупается по исходной цене d28: 1 зл за первый класс, дальше +1.</div>';
+        html += row('weapons','weapon_sharp','Заточка клинка','+2 к силе текущего оружия');
+        html += row('weapons','weapon_master','Мастерский клинок','+5 к силе текущего оружия');
+      } else if(tab === 'armor'){
+        html += row('armor','armor_hide','Кожаная броня','+2 защиты');
+        html += row('armor','armor_plate','Латная броня','+4 защиты');
+        html += row('armor','armor_shield','Щит стража','+5 защиты');
+      } else if(tab === 'magic'){
+        html = SERVICES.magic.map(s => row('magic', s.id, s.name, s.desc)).join('');
+      } else if(tab === 'jeweler'){
+        html += liquidSelect();
+        html += row('jeweler','enchant','Украшение кристаллом',svc('jeweler','enchant').desc || '+ к силе');
+        html += row('jeweler','socket','Вставка камня',svc('jeweler','socket').desc || 'Эффект жидкости');
+        const comboCost = priceFor('jeweler','combo') + (rf.ok ? rf.cost : 0);
+        html += row('jeweler','combo','Перековка + зачарование','Совместить улучшения в одном оружии',rf.ok ? (state.goldCount < comboCost ? 'Недостаточно золота' : '') : rf.reason, comboCost);
+      } else if(tab === 'market'){
+        html = SERVICES.market.map(s => row('market', s.id, s.name, s.desc)).join('');
+      } else if(tab === 'forge'){
+        html += '<div class="shop-note">' + FORGE_RULES.note + '</div>';
+        html += row('forge','to_metal','Перековка в металл',svc('forge','to_metal').desc || 'Качество +1', qualityOf(w) > 0 ? 'Уже металлическое оружие' : '');
+        html += row('forge','reforge','Перековка','+' + reforgeGain(originalDmg.get(w) || (w && w.dmg) || 1) + ' силы · ' + (up.reforge || 0) + '/' + FORGE_RULES.maxReforge, rf.ok ? '' : rf.reason);
+        html += row('forge','new_weapon','Следующий класс оружия','Цена d28 без изменений: ' + (state.weaponLevel + 1) + ' зл', state.weapons[state.weaponLevel + 1] ? '' : 'Максимум');
+      }
+      return html;
+    }
+
+    function renderShop(){
+      const tabs = $('shop-tabs');
+      if(!tabs) return;
+      if(!tabs.children.length){
+        SHOP_TABS.forEach(t => {
+          const b = document.createElement('button');
+          b.className = 'shop-tab'; b.dataset.tab = t.id; b.textContent = t.icon + ' ' + t.name;
+          b.onclick = () => { currentTab = t.id; renderShop(); };
+          tabs.appendChild(b);
+        });
+      }
+      [...tabs.children].forEach(b => b.classList.toggle('sel', b.dataset.tab === currentTab));
+      document.querySelectorAll('#shop-panel .shop-view').forEach(v => v.classList.toggle('active', v.id === 'shop-view-' + currentTab));
+      $('shop-gold').textContent = 'В кармане: ' + state.goldCount + ' золота';
+      SHOP_TABS.forEach(t => { const box = $('shop-stock-' + t.id); if(box) box.innerHTML = renderStock(t.id); });
+      const w = curWeapon(), up = curUp(w) || {};
+      $('shop-summary').innerHTML = w
+        ? '⚔️ <b>' + w.name + '</b> · ' + QUALITY[qualityOf(w)] + ' · сила ' + w.dmg +
+          ' · перековок ' + (up.reforge || 0) + '/' + FORGE_RULES.maxReforge +
+          (up.enchant ? ' · 💎 ' + up.enchant.name : ' · без зачарования')
+        : 'Оружие недоступно';
+    }
+
+    function refreshRecords(){
+      const html = recordsHTML();
+      ['shared-records-login','shared-records-game'].forEach(id => { const el = $(id); if(el) el.innerHTML = html; });
+      const count = $('shared-rec-count');
+      if(count) count.textContent = recordsList().filter(r => r.got).length + '/' + RECORDS.length;
+    }
+
+    function resetForNewGame(){
+      originalDmg.forEach((dmg, w) => { w.dmg = dmg; });
+      originalDmg.clear(); upgrades.clear();
+      lastKiller = ''; lastDeath = null;
+      refreshRecords();
+    }
+
+    shopPanel.addEventListener('click', e => {
+      const b = e.target.closest('button[data-buy]');
+      if(!b || b.disabled) return;
+      perform(b.dataset.tab, b.dataset.buy, b.dataset.liquid || selectedLiquid);
+    });
+    shopPanel.addEventListener('change', e => {
+      if(e.target.id === 'd28-liquid'){ selectedLiquid = e.target.value; renderShop(); }
+    });
+    new MutationObserver(() => {
+      if(shopPanel.style.display !== 'none'){ renderShop(); refreshRecords(); }
+    }).observe(shopPanel, { attributes:true, attributeFilter:['style'] });
+
+    setInterval(() => {
+      ticks++;
+      const active = !!state.gameActive;
+      if(!prevActive && active) resetForNewGame();
+      if(prevActive && !active){
+        if(state.playerHp <= 0){
+          const src = state.lastDamageSource;
+          lastKiller = ENEMY_NAMES[src] || (src === 'poison' ? 'яд' : 'неизвестный монстр');
+          lastDeath = { killer:lastKiller, wasUnlocked:recordDeath('dungeon', lastKiller) };
+        } else if(state.playerHp > 0){
+          unlockRecord('win_dungeon');
+        }
+        refreshRecords();
+      }
+      prevActive = active;
+      if(ticks % 20 === 0) refreshRecords();
+      const sig = [state.goldCount, state.weaponLevel, curWeapon() && curWeapon().dmg, currentTab].join('|');
+      if(shopPanel.style.display !== 'none' && sig !== lastSig){ lastSig = sig; renderShop(); }
+    }, 150);
+
+    window.__d28Shop = { render:renderShop, buy:perform };
+    window.__d28State = () => {
+      const w = curWeapon(), up = curUp(w) || {};
+      return {
+        gameActive: !!state.gameActive,
+        gold: state.goldCount,
+        hp: state.playerHp,
+        weapon: w ? { name:w.name, dmg:w.dmg, quality:QUALITY[qualityOf(w)] } : null,
+        forge: w ? { reforges:up.reforge || 0, max:FORGE_RULES.maxReforge, enchant:up.enchant ? up.enchant.name : null } : null,
+        shopOpen: shopPanel.style.display !== 'none',
+        shopTab: currentTab,
+        lastKiller, lastDeath,
+        recordsUnlocked: recordsList().filter(r => r.got).map(r => r.id),
+        globals: {
+          RECORDS:!!window.RECORDS, recordDeath:typeof window.recordDeath, recordsHTML:typeof window.recordsHTML,
+          SHOP_TABS:(window.SHOP_TABS || []).length, SERVICES:Object.keys(window.SERVICES || {}),
+          ENCHANT_LIQUIDS:(window.ENCHANT_LIQUIDS || []).length, FORGE_RULES:!!window.FORGE_RULES,
+          reforgeCost:typeof window.reforgeCost, reforgeGain:typeof window.reforgeGain
+        }
+      };
+    };
+    renderShop(); refreshRecords();
+  </script>
 </body>
 </html>

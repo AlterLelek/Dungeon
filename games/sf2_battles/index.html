@@ -90,6 +90,23 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 .wide-row { grid-column: span 3; }
 .coin-ico { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: #fbbf24; border: 2px solid #92400e; vertical-align: -1px; }
 .q-rusty { color: #9ca3af; } .q-normal { color: #e5e7eb; } .q-gold { color: #fbbf24; } .q-magic { color: #a78bfa; }
+
+/* ===== РАСШИРЕННАЯ ЛАВКА / РЕКОРДЫ / КАРТА ===== */
+.shop-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.shop-tab { background: #374151; color: #d1d5db; border: 1px solid #4b5563; border-radius: 6px; padding: 5px 7px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: inherit; }
+.shop-tab.active { background: #b45309; border-color: #fbbf24; color: #fff; }
+.shop-sub { color: #fbbf24; font-size: 11px; margin: 9px 0 5px; border-top: 1px solid #4b5563; padding-top: 7px; font-weight: bold; }
+.shop-note { color: #9ca3af; font-size: 10px; line-height: 1.3; margin: -3px 0 8px 0; }
+.liquid-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+#records-start-row { width: 300px; display: flex; gap: 8px; }
+#records-start-row .mode-btn { width: 100%; padding: 9px 12px; font-size: 13px; }
+#records-panel { width: 330px; }
+.recRow { display: flex; gap: 8px; font-size: 12px; color: #6b7280; padding: 4px 2px; border-bottom: 1px solid rgba(255,255,255,.07); line-height: 1.25; }
+.recRow.got { color: #fde68a; }
+.recRow span:first-child { width: 16px; flex-shrink: 0; }
+#sf-toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(22px); background: #1f2937; border: 2px solid #fbbf24; color: #fde68a; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: bold; z-index: 9500; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; max-width: 90vw; text-align: center; box-shadow: 0 6px 22px rgba(0,0,0,.6); }
+#sf-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#map-hint { color: #9ca3af; font-size: 11px; text-align: center; width: 326px; box-sizing: border-box; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -118,7 +135,17 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 <input type="text" id="hero-name-input" maxlength="16" value="Герой" placeholder="Имя героя" aria-label="Имя героя">
 <button class="mode-btn" id="start-btn">▶ Играть</button>
 </div>
+<div id="records-start-row">
+<button class="mode-btn" id="records-btn">🏆 Рекорды</button>
 </div>
+</div>
+
+<div id="records-panel" class="panel">
+<h3>🏆 Рекорды</h3>
+<div id="records-list"></div>
+<button class="close-panel" onclick="toggleRecords(false)">Закрыть [Esc]</button>
+</div>
+<div id="sf-toast"></div>
 
 <div id="hud">
 <div class="hud-hero" style="color:#60a5fa;">
@@ -168,25 +195,13 @@ canvas { background-color: #241f1d; border: 3px solid #4f46e5; width: 326px; hei
 <button class="btn" onclick="move(32,0)">▶ D</button>
 <button class="btn wide-row" onclick="move(0,32)">▼ S</button>
 </div>
+<div id="map-hint"></div>
 
 <div id="shop-panel" class="panel">
 <h3>🛒 Лавка</h3>
 <div id="shop-gold"></div>
-<div class="panel-row">
-<span class="panel-label" id="shop-wpn-label"></span>
-<span class="panel-price" id="shop-wpn-cost"></span>
-<button class="buy-btn" id="shop-wpn-btn" onclick="buyOption('weapon')">Купить</button>
-</div>
-<div class="panel-row">
-<span class="panel-label" id="shop-shd-label">🛡️ Броня +1 (постоянная)</span>
-<span class="panel-price" id="shop-shd-cost">1 зл</span>
-<button class="buy-btn" id="shop-shd-btn" onclick="buyOption('shield')">Купить</button>
-</div>
-<div class="panel-row">
-<span class="panel-label">⚡ Энергия +1</span>
-<span class="panel-price">1 зл</span>
-<button class="buy-btn" id="shop-en-btn" onclick="buyOption('energy')">Купить</button>
-</div>
+<div id="shop-tabs" class="shop-tabs"></div>
+<div id="shop-content"></div>
 <button class="close-panel" onclick="toggleShop(false)">Закрыть [Esc]</button>
 </div>
 
@@ -259,8 +274,12 @@ const heroNameLabel = document.getElementById('hero-name-label');
 const heroWeaponEl = document.getElementById('hero-weapon');
 const heroHintEl = document.getElementById('hero-hint');
 
-const GRID = 10;
+const GRID = 10;          // бой: старое поле 10×10
 const CELL = 32;
+// Карта: те же параметры, что и в Подземелье 28 (15×15, 32px, мир 480px).
+const MAP_GRID = 15;
+const MAP_CELL = 32;
+const MAP_WORLD = MAP_GRID * MAP_CELL;
 const MAX_ITEMS = 40;
 const MAX_ENEMY_ROWS = 6;
 
@@ -286,11 +305,12 @@ let monsters = [];
 let stairs = {x:128, y:128, active:false};
 let player = {x:32, y:160};
 
-const MODES = ['chase', 'clear', 'mixed'];
+const MODES = ['chase', 'clear', 'mixed', 'map'];
 const MODE_INFO = [
 {icon:'🏃', name:'Погоня', desc:'🏃 монстры убегают — лови шагом на их клетку'},
 {icon:'⚔️', name:'Зачистка', desc:'⚔️ монстры охотятся на тебя — убей всех'},
-{icon:'🔥', name:'Погоня+зачистка', desc:'🔥 половина убегает, половина охотится'}
+{icon:'🔥', name:'Погоня+зачистка', desc:'🔥 половина убегает, половина охотится'},
+{icon:'🗺️', name:'Карта 15×15', desc:'🗺️ поле Подземелья 28: дороги, стены и монстры. Шаг в монстра — бой 1 на 1 (стрелки/WASD)'}
 ];
 let gameMode = 'clear';
 let menuActive = true;
@@ -307,6 +327,33 @@ const HEROES = [
 {name:"Лучник", emoji:"🏹", set:"archer", maxHp:90, maxMp:3, melMod:0, lightRange:80, sprite:"../dungeon28/assets/sprites/heroes/elf_archer_0.png"}
 ];
 let heroIdx = 0;
+
+/* Домашняя местность героя — используется и в заставке боя, и на карте. */
+const HERO_THEME = {
+warrior: {id:'fortress', name:'крепость / камень', icon:'🏰'},
+mage:    {id:'mountains', name:'горы / башня', icon:'⛰️'},
+paladin: {id:'temple', name:'храм', icon:'🏛️'},
+archer:  {id:'forest', name:'лес', icon:'🌲'},
+angel:   {id:'sky', name:'небо', icon:'☁️'}
+};
+function heroTheme() {
+const h = HEROES[heroIdx] || {};
+return HERO_THEME[h.key] || HERO_THEME[h.set] || HERO_THEME.warrior;
+}
+
+// Состояние карты и расширенной лавки (объявлено здесь, чтобы было доступно всем скриптам).
+let mapActive = false;
+let mapTiles = [];      // 0 — стена, 1 — дорога
+let mapDecor = [];      // случайные детали прорисовки
+let mapCam = {x:0, y:0};
+let mapFloor = 1;
+let forgeQuality = 0;   // 0 — ржавое, 1 — острое, ... (FORGE_RULES.minQuality)
+let reforgeCount = 0;
+let crystalBonus = 0;
+let liquidBonus = {hp:0, mp:0, atk:0, def:0, light:0};
+let lastKillerType = null;
+let shopTab = 'weapons';
+let recordsOpen = false;
 
 const WARRIOR_WEAPONS = [
 {name:"Кулаки", css:"q-normal", dmg:1, cost:0},
@@ -779,7 +826,7 @@ if (off !== 0) card.onclick = () => selectMode(idx);
 box.appendChild(card);
 }
 gameMode = MODES[modeIdx];
-document.getElementById('mode-hint').innerHTML = MODE_INFO[modeIdx].desc + '<br><br>этажи, сложность, мелодии — в ⚙️ Настройках • M — лавка';
+document.getElementById('mode-hint').innerHTML = MODE_INFO[modeIdx].desc + '<br><br>этажи, сложность, мелодии — в ⚙️ Настройках • M — лавка • 🏆 рекорды на старте';
 }
 function renderStart() { renderHeroCarousel(); renderModeCarousel(); }
 function selectHero(idx) {
@@ -805,12 +852,21 @@ goldCount = 0; playerHp = HEROES[heroIdx].maxHp; starBonus = 0; shieldBonus = 0;
 poisonTurns = 0; poisonDmg = 0;
 abilityTurns = 0; abilityCooldown = 0; abilityAtk = 0; abilityShield = 0; spellDiscount = 0;
 energy = 0; weaponLevel = 0; totalTurns = 0; currentFloor = 1;
+forgeQuality = 0; reforgeCount = 0; crystalBonus = 0;
+liquidBonus = {hp:0, mp:0, atk:0, def:0, light:0};
+lastKillerType = null;
 weapons = getWeaponsBySet(HEROES[heroIdx].set);
 startAmbient();
-initFloor();
+if (typeof startMapGame === 'function' && gameMode === 'map') startMapGame();
+else { mapActive = false; initFloor(); }
 draw();
 }
-function showMenu() { gameActive = false; menuActive = true; startScreen.style.display = 'flex'; renderStart(); }
+function showMenu() {
+gameActive = false; mapActive = false; menuActive = true;
+startScreen.style.display = 'flex';
+renderStart();
+if (typeof refreshRecordsPanel === 'function') refreshRecordsPanel();
+}
 
 document.getElementById('prev-hero').onclick = () => selectHero(heroIdx - 1);
 document.getElementById('next-hero').onclick = () => selectHero(heroIdx + 1);
@@ -831,38 +887,173 @@ shopOpen = open;
 shopPanel.style.display = open ? 'block' : 'none';
 if (open) { playSound('menu'); updateShop(); }
 }
+function sfShared() { return window.__SF_SHARED || {}; }
+function sfSvc(id) {
+const groups = sfShared().SERVICES || {};
+for (const tab in groups) {
+const found = (groups[tab] || []).find(s => s.id === id);
+if (found) return found;
+}
+return null;
+}
+function sfSvcCost(id, fallback) { const s = sfSvc(id); return s && typeof s.cost === 'number' ? s.cost : fallback; }
+function forgeDamageBonus() {
+const rules = sfShared().FORGE_RULES || {gainDivisor:5};
+const gain = typeof sfShared().reforgeGain === 'function'
+? sfShared().reforgeGain(weapons[weaponLevel].dmg)
+: Math.max(1, Math.floor(weapons[weaponLevel].dmg / (rules.gainDivisor || 5)));
+return reforgeCount * gain + crystalBonus + liquidBonus.atk;
+}
 function shieldPrice() { return shieldBonus + 1; }
+function shopRow(label, cost, buyId, disabled) {
+return '<div class="panel-row"><span class="panel-label">' + label + '</span>' +
+'<span class="panel-price">' + (cost == null ? '—' : cost + ' зл') + '</span>' +
+'<button class="buy-btn" data-buy="' + buyId + '"' + (disabled ? ' disabled' : '') + '>Купить</button></div>';
+}
+function shopSection(title) { return '<div class="shop-sub">' + title + '</div>'; }
+function renderShopTab(tab, S) {
+const tabs = S.SHOP_TABS || [];
+const info = tabs.find(t => t.id === tab) || tabs[0] || {name:'Оружие'};
+let html = '<div class="shop-note">Раздел: ' + info.name + ' • перековка: +1/' +
+((S.FORGE_RULES && S.FORGE_RULES.gainDivisor) || 5) + ' силы, до ' +
+((S.FORGE_RULES && S.FORGE_RULES.maxReforge) || 5) + ' раз</div>';
+const nextW = weapons[weaponLevel + 1];
+const wCost = nextW ? nextW.cost : null; // стоимость из базы D28 — не меняем
+const wName = nextW ? "<span class='" + nextW.css + "'>" + nextW.name + '</span> (урон ' + nextW.dmg + ')' : 'Оружие максимального уровня';
+const forgeRules = S.FORGE_RULES || {minQuality:1, maxReforge:5};
+const rCost = typeof S.reforgeCost === 'function'
+? S.reforgeCost(forgeQuality, reforgeCount)
+: (1 + forgeQuality + reforgeCount);
+const canForge = forgeQuality >= (forgeRules.minQuality || 1) && reforgeCount < (forgeRules.maxReforge || 5);
+
+if (tab === 'weapons' || tab === 'forge') {
+html += shopSection('⚔ Оружие и кузня');
+html += shopRow(wName, wCost, 'weapon', !nextW || goldCount < wCost);
+const qualities = S.QUALITY || ['Ржавое','Острое','Золотое','Волшебное','Зачарованное'];
+html += '<div class="shop-note">Качество: ' + (qualities[forgeQuality] || qualities[0]) +
+' • перековок ' + reforgeCount + '/' + (forgeRules.maxReforge || 5) +
+' • бонус силы +' + forgeDamageBonus() + '</div>';
+html += shopRow('🔥 Перековка (+' + (typeof S.reforgeGain === 'function' ? S.reforgeGain(weapons[weaponLevel].dmg) : 1) + ' силы)',
+rCost, 'reforge', !canForge || goldCount < rCost);
+html += shopRow('🔥 Перековка в металл (качество +1)', sfSvcCost('to_metal', 3), 'to_metal',
+forgeQuality >= 1 || goldCount < sfSvcCost('to_metal', 3));
+html += shopRow('⚒ Новое оружие (класс +1)', wCost, 'new_weapon', !nextW || goldCount < wCost);
+html += '<div class="shop-note">' + (forgeRules.note || 'Перековка доступна от «Острого» оружия.') + '</div>';
+if (tab === 'weapons') {
+html += shopSection('🛡 Защита и мана');
+html += shopRow('🛡️ Броня +1 (постоянная)', shieldPrice(), 'shield', goldCount < shieldPrice());
+html += shopRow('⚡ Энергия +1', 1, 'energy', goldCount < 1);
+}
+}
+if (tab === 'armor') {
+html += shopSection('🛡 Броня');
+html += shopRow('🛡️ Броня +1 (постоянная)', shieldPrice(), 'shield', goldCount < shieldPrice());
+html += shopRow('💎 Камень камня (+3 защиты)', sfSvcCost('socket', 2), 'liquid:liquid_def', goldCount < sfSvcCost('socket', 2));
+html += shopRow('💎 Камень яда (+3 яда)', sfSvcCost('socket', 2), 'liquid:liquid_poison', goldCount < sfSvcCost('socket', 2));
+}
+if (tab === 'magic') {
+html += shopSection('✨ Зелья и свитки');
+(S.SERVICES && S.SERVICES.magic || []).forEach(s => {
+html += shopRow(s.name + ' — ' + s.desc, s.cost, s.id, goldCount < s.cost);
+});
+}
+if (tab === 'jeweler') {
+html += shopSection('💎 Кристаллы');
+(S.SERVICES && S.SERVICES.jeweler || []).forEach(s => {
+html += shopRow(s.name + ' — ' + s.desc, s.cost, s.id === 'socket' ? 'socket' : s.id, goldCount < s.cost);
+});
+html += shopSection('🧪 Жидкости для вставки');
+(S.ENCHANT_LIQUIDS || []).forEach(l => {
+html += shopRow('<span class="liquid-dot" style="background:' + l.color + '"></span>' + l.name + ' (+' + l.value + ' ' + l.stat + ')',
+sfSvcCost('socket', 2), 'liquid:' + l.id, goldCount < sfSvcCost('socket', 2));
+});
+}
+if (tab === 'market') {
+html += shopSection('🛒 Рынок');
+(S.SERVICES && S.SERVICES.market || []).forEach(s => {
+html += shopRow(s.name + ' — ' + s.desc, s.cost, s.id, goldCount < s.cost);
+});
+}
+return html;
+}
 function updateShop() {
-document.getElementById('shop-gold').innerText = "В кармане: " + goldCount + " золота";
+const S = sfShared();
+const goldEl = document.getElementById('shop-gold');
+if (!goldEl) return;
+goldEl.innerText = "В кармане: " + goldCount + " золота";
+const tabs = S.SHOP_TABS || [];
+if (!tabs.some(t => t.id === shopTab)) shopTab = tabs.length ? tabs[0].id : 'weapons';
+document.getElementById('shop-tabs').innerHTML = tabs.map(t =>
+'<button class="shop-tab' + (shopTab === t.id ? ' active' : '') + '" data-tab="' + t.id + '">' +
+(t.icon || '') + ' ' + t.name + '</button>').join('');
+document.getElementById('shop-content').innerHTML = renderShopTab(shopTab, S);
+}
+function applyLiquid(l) {
+if (!l) return;
+if (l.stat === 'hp') { liquidBonus.hp += l.value; playerHp = Math.min(heroMaxHp() + liquidBonus.hp, playerHp + l.value); }
+else if (l.stat === 'mp') { liquidBonus.mp += l.value; energy += l.value; }
+else if (l.stat === 'atk') liquidBonus.atk += l.value;
+else if (l.stat === 'def') { liquidBonus.def += l.value; shieldBonus += l.value; }
+else if (l.stat === 'light') liquidBonus.light += l.value;
+else if (l.stat === 'poison') liquidBonus.poison = (liquidBonus.poison || 0) + l.value;
+}
+function buyShopOption(id) {
+const S = sfShared();
+const cost = sfSvcCost(id, null);
+let paid = false, message = '';
+function pay(c) { if (goldCount < c) return false; goldCount -= c; paid = true; playSound('collect'); return true; }
+if (id === 'weapon' || id === 'new_weapon') {
 const nextW = weapons[weaponLevel + 1];
-const wLabel = document.getElementById('shop-wpn-label');
-const wCost = document.getElementById('shop-wpn-cost');
-const wBtn = document.getElementById('shop-wpn-btn');
-if (nextW) {
-wLabel.innerHTML = "⚔️ <span class='" + nextW.css + "'>" + nextW.name + "</span> (урон " + nextW.dmg + ")";
-wCost.innerText = nextW.cost + " зл";
-wBtn.disabled = goldCount < nextW.cost;
-} else {
-wLabel.innerText = "⚔️ Оружие максимального уровня";
-wCost.innerText = "—"; wBtn.disabled = true;
+if (nextW && pay(nextW.cost)) { weaponLevel++; message = 'Куплено: ' + nextW.name; }
+} else if (id === 'shield') {
+if (pay(shieldPrice())) { shieldBonus += 1; message = 'Броня +1'; }
+} else if (id === 'energy') {
+if (pay(1)) { energy += 1; message = 'Энергия +1'; }
+} else if (id === 'reforge') {
+const rCost = typeof S.reforgeCost === 'function' ? S.reforgeCost(forgeQuality, reforgeCount) : 1 + forgeQuality + reforgeCount;
+const rules = S.FORGE_RULES || {};
+if (forgeQuality >= (rules.minQuality || 1) && reforgeCount < (rules.maxReforge || 5) && pay(rCost)) {
+reforgeCount++; message = 'Перековка ' + reforgeCount + '/' + (rules.maxReforge || 5);
 }
-const sp = shieldPrice();
-document.getElementById('shop-shd-cost').innerText = sp + " зл";
-document.getElementById('shop-shd-btn').disabled = goldCount < sp;
-document.getElementById('shop-en-btn').disabled = goldCount < 1;
+} else if (id === 'to_metal') {
+if (forgeQuality < 1 && pay(sfSvcCost('to_metal', 3))) { forgeQuality = 1; message = 'Оружие: Острое'; }
+} else if (id === 'enchant') {
+if (pay(sfSvcCost('enchant', 1))) { crystalBonus += 1; message = 'Кристалл +1 силы'; }
+} else if (id === 'socket') {
+if (pay(sfSvcCost('socket', 2))) {
+const list = S.ENCHANT_LIQUIDS || [];
+if (list.length) { applyLiquid(list[Math.floor(Math.random()*list.length)]); message = 'Камень вставлен'; }
 }
-function buyOption(kind) {
-if (kind === 'weapon') {
-const nextW = weapons[weaponLevel + 1];
-if (nextW && goldCount >= nextW.cost) { goldCount -= nextW.cost; weaponLevel++; playSound('collect'); }
-} else if (kind === 'shield') {
-const sp = shieldPrice();
-if (goldCount >= sp) { goldCount -= sp; shieldBonus += 1; playSound('collect'); }
-} else if (kind === 'energy') {
-if (goldCount >= 1) { goldCount -= 1; energy += 1; playSound('collect'); }
+} else if (id.indexOf('liquid:') === 0) {
+const l = (S.ENCHANT_LIQUIDS || []).find(x => x.id === id.slice(7));
+if (l && pay(sfSvcCost('socket', 2))) { applyLiquid(l); message = l.name + ' вставлена'; }
+} else if (id === 'potion_hp') {
+if (pay(sfSvcCost(id, 5))) { playerHp = Math.min(heroMaxHp(), playerHp + 25); message = '+25 HP'; }
+} else if (id === 'potion_mp') {
+if (pay(sfSvcCost(id, 6))) { energy += 6; message = '+6 MP'; }
+} else if (id === 'scroll_fire') {
+if (pay(sfSvcCost(id, 10))) {
+const list = monsters;
+for (let i = list.length - 1; i >= 0; i--) {
+list[i].hp -= 25;
+if (list[i].hp <= 0) { list.splice(i, 1); goldCount += 2; energy += 1; }
 }
-updateShop(); updateHud();
+if (!mapActive) openStairs();
+message = 'Огненный шар!';
 }
+} else if (id === 'scroll_heal') {
+if (pay(sfSvcCost(id, 12))) { playerHp = heroMaxHp(); message = 'Полное исцеление'; }
+} else if (id === 'herb_mint') {
+if (pay(sfSvcCost(id, 2))) { energy += 3; message = '+3 MP'; }
+} else if (id === 'herb_sage') {
+if (pay(sfSvcCost(id, 2))) { playerHp = Math.min(heroMaxHp(), playerHp + 12); message = '+12 HP'; }
+} else if (id === 'chest_small') {
+if (pay(sfSvcCost(id, 9))) { const got = 1 + Math.floor(Math.random()*15); goldCount += got; message = 'Находка: +' + got + ' зл'; }
+}
+if (paid && message && typeof sfToast === 'function') sfToast(message);
+updateShop(); updateHud(); draw();
+}
+function buyOption(kind) { buyShopOption(kind === 'weapon' ? 'weapon' : kind === 'shield' ? 'shield' : 'energy'); }
 
 function toggleSettings(open) {
 settingsOpen = open;
@@ -1451,6 +1642,7 @@ document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape') {
 if (settingsOpen) toggleSettings(false);
 if (shopOpen) toggleShop(false);
+if (recordsOpen) toggleRecords(false);
 return;
 }
 if (shopOpen || settingsOpen) return;
@@ -1465,6 +1657,8 @@ else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startGame(); 
 else if (e.key === '1') selectMode(0);
 else if (e.key === '2') selectMode(1);
 else if (e.key === '3') selectMode(2);
+else if (e.key === '4') selectMode(3);
+else if (e.key.toLowerCase() === 'r') toggleRecords(!recordsOpen);
 return;
 }
 const key = e.key.toLowerCase();
@@ -1515,30 +1709,89 @@ return imgs[src];
 function ease(t) { t = Math.max(0, Math.min(1, t)); return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 function cue(name, time, fn) { if (t >= time && !fired[name]) { fired[name] = 1; fn(); } }
 
-function buildBg() {
+var THEME_BG = {
+fortress: {sky:['#151821','#343a4a','#4d453c'], wall:'#24262e', line:'rgba(255,255,255,.06)', ground:'#6e6249', glow:'rgba(251,191,36,.20)'},
+mountains:{sky:['#0f172a','#334155','#6b7280'], wall:'#1e293b', line:'rgba(219,234,254,.07)', ground:'#5b6470', glow:'rgba(191,219,254,.16)'},
+temple:   {sky:['#1b1630','#453260','#8b6f9c'], wall:'#d8cdb2', line:'rgba(80,60,40,.16)', ground:'#c8b88f', glow:'rgba(253,230,138,.22)'},
+forest:   {sky:['#071710','#14532d','#35704a'], wall:'#10281d', line:'rgba(134,239,172,.06)', ground:'#436b3b', glow:'rgba(134,239,172,.14)'},
+sky:      {sky:['#1e3a8a','#60a5fa','#dbeafe'], wall:'#e8f1ff', line:'rgba(255,255,255,.18)', ground:'#c7dcf5', glow:'rgba(255,255,255,.26)'}
+};
+function buildBg(themeId) {
 bg = document.createElement('canvas'); bg.width = W; bg.height = H;
 var g = bg.getContext('2d');
+var p = THEME_BG[themeId] || THEME_BG.fortress;
 var sky = g.createLinearGradient(0, 0, 0, H);
-sky.addColorStop(0, '#151b3d'); sky.addColorStop(.55, '#3b477c'); sky.addColorStop(1, '#4a3c52');
+sky.addColorStop(0, p.sky[0]); sky.addColorStop(.55, p.sky[1]); sky.addColorStop(1, p.sky[2]);
 g.fillStyle = sky; g.fillRect(0, 0, W, H);
-g.fillStyle = '#dfe8ff';
-[[70, 40, 1], [250, 28, .7], [410, 52, 1.2]].forEach(function (c) {
-g.globalAlpha = .22; g.beginPath(); g.ellipse(c[0], c[1], 38 * c[2], 11 * c[2], 0, 0, 6.29);
-g.ellipse(c[0] - 22 * c[2], c[1] + 3, 23 * c[2], 8 * c[2], 0, 0, 6.29);
-g.ellipse(c[0] + 20 * c[2], c[1] + 4, 26 * c[2], 8 * c[2], 0, 0, 6.29); g.fill();
+
+if (themeId === 'sky') {
+for (var i = 0; i < 12; i++) {
+var cx = Math.random()*W, cy = 20 + Math.random()*130, s = .6 + Math.random()*.9;
+g.globalAlpha = .25; g.fillStyle = '#fff'; g.beginPath();
+g.ellipse(cx, cy, 42*s, 12*s, 0, 0, 6.29);
+g.ellipse(cx-20*s, cy+2, 25*s, 9*s, 0, 0, 6.29);
+g.ellipse(cx+22*s, cy+3, 28*s, 9*s, 0, 0, 6.29); g.fill();
+}
+g.globalAlpha = .55; g.fillStyle = '#fef3c7'; g.beginPath(); g.arc(400, 46, 22, 0, 6.29); g.fill(); g.globalAlpha = 1;
+g.fillStyle = 'rgba(30,64,175,.18)';
+for (var r = 0; r < 5; r++) g.fillRect(20 + r*100, 150 + (r%2)*14, 70, 6);
+} else if (themeId === 'forest') {
+for (var layer = 0; layer < 3; layer++) {
+g.fillStyle = layer === 0 ? 'rgba(8,35,20,.75)' : (layer === 1 ? 'rgba(12,52,29,.8)' : 'rgba(18,70,40,.85)');
+for (var k = 0; k < 9; k++) {
+var tx = k*60 + layer*17 + Math.random()*18, th = 70 + layer*20 + Math.random()*30;
+g.fillRect(tx-5, 172-th, 10, th);
+g.beginPath(); g.moveTo(tx-42, 178-th); g.lineTo(tx, 108-th); g.lineTo(tx+42, 178-th); g.closePath(); g.fill();
+}
+}
+} else if (themeId === 'mountains') {
+g.fillStyle = '#475569';
+for (var m = 0; m < 6; m++) {
+var px = m*95 - 20, ph = 70 + Math.random()*45;
+g.beginPath(); g.moveTo(px-70, 178); g.lineTo(px, 178-ph); g.lineTo(px+70, 178); g.closePath(); g.fill();
+g.fillStyle = 'rgba(226,232,240,.45)';
+g.beginPath(); g.moveTo(px, 178-ph); g.lineTo(px+18, 178-ph+26); g.lineTo(px-18, 178-ph+26); g.closePath(); g.fill();
+g.fillStyle = '#475569';
+}
+// башня на склоне
+g.fillStyle = '#1f2937'; g.fillRect(330, 92, 48, 86);
+g.beginPath(); g.moveTo(326, 92); g.lineTo(354, 54); g.lineTo(382, 92); g.closePath(); g.fill();
+g.fillStyle = p.glow; g.fillRect(346, 118, 16, 22);
+} else if (themeId === 'temple') {
+g.fillStyle = p.wall;
+for (var c = 0; c < 6; c++) {
+var colX = 18 + c*82;
+g.fillRect(colX, 78, 20, 98);
+g.fillRect(colX-7, 72, 34, 9); g.fillRect(colX-6, 174, 32, 7);
+g.strokeStyle = p.line; g.lineWidth = 1;
+for (var fl = 0; fl < 4; fl++) { g.beginPath(); g.moveTo(colX, 92+fl*20); g.lineTo(colX+20, 92+fl*20); g.stroke(); }
+}
+g.beginPath(); g.ellipse(240, 78, 150, 42, 0, Math.PI, 0); g.fill();
+g.fillStyle = p.glow; g.beginPath(); g.ellipse(240, 60, 120, 30, 0, Math.PI, 0); g.fill();
+} else {
+// крепость / камень: зубцы, кирпичная кладка и факелы
+g.fillStyle = p.wall; g.fillRect(0, 74, W, 104);
+g.fillStyle = 'rgba(0,0,0,.28)';
+for (var b = 0; b < 8; b++) g.fillRect(b*62 - 12, 74, 28, 104);
+g.strokeStyle = p.line; g.lineWidth = 1;
+for (var by = 90; by < 178; by += 22) { g.beginPath(); g.moveTo(0, by); g.lineTo(W, by); g.stroke(); }
+g.fillStyle = p.wall;
+for (var z = 0; z < 12; z++) g.fillRect(z*42, 60, 26, 18);
+[[38, 118], [440, 118]].forEach(function (t) {
+var gg = g.createRadialGradient(t[0], t[1], 2, t[0], t[1], 52);
+gg.addColorStop(0, p.glow); gg.addColorStop(1, 'rgba(251,191,36,0)');
+g.fillStyle = gg; g.fillRect(t[0]-52, t[1]-52, 104, 104);
+g.fillStyle = '#fbbf24'; g.fillRect(t[0]-2, t[1]-9, 4, 13);
 });
-g.globalAlpha = 1;
-g.fillStyle = '#1b2030'; g.fillRect(0, 168, W, 102);
-g.fillStyle = '#2b3348'; g.fillRect(0, 168, W, 10);
-g.fillStyle = '#111622';
-g.beginPath(); g.ellipse(390, 178, 92, 76, 0, Math.PI, 0); g.fill(); g.fillRect(298, 178, 184, 72);
-g.fillStyle = '#080a10'; g.beginPath(); g.ellipse(390, 226, 48, 52, 0, Math.PI, 0); g.fill(); g.fillRect(342, 226, 96, 42);
-g.fillStyle = '#6e6249'; g.fillRect(0, 262, W, 8);
-g.fillStyle = '#827651'; g.fillRect(0, 270, W, H - 270);
-g.strokeStyle = 'rgba(255,255,255,.07)';
+}
+g.fillStyle = p.wall; g.fillRect(0, 176, W, 86);
+g.fillStyle = p.ground; g.fillRect(0, 262, W, 8);
+g.fillStyle = themeId === 'sky' ? '#b9cee8' : (themeId === 'forest' ? '#4f7a42' : (themeId === 'temple' ? '#d9cba6' : '#827651'));
+g.fillRect(0, 270, W, H - 270);
+g.strokeStyle = p.line; g.lineWidth = 1;
 for (var x = -40; x < W + 60; x += 56) { g.beginPath(); g.moveTo(x, 270); g.lineTo(x + 28, H); g.stroke(); }
 var v = g.createRadialGradient(W / 2, H / 2, 70, W / 2, H / 2, 300);
-v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.58)');
+v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, themeId === 'sky' ? 'rgba(0,0,0,.18)' : 'rgba(0,0,0,.52)');
 g.fillStyle = v; g.fillRect(0, 0, W, H);
 }
 
@@ -1609,14 +1862,20 @@ cx.save(); cx.translate(shX, shY);
 
 var appear = ease((t - T_PLATFORM) / 380), enemyIn = ease((t - T_ENEMY) / 420);
 var h = cfg.heroes[0], e = cfg.enemies[0];
-var hx = 150, ey = 226, hy = 236, bend = 0, ebend = 0, lunge = 0, elunge = 0;
+// Монстр стоит на той стороне, от которой атакует (по умолчанию слева), герой — напротив.
+var side = cfg.side === 'right' ? 'right' : 'left';
+var hx = side === 'right' ? 108 : 372;
+var mx = side === 'right' ? 372 : 108;
+var heroDir = mx > hx ? 1 : -1;
+var enemyDir = hx > mx ? 1 : -1;
+var ey = 226, hy = 236, bend = 0, ebend = 0, lunge = 0, elunge = 0;
 
 function attackWindow(start, hit, who) {
 var d = t - start;
 if (d > 0 && d < 520) {
 var v = Math.sin(Math.PI * Math.min(1, d / 520));
-if (who === 1) { lunge = v * 62; bend = -v * .12; }
-else { elunge = -v * 54; ebend = v * .13; }
+if (who === 1) { lunge = v * 62 * heroDir; bend = -v * .12 * heroDir; }
+else { elunge = v * 54 * enemyDir; ebend = -v * .13 * enemyDir; }
 }
 }
 attackWindow(T_H1, T_H1_HIT, 1);
@@ -1627,21 +1886,21 @@ platform(hx, hy + 6, 32, appear);
 still(h.sprite, hx + lunge, hy, 134, 1, 1, bend, 1);
 }
 if (enemyIn > 0) {
-platform(372, ey + 7, 34, enemyIn);
+platform(mx, ey + 7, 34, enemyIn);
 var dead = cfg.killed && t >= T_H1_HIT;
 var eAlpha = dead ? Math.max(0, 1 - (t - T_H1_HIT) / 600) : 1;
-still(e.sprite, 372 + elunge, ey, 138, 1 + (1 - enemyIn) * .25, 1, ebend, eAlpha);
+still(e.sprite, mx + elunge, ey, 138, 1 + (1 - enemyIn) * .25, 1, ebend, eAlpha);
 if (eAlpha < 1) {
 cx.save(); cx.globalAlpha = eAlpha; cx.fillStyle = '#ffd54f';
-cx.beginPath(); cx.arc(372, ey - 60, 20 + (1 - eAlpha) * 24, 0, 6.29); cx.fill(); cx.restore();
+cx.beginPath(); cx.arc(mx, ey - 60, 20 + (1 - eAlpha) * 24, 0, 6.29); cx.fill(); cx.restore();
 }
 }
 
-if (t >= T_H1_HIT && t < T_H1_HIT + 420) floatDamage(372, 118, '-' + cfg.damage1, '#ffd54f', t - T_H1_HIT);
-if (t >= T_ENEMY_HIT && t < T_ENEMY_HIT + 420) floatDamage(cfg.defenderX, 128, '-' + cfg.counterDamage, '#ff5252', t - T_ENEMY_HIT);
+if (t >= T_H1_HIT && t < T_H1_HIT + 420) floatDamage(mx, 118, '-' + cfg.damage1, '#ffd54f', t - T_H1_HIT);
+if (t >= T_ENEMY_HIT && t < T_ENEMY_HIT + 420) floatDamage(hx, 128, '-' + cfg.counterDamage, '#ff5252', t - T_ENEMY_HIT);
 
-if (t >= T_PLATFORM) box(6, 6, 170, 46, h.name, h.hp, h.max, h.mp, h.mpMax);
-if (t >= T_ENEMY) box(W - 150, 6, 144, 38, e.name, e.hp, e.max, null, null);
+if (t >= T_PLATFORM) box(hx < mx ? 6 : W - 176, 6, 170, 46, h.name, h.hp, h.max, h.mp, h.mpMax);
+if (t >= T_ENEMY) box(mx < hx ? 6 : W - 150, 6, 144, 38, e.name, e.hp, e.max, null, null);
 
 cx.restore();
 
@@ -1672,7 +1931,8 @@ function start(o) {
 if (!o || !o.enemies || !o.enemies.length) { if (o && o.onEnd) o.onEnd(); return; }
 cfg = o; fired = {}; t = 0; t0 = performance.now(); active = true;
 if (typeof playSound === 'function') playSound('battle');
-buildBg();
+var themeId = o.theme || (typeof heroTheme === 'function' ? heroTheme().id : 'fortress');
+buildBg(themeId);
 overlay = document.createElement('div');
 overlay.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:9000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;';
 var wrap = document.createElement('div');
@@ -1692,6 +1952,32 @@ cx = cv.getContext('2d');
 raf = requestAnimationFrame(draw);
 }
 window.startBattleCutscene = start;
+window.__sfCutsceneLayout = function (side) {
+var s = side ? (side === 'right' ? 'right' : 'left') : (cfg && cfg.side === 'right' ? 'right' : 'left');
+return {side:s, heroX:s === 'right' ? 108 : 372, monsterX:s === 'right' ? 372 : 108,
+theme:cfg && cfg.theme ? cfg.theme : null};
+};
+// Тестовый вызов: __sfCutscene('left') — монстр слева, герой справа; 'right' — наоборот.
+window.__sfCutscene = function (side) {
+window.__sfLastCutsceneSide = side === 'right' ? 'right' : 'left';
+var h = (typeof HEROES !== 'undefined' && HEROES[heroIdx]) || {name:'Герой', sprite:'', maxHp:100};
+var mType = '🐢';
+var eName = (typeof ENEMY_NAMES !== 'undefined' && ENEMY_NAMES[mType]) || 'Черепаха';
+var eSprite = '../dungeon28/assets/sprites/monsters/turtle_0.png';
+start({
+heroes: [{name:h.name, sprite:h.sprite, hp:h.maxHp, max:h.maxHp, mp:0, mpMax:10}],
+enemies: [{name:eName, sprite:eSprite, hp:200, max:200}],
+damage1: 12, counterDamage: 3, defenderX: 150,
+side: side === 'right' ? 'right' : 'left',
+theme: (typeof heroTheme === 'function' ? heroTheme().id : 'fortress'),
+killed: false, endAt: 3700,
+messages: [
+{at:560, text:eName + ' появился.', color:'#fca5a5'},
+{at:1470, text:h.name + ' атаковал на 12 ед.', color:'#86efac'},
+{at:2520, text:eName + ' атаковал.', color:'#fca5a5'}
+]
+});
+};
 })();
 </script>
 <script>
@@ -1701,12 +1987,23 @@ window.startBattleCutscene = start;
 var origFight = fight;
 var BUSY = '_sfBattleBusy';
 var DONE = '_sfBattleDone';
+var origEndGame = endGame;
+
+// Сторона, от которой приходит атакующий монстр: по умолчанию слева (монстр слева, герой справа).
+function currentAttackerSide(m) {
+if (typeof mapActive !== 'undefined' && mapActive && typeof mapHeroCell === 'function') {
+var heroCell = mapHeroCell();
+if (m && typeof m.mx === 'number' && typeof m.my === 'number') return m.mx < heroCell.x ? 'left' : 'right';
+}
+return window.__sfAttackerSide === 'right' ? 'right' : 'left';
+}
+window.__sfCurrentAttackerSide = currentAttackerSide;
 
 function applyD28Data(d) {
 if (!d || !d.heroes || !d.monsters || !d.weapons) return;
 var melMods = [0, -1, 0, 0, 0];
 HEROES.splice(0, HEROES.length, ...d.heroes.map(function (h, i) {
-return { name: h.name, emoji: h.emoji, set: h.set, maxHp: h.maxHp, maxMp: h.maxMp,
+return { name: h.name, emoji: h.emoji, key: h.key, set: h.set, maxHp: h.maxHp, maxMp: h.maxMp,
 melMod: melMods[i] || 0, lightRange: h.lightRange, sprite: h.sprite };
 }));
 WARRIOR_WEAPONS.splice(0, WARRIOR_WEAPONS.length, ...d.weapons.warrior);
@@ -1723,12 +2020,44 @@ renderStart();
 }
 window.addEventListener('d28-data', function (e) { applyD28Data(e.detail); });
 
+// Рекорды открываются при смерти от имени убийцы и при победе в SF.
+function sfRecordTextForKiller(name) {
+var n = String(name || '').toLowerCase();
+var id = '';
+if (n.indexOf('черепах') !== -1) id = 'kill_turtle_sf';
+else if (n.indexOf('скелет') !== -1) id = 'kill_skeleton_dungeon';
+else if (n.indexOf('зомби') !== -1) id = 'kill_zombie_mm6';
+else if (n.indexOf('лич') !== -1) id = 'kill_lich_mm6';
+else if (n.indexOf('паук') !== -1) id = 'kill_spider_labyrinth';
+else if (n.indexOf('арбалетчик') !== -1) id = 'kill_dark_archer_dungeon';
+var list = (window.__SF_SHARED || {}).RECORDS || [];
+var rec = list.find(function (r) { return r.id === id; });
+return rec ? rec.text : '';
+}
+function sfAnnounceRecord(id, text) {
+var label = text || (((window.__SF_SHARED || {}).RECORDS || []).find(function (r) { return r.id === id; }) || {}).text;
+if (typeof sfToast === 'function') sfToast('🏆 Новый рекорд: ' + (label || id));
+if (typeof refreshRecordsPanel === 'function') refreshRecordsPanel();
+}
+endGame = function (win, killerName) {
+var S = window.__SF_SHARED || {};
+if (win && typeof S.unlockRecord === 'function') {
+if (S.unlockRecord('win_sf')) sfAnnounceRecord('win_sf');
+} else if (!win && typeof S.recordDeath === 'function') {
+var name = killerName;
+if (!name && lastKillerType && typeof ENEMY_NAMES !== 'undefined') name = ENEMY_NAMES[lastKillerType];
+if (name && S.recordDeath('sf', name)) sfAnnounceRecord('', sfRecordTextForKiller(name));
+}
+lastKillerType = null;
+origEndGame(win);
+};
+
 fight = function (m, index) {
 if (window[BUSY]) return;
 if (window.startBattleCutscene) {
 window[BUSY] = true;
 var h = HEROES[heroIdx];
-var atk = weapons[weaponLevel].dmg + starBonus + abilityAtk;
+var atk = weapons[weaponLevel].dmg + starBonus + abilityAtk + (typeof forgeDamageBonus === 'function' ? forgeDamageBonus() : 0);
 if (HEROES[heroIdx].name === 'Лучник' && abilityTurns > 0) atk = Math.round(atk * 1.5);
 var dmg = Math.max(1, atk - m.def);
 var killed = (m.hp - dmg) <= 0;
@@ -1736,6 +2065,9 @@ var defense = shieldBonus + abilityShield;
 var counter = (!killed && !m.isStunned) ? Math.max(0, m.atk - defense) : 0;
 var poison = !killed && m.type === '🧟';
 var eName = ENEMY_NAMES[m.type] || m.type;
+var attackerSide = currentAttackerSide(m);
+window.__sfLastCutsceneSide = attackerSide;
+lastKillerType = m.type;
 var C_HERO = '#86efac', C_ENEMY = '#fca5a5', C_NEUTRAL = '#fde68a';
 var messages = [
 {at: 560, text: eName + ' появился.', color: C_ENEMY},
@@ -1773,6 +2105,7 @@ heroes: [
 ],
 enemies: [{name: eName, sprite: '../dungeon28/assets/sprites/monsters/' + (ENEMY_SPRITE[m.type] || 'skeleton_0') + '.png', hp: m.hp, max: m.maxHp}],
 damage1: dmg, counterDamage: counter, defenderX: 150,
+side: attackerSide, theme: (typeof heroTheme === 'function' ? heroTheme().id : 'fortress'),
 poison: poison, killed: killed, endAt: endAt, messages: messages
 });
 return;
@@ -1781,9 +2114,313 @@ origFight(m, index);
 };
 })();
 </script>
+<script>
+/* ===== КАРТА 15×15, РЕКОРДЫ И ТЕСТОВОЕ СОСТОЯНИЕ ===== */
+var mapBg = null;
+var sfToastTimer = null;
+
+function sfToast(msg) {
+var el = document.getElementById('sf-toast');
+if (!el) return;
+el.textContent = msg;
+el.classList.add('show');
+if (sfToastTimer) clearTimeout(sfToastTimer);
+sfToastTimer = setTimeout(function () { el.classList.remove('show'); }, 3200);
+}
+function refreshRecordsPanel() {
+var el = document.getElementById('records-list');
+if (!el) return;
+var S = window.__SF_SHARED || {};
+el.innerHTML = typeof S.recordsHTML === 'function' ? S.recordsHTML() : 'Рекорды загружаются…';
+}
+function toggleRecords(open) {
+recordsOpen = !!open;
+var el = document.getElementById('records-panel');
+if (el) el.style.display = recordsOpen ? 'block' : 'none';
+if (recordsOpen) { refreshRecordsPanel(); playSound('menu'); }
+}
+
+/* --- генерация карты: дороги высекаются случайным обходом, остальное — стены --- */
+function generateMapTiles() {
+mapTiles = [];
+for (var y = 0; y < MAP_GRID; y++) {
+mapTiles[y] = [];
+for (var x = 0; x < MAP_GRID; x++) mapTiles[y][x] = 0;
+}
+var sx = 7, sy = 7, stack = [[sx, sy]];
+mapTiles[sy][sx] = 1;
+var dirs = [[0,-1],[1,0],[0,1],[-1,0]];
+while (stack.length) {
+var cur = stack[stack.length - 1];
+var order = dirs.slice().sort(function () { return Math.random() - .5; });
+var moved = false;
+for (var d = 0; d < order.length; d++) {
+var nx = cur[0] + order[d][0], ny = cur[1] + order[d][1];
+if (nx > 0 && nx < MAP_GRID - 1 && ny > 0 && ny < MAP_GRID - 1 && !mapTiles[ny][nx]) {
+mapTiles[ny][nx] = 1; stack.push([nx, ny]); moved = true; break;
+}
+}
+if (!moved) stack.pop();
+}
+// несколько петель, чтобы карта не была идеальным лабиринтом
+for (var k = 0; k < 14; k++) {
+var rx = 1 + Math.floor(Math.random() * (MAP_GRID - 2));
+var ry = 1 + Math.floor(Math.random() * (MAP_GRID - 2));
+if (mapTiles[ry][rx + 1] || mapTiles[ry + 1][rx] || mapTiles[ry][rx - 1] || mapTiles[ry - 1][rx]) mapTiles[ry][rx] = 1;
+}
+mapDecor = [];
+for (var i = 0; i < 90; i++) mapDecor.push({x:Math.random()*MAP_WORLD, y:Math.random()*MAP_WORLD, r:4+Math.random()*16, a:Math.random()*Math.PI, dark:Math.random()<.5});
+}
+function mapRoadCells() {
+var out = [];
+for (var y = 0; y < MAP_GRID; y++) for (var x = 0; x < MAP_GRID; x++) if (mapTiles[y][x]) out.push({x:x, y:y});
+return out;
+}
+function mapHeroCell() {
+return {x:Math.floor(player.x / MAP_CELL), y:Math.floor(player.y / MAP_CELL)};
+}
+function updateMapCamera() {
+mapCam.x = Math.max(0, Math.min(MAP_WORLD - 320, Math.round(player.x + MAP_CELL / 2 - 160)));
+mapCam.y = Math.max(0, Math.min(MAP_WORLD - 320, Math.round(player.y + MAP_CELL / 2 - 160)));
+}
+function mapDataMonster(type) {
+var D = window.D28_DATA || {};
+var found = (D.monsters || []).find(function (m) { return m.emoji === type; });
+return found || null;
+}
+function initMapFloor() {
+stopFade();
+generateMapTiles();
+monsters = []; items = [];
+var cells = mapRoadCells();
+var hc = {x:7, y:7};
+if (!mapTiles[hc.y][hc.x]) { hc = cells[Math.floor(Math.random()*cells.length)]; }
+player.x = hc.x * MAP_CELL; player.y = hc.y * MAP_CELL;
+// лестница — максимально далёкая от героя дорожная клетка
+var far = null, best = -1;
+cells.forEach(function (c) {
+var dist = Math.abs(c.x - hc.x) + Math.abs(c.y - hc.y);
+if (dist > best) { best = dist; far = c; }
+});
+stairs.x = (far || cells[0]).x * MAP_CELL;
+stairs.y = (far || cells[0]).y * MAP_CELL;
+stairs.active = false;
+var spawn = cells.filter(function (c) {
+return Math.abs(c.x - hc.x) + Math.abs(c.y - hc.y) > 4 &&
+!(c.x * MAP_CELL === stairs.x && c.y * MAP_CELL === stairs.y);
+});
+var count = Math.min(20, 4 + currentFloor + settings.monstAdd);
+for (var i = 0; i < count && spawn.length; i++) {
+var idx = Math.floor(Math.random() * spawn.length);
+var cell = spawn.splice(idx, 1)[0];
+var type = ENEMY_TYPES[i % ENEMY_TYPES.length];
+var data = mapDataMonster(type);
+var base = data || (ENEMY_BASE[type] || {hp:80, atk:4, def:0});
+var hp = Math.round((base.hp || 80) * (1 + (currentFloor - 1) * .2));
+var atk = Math.round((base.atk || 4) * (1 + (currentFloor - 1) * .1));
+if (settings.difficulty === 'horror') { hp = Math.round(hp * 1.5); atk += 2; }
+monsters.push({
+x:cell.x*MAP_CELL + 4, y:cell.y*MAP_CELL + 4, mx:cell.x, my:cell.y,
+type:type, hp:hp, maxHp:hp, atk:atk, def:base.def || 0,
+behavior:'hunt', isStunned:false, stunTimer:0
+});
+}
+// несколько предметов на дорогах
+var loot = spawn.slice().sort(function(){return Math.random()-.5;}).slice(0, 4 + Math.floor(currentFloor/2));
+loot.forEach(function (c) {
+items.push({x:c.x*MAP_CELL, y:c.y*MAP_CELL, type:ITEM_TYPES[Math.floor(Math.random()*ITEM_TYPES.length)]});
+});
+buildMapBg();
+updateMapCamera();
+updateHud();
+}
+function startMapGame() {
+mapActive = true;
+mapFloor = 1; currentFloor = 1;
+initMapFloor();
+var hint = document.getElementById('map-hint');
+if (hint) hint.innerHTML = '🗺️ Карта ' + MAP_GRID + '×' + MAP_GRID + ' (' + heroTheme().name + '): стрелки/WASD — шаг, в монстра — бой 1 на 1';
+}
+
+/* --- фон карты: тема героя + дороги, стены и процедурный камень --- */
+function buildMapBg() {
+mapBg = document.createElement('canvas');
+mapBg.width = MAP_WORLD; mapBg.height = MAP_WORLD;
+var c = mapBg.getContext('2d');
+var theme = heroTheme().id;
+var P = {
+fortress:  {base:'#262630', road:'#4b4640', wall:'#171820', spot:'rgba(255,255,255,.05)', torch:'rgba(251,191,36,.20)'},
+mountains: {base:'#2b3442', road:'#4d5765', wall:'#151d2b', spot:'rgba(219,234,254,.05)', torch:'rgba(191,219,254,.14)'},
+temple:    {base:'#3b3046', road:'#c9ba90', wall:'#241d30', spot:'rgba(253,230,138,.07)', torch:'rgba(253,230,138,.20)'},
+forest:    {base:'#123123', road:'#4d6c40', wall:'#0b2016', spot:'rgba(134,239,172,.05)', torch:'rgba(134,239,172,.12)'},
+sky:       {base:'#274169', road:'#a9c4e8', wall:'#1c2f50', spot:'rgba(255,255,255,.08)', torch:'rgba(255,255,255,.20)'}
+}[theme] || {base:'#262630', road:'#4b4640', wall:'#171820', spot:'rgba(255,255,255,.05)', torch:'rgba(251,191,36,.20)'};
+c.fillStyle = P.base; c.fillRect(0, 0, MAP_WORLD, MAP_WORLD);
+mapDecor.forEach(function (o) {
+c.fillStyle = o.dark ? 'rgba(0,0,0,.18)' : P.spot;
+c.beginPath(); c.ellipse(o.x, o.y, o.r, o.r*.6, o.a, 0, 6.29); c.fill();
+});
+for (var y = 0; y < MAP_GRID; y++) {
+for (var x = 0; x < MAP_GRID; x++) {
+var px = x*MAP_CELL, py = y*MAP_CELL;
+if (mapTiles[y][x]) {
+c.fillStyle = P.road; c.fillRect(px, py, MAP_CELL, MAP_CELL);
+c.strokeStyle = 'rgba(0,0,0,.20)'; c.lineWidth = 1;
+c.strokeRect(px+.5, py+.5, MAP_CELL-1, MAP_CELL-1);
+c.fillStyle = 'rgba(255,255,255,.05)';
+c.fillRect(px+4+((x*7+y*3)%10), py+5+((y*5+x*2)%8), 8, 5);
+} else {
+c.fillStyle = P.wall; c.fillRect(px, py, MAP_CELL, MAP_CELL);
+c.fillStyle = 'rgba(255,255,255,.035)'; c.fillRect(px+2, py+2, MAP_CELL-4, 3);
+c.strokeStyle = 'rgba(0,0,0,.45)'; c.lineWidth = 1;
+c.beginPath(); c.moveTo(px, py+16); c.lineTo(px+MAP_CELL, py+16); c.stroke();
+if (theme === 'forest' && (x+y)%2===0) {
+c.fillStyle = '#0e2a1a'; c.beginPath(); c.moveTo(px+16, py+4); c.lineTo(px+27, py+26); c.lineTo(px+5, py+26); c.closePath(); c.fill();
+}
+}
+}
+}
+// тематические детали поверх стен
+if (theme === 'fortress' || theme === 'mountains' || theme === 'temple') {
+[[28,70],[MAP_WORLD-28,70],[28,MAP_WORLD-70],[MAP_WORLD-28,MAP_WORLD-70]].forEach(function (t) {
+var g = c.createRadialGradient(t[0], t[1], 2, t[0], t[1], 52);
+g.addColorStop(0, P.torch); g.addColorStop(1, 'rgba(0,0,0,0)');
+c.fillStyle = g; c.fillRect(t[0]-52, t[1]-52, 104, 104);
+c.fillStyle = theme === 'temple' ? '#fbbf24' : '#f59e0b'; c.fillRect(t[0]-2, t[1]-8, 4, 12);
+});
+}
+var v = c.createRadialGradient(MAP_WORLD/2, MAP_WORLD/2, 140, MAP_WORLD/2, MAP_WORLD/2, 380);
+v.addColorStop(0, 'rgba(0,0,0,0)');
+v.addColorStop(1, theme === 'sky' ? 'rgba(0,0,0,.18)' : 'rgba(0,0,0,.52)');
+c.fillStyle = v; c.fillRect(0, 0, MAP_WORLD, MAP_WORLD);
+}
+function drawMap() {
+if (!mapBg) buildMapBg();
+ctx.clearRect(0, 0, 320, 320);
+ctx.drawImage(mapBg, mapCam.x, mapCam.y, 320, 320, 0, 0, 320, 320);
+ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+for (var i = 0; i <= MAP_GRID; i++) {
+var gx = i*MAP_CELL - mapCam.x, gy = i*MAP_CELL - mapCam.y;
+ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 320); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(320, gy); ctx.stroke();
+}
+if (stairs.active) {
+ctx.fillStyle = '#f59e0b'; ctx.fillRect(stairs.x-mapCam.x+4, stairs.y-mapCam.y+4, 24, 24);
+drawCell(stairs.x-mapCam.x, stairs.y-mapCam.y, '▼', 16);
+}
+items.forEach(function (it) { drawItem(it.x-mapCam.x, it.y-mapCam.y, it.type); });
+monsters.forEach(function (m) {
+if (m.isStunned) { ctx.fillStyle='rgba(147,51,234,.5)'; ctx.fillRect(m.x-mapCam.x, m.y-mapCam.y, 28, 28); }
+drawCell(m.x-mapCam.x, m.y-mapCam.y, m.type, 22);
+drawBars(m.x-mapCam.x, m.y-mapCam.y, m.hp, m.maxHp, m.def, m.atk);
+});
+drawCell(player.x-mapCam.x, player.y-mapCam.y, HEROES[heroIdx].emoji, 22);
+drawBars(player.x-mapCam.x, player.y-mapCam.y, playerHp, heroMaxHp(), shieldBonus, weapons[weaponLevel].dmg + starBonus);
+}
+var origDraw = draw;
+draw = function () { if (mapActive) { drawMap(); return; } origDraw(); };
+
+function mapMove(dx, dy) {
+if (!gameActive || playerHp <= 0 || shopOpen || settingsOpen || window._sfBattleBusy) return;
+var hc = mapHeroCell();
+var nx = hc.x + dx / MAP_CELL, ny = hc.y + dy / MAP_CELL;
+if (nx < 0 || ny < 0 || nx >= MAP_GRID || ny >= MAP_GRID) return;
+if (!mapTiles[ny][nx]) { playSound('skip'); return; }
+var mi = monsters.findIndex(function (m) { return m.mx === nx && m.my === ny; });
+if (mi !== -1) {
+fight(monsters[mi], mi);
+updateHud(); draw();
+return;
+}
+player.x = nx * MAP_CELL; player.y = ny * MAP_CELL;
+playSound('step');
+var ii = items.findIndex(function (it) { return it.x === player.x && it.y === player.y; });
+if (ii !== -1) {
+var it = items[ii];
+if (it.type === 'coin') goldCount += 2;
+if (it.type === 'star') starBonus += settings.starVal;
+if (it.type === 'shield') shieldBonus += settings.shieldVal;
+if (it.type === 'heart') playerHp = Math.min(heroMaxHp(), playerHp + 20);
+if (it.type === 'scroll') energy += 2;
+if (it.type === 'blackHeart') { playerHp -= 15; playSound('bad'); }
+else playSound('collect');
+items.splice(ii, 1);
+if (playerHp <= 0) { endGame(false); return; }
+}
+totalTurns++;
+if (stairs.active && player.x === stairs.x && player.y === stairs.y) {
+mapFloor++; currentFloor = mapFloor;
+if (mapFloor > settings.floors) { endGame(true); return; }
+playSound('stairs');
+if (settings.bonusReset) clearBonuses();
+initMapFloor();
+draw();
+return;
+}
+updateMapCamera(); updateHud(); draw();
+}
+var origMove = move;
+move = function (dx, dy) { if (mapActive) return mapMove(dx, dy); return origMove(dx, dy); };
+var origSkipTurn = skipTurn;
+skipTurn = function () {
+if (mapActive) {
+if (!gameActive || playerHp <= 0 || shopOpen || settingsOpen || window._sfBattleBusy) return;
+playSound('skip'); totalTurns++; updateHud(); draw(); return;
+}
+return origSkipTurn();
+};
+
+/* --- инициализация UI --- */
+document.getElementById('records-btn').addEventListener('click', function () { toggleRecords(!recordsOpen); });
+document.getElementById('shop-tabs').addEventListener('click', function (e) {
+var b = e.target.closest('[data-tab]');
+if (b) { shopTab = b.getAttribute('data-tab'); playSound('menu'); updateShop(); }
+});
+document.getElementById('shop-content').addEventListener('click', function (e) {
+var b = e.target.closest('[data-buy]');
+if (b && !b.disabled) buyShopOption(b.getAttribute('data-buy'));
+});
+window.addEventListener('sf-shared-data', function () { refreshRecordsPanel(); updateShop(); renderStart(); });
+window.addEventListener('d28-data', function () { refreshRecordsPanel(); });
+refreshRecordsPanel();
+
+window.__sfState = function () {
+var theme = heroTheme();
+return {
+version: VERSION,
+mode: gameMode,
+menuActive: menuActive,
+gameActive: gameActive,
+mapActive: mapActive,
+hero: {name:HEROES[heroIdx].name, key:HEROES[heroIdx].key || HEROES[heroIdx].set,
+theme:theme, hp:playerHp, maxHp:heroMaxHp()},
+player: {x:player.x, y:player.y, cell:mapHeroCell()},
+grid: mapActive ? MAP_GRID : GRID,
+cell: CELL,
+world: mapActive ? MAP_WORLD : 320,
+camera: {x:mapCam.x, y:mapCam.y},
+monsters: monsters.map(function (m) { return {type:m.type, name:ENEMY_NAMES[m.type]||m.type, x:m.x, y:m.y, mx:m.mx, my:m.my, hp:m.hp, maxHp:m.maxHp}; }),
+items: items.map(function (it) { return {x:it.x, y:it.y, type:it.type}; }),
+stairs: {x:stairs.x, y:stairs.y, active:stairs.active},
+gold: goldCount, energy: energy, turn: totalTurns, floor: mapActive ? mapFloor : currentFloor,
+weapon: weapons[weaponLevel], weaponLevel: weaponLevel,
+forge: {quality:forgeQuality, reforge:reforgeCount, bonus:forgeDamageBonus()},
+shopTab: shopTab, recordsOpen: recordsOpen,
+busy: !!window._sfBattleBusy,
+lastCutsceneSide: window.__sfLastCutsceneSide || 'left'
+};
+};
+window.__sfSetAttackerSide = function (s) { window.__sfAttackerSide = s === 'right' ? 'right' : 'left'; return window.__sfAttackerSide; };
+</script>
 <script type="module">
 import { D28_DATA } from '../dungeon28/shared-data.js';
+import { recordDeath, unlockRecord, recordsHTML, RECORDS } from '../shared/records.js';
+import { SHOP_TABS, SERVICES, ENCHANT_LIQUIDS, reforgeCost, reforgeGain, FORGE_RULES, QUALITY } from '../shared/shop-data.js';
+window.D28_DATA = D28_DATA;
+window.__SF_SHARED = { D28_DATA, recordDeath, unlockRecord, recordsHTML, RECORDS,
+SHOP_TABS, SERVICES, ENCHANT_LIQUIDS, reforgeCost, reforgeGain, FORGE_RULES, QUALITY };
 window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
+window.dispatchEvent(new CustomEvent('sf-shared-data'));
 </script>
 </body>
 </html>
