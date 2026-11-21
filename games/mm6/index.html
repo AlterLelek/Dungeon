@@ -2418,5 +2418,9 @@ bindSettings(); syncSettings();
 renderStart();
 
 </script>
+<script type="module">
+  import { mountEntryForm } from '../shared/entry-profile.js';
+  mountEntryForm({ input:'#heroName', start:'#playBtn', title:'Вход в отряд' });
+</script>
 </body>
 </html>

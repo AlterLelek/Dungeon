@@ -568,5 +568,9 @@
     };
     renderShop(); refreshRecords();
   </script>
+  <script type="module">
+    import { mountEntryForm } from '../shared/entry-profile.js';
+    mountEntryForm({ input:'#guest-name', start:'#btn-guest', title:'Вход в игру' });
+  </script>
 </body>
 </html>

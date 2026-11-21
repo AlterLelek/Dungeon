@@ -1,85 +1,184 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игровой хаб</title>
-    <style>
-        body { 
-            background-color: #1e1e24; 
-            color: #fff; 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden;
-            user-select: none;
-        }
-        h1 { 
-            color: #fbbf24; 
-            text-shadow: 0 0 15px rgba(251,191,36,0.5); 
-            letter-spacing: 2px; 
-            font-size: 32px; 
-            margin-bottom: 30px; 
-        }
-        .game-card { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            padding: 20px 40px; 
-            margin: 10px; 
-            background: linear-gradient(135deg, #2b2b3b, #1a1a24); 
-            color: white; 
-            text-decoration: none; 
-            border-radius: 15px; 
-            font-size: 24px; 
-            font-weight: bold; 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s, border-color 0.2s;
-            border: 2px solid #4f46e5;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .game-card:hover { 
-            transform: translateY(-5px) scale(1.05); 
-            border-color: #fbbf24; 
-            box-shadow: 0 15px 30px rgba(251,191,36,0.3), 0 0 20px rgba(251,191,36,0.2); 
-        }
-        .game-card:active {
-            transform: scale(0.95);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
-            border-color: #fbbf24;
-        }
-        .game-card span { 
-            font-size: 40px; 
-            margin-bottom: 10px; 
-            transition: transform 0.2s;
-        }
-        .game-card:active span {
-            transform: scale(0.9);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МЕГА-СБОРНИК · Подземелье 28</title>
+<style>
+:root{
+  --gold:#fbbf24; --gold-soft:#fde68a; --ink:#0e101b; --panel:#1b1c29;
+  --line:rgba(251,191,36,.26); --text:#f8fafc; --muted:#9aa6c4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",Arial,sans-serif;color:var(--text);
+  background:radial-gradient(circle at 50% 20%,#34344a 0%,#1b1c29 45%,#0e101b 100%);
+  overflow:hidden;user-select:none;-webkit-user-select:none;
+}
+#hub{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:18px 16px 26px}
+.hub-top{width:100%;max-width:1080px;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-icon{
+  width:62px;height:62px;display:flex;align-items:center;justify-content:center;font-size:32px;
+  border:2px solid var(--gold);border-radius:16px;background:linear-gradient(145deg,#3a2e12,#151623);
+  box-shadow:0 0 24px rgba(251,191,36,.28)
+}
+.brand h1{
+  font-size:30px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);
+  text-shadow:0 0 18px rgba(251,191,36,.45);line-height:1.1
+}
+.brand p{margin-top:5px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.profile-slot{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.profile-slot>.dentry{margin:0}
+.hub-main{width:100%;max-width:1080px;display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:16px}
+.intro{text-align:center;max-width:760px}
+.intro h2{font-size:16px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px}
+.intro p{font-size:13px;color:var(--muted);line-height:1.5;min-height:18px}
+.intro p.filled{color:#fde68a;font-style:italic}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:860px}
+.card{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  padding:22px 18px 18px;border:2px solid #4a4a68;border-radius:16px;cursor:pointer;font-family:inherit;
+  background:linear-gradient(150deg,rgba(48,48,68,.96),rgba(20,21,32,.98));color:var(--text);
+  box-shadow:0 10px 22px rgba(0,0,0,.45);transition:transform .18s,border-color .18s,box-shadow .18s,background .18s;
+  -webkit-tap-highlight-color:transparent;overflow:hidden
+}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(251,191,36,.12),transparent 60%);pointer-events:none}
+.card:hover,.card:focus-visible{transform:translateY(-5px);border-color:var(--gold);background:linear-gradient(150deg,#37314a,#1b1c2e);box-shadow:0 16px 32px rgba(0,0,0,.5),0 0 22px rgba(251,191,36,.28);outline:none}
+.card:active{transform:translateY(-1px) scale(.985)}
+.card .icon{font-size:48px;line-height:1;filter:drop-shadow(0 0 12px rgba(251,191,36,.35))}
+.card .name{font-size:17px;font-weight:800;letter-spacing:1.4px;color:var(--gold)}
+.card .desc{font-size:12px;color:var(--muted);line-height:1.35}
+.card .cta{margin-top:4px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#0e101b;background:var(--gold);padding:5px 12px;border-radius:20px}
+.hub-foot{font-size:11px;color:#707b99;text-align:center;line-height:1.6}
+#gameWrap{position:fixed;inset:0;display:none;background:#0a0b12;z-index:100;flex-direction:column}
+#gameWrap.on{display:flex}
+.gamebar{height:46px;flex:0 0 46px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;background:#151623;border-bottom:1px solid var(--line)}
+.gamebar b{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
+.gamebar a{font-size:11px;color:var(--muted);text-decoration:none;padding:5px 9px;border:1px solid #4a4a68;border-radius:7px}
+.gamebar a:hover{color:var(--gold);border-color:var(--gold)}
+#gameFrame{flex:1 1 auto;width:100%;border:0;background:#15151d;display:block}
+.exit{
+  position:absolute;top:56px;right:12px;z-index:200;background:rgba(180,40,40,.92);color:#fff;
+  border:2px solid #ff9a9a;border-radius:9px;padding:7px 12px;font:800 12px inherit;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.5)
+}
+.exit:hover{background:#e63333}
+@media(max-width:720px){
+  .grid{grid-template-columns:1fr;gap:12px;max-width:460px}
+  .card{padding:16px}
+  .card .icon{font-size:38px}
+  .brand-icon{width:48px;height:48px;font-size:25px}
+  .brand h1{font-size:22px;letter-spacing:3px}
+  .hub-top{justify-content:center;text-align:center}
+  .profile-slot{align-items:center}
+}
+</style>
 </head>
 <body>
-    <h1>🎮 Игровой хаб</h1>
-    <a href="games/dungeon28/index.html" class="game-card">
-        <span>🏰</span>
-        Подземелье 28
-    </a>
-    <a href="games/labyrinth/index.html" class="game-card">
-        <span>🌀</span>
-        Лабиринт
-    </a>
-    <a href="games/sf2_battles/index.html" class="game-card">
-        <span>⚔️</span>
-        SF2 Битвы
-    </a>
-    <a href="games/mm6/index.html" class="game-card">
-        <span>👁️</span>
-        РПГ MM6
-    </a>
+<div id="hub">
+  <div class="hub-top">
+    <div class="brand">
+      <div class="brand-icon">🎮</div>
+      <div><h1>МЕГА-СБОРНИК</h1><p>Подземелье 28 · коллекция игр</p></div>
+    </div>
+    <div class="profile-slot">
+      <!-- Сюда общий модуль вставляет форму входа: ник, аватар, комментарий. -->
+      <div id="entry-anchor"><input id="hub-nick" type="text" hidden></div>
+    </div>
+  </div>
+
+  <main class="hub-main">
+    <section class="intro">
+      <h2>Выбери приключение</h2>
+      <p id="hub-comment">Войди как гость — ник и комментарий сохранятся на этом устройстве.</p>
+    </section>
+
+    <div class="grid" id="gameGrid">
+      <button class="card" data-game="games/dungeon28/index.html" data-title="Подземелье 28">
+        <span class="icon">🕯️</span>
+        <span class="name">ПОДЗЕМЕЛЬЕ 28</span>
+        <span class="desc">Канонический пошаговый рогалик 15×15: герои, монстры, лавка и рекорды</span>
+        <span class="cta">Играть ➜</span>
+      </button>
+      <button class="card" data-game="games/labyrinth/index.html" data-title="Лабиринт">
+        <span class="icon">🌀</span>
+        <span class="name">ЛАБИРИНТ</span>
+        <span class="desc">Сбор самоцветов, умные монстры, шесть режимов и общие рекорды</span>
+        <span class="cta">Играть ➜</span>
+      </button>
+      <button class="card" data-game="games/sf2_battles/index.html" data-title="SF2 Битвы">
+        <span class="icon">⚔️</span>
+        <span class="name">SF2 БИТВЫ</span>
+        <span class="desc">Один герой против одного монстра, карта 15×15 и бой в стиле Shining Force</span>
+        <span class="cta">Играть ➜</span>
+      </button>
+      <button class="card" data-game="games/mm6/index.html" data-title="РПГ MM6">
+        <span class="icon">👁️</span>
+        <span class="name">РПГ MM6</span>
+        <span class="desc">Отряд из двух героев, 9–16 карт, биомы, лавки, крафт и боссы</span>
+        <span class="cta">Играть ➜</span>
+      </button>
+    </div>
+
+    <div class="hub-foot">Прогресс и профиль хранятся в браузере · Esc — вернуться из игры в меню</div>
+  </main>
+</div>
+
+<div id="gameWrap">
+  <div class="gamebar">
+    <b id="gameTitle">Игра</b>
+    <a id="openTab" href="#" target="_blank" rel="noopener">↗ Открыть в новой вкладке</a>
+  </div>
+  <button class="exit" id="exitGame">✖ В МЕНЮ</button>
+  <iframe id="gameFrame" title="Игра"></iframe>
+</div>
+
+<script type="module">
+import { mountEntryForm, getProfile, saveProfile, profileComment, profileNick, profileAvatar } from './games/shared/entry-profile.js';
+
+mountEntryForm({ input:'#hub-nick', title:'Вход в игру' });
+
+const note = document.getElementById('hub-comment');
+function paintNote(){
+  const c = profileComment();
+  note.textContent = c ? '💬 ' + profileAvatar() + ' ' + profileNick() + ': «' + c + '»' :
+    'Войди как гость — ник и комментарий сохранятся на этом устройстве.';
+  note.classList.toggle('filled', !!c);
+}
+paintNote();
+document.addEventListener('dungeon-profile', paintNote);
+
+const wrap = document.getElementById('gameWrap');
+const frame = document.getElementById('gameFrame');
+const title = document.getElementById('gameTitle');
+const openTab = document.getElementById('openTab');
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => {
+    const url = card.dataset.game;
+    title.textContent = card.dataset.title;
+    openTab.href = url;
+    frame.src = url;
+    wrap.classList.add('on');
+    document.getElementById('hub').style.visibility = 'hidden';
+  });
+});
+
+function closeGame(){
+  wrap.classList.remove('on');
+  frame.src = 'about:blank';
+  document.getElementById('hub').style.visibility = '';
+}
+document.getElementById('exitGame').addEventListener('click', closeGame);
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && wrap.classList.contains('on')) closeGame(); });
+
+// Публичный хук для проверки профиля из консоли/тестов.
+window.__hubProfile = { get:getProfile, save:saveProfile, open:url=>{
+  const card = [...document.querySelectorAll('.card')].find(c => c.dataset.game === url);
+  if(card) card.click();
+}, close:closeGame };
+</script>
 </body>
 </html>

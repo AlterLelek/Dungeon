@@ -2503,5 +2503,9 @@ SHOP_TABS, SERVICES, ENCHANT_LIQUIDS, reforgeCost, reforgeGain, FORGE_RULES, QUA
 window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 window.dispatchEvent(new CustomEvent('sf-shared-data'));
 </script>
+<script type="module">
+  import { mountEntryForm } from '../shared/entry-profile.js';
+  mountEntryForm({ input:'#hero-name-input', start:'#start-btn', title:'Вход в игру' });
+</script>
 </body>
 </html>
