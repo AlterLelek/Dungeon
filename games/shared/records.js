@@ -2,19 +2,19 @@
 const KEY = 'dungeon_records_v1';
 
 export const RECORDS = [
-  { id: 'kill_skeleton_dungeon', text: 'Убит скелетом в Подземелье 28' },
-  { id: 'kill_turtle_dungeon', text: 'Убит черепахой в Подземелье 28' },
-  { id: 'kill_turtle_sf', text: 'Убит черепахой в SF' },
-  { id: 'kill_zombie_mm6', text: 'Убит зомби в MM6' },
-  { id: 'kill_lich_mm6', text: 'Убит личем в MM6' },
+  { id: 'kill_skeleton_dungeon', text: 'Убит скелетом в Подземелье' },
+  { id: 'kill_turtle_dungeon', text: 'Убит черепахой в Подземелье' },
+  { id: 'kill_turtle_sf', text: 'Убит черепахой в Подземелье 28' },
+  { id: 'kill_zombie_mm6', text: 'Убит зомби в Авантюристе' },
+  { id: 'kill_lich_mm6', text: 'Убит личем в Авантюристе' },
   { id: 'kill_spider_labyrinth', text: 'Убит пауком в Лабиринте' },
-  { id: 'kill_dark_archer_dungeon', text: 'Убит тёмным арбалетчиком в Подземелье 28' },
-  { id: 'boss_mm6', text: 'Победён босс в MM6' },
-  { id: 'flee_mm6', text: 'Удачный побег в MM6' },
-  { id: 'win_dungeon', text: 'Победа в Подземелье 28' },
-  { id: 'win_sf', text: 'Победа в SF' },
+  { id: 'kill_dark_archer_dungeon', text: 'Убит тёмным арбалетчиком в Подземелье' },
+  { id: 'boss_mm6', text: 'Победён босс в Авантюристе' },
+  { id: 'flee_mm6', text: 'Удачный побег в Авантюристе' },
+  { id: 'win_dungeon', text: 'Победа в Подземелье' },
+  { id: 'win_sf', text: 'Победа в Подземелье 28' },
   { id: 'win_labyrinth', text: 'Победа в Лабиринте' },
-  { id: 'win_mm6', text: 'Победа в MM6' }
+  { id: 'win_mm6', text: 'Победа в Авантюристе' }
 ];
 
 export function loadRecords(){

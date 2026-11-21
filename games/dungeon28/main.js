@@ -819,7 +819,7 @@ preloadSprites();
 
 initUnifiedLaunch({
   game: 'd28',
-  title: 'ПОДЗЕМЕЛЬЕ 28',
+  title: 'ПОДЗЕМЕЛЬЕ',
   logo: '🏰',
   version: VERSION,
   heroes: HERO_DOSSIERS,

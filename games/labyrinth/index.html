@@ -1398,16 +1398,16 @@ function buildSettings(){
    slider(mkLine(),label,()=>cfg[key],v=>cfg[key]=v,mn,mx,st);
   }
   if(MEX[curTab])for(const [key,label,mn,mx,st] of MEX[curTab])slider(mkLine(),label,()=>cfg[key],v=>cfg[key]=v,mn,mx,st);
-  const info=document.createElement('div');info.style.cssText='font-size:12px;color:#b9b9d6;margin:6px 0 10px;line-height:1.5';info.textContent='Как в Подземелье 28 · интерес 1: '+cfg.interest1+' · интерес 2: '+cfg.interest2+' · особенность: '+cfg.special;body.appendChild(info);
+  const info=document.createElement('div');info.style.cssText='font-size:12px;color:#b9b9d6;margin:6px 0 10px;line-height:1.5';info.textContent='Как в Подземелье · интерес 1: '+cfg.interest1+' · интерес 2: '+cfg.interest2+' · особенность: '+cfg.special;body.appendChild(info);
   const ln=mkLine();
   const lab=document.createElement('label');lab.textContent='Вкус (за чем охотится)';ln.appendChild(lab);
   const sel=document.createElement('select');
   for(const t in TASTES){const o=document.createElement('option');o.value=t;o.textContent=TASTES[t];if(cfg.taste===t)o.selected=true;sel.appendChild(o);}
   sel.onchange=()=>{cfg.taste=sel.value;saveJSON('lab32_set_v2',S);};
   ln.appendChild(sel);
-  if(curTab==='turtle'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐢 Толстая броня — 8 защиты, как в Подземелье 28.';body.appendChild(note);}
+  if(curTab==='turtle'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐢 Толстая броня — 8 защиты, как в Подземелье.';body.appendChild(note);}
   if(curTab==='mouse'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🐭 При первом убийстве мышь делится на двух мышей послабее (делятся один раз).';body.appendChild(note);}
-  if(curTab==='zombie'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🧟 Зомби опасен ядом и охотится за героем — как в Подземелье 28.';body.appendChild(note);}
+  if(curTab==='zombie'){const note=document.createElement('div');note.style.cssText='font-size:12px;color:#9a9ab8;margin:4px 0';note.textContent='🧟 Зомби опасен ядом и охотится за героем — как в Подземелье.';body.appendChild(note);}
  }
  if(curTab==='bonuses'){
   const b=S.bonuses;

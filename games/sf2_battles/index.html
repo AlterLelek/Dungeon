@@ -3,6 +3,7 @@
 <head>
 <script>document.documentElement.classList.add('ul-preload');</script>
 <meta charset="UTF-8">
+<title>Подземелье 28</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <link rel="stylesheet" href="../shared/launch.css">
 <style>
@@ -326,7 +327,7 @@ const heroHintEl = document.getElementById('hero-hint');
 
 const GRID = 10;          // бой: старое поле 10×10
 const CELL = 32;
-// Карта: те же параметры, что и в Подземелье 28 (15×15, 32px, мир 480px).
+// Карта: те же параметры, что и в Подземелье (15×15, 32px, мир 480px).
 const MAP_GRID = 15;
 const MAP_CELL = 32;
 const MAP_WORLD = MAP_GRID * MAP_CELL;
@@ -2568,7 +2569,7 @@ window.dispatchEvent(new CustomEvent('d28-data', { detail: D28_DATA }));
 window.dispatchEvent(new CustomEvent('sf-shared-data'));
 initUnifiedLaunch({
   game:'sf',
-  title:'SF2 БИТВЫ',
+  title:'ПОДЗЕМЕЛЬЕ 28',
   logo:'🥊',
   version:D28_DATA.version,
   heroes:HERO_DOSSIERS,

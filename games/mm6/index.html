@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05060d">
-<title>Подземелье 6</title>
+<title>Авантюрист</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../shared/launch.css">
 <style>
@@ -180,7 +180,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <body>
 <div id="app">
   <div id="stage">
-    <canvas id="cv" width="640" height="360" aria-label="Подземелье 6"></canvas>
+    <canvas id="cv" width="640" height="360" aria-label="Авантюрист"></canvas>
     <div id="party" class="hidden"></div>
   </div>
   <div id="controls" class="hidden">
@@ -211,7 +211,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <div id="start" class="overlay">
   <div class="box">
-    <div class="head"><h1>ПОДЗЕМЕЛЬЕ <span>6</span></h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button></div></div>
+    <div class="head"><h1>АВАНТЮРИСТ</h1><div style="display:flex;gap:6px"><button class="link" id="recordsBtn">🏆 Рекорды</button><button class="link" id="settingsBtn">⚙ Настройки</button></div></div>
     <div class="progress">
       <svg viewBox="0 0 42 42" aria-hidden="true"><circle class="ringTrack" cx="21" cy="21" r="17"></circle><circle id="ring" cx="21" cy="21" r="17"></circle></svg>
       <div><b id="achTitle">ДОСТИЖЕНИЕ · КРУГ СЛАВЫ</b><small id="achText">Победите 10 боссов на карте, чтобы замкнуть круг.</small><div id="winCounts">Боссы 0/10</div></div>
@@ -356,7 +356,7 @@ function recordAnnounce(id,got){
 
 /* ============================ 2. КАНОНИЧЕСКИЕ ДАННЫЕ D28 + РАСШИРЕНИЕ ============================ */
 const HERO_DESC=[
-  'Крепкий боец из Подземелья 28. Держит строй и бьёт наверняка.',
+  'Крепкий боец из Подземелья. Держит строй и бьёт наверняка.',
   'Хрупкий, но дальнобойный. Заряд маны бьёт сильнее.',
   'Паладин: молитва лечит и снимает яд.',
   'Ангел: свет пробивает нежить.',
@@ -2473,7 +2473,7 @@ renderStart();
 
 initUnifiedLaunch({
   game:'mm6',
-  title:'РПГ MM6',
+  title:'АВАНТЮРИСТ',
   logo:'🛡️',
   version:D28_DATA.version,
   heroes:HERO_DOSSIERS,

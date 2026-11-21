@@ -265,11 +265,11 @@ export const BOSS_BONUSES = [
 
 export const GAME_RECORDS = [
   { id: 'kill_skeleton_dungeon', text: 'Убит скелетом в подземелье' },
-  { id: 'kill_turtle_sf', text: 'Убит черепахой в SF' },
-  { id: 'kill_zombie_mm6', text: 'Убит зомби в MM6' },
-  { id: 'kill_lich_mm6', text: 'Убит личем в MM6' },
-  { id: 'boss_mm6', text: 'Победён босс в MM6' },
-  { id: 'flee_mm6', text: 'Удачный побег в MM6' }
+  { id: 'kill_turtle_sf', text: 'Убит черепахой в Подземелье 28' },
+  { id: 'kill_zombie_mm6', text: 'Убит зомби в Авантюристе' },
+  { id: 'kill_lich_mm6', text: 'Убит личем в Авантюристе' },
+  { id: 'boss_mm6', text: 'Победён босс в Авантюристе' },
+  { id: 'flee_mm6', text: 'Удачный побег в Авантюристе' }
 ];
 
 // Настройки «полный дубль подземелья»: значения по умолчанию.
