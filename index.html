@@ -26,14 +26,14 @@
             font-size: 32px;
             margin-bottom: 8px;
         }
-        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:720px;margin-top:4px}
+        .grid{display:grid;grid-template-columns:1fr;gap:10px;width:100%;max-width:560px;margin-top:4px}
         .game-card {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 7px;
+            gap: 5px;
             text-align: center;
-            padding: 18px 14px 16px;
+            padding: 12px 12px 11px;
             background: linear-gradient(150deg, rgba(48,48,68,.96), rgba(20,21,32,.98));
             color: white;
             text-decoration: none;
@@ -82,25 +82,27 @@
         }
         /* РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА */
         @media (min-width: 1000px) {
-            h1 { font-size: 38px; }
-            .grid { max-width: 900px; gap: 18px; }
-            .game-card .icon { font-size: 50px; }
-            .game-card .name { font-size: 19px; }
-            .game-card .desc { font-size: 13px; }
+            h1 { font-size: 32px; }
+            .grid { max-width: 600px; gap: 10px; }
+            .game-card { padding: 10px 12px; gap: 4px; }
+            .game-card .icon { font-size: 34px; }
+            .game-card .name { font-size: 16px; }
+            .game-card .desc { font-size: 11px; }
         }
         @media (max-height: 520px) and (orientation: landscape) {
-            body { padding: 8px; }
-            h1 { font-size: 22px; margin-bottom: 4px; }
-            .grid { max-width: 820px; gap: 8px; }
-            .game-card { padding: 8px 10px; gap: 3px; }
-            .game-card .icon { font-size: 26px; }
-            .game-card .name { font-size: 13px; }
+            body { padding: 6px; }
+            h1 { font-size: 20px; margin-bottom: 3px; }
+            .grid { max-width: 760px; gap: 5px; }
+            .game-card { padding: 6px 10px; gap: 2px; }
+            .game-card .icon { font-size: 22px; }
+            .game-card .name { font-size: 12px; }
             .game-card .desc { display: none; }
+            .game-card .cta { font-size: 9px; padding: 3px 9px; }
         }
         @media (max-width: 520px) and (orientation: portrait) {
             body { padding: 10px; }
-            .grid { gap: 10px; }
-            .game-card { padding: 12px 8px; }
+            .grid { gap: 9px; }
+            .game-card { padding: 10px 8px; }
             .game-card .desc { font-size: 10px; }
         }
     </style>

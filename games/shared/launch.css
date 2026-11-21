@@ -1,6 +1,14 @@
 /* Единый стартовый экран для всех четырёх игр. Фон — как в MM6. */
 :root { --ul-gold:#fbbf24; --ul-ink:#f3e8cf; --ul-dim:#9aa4c2; --ul-panel:#12152a; }
 
+/* Скрываем старые стартовые экраны до загрузки модуля, чтобы они не мигали при входе. */
+html.ul-preload body { background:#05060d !important; }
+html.ul-preload #login-screen,
+html.ul-preload #start-screen,
+html.ul-preload #menuOv,
+html.ul-preload #start,
+html.ul-preload #splash { display:none !important; }
+
 body.ul-active { background:#05060d !important; }
 body.ul-active #login-screen,
 body.ul-active #start-screen,
@@ -24,10 +32,10 @@ body.ul-active #splash { display:none !important; }
   box-shadow:0 0 60px rgba(0,0,0,.85),0 0 24px rgba(251,191,36,.08);
   padding:18px 20px 14px;
 }
-.ul-header { position:relative; display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:12px; }
-.ul-logo { font-size:36px; line-height:1; filter:drop-shadow(0 0 14px rgba(251,191,36,.45)); }
+.ul-header { position:relative; display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:5px; }
+.ul-logo { font-size:24px; line-height:1; filter:drop-shadow(0 0 14px rgba(251,191,36,.45)); }
 .ul-title {
-  margin:0; color:#ffdc7a; letter-spacing:3px; font-size:30px; text-align:center;
+  margin:0; color:#ffdc7a; letter-spacing:2px; font-size:24px; text-align:center;
   text-shadow:0 0 18px rgba(251,191,36,.55),2px 2px 0 #000; white-space:nowrap;
   opacity:0; transform:translateY(120px) scale(2.1);
 }
@@ -38,38 +46,36 @@ body.ul-active #splash { display:none !important; }
   68% { opacity:1; transform:translateY(-6px) scale(1.04); }
   100% { opacity:1; transform:translateY(0) scale(1); }
 }
-.ul-title span {
-  color:#fff3c4; border:1px solid rgba(251,191,36,.6); border-radius:7px;
-  padding:0 7px; font-size:.72em; vertical-align:middle;
-}
-.ul-meta { display:flex; align-items:center; gap:8px; }
+/* Версия — только отдельной строкой под названием игры. */
 .ul-version {
-  font-size:11px; color:var(--ul-dim); letter-spacing:1px;
-  border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:3px 9px;
+  margin-top:1px; font-size:10px; color:var(--ul-dim); letter-spacing:1px;
+  border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:1px 8px;
   background:rgba(255,255,255,.04);
 }
+.ul-meta { display:flex; align-items:center; justify-content:center; gap:8px; }
 .ul-hub, .ul-btn {
   cursor:pointer; border-radius:9px; border:1px solid rgba(251,191,36,.48);
-  background:rgba(251,191,36,.1); color:#ffe9b0; font-weight:700; font-size:12px;
-  padding:8px 13px; transition:background .15s,border-color .15s,transform .1s;
+  background:rgba(251,191,36,.1); color:#ffe9b0; font-weight:700; font-size:11px;
+  padding:6px 12px; transition:background .15s,border-color .15s,transform .1s;
 }
 .ul-hub:hover, .ul-btn:hover { background:rgba(251,191,36,.24); border-color:var(--ul-gold); }
 .ul-btn:active, .ul-hub:active { transform:translateY(1px); }
 
-.ul-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+/* Все окна стартового экрана идут вертикально на любом устройстве. */
+.ul-grid { display:grid; grid-template-columns:1fr; gap:6px; }
 .ul-block {
-  min-width:0; padding:11px 12px; border-radius:13px;
+  min-width:0; padding:6px 9px; border-radius:13px;
   background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.09);
 }
-.ul-label { display:block; margin-bottom:8px; color:#9fb0d8; font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase; text-align:center; }
+.ul-label { display:block; margin-bottom:5px; color:#9fb0d8; font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; text-align:center; }
 .ul-carousel-row { display:flex; align-items:center; justify-content:center; gap:7px; }
 .ul-arrow {
-  flex:0 0 36px; width:36px; height:48px; cursor:pointer;
+  flex:0 0 32px; width:32px; height:40px; cursor:pointer;
   border:1px solid rgba(255,255,255,.18); border-radius:9px;
   background:rgba(255,255,255,.05); color:#d7dcf0; font-size:15px;
 }
 .ul-arrow:hover { border-color:var(--ul-gold); color:#ffe9b0; }
-.ul-carousel { flex:1 1 auto; min-width:0; display:flex; align-items:center; justify-content:center; gap:6px; height:88px; }
+.ul-carousel { flex:1 1 auto; min-width:0; display:flex; align-items:center; justify-content:center; gap:6px; height:56px; }
 .ul-card3 {
   width:32%; max-width:104px; height:100%; border-radius:10px;
   border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25);
@@ -79,36 +85,36 @@ body.ul-active #splash { display:none !important; }
 .ul-card3.center { opacity:1; transform:scale(1.08); border-color:rgba(251,191,36,.7); background:rgba(251,191,36,.09); box-shadow:0 0 16px rgba(251,191,36,.2); }
 .ul-card3.side { cursor:pointer; }
 .ul-card3.side:hover { opacity:.85; }
-.ul-emoji { width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:28px; }
+.ul-emoji { width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:24px; }
 .ul-emoji img { width:100%; height:100%; object-fit:contain; }
 .ul-cname { font-size:10px; font-weight:800; color:#ffe9b0; text-align:center; line-height:1.1; padding:0 3px; }
-.ul-desc { margin:8px 2px 0; min-height:66px; text-align:center; font-size:11px; line-height:1.45; color:#c8cfe4; }
+.ul-desc { margin:4px 2px 0; min-height:44px; text-align:center; font-size:10px; line-height:1.25; color:#c8cfe4; }
 .ul-desc b { color:#ffe6a8; }
 .ul-desc .ul-line { display:block; margin-top:4px; color:#fbbf24; font-weight:700; }
 .ul-desc .ul-cons { display:block; margin-top:3px; color:#fca5a5; }
 .ul-desc .ul-pros { display:block; margin-top:3px; color:#86efac; }
 
-.ul-bottom { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
-.ul-row { display:flex; gap:8px; align-items:center; }
+.ul-bottom { display:grid; grid-template-columns:1fr; gap:6px; margin-top:6px; }
+.ul-row { display:flex; gap:7px; align-items:center; }
 .ul-input {
   flex:1; min-width:0; background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.2);
-  border-radius:9px; padding:10px; color:#fff3d0; outline:none;
+  border-radius:9px; padding:7px; color:#fff3d0; outline:none; font-size:12px;
 }
 .ul-input:focus { border-color:var(--ul-gold); }
-.ul-dice { flex:0 0 46px; width:46px; height:44px; font-size:18px; }
-.ul-actions { display:flex; flex-direction:column; gap:7px; }
+.ul-dice { flex:0 0 40px; width:40px; height:36px; font-size:16px; }
+.ul-actions { display:flex; flex-direction:column; gap:5px; }
 .ul-play {
-  cursor:pointer; border:0; border-radius:9px; padding:11px 16px; font-weight:900; color:#241704;
-  background:linear-gradient(180deg,#ffe9a8,#f5b92c); box-shadow:0 4px 0 #8a5b0c;
+  cursor:pointer; border:0; border-radius:9px; padding:7px 12px; font-weight:900; font-size:12px; color:#241704;
+  background:linear-gradient(180deg,#ffe9a8,#f5b92c); box-shadow:0 3px 0 #8a5b0c;
 }
 .ul-play:active { transform:translateY(2px); box-shadow:0 2px 0 #8a5b0c; }
 .ul-google {
   cursor:not-allowed; border:1px solid rgba(255,255,255,.18); border-radius:9px;
-  background:rgba(255,255,255,.04); color:#9aa4c2; font-weight:700; padding:7px;
+  background:rgba(255,255,255,.04); color:#9aa4c2; font-weight:700; font-size:10px; padding:5px;
 }
 .ul-soon { font-size:9px; color:#fbbf24; border:1px solid rgba(251,191,36,.4); border-radius:999px; padding:1px 5px; margin-left:5px; }
-.ul-rec { margin-top:10px; border:1px solid rgba(255,255,255,.12); border-radius:9px; background:rgba(0,0,0,.22); }
-.ul-rec summary { cursor:pointer; padding:7px 10px; color:#fbbf24; font-size:12px; text-align:center; }
+.ul-rec { margin-top:6px; border:1px solid rgba(255,255,255,.12); border-radius:9px; background:rgba(0,0,0,.22); }
+.ul-rec summary { cursor:pointer; padding:5px 9px; color:#fbbf24; font-size:11px; text-align:center; }
 .ul-rec-body { max-height:120px; overflow:auto; padding:0 9px 8px; }
 .ul-rec-row { display:flex; gap:7px; padding:2px 0; font-size:11px; color:#9aa4c2; }
 .ul-rec-row.got { color:#fbbf24; }
@@ -116,15 +122,11 @@ body.ul-active #splash { display:none !important; }
 .ul-rec-body .recRow.got { color:#fbbf24; }
 .ul-rec-body .recRow span:first-child { flex:0 0 12px; }
 
-.ul-achievement {
-  margin-top:8px; padding:8px 10px; border-radius:10px;
-  border:1px solid rgba(251,191,36,.28); background:rgba(251,191,36,.05);
-  color:#ffe6a8; font-size:11px; line-height:1.4;
-}
-.ul-achievement b { color:#ffdc7a; }
-.ul-achievement small { display:block; color:#9fb0d8; margin-top:2px; }
+/* Оригинальный блок достижения MM6 просто переносится сюда, без переделки. */
+.ul-achievement { margin-top:5px; }
+.ul-achievement .progress { margin:0; }
 
-.ul-footer { display:flex; justify-content:center; gap:9px; margin-top:12px; padding-top:11px; border-top:1px solid rgba(255,255,255,.09); flex-wrap:wrap; }
+.ul-footer { display:flex; justify-content:center; gap:7px; margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,.09); flex-wrap:wrap; }
 .ul-footer .ul-btn { min-width:118px; }
 
 .ul-modal { position:fixed; inset:0; z-index:5200; display:none; align-items:center; justify-content:center; padding:14px; background:rgba(2,3,9,.88); }
@@ -153,39 +155,52 @@ body.ul-active #splash { display:none !important; }
 .universe-catalog .uc-cons { font-size:10px; color:#fca5a5; }
 
 @media (min-width:1100px) and (min-height:700px) {
-  #unified-launch { padding:22px; }
-  .ul-card { width:min(980px,100%); padding:22px 26px 16px; }
-  .ul-title { font-size:36px; }
-  .ul-carousel { height:104px; }
-  .ul-emoji { width:58px; height:58px; font-size:32px; }
-  .ul-desc { font-size:12px; }
+  #unified-launch { padding:10px; }
+  .ul-card { width:min(760px,100%); padding:10px 16px 9px; }
+  .ul-title { font-size:27px; }
+  .ul-carousel { height:60px; }
+  .ul-emoji { width:44px; height:44px; font-size:26px; }
+  .ul-desc { font-size:10px; }
 }
 @media (max-width:700px) {
-  .ul-card { padding:14px 12px 12px; }
-  .ul-grid, .ul-bottom { grid-template-columns:1fr; }
-  .ul-title { font-size:23px; }
-  .ul-logo { font-size:28px; }
-  .ul-carousel { height:82px; }
-  .ul-desc { min-height:58px; }
-  .ul-footer .ul-btn { flex:1 1 30%; min-width:0; font-size:11px; padding:8px 4px; }
+  .ul-card { padding:9px 9px 8px; }
+  .ul-title { font-size:22px; }
+  .ul-logo { font-size:24px; }
+  .ul-carousel { height:58px; }
+  .ul-desc { min-height:42px; font-size:10px; }
+  .ul-footer .ul-btn { flex:1 1 30%; min-width:0; font-size:10px; padding:6px 3px; }
 }
 @media (max-height:520px) and (orientation:landscape) {
-  #unified-launch { padding:6px; align-items:flex-start; }
-  .ul-card { max-height:none; padding:8px 12px; }
-  .ul-header { gap:2px; margin-bottom:5px; }
-  .ul-logo { font-size:22px; }
-  .ul-title { font-size:20px; }
-  .ul-grid { grid-template-columns:1fr 1fr; gap:8px; }
-  .ul-block { padding:6px 8px; }
-  .ul-label { margin-bottom:4px; }
-  .ul-carousel { height:62px; }
-  .ul-arrow { height:40px; }
-  .ul-emoji { width:36px; height:36px; font-size:22px; }
-  .ul-desc { min-height:44px; font-size:10px; margin-top:4px; }
-  .ul-bottom { grid-template-columns:1fr 1fr; margin-top:7px; gap:8px; }
-  .ul-input { padding:7px; }
-  .ul-play { padding:8px; }
-  .ul-rec { margin-top:6px; }
-  .ul-rec-body { max-height:54px; }
-  .ul-footer { margin-top:6px; padding-top:6px; }
+  #unified-launch { padding:4px; align-items:flex-start; }
+  .ul-card { max-height:none; width:min(760px,100%); padding:5px 8px; }
+  .ul-header { gap:1px; margin-bottom:3px; }
+  .ul-logo { font-size:16px; }
+  .ul-title { font-size:16px; letter-spacing:2px; }
+  .ul-version { font-size:9px; padding:1px 7px; }
+  .ul-hub, .ul-btn { padding:4px 8px; font-size:10px; }
+  .ul-grid, .ul-bottom { gap:4px; }
+  .ul-block { padding:4px 6px; }
+  .ul-label { margin-bottom:3px; font-size:9px; }
+  .ul-carousel { height:38px; gap:4px; }
+  .ul-arrow { flex-basis:28px; width:28px; height:32px; font-size:12px; }
+  .ul-emoji { width:26px; height:26px; font-size:16px; }
+  .ul-cname { font-size:9px; }
+  .ul-desc { min-height:26px; font-size:9px; line-height:1.2; margin-top:3px; }
+  .ul-desc .ul-line, .ul-desc .ul-cons, .ul-desc .ul-pros { margin-top:1px; }
+  .ul-bottom { margin-top:4px; }
+  .ul-row { gap:4px; }
+  .ul-input { padding:5px; font-size:11px; }
+  .ul-dice { flex-basis:34px; width:34px; height:32px; font-size:14px; }
+  .ul-actions { flex-direction:row; gap:4px; }
+  .ul-play, .ul-google { flex:1; padding:5px; font-size:10px; }
+  .ul-achievement { margin-top:4px; }
+  .ul-achievement .progress { margin:0; padding:4px; gap:6px; }
+  .ul-achievement .progress svg { width:30px; height:30px; flex-basis:30px; }
+  .ul-achievement .progress b { font-size:10px; }
+  .ul-achievement .progress small { font-size:9px; line-height:1.2; margin-top:1px; }
+  .ul-rec { margin-top:4px; }
+  .ul-rec summary { padding:4px 8px; font-size:10px; }
+  .ul-rec-body { max-height:0; }
+  .ul-footer { margin-top:4px; padding-top:4px; gap:4px; }
+  .ul-footer .ul-btn { flex:1 1 30%; min-width:0; padding:4px; font-size:10px; }
 }

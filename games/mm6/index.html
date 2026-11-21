@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.documentElement.classList.add('ul-preload');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05060d">
@@ -1256,6 +1257,7 @@ function finishRun(win){
   $('controls').classList.add('hidden'); $('party').classList.add('hidden');
   ['shop','inventory','reward','spellMenu'].forEach(id=>$(id).classList.add('hidden'));
   $('start').classList.remove('hidden'); renderStart();
+  if (window.UnifiedLaunch) window.UnifiedLaunch.show();
 }
 
 /* ============================ 7. МЕНЮ ЗАКЛИНАНИЙ ============================ */
@@ -2487,12 +2489,7 @@ initUnifiedLaunch({
   nameKey:'mm6_heroName',
   catalogTarget:'#settings .box',
   onClick:()=>playSound('collect'),
-  achievement:()=>{
-    const filled=Math.min(10,progress.boss||0);
-    return '<b>'+(progress.achieved?'ДОСТИЖЕНИЕ ПОЛУЧЕНО ✦':'ДОСТИЖЕНИЕ · КРУГ СЛАВЫ')+'</b>'+
-      '<small>'+(progress.achieved?'Круг славы замкнут: 10 боссов на карте.':'Победите 10 боссов на карте, чтобы замкнуть круг.')+'</small>'+
-      '<small>Боссы '+filled+'/10 · побед '+(progress.runs||0)+' · побегов '+(progress.flees||0)+'</small>';
-  },
+  achievementSelector:'#start .progress',
   stats:()=>{
     let recs=[]; try{ recs=JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){}
     return '<p><b>Боссы:</b> '+(progress.boss||0)+'/10</p>'+

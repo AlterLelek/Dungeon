@@ -71,9 +71,9 @@ export function initUnifiedLaunch(cfg) {
     <div class="ul-card">
       <header class="ul-header">
         <div class="ul-logo" aria-hidden="true">${esc(cfg.logo || '🏰')}</div>
-        <h1 class="ul-title">${esc(cfg.title || 'ПОДЗЕМЕЛЬЕ')}<span>v${esc(cfg.version || '')}</span></h1>
+        <h1 class="ul-title">${esc(cfg.title || 'ПОДЗЕМЕЛЬЕ')}</h1>
+        <div class="ul-version">v${esc(cfg.version || '')}</div>
         <div class="ul-meta">
-          <span class="ul-version">v${esc(cfg.version || '')}</span>
           <button class="ul-hub" type="button" id="ul-hub">🎮 Выбор игр</button>
         </div>
       </header>
@@ -119,7 +119,7 @@ export function initUnifiedLaunch(cfg) {
         <summary>🏆 Рекорды похождений <span id="ul-rec-count">0/0</span></summary>
         <div class="ul-rec-body" id="ul-rec-body"></div>
       </details>
-      ${cfg.achievement ? '<div class="ul-achievement" id="ul-achievement"></div>' : ''}
+      ${(cfg.achievement || cfg.achievementSelector) ? '<div class="ul-achievement" id="ul-achievement"></div>' : ''}
 
       <footer class="ul-footer">
         <button class="ul-btn" type="button" data-modal="records">🏆 Рекорды</button>
@@ -135,6 +135,11 @@ export function initUnifiedLaunch(cfg) {
     </div>`;
 
   document.body.appendChild(root);
+  if (cfg.achievementSelector) {
+    const achNode = document.querySelector(cfg.achievementSelector);
+    const achSlot = root.querySelector('#ul-achievement');
+    if (achNode && achSlot) achSlot.appendChild(achNode);
+  }
   document.body.classList.add('ul-active');
   injectCatalog(cfg.catalogTarget);
 
