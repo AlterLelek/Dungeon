@@ -1,0 +1,3122 @@
+[
+  {
+    "file": "angel_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/angel_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/angel_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/angel_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/angel_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "archer.png",
+    "path": "games/dungeon28/assets/sprites/heroes/archer.png",
+    "type": "character",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "battle_angel_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/battle_angel_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js",
+      "games/dungeon28/shared-data.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "battle_angel_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/battle_angel_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "battle_angel_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/battle_angel_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "battle_angel_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/battle_angel_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/angel.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "elf_archer_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/elf_archer_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/archer.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "elf_archer_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/elf_archer_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/archer.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "elf_archer_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/elf_archer_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/archer.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "elf_archer_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/elf_archer_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/archer.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "knight_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/knight_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/warrior.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "knight_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/knight_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/warrior.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "knight_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/knight_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/warrior.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "knight_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/knight_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/warrior.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mage.png",
+    "path": "games/dungeon28/assets/sprites/heroes/mage.png",
+    "type": "character",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/paladin_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/paladin.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/paladin_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/paladin.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/paladin_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/paladin.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/paladin_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/paladin.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "wizard_0.png",
+    "path": "games/dungeon28/assets/sprites/heroes/wizard_0.png",
+    "type": "character",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/mage.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "wizard_1.png",
+    "path": "games/dungeon28/assets/sprites/heroes/wizard_1.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/mage.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "wizard_2.png",
+    "path": "games/dungeon28/assets/sprites/heroes/wizard_2.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/mage.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "wizard_3.png",
+    "path": "games/dungeon28/assets/sprites/heroes/wizard_3.png",
+    "type": "character",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/heroes/mage.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "arrow_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/arrow_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "axe_0.png",
+    "path": "games/dungeon28/assets/sprites/items/axe_0.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js",
+      "games/mm6/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "axe_1.png",
+    "path": "games/dungeon28/assets/sprites/items/axe_1.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "axe_2.png",
+    "path": "games/dungeon28/assets/sprites/items/axe_2.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "axe_3.png",
+    "path": "games/dungeon28/assets/sprites/items/axe_3.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/bow_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow0_0.png",
+    "path": "games/dungeon28/assets/sprites/items/bow0_0.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js",
+      "games/mm6/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow0_1.png",
+    "path": "games/dungeon28/assets/sprites/items/bow0_1.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow0_2.png",
+    "path": "games/dungeon28/assets/sprites/items/bow0_2.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow0_3.png",
+    "path": "games/dungeon28/assets/sprites/items/bow0_3.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow1_0.png",
+    "path": "games/dungeon28/assets/sprites/items/bow1_0.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow1_1.png",
+    "path": "games/dungeon28/assets/sprites/items/bow1_1.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow1_2.png",
+    "path": "games/dungeon28/assets/sprites/items/bow1_2.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow1_3.png",
+    "path": "games/dungeon28/assets/sprites/items/bow1_3.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "coin.png",
+    "path": "games/dungeon28/assets/sprites/items/coin.png",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/dagger_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_1.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_2.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_3.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_4.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_5.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_6.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_7.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_8.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_9.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_10.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_11.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_11.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_12.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_12.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_13.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_13.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_14.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_14.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_15.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_15.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_16.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_16.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_17.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_17.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_18.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_18.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_19.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_19.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb_20.svg",
+    "path": "games/dungeon28/assets/sprites/items/herb_20.svg",
+    "type": "herb",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "lightning.png",
+    "path": "games/dungeon28/assets/sprites/items/lightning.png",
+    "type": "item",
+    "used_in": [
+      "dungeon",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/ui.js",
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mace_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/mace_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "quiver_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/quiver_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_1.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_2.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_3.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_4.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_5.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_6.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_7.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_8.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_9.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "robe_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/robe_10.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_1.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_2.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_3.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_4.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_5.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_6.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_7.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_8.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_9.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/shield_10.svg",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield.png",
+    "path": "games/dungeon28/assets/sprites/items/shield.png",
+    "type": "armor",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/main.js",
+      "games/dungeon28/ui.js",
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_0.png",
+    "path": "games/dungeon28/assets/sprites/items/staff_0.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js",
+      "games/mm6/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_1.png",
+    "path": "games/dungeon28/assets/sprites/items/staff_1.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_1.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_1.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_2.png",
+    "path": "games/dungeon28/assets/sprites/items/staff_2.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_2.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_2.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_3.png",
+    "path": "games/dungeon28/assets/sprites/items/staff_3.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_3.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_3.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_4.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_4.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_5.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_5.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_6.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_6.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_7.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_7.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_8.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_8.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_9.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_9.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff_10.svg",
+    "path": "games/dungeon28/assets/sprites/items/staff_10.svg",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff.png",
+    "path": "games/dungeon28/assets/sprites/items/staff.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "star.png",
+    "path": "games/dungeon28/assets/sprites/items/star.png",
+    "type": "item",
+    "used_in": [
+      "dungeon",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/ui.js",
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sword_0.png",
+    "path": "games/dungeon28/assets/sprites/items/sword_0.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js",
+      "games/mm6/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sword_1.png",
+    "path": "games/dungeon28/assets/sprites/items/sword_1.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sword_2.png",
+    "path": "games/dungeon28/assets/sprites/items/sword_2.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sword_3.png",
+    "path": "games/dungeon28/assets/sprites/items/sword_3.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_anime_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_anime_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_axe.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_axe.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_baton_with_spikes.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_baton_with_spikes.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_big_hammer.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_big_hammer.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_cleaver.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_cleaver.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_duel_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_duel_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_golden_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_golden_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_hammer.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_hammer.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_katana.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_katana.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_knife.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_knife.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_knight_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_knight_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_lavish_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_lavish_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_mace.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_mace.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_machete.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_machete.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_red_gem_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_red_gem_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_red_magic_staff.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_red_magic_staff.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_regular_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_regular_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_rusty_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_rusty_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_saw_sword.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_saw_sword.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "weapon_spear.png",
+    "path": "games/dungeon28/assets/sprites/items/weapon_spear.png",
+    "type": "weapon",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "lightning.png",
+    "path": "games/dungeon28/assets/sprites/lightning.png",
+    "type": "ui",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dark_archer_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/dark_archer_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "dark_archer_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/dark_archer_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "dark_archer_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/dark_archer_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "dark_archer_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/dark_archer_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "demon_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/demon_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "demon_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/demon_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "demon_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/demon_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "demon_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/demon_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "ghost_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/ghost_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "ghost_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/ghost_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "ghost_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/ghost_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "ghost_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/ghost_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "imp_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/imp_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "imp_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/imp_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "imp_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/imp_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "imp_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/imp_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/index.html",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_4.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_4.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_5.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_5.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_6.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_6.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "necromancer_7.png",
+    "path": "games/dungeon28/assets/sprites/monsters/necromancer_7.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "orc.png",
+    "path": "games/dungeon28/assets/sprites/monsters/orc.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "orge_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/orge_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "orge_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/orge_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "orge_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/orge_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "orge_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/orge_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "rat_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/rat_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_4.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_4.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_5.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_5.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_6.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_6.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_7.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_7.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_8.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_8.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "skeleton_9.png",
+    "path": "games/dungeon28/assets/sprites/monsters/skeleton_9.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "spider_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/spider_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "spider_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/spider_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "spider_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/spider_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "spider_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/spider_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "turtle_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/turtle_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "turtle_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/turtle_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "turtle_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/turtle_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "turtle_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/turtle_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_0.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_0.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "labyrinth",
+      "dungeon28",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/labyrinth/index.html",
+      "games/mm6/data.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "labyrinth": [
+        "games/labyrinth/index.html"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_1.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_1.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_2.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_2.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_3.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_3.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_4.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_4.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_5.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_5.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "undead_6.png",
+    "path": "games/dungeon28/assets/sprites/monsters/undead_6.png",
+    "type": "enemy",
+    "used_in": [
+      "dungeon",
+      "dungeon28"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/sf2_battles/index.html"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "dungeon": [
+        "games/dungeon28/config.js"
+      ],
+      "dungeon28": [
+        "games/sf2_battles/index.html"
+      ]
+    }
+  },
+  {
+    "file": "shield.png",
+    "path": "games/dungeon28/assets/sprites/shield.png",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "star.png",
+    "path": "games/dungeon28/assets/sprites/star.png",
+    "type": "ui",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "coin.png",
+    "path": "games/dungeon28/assets/sprites/ui/coin.png",
+    "type": "ui",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/main.js",
+      "games/dungeon28/ui.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "lightning.png",
+    "path": "games/dungeon28/assets/sprites/ui/lightning.png",
+    "type": "ui",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield.png",
+    "path": "games/dungeon28/assets/sprites/ui/shield.png",
+    "type": "ui",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "star.png",
+    "path": "games/dungeon28/assets/sprites/ui/star.png",
+    "type": "ui",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  }
+]
