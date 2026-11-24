@@ -298,6 +298,9 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <div class="setRow"><span class="setLabel">Скорость монстров</span><input type="number" id="setMonsterSpeed" min="0.5" max="2" step="0.1" value="1"></div>
     <div class="setRow"><span class="setLabel">Сила монстров</span><input type="number" id="setMonsterPower" min="0.5" max="2" step="0.1" value="1"></div>
     <div class="setRow"><span class="setLabel">Журнал событий (строк)</span><input type="number" id="setLogLimit" min="100" max="1000" step="100" value="1000"></div>
+    <div class="setRow"><span class="setLabel">🌦 Цикл погоды (ходов)</span><input type="number" id="setWeatherCycle" min="10" max="500" step="10" value="100"></div>
+    <div class="setRow"><span class="setLabel">🐾 Макс. животных</span><input type="number" id="setMaxAnimals" min="0" max="8" step="1" value="2"></div>
+    <div class="setRow"><span class="setLabel">🐾 Появление животных (ходов)</span><input type="number" id="setAnimalSpawnEvery" min="1" max="200" step="1" value="10"></div>
     <div class="setCheck"><input type="checkbox" id="setFloatDamage" checked><span>Числа урона над целями</span></div>
     <div class="setCheck"><input type="checkbox" id="setBreathAnim" checked><span>Лёгкое «дыхание» спрайтов</span></div>
     <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L/Д открывает журнал.</div>
@@ -340,7 +343,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BIOMES, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { createWeather } from './weather.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
 import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound } from '../dungeon28/audio.js';
@@ -351,6 +355,7 @@ import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 const W = 640, H = 360;
+const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:300,heroScale:.5,msgY:178,msgH:84};
 const setFont=(px,bold=true)=>{ ctx.font=(bold?'700 ':'400 ')+px+'px '+UI_FONT; };
@@ -491,6 +496,123 @@ const BIOME_KEYS=['field','village','city','port','mountains'];
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
 const DIR_NAMES=['север','восток','юг','запад'];
 const C_HERO='#86efac', C_ENEMY='#fca5a5', C_NEUTRAL='#fde68a';
+
+/* --- Фауна карты: SVG-спрайты и простое блуждание без участия в бою --- */
+const WILD_BASE='../../assets/wildlife/';
+const WILD_KINDS={
+  sparrow:{kind:'bird', sprite:WILD_BASE+'sparrow.svg', w:24, h:18, speed:[48,76], y:[26,112], flap:190},
+  eagle:  {kind:'bird', sprite:WILD_BASE+'eagle.svg',   w:46, h:29, speed:[26,42], y:[22,88],  flap:520},
+  rabbit: {kind:'animal', sprite:WILD_BASE+'rabbit.svg', w:25, h:22, speed:[11,20], y:[214,318], rest:[700,2100]},
+  fox:    {kind:'animal', sprite:WILD_BASE+'fox.svg',    w:38, h:24, speed:[17,28], y:[232,326], rest:[500,1600]}
+};
+// Цели по животным: небольшое значение по умолчанию, настраивается через DEFAULT_SETTINGS.maxAnimals.
+const WILD_BY_BIOME={
+  field:    {sparrow:4, eagle:1, rabbit:2, fox:1},
+  village:  {sparrow:3, eagle:1, rabbit:1, fox:1},
+  city:     {sparrow:3, eagle:0, rabbit:0, fox:1},
+  port:     {sparrow:4, eagle:2, rabbit:0, fox:0},
+  mountains:{sparrow:1, eagle:3, rabbit:1, fox:1}
+};
+const MAX_ANIMALS_DEFAULT=clamp(Number(DEFAULT_SETTINGS.maxAnimals)||2,0,8);
+const ANIMAL_SPAWN_EVERY_DEFAULT=clamp(Number(DEFAULT_SETTINGS.animalSpawnEvery)||10,1,999);
+
+function maxAnimalsLimit(){
+  return clamp(Number(settings&&settings.maxAnimals!=null?settings.maxAnimals:MAX_ANIMALS_DEFAULT)||0,0,8);
+}
+function animalSpawnEvery(){
+  return clamp(Number(settings&&settings.animalSpawnEvery!=null?settings.animalSpawnEvery:ANIMAL_SPAWN_EVERY_DEFAULT)||10,1,999);
+}
+function isAnimalKind(type){ return !!(WILD_KINDS[type]&&WILD_KINDS[type].kind==='animal'); }
+function animalCount(list){ return (list||[]).filter(a=>isAnimalKind(a.type)).length; }
+function makeWildlife(type,biome){
+  const def=WILD_KINDS[type]; if(!def) return null;
+  const dir=Math.random()<.5?-1:1, y=rnd(def.y[0],def.y[1]);
+  const scale=.88+Math.random()*.24;
+  if(def.kind==='bird'){
+    return {type,x:rnd(-60,W+60),y,baseY:y,dir,speed:rnd(def.speed[0],def.speed[1]),
+      phase:Math.random()*Math.PI*2,flapPhase:Math.random()*Math.PI*2,scale};
+  }
+  const x=rnd(40,W-40);
+  return {type,x,y,dir,speed:rnd(def.speed[0],def.speed[1]),
+    tx:clamp(x+rnd(-90,90),30,W-30),ty:clamp(y+rnd(-24,24),def.y[0],def.y[1]),
+    rest:rnd(400,1600),phase:Math.random()*Math.PI*2,scale};
+}
+function createWildlife(biome){
+  const counts=WILD_BY_BIOME[biome]||WILD_BY_BIOME.field, list=[];
+  let animals=maxAnimalsLimit();
+  Object.keys(counts).forEach(type=>{
+    const def=WILD_KINDS[type]; if(!def) return;
+    let n=counts[type];
+    if(def.kind==='animal'){ n=Math.min(n,animals); animals-=n; }
+    for(let i=0;i<n;i++) list.push(makeWildlife(type,biome));
+  });
+  // Гарантируем небольшой начальный предел животных.
+  while(animalCount(list)>maxAnimalsLimit()){
+    const idx=list.findIndex(a=>isAnimalKind(a.type));
+    if(idx<0) break; list.splice(idx,1);
+  }
+  return list;
+}
+function maybeSpawnAnimal(){
+  const m=currentMap(); if(!m||!m.wildlife) return;
+  const limit=maxAnimalsLimit();
+  if(animalCount(m.wildlife)>=limit) return;
+  if((game.world.turn||0)%animalSpawnEvery()!==0) return;
+  const counts=WILD_BY_BIOME[m.biome]||WILD_BY_BIOME.field;
+  const pool=Object.keys(counts).filter(t=>isAnimalKind(t)&&counts[t]>0);
+  if(!pool.length) return;
+  const a=makeWildlife(pick(pool),m.biome);
+  if(a) m.wildlife.push(a);
+}
+function updateWildlife(dt,now){
+  const m=currentMap();
+  if(!m||!m.wildlife) return;
+  const sec=dt/1000;
+  m.wildlife.forEach(a=>{
+    const def=WILD_KINDS[a.type]; if(!def) return;
+    if(def.kind==='bird'){
+      a.x+=a.dir*a.speed*sec;
+      a.y=a.baseY+Math.sin(now/720+a.phase)*4;
+      if(a.dir>0&&a.x>W+60){ a.x=-60; a.baseY=rnd(def.y[0],def.y[1]); }
+      else if(a.dir<0&&a.x<-60){ a.x=W+60; a.baseY=rnd(def.y[0],def.y[1]); }
+      return;
+    }
+    if(a.rest>0){ a.rest-=dt; return; }
+    const dx=a.tx-a.x, dy=a.ty-a.y, dist=Math.hypot(dx,dy);
+    if(dist<4){
+      a.tx=clamp(a.x+rnd(-110,110),30,W-30);
+      a.ty=clamp(a.y+rnd(-30,30),def.y[0],def.y[1]);
+      a.rest=rnd(def.rest[0],def.rest[1]);
+      return;
+    }
+    const step=Math.min(dist,a.speed*sec);
+    a.x+=dx/dist*step; a.y+=dy/dist*step;
+    if(Math.abs(dx)>1) a.dir=dx>0?1:-1;
+  });
+}
+function drawWildlife(kind,now){
+  const m=currentMap();
+  if(!m||!m.wildlife) return;
+  m.wildlife.forEach(a=>{
+    const def=WILD_KINDS[a.type];
+    if(def.kind!==kind) return;
+    const im=spriteImg(def.sprite);
+    if(!im||im.dataset.ready!=='1') return;
+    const w=def.w*a.scale, h=def.h*a.scale;
+    const flap=kind==='bird'?1+Math.sin(now/def.flap+a.flapPhase)*.16:1;
+    const bob=kind==='animal'?Math.sin(now/130+a.phase)*1.1:0;
+    ctx.save();
+    if(kind==='animal'){
+      ctx.globalAlpha=.18; ctx.fillStyle='#000';
+      ctx.beginPath(); ctx.ellipse(a.x,a.y+h*.42,w*.4,2.5,0,0,6.29); ctx.fill();
+      ctx.globalAlpha=1;
+    }
+    ctx.translate(a.x,a.y+bob);
+    ctx.scale(a.dir,1);
+    ctx.drawImage(im,-w/2,-h*flap/2,w,h*flap);
+    ctx.restore();
+  });
+}
 const DEFAULT_SPELLS={
   warrior:['heal','bless','stun'], mage:['fire','ice','heal','shield','lightning'],
   archer:['poison','wind','heal'], paladin:['heal','light','bless'], angel:['light','heal','shield']
@@ -514,7 +636,8 @@ let progress=loadProgress();
 const SETTINGS_KEY='mm6_settings_v1';
 const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[8,24],monstersAdd:[0,5],itemRate:[1,5],
   shieldVal:[1,10],starVal:[1,10],sound:[0,10],sfx:[0,10],amb:[0,10],music:[0,10],tempo:[300,1200],
-  partySize:[1,3],heroSpeed:[.5,2],monsterSpeed:[.5,2],monsterPower:[.5,2],bonusEvery:[2,20],logLimit:[100,1000]};
+  partySize:[1,3],heroSpeed:[.5,2],monsterSpeed:[.5,2],monsterPower:[.5,2],bonusEvery:[2,20],logLimit:[100,1000],
+  weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
 const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim'];
@@ -548,6 +671,7 @@ function syncSettings(){
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
+    setWeatherCycle:'weatherCycleSteps',setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
@@ -560,6 +684,7 @@ function bindSettings(){
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
+    setWeatherCycle:'weatherCycleSteps',setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{
@@ -858,6 +983,7 @@ function startGame(diffId,a,b){
   game.party=selHero.map((idx,slot)=>makeHeroState(HEROES[idx],slot));
   game.world=generateWorld(d.id);
   setMap(0,null);
+  updateWeatherByTurn();
   game.msg='Добро пожаловать! Ищите босса в дальнем углу карты.';
   phase='play';
   $('start').classList.add('hidden');
@@ -969,7 +1095,8 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     mons.push(spawnMonster(pick(pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
   }
   return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},
-    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier};
+    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
+    wildlife:createWildlife(biome)};
 }
 function spawnMonster(def,tier,x,y,variantId,isBoss,allowVariant){
   const color=MONSTER_COLORS.find(c=>c.id===variantId)||
@@ -1105,11 +1232,14 @@ function afterStep(){
     if(Math.random()<.3){ sx=sx?-0:sx; }
     const nx=e.x+sx,ny=e.y+sy;
     if(nx<0||ny<0||nx>=m.size||ny>=m.size) return;
+    // Животные/монстры не нападают первыми: бой начинается, только если игрок их тронул.
+    if(nx===game.player.x&&ny===game.player.y) return;
     const c=m.cells[ny][nx];
     if(isBlocking(c)||enemyAt(nx,ny)) return;
     e.x=nx; e.y=ny;
-    if(nx===game.player.x&&ny===game.player.y){ startBattle(battleGroup(e),null); return; }
   });
+  updateWeatherByTurn();
+  maybeSpawnAnimal();
   updateParty();
 }
 function addItem(o){
@@ -2415,6 +2545,7 @@ function drawMiniMap(m){
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome];
   drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
+  drawWildlife('bird',now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
   const px=p.px,py=p.py;
   for(let d=2;d>=1;d--){
@@ -2441,6 +2572,7 @@ function drawMap(now){
       }
     }
   }
+  drawWildlife('animal',now);
   m.monsters.forEach(e=>{
     if(!e.alive) return;
     const dx=e.x-px,dy=e.y-py,forward=dx*f[0]+dy*f[1],side=dx*r[0]+dy*r[1];
@@ -2453,6 +2585,7 @@ function drawMap(now){
   });
   const moveBob=p.moveT>0?Math.sin((1-p.moveT)*Math.PI)*2:0;
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
+  weather.draw(ctx); // Осадки поверх поля, но под HUD.
   // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
   panel(10,10,214,86);
   fitText(heroNameText+' · '+party()[0].def.name,126,11,'#ffe6a8',18,22);
@@ -2477,8 +2610,9 @@ function drawMap(now){
   roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
   fitText(game.msg,372,11,'#f3e8cf',134,339);
+  const wLabel=weather.label();
   ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
-  ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот',12,H-8);
+  ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
 }
 
 /* ============================ 12. БОЙ И КАДРЫ ============================ */
@@ -2541,6 +2675,7 @@ function drawBattleScenery(biome,now){
 function drawBattle(now,dt){
   const b=game.battle;
   const m=currentMap(); drawBattleScenery(m?m.biome:'field',now);
+  weather.draw(ctx); // Погода видна и в бою на той же карте.
   ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle='#000'; ctx.fillRect(0,92,W,BF.msgY-92); ctx.restore();
   let hj=0,ej=0;
   if(b.anim){ b.anim.t=Math.max(0,b.anim.t-dt/520);
@@ -2769,6 +2904,16 @@ function regenOutsideBattle(now){
     h.mp=Math.min(h.maxMp,h.mp+ticks*per);
   });
 }
+function weatherCycleSteps(){
+  return clamp(Number(settings&&settings.weatherCycleSteps!=null?settings.weatherCycleSteps:WEATHER_CYCLE_STEPS)||WEATHER_CYCLE_STEPS,10,500);
+}
+function updateWeatherByTurn(){
+  if(!game) return;
+  const m=currentMap(); const biome=BIOMES[(m&&m.biome)||'field']||BIOMES.field;
+  const cfg=Object.assign({}, SEASON_WEATHER[biome.season]||{}, { cycleSteps: weatherCycleSteps() });
+  weather.setSeason(biome.season, cfg);
+  weather.onTurn(game.world.turn||0, cfg);
+}
 function loop(now){
   requestAnimationFrame(loop);
   const dt=Math.min(50,now-last); last=now;
@@ -2780,6 +2925,10 @@ function loop(now){
     const raw=1-p.moveT, t=raw*raw*(3-2*raw);
     p.px=p.fromX+(p.x-p.fromX)*t; p.py=p.fromY+(p.y-p.fromY)*t;
   }
+  const map=currentMap(), biome=BIOMES[(map&&map.biome)||'field']||BIOMES.field;
+  weather.setSeason(biome.season, Object.assign({}, SEASON_WEATHER[biome.season]||{}, { cycleSteps: weatherCycleSteps() }));
+  weather.update(dt);
+  if(!game.battle) updateWildlife(dt,now);
   if(game.battle) drawBattle(now,dt); else drawMap(now);
 }
 requestAnimationFrame(loop);
@@ -2864,6 +3013,8 @@ function craftReport(){
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
+  weather:()=>weather.debug(),
+  setTurn:(n)=>{ if(game){ game.world.turn=Math.max(0,Math.round(n||0)); updateWeatherByTurn(); } return weather.debug(); },
   startBattle:(which)=>{
     if(!game||game.battle) return null;
     if(Array.isArray(which)&&which.length) return startBattle(which.map(e=>(e&&e.maxHp?e:spawnMonster(e,0,0,0,null,false,false))),null);

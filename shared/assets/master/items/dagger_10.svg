@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6fdff"/><stop offset="1" stop-color="#3d95b5"/></linearGradient><radialGradient id="glow"><stop offset="0" stop-color="#7fe3e0" stop-opacity="0.85"/><stop offset="1" stop-color="#7fe3e0" stop-opacity="0"/></radialGradient></defs><g stroke="#241a14" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" >
+      <circle cx="32" cy="17" r="15" fill="url(#glow)"/>
+      <path d="M32 4 L37.6 15 L34.6 28.5 H29.4 L26.4 15 Z" fill="url(#b)"/>
+      <path d="M32 4 L32 28.5" stroke="#eafcff" stroke-width="1" opacity="0.7"/>
+      <path d="M32 4 L29.4 15 L29.4 28.5" stroke="#2b7f9c" stroke-width="0.8" fill="none" opacity="0.6"/>
+      <path d="M32 4 L34.6 15 L34.6 28.5" stroke="#2b7f9c" stroke-width="0.8" fill="none" opacity="0.6"/>
+      <rect x="22" y="28.4" width="20" height="4.2" rx="2" fill="#b9c6d2" stroke="#241a14" stroke-width="1.4"/><path d="M24 29.3 H40" stroke="#eef3f7" stroke-width="1" opacity="0.85"/>
+      <rect x="29" y="32.4" width="6" height="15" rx="2.4" fill="#2c4f7d" stroke="#241a14" stroke-width="1.4"/><path d="M29.4 36 H34.6 M29.4 39 H34.6 M29.4 42 H34.6 M29.4 45 H34.6" stroke="#16283f" stroke-width="1.1" opacity="0.85" fill="none"/>
+      <circle cx="32" cy="51" r="4.6" fill="#b9c6d2" stroke="#241a14" stroke-width="1.4"/><circle cx="32" cy="51" r="1.9" fill="#7fe3e0" stroke="#241a14" stroke-width="1"/><circle cx="31.43" cy="50.335" r="0.608" fill="#ffffff" opacity="0.9"/>
+    </g></svg>

@@ -39,7 +39,25 @@ const GAMES = [
 
 const TEXT_EXT = new Set(['.html', '.js', '.css', '.json']);
 const SKIP_DIRS = new Set(['node_modules', '.git', '_Old']);
-const KNOWN_FOLDERS = new Set(['items', 'ui', 'monsters', 'heroes', 'tiles']);
+const TREE_DIR = path.join(OUT_DIR, 'trees');
+const TREE_BATCH = path.join(OUT_DIR, 'trees-batch.json');
+const TREE_GROUPS = {
+  'Trees - Summer': 'Деревья — Лето',
+  'Trees - Autumn': 'Деревья — Осень',
+  'Trees - Winter': 'Деревья — Зима',
+  'Trees - Spring': 'Деревья — Весна',
+};
+const FLORA_DIR = path.join(OUT_DIR, 'flora');
+const FLORA_BATCH = path.join(OUT_DIR, 'flora-batch.json');
+const FLORA_GROUPS = {
+  Flora: 'Флора',
+};
+const MOUNTAIN_DIR = path.join(OUT_DIR, 'mountains');
+const MOUNTAIN_BATCH = path.join(OUT_DIR, 'mountains-batch.json');
+const MOUNTAIN_GROUPS = {
+  Mountains: 'Горы',
+};
+const KNOWN_FOLDERS = new Set(['items', 'ui', 'monsters', 'heroes', 'tiles', 'wildlife']);
 const HAS_EXT_RE = /\.(png|svg|webp|jpe?g)/i;
 const END_EXT_RE = /\.(png|svg|webp|jpe?g)(?:[?#].*)?$/i;
 
@@ -74,6 +92,7 @@ function detectType(relAsset, file) {
 
   if (rel.startsWith('sprites/heroes/') || rel.startsWith('heroes/')) return 'character';
   if (rel.startsWith('sprites/monsters/') || rel.startsWith('monsters/')) return 'enemy';
+  if (rel.startsWith('wildlife/') || rel.startsWith('sprites/wildlife/')) return 'wildlife';
   if (rel.startsWith('sprites/ui/') || rel.startsWith('ui/')) return 'ui';
   if (
     rel.startsWith('sprites/tiles/') ||
@@ -99,6 +118,14 @@ function collectAssets() {
   for (const root of ASSET_ROOTS) {
     if (!fs.existsSync(root)) continue;
     for (const abs of walk(root)) {
+      // В манифест попадают только файлы ассетов, не служебные .js/.json.
+      // Деревья, флора и горы добавляются отдельными батчами в конец манифеста.
+      if (
+        !HAS_EXT_RE.test(abs) ||
+        abs.startsWith(TREE_DIR + path.sep) ||
+        abs.startsWith(FLORA_DIR + path.sep) ||
+        abs.startsWith(MOUNTAIN_DIR + path.sep)
+      ) continue;
       if (byAbs.has(abs)) continue;
       const relAsset = toPosix(path.relative(root, abs));
       byAbs.set(abs, { abs, root, relAsset });
@@ -178,7 +205,7 @@ function folderFromPrefix(prefix) {
 
 function folderContext(line, folderVars) {
   const context = new Set();
-  const re = /(?:^|[\/\\'"`])(items|ui|monsters|heroes|tiles)\//gi;
+  const re = /(?:^|[\/\\'"`])(items|ui|monsters|heroes|tiles|wildlife)\//gi;
   let match;
   while ((match = re.exec(line))) context.add(match[1].toLowerCase());
 
@@ -411,6 +438,23 @@ function buildManifest(assets, games) {
   });
 }
 
+// Деревья, флора и горы приходят отдельными батчами: их записи дописываются
+// в конец манифеста без пересортировки, с человекочитаемыми названиями групп.
+function collectBatchEntries(batchFile, groupLabels) {
+  if (!fs.existsSync(batchFile)) return [];
+  const batch = JSON.parse(fs.readFileSync(batchFile, 'utf8'));
+  return batch.map((entry) => ({
+    ...entry,
+    // Поле file нужно каталогу ассетов на главной странице.
+    file: path.basename(entry.path),
+    group: groupLabels[entry.group] || entry.group,
+    used_in: entry.used_in || [],
+    refs: entry.refs || [],
+    dynamic: entry.dynamic || false,
+    dynamic_in: entry.dynamic_in || {},
+  }));
+}
+
 function main() {
   const assets = collectAssets().sort((a, b) =>
     a.path.localeCompare(b.path, 'ru', { numeric: true, sensitivity: 'base' })
@@ -422,17 +466,22 @@ function main() {
     return;
   }
 
-  const manifest = buildManifest(assets, GAMES);
+  const legacy = buildManifest(assets, GAMES);
+  const trees = collectBatchEntries(TREE_BATCH, TREE_GROUPS);
+  const flora = collectBatchEntries(FLORA_BATCH, FLORA_GROUPS);
+  const mountains = collectBatchEntries(MOUNTAIN_BATCH, MOUNTAIN_GROUPS);
+  const manifest = [...legacy, ...trees, ...flora, ...mountains];
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 
-  const used = manifest.filter((entry) => entry.used_in.length).length;
-  const dynamic = manifest.filter((entry) => entry.dynamic).length;
+  const used = legacy.filter((entry) => entry.used_in.length).length;
+  const dynamic = legacy.filter((entry) => entry.dynamic).length;
 
   console.log('manifest: ' + relRoot(OUT_FILE));
   console.log('assets: ' + manifest.length + ', used: ' + used + ', dynamic: ' + dynamic);
+  console.log('  trees: ' + trees.length + ', flora: ' + flora.length + ', mountains: ' + mountains.length);
   for (const game of GAMES) {
-    const count = manifest.filter((entry) => entry.used_in.includes(game.id)).length;
+    const count = legacy.filter((entry) => entry.used_in.includes(game.id)).length;
     console.log('  ' + game.label + ': ' + count);
   }
 }

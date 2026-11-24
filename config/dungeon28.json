@@ -1,0 +1,88 @@
+{
+  "game": "dungeon28",
+  "master": "shared/assets/master",
+  "output": "games/dungeon28/assets/sprites/generated",
+  "padding": 12,
+  "presets": {
+    "heroStage": [
+      {
+        "asset": "stages/wooden_background.svg",
+        "role": "background",
+        "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+      },
+      {
+        "asset": "stages/wooden_base.svg",
+        "role": "base",
+        "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+      }
+    ]
+  },
+  "recipes": [
+    {
+      "id": "test_hero_knight_0",
+      "layers": [
+        {
+          "asset": "stages/wooden_background.svg",
+          "role": "background",
+          "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+        },
+        {
+          "asset": "stages/wooden_base.svg",
+          "role": "base",
+          "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+        },
+        {
+          "asset": "heroes/knight_0.png",
+          "role": "hero"
+        }
+      ],
+      "output": "test/hero_knight_0.svg"
+    }
+  ],
+  "recipeGroups": [
+    {
+      "idPrefix": "hero_",
+      "sourceDir": "heroes",
+      "extensions": [".png"],
+      "outputPattern": "heroes/{stem}.svg",
+      "layers": [
+        {
+          "asset": "stages/wooden_background.svg",
+          "role": "background",
+          "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+        },
+        {
+          "asset": "stages/wooden_base.svg",
+          "role": "base",
+          "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+        },
+        {
+          "asset": "{source}",
+          "role": "hero"
+        }
+      ]
+    },
+    {
+      "idPrefix": "monster_",
+      "sourceDir": "monsters",
+      "extensions": [".png"],
+      "outputPattern": "monsters/{stem}.svg",
+      "layers": [
+        {
+          "asset": "stages/wooden_background.svg",
+          "role": "background",
+          "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+        },
+        {
+          "asset": "stages/wooden_base.svg",
+          "role": "base",
+          "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+        },
+        {
+          "asset": "{source}",
+          "role": "monster"
+        }
+      ]
+    }
+  ]
+}

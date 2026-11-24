@@ -225,12 +225,24 @@ export const SHOP_TYPES = [
 ];
 
 export const BIOMES = {
-  field: { name: 'Поле', ground: ['#3f6b3a', '#1f3a24'], road: '#a39064', roadDark: '#5d5238', tree: '#2f6b38', water: '#2b5d8a', rock: '#71717a', accent: '#86efac', scene: 'forest' },
-  village: { name: 'Деревня', ground: ['#56704a', '#273426'], road: '#b09a6b', roadDark: '#63563a', tree: '#3f7d43', water: '#3b6e97', rock: '#8b7f6a', accent: '#fcd34d', scene: 'town' },
-  city: { name: 'Город', ground: ['#5b5b6b', '#2b2b3a'], road: '#9a9a9a', roadDark: '#54545e', tree: '#3c6b42', water: '#2f628c', rock: '#9ca3af', accent: '#fbbf24', scene: 'town' },
-  port: { name: 'Порт', ground: ['#3f6b74', '#1d3540'], road: '#a8a08a', roadDark: '#5c5a4f', tree: '#2f6b48', water: '#1d4ed8', rock: '#7c8a8f', accent: '#7dd3fc', scene: 'port' },
-  mountains: { name: 'Горы', ground: ['#5d5663', '#2a2733'], road: '#8f867a', roadDark: '#524b45', tree: '#3b5d43', water: '#315c80', rock: '#a1a1aa', accent: '#fca5a5', scene: 'cave' }
+  field: { name: 'Поле', season: 'summer', ground: ['#3f6b3a', '#1f3a24'], road: '#a39064', roadDark: '#5d5238', tree: '#2f6b38', water: '#2b5d8a', rock: '#71717a', accent: '#86efac', scene: 'forest' },
+  village: { name: 'Деревня', season: 'spring', ground: ['#56704a', '#273426'], road: '#b09a6b', roadDark: '#63563a', tree: '#3f7d43', water: '#3b6e97', rock: '#8b7f6a', accent: '#fcd34d', scene: 'town' },
+  city: { name: 'Город', season: 'autumn', ground: ['#5b5b6b', '#2b2b3a'], road: '#9a9a9a', roadDark: '#54545e', tree: '#3c6b42', water: '#2f628c', rock: '#9ca3af', accent: '#fbbf24', scene: 'town' },
+  port: { name: 'Порт', season: 'spring', ground: ['#3f6b74', '#1d3540'], road: '#a8a08a', roadDark: '#5c5a4f', tree: '#2f6b48', water: '#1d4ed8', rock: '#7c8a8f', accent: '#7dd3fc', scene: 'port' },
+  mountains: { name: 'Горы', season: 'winter', ground: ['#5d5663', '#2a2733'], road: '#8f867a', roadDark: '#524b45', tree: '#3b5d43', water: '#315c80', rock: '#a1a1aa', accent: '#fca5a5', scene: 'cave' }
 };
+
+// Сезонная зона карты: название и допустимая погода.
+// Зима: снег/ясно, без дождя. Лето: дождь/морось/ясно, без снега. Весна/осень: оба возможны.
+export const SEASON_WEATHER = {
+  spring: { name: 'Весна', defaultWeather: 'rain', allowed: ['clear', 'drizzle', 'rain'] },
+  summer: { name: 'Лето',  defaultWeather: 'drizzle', allowed: ['clear', 'drizzle', 'rain'] },
+  autumn: { name: 'Осень', defaultWeather: 'rain', allowed: ['clear', 'drizzle', 'rain', 'heavy_rain'] },
+  winter: { name: 'Зима',  defaultWeather: 'snow', allowed: ['clear', 'snow', 'heavy_snow'] }
+};
+
+// Цикл смены погоды в шагах игрока. Меняется 1 раз за цикл.
+export const WEATHER_CYCLE_STEPS = 100;
 
 export const DIFFICULTY = [
   { id: 'easy', name: 'Лёгкая', maps: [9, 11], size: [10, 12], tier: 0, monsters: 3, boss: 0, gold: 1.25 },
@@ -280,5 +292,7 @@ export const DEFAULT_SETTINGS = {
   keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false,
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
-  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true
+  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,
+  // Погода/животные.
+  weatherCycleSteps: 100, maxAnimals: 2, animalSpawnEvery: 10
 };

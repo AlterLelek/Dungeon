@@ -281,6 +281,18 @@
             display: block;
             margin: 0 auto;
         }
+        @keyframes tree-crown-sway {
+            0%, 100% { transform: rotate(calc(-1 * var(--sway-angle, 2.4deg))); }
+            50% { transform: rotate(var(--sway-angle, 2.4deg)); }
+        }
+        .asset-table .pic img.tree-sway {
+            transform-origin: 50% 88%;
+            animation: tree-crown-sway var(--sway-duration, 4.8s) ease-in-out infinite;
+            animation-delay: var(--sway-delay, 0s);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .asset-table .pic img.tree-sway { animation: none; }
+        }
         .asset-table .pic .noimg { color: #5c6375; font-size: 11px; }
         .asset-table .asset-loading,
         .asset-table .asset-empty {
@@ -432,6 +444,16 @@
                 : rows.length + ' файлов';
         }
 
+        // Стабильный Seed по пути файла: фаза покачивания не зависит от порядка строк.
+        function swaySeed(value) {
+            let hash = 2166136261;
+            for (let i = 0; i < value.length; i++) {
+                hash ^= value.charCodeAt(i);
+                hash = Math.imul(hash, 16777619);
+            }
+            return hash >>> 0;
+        }
+
         function render(entries) {
             const groups = new Map(TYPE_GROUPS.map((group) => [group.id, []]));
             for (const entry of entries) {
@@ -522,6 +544,20 @@
                     img.decoding = 'async';
                     img.width = 40;
                     img.height = 40;
+
+                    if (entry.type === 'tree' || entry.path.startsWith('assets/trees/')) {
+                        const seed = swaySeed(entry.path);
+                        const duration = 4.2 + (seed % 9) * 0.2;
+                        const uniqueSeed = (seed ^ Math.imul(entry.id || 1, 0x9e3779b9)) >>> 0;
+                        const phase = uniqueSeed / 4294967296;
+                        const angle = 2 + ((seed >>> 16) % 9) / 10;
+
+                        img.classList.add('tree-sway');
+                        img.style.setProperty('--sway-duration', duration.toFixed(2) + 's');
+                        img.style.setProperty('--sway-delay', (-duration * phase) + 's');
+                        img.style.setProperty('--sway-angle', angle.toFixed(2) + 'deg');
+                    }
+
                     img.addEventListener('error', () => {
                         img.remove();
                         const fallback = document.createElement('span');

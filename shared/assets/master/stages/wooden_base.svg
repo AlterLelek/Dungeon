@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Wooden base — векторная подставка под персонажа</title>
+  <defs>
+    <linearGradient id="topWood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b18353"/>
+      <stop offset="0.5" stop-color="#8a5d38"/>
+      <stop offset="1" stop-color="#6d452a"/>
+    </linearGradient>
+    <linearGradient id="frontWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a4f30"/>
+      <stop offset="1" stop-color="#3b2516"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#120a05" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#120a05" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="frontClip">
+      <path d="M232 858 Q512 946 792 858 L792 940 Q512 1030 232 940 Z"/>
+    </clipPath>
+  </defs>
+
+  <ellipse cx="512" cy="920" rx="330" ry="70" fill="url(#shadow)"/>
+  <path d="M232 858 Q512 946 792 858 L792 940 Q512 1030 232 940 Z" fill="url(#frontWood)" stroke="#2b1a0f" stroke-width="8"/>
+  <g clip-path="url(#frontClip)" stroke="#2b1a0f" stroke-width="5" opacity="0.55">
+    <path d="M332 880V990 M432 900V1010 M532 906V1016 M632 900V1010 M732 880V990"/>
+  </g>
+  <g clip-path="url(#frontClip)" stroke="#c08a55" stroke-width="3" opacity="0.3">
+    <path d="M250 884q130 26 264 8t250 -4"/>
+    <path d="M250 928q140 24 270 6t246 -8"/>
+  </g>
+  <ellipse cx="512" cy="858" rx="280" ry="88" fill="url(#topWood)" stroke="#2b1a0f" stroke-width="8"/>
+  <g fill="none" stroke="#5c3a22" stroke-width="4" opacity="0.5">
+    <ellipse cx="512" cy="858" rx="220" ry="66"/>
+    <ellipse cx="512" cy="858" rx="150" ry="42"/>
+  </g>
+  <g fill="none" stroke="#e0b279" stroke-width="3" opacity="0.35">
+    <path d="M300 844q110 -34 220 -8t202 6"/>
+    <path d="M320 878q120 -28 230 -4t170 2"/>
+  </g>
+  <ellipse cx="512" cy="858" rx="280" ry="88" fill="#ffdca3" opacity="0.08"/>
+</svg>

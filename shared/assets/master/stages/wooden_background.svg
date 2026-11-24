@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>Wooden background — векторный фон для композиции героев</title>
+  <defs>
+    <radialGradient id="bgLight" cx="50%" cy="42%" r="62%">
+      <stop offset="0" stop-color="#6b4a30"/>
+      <stop offset="0.55" stop-color="#3b291c"/>
+      <stop offset="1" stop-color="#1a110b"/>
+    </radialGradient>
+    <linearGradient id="plank" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7b5536"/>
+      <stop offset="0.5" stop-color="#5c3d27"/>
+      <stop offset="1" stop-color="#432c1c"/>
+    </linearGradient>
+    <clipPath id="stageClip">
+      <ellipse cx="512" cy="512" rx="440" ry="440"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#stageClip)">
+    <rect x="72" y="72" width="880" height="880" fill="url(#bgLight)"/>
+    <g fill="url(#plank)" opacity="0.85">
+      <rect x="72" y="72" width="880" height="110"/>
+      <rect x="72" y="182" width="880" height="110"/>
+      <rect x="72" y="292" width="880" height="110"/>
+      <rect x="72" y="402" width="880" height="110"/>
+      <rect x="72" y="512" width="880" height="110"/>
+      <rect x="72" y="622" width="880" height="110"/>
+      <rect x="72" y="732" width="880" height="110"/>
+      <rect x="72" y="842" width="880" height="110"/>
+    </g>
+    <g stroke="#2b1b11" stroke-width="3" opacity="0.5">
+      <path d="M72 182H952 M72 292H952 M72 402H952 M72 512H952 M72 622H952 M72 732H952 M72 842H952"/>
+      <path d="M330 72V182 M690 182V292 M250 292V402 M760 402V512 M390 512V622 M820 622V732 M180 732V842 M600 842V952"/>
+    </g>
+    <g stroke="#a87b4e" stroke-width="2" fill="none" opacity="0.28">
+      <path d="M120 130q140 16 290 2t280 8"/>
+      <path d="M100 244q180 -14 340 4t320 -6"/>
+      <path d="M130 360q160 20 330 -2t300 10"/>
+      <path d="M90 470q190 -12 370 6t350 -8"/>
+      <path d="M140 580q150 18 320 -4t330 12"/>
+      <path d="M100 690q180 -14 360 6t340 -10"/>
+      <path d="M130 800q170 18 350 -6t310 8"/>
+      <path d="M110 910q190 -12 380 4t320 -6"/>
+    </g>
+    <ellipse cx="512" cy="470" rx="380" ry="380" fill="#f0c98a" opacity="0.10"/>
+  </g>
+  <ellipse cx="512" cy="512" rx="440" ry="440" fill="none" stroke="#21150d" stroke-width="14" opacity="0.75"/>
+</svg>
