@@ -3777,6 +3777,19 @@
     "dynamic_in": {}
   },
   {
+    "file": "deer.svg",
+    "path": "assets/wildlife/deer.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "eagle.svg",
     "path": "assets/wildlife/eagle.svg",
     "type": "wildlife",
@@ -3803,6 +3816,19 @@
     "dynamic_in": {}
   },
   {
+    "file": "hedgehog.svg",
+    "path": "assets/wildlife/hedgehog.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "rabbit.svg",
     "path": "assets/wildlife/rabbit.svg",
     "type": "wildlife",
@@ -3818,6 +3844,19 @@
   {
     "file": "sparrow.svg",
     "path": "assets/wildlife/sparrow.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "squirrel.svg",
+    "path": "assets/wildlife/squirrel.svg",
     "type": "wildlife",
     "used_in": [
       "adventurer"

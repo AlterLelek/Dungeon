@@ -503,15 +503,18 @@ const WILD_KINDS={
   sparrow:{kind:'bird', sprite:WILD_BASE+'sparrow.svg', w:24, h:18, speed:[48,76], y:[26,112], flap:190},
   eagle:  {kind:'bird', sprite:WILD_BASE+'eagle.svg',   w:46, h:29, speed:[26,42], y:[22,88],  flap:520},
   rabbit: {kind:'animal', sprite:WILD_BASE+'rabbit.svg', w:25, h:22, speed:[11,20], y:[214,318], rest:[700,2100]},
-  fox:    {kind:'animal', sprite:WILD_BASE+'fox.svg',    w:38, h:24, speed:[17,28], y:[232,326], rest:[500,1600]}
+  fox:    {kind:'animal', sprite:WILD_BASE+'fox.svg',    w:38, h:24, speed:[17,28], y:[232,326], rest:[500,1600]},
+  squirrel:{kind:'animal', sprite:WILD_BASE+'squirrel.svg', w:28, h:23, speed:[14,24], y:[208,310], rest:[600,1700]},
+  hedgehog:{kind:'animal', sprite:WILD_BASE+'hedgehog.svg', w:26, h:17, speed:[6,11], y:[250,330], rest:[900,2300]},
+  deer:   {kind:'animal', sprite:WILD_BASE+'deer.svg',    w:40, h:33, speed:[20,32], y:[210,320], rest:[800,2200]}
 };
 // Цели по животным: небольшое значение по умолчанию, настраивается через DEFAULT_SETTINGS.maxAnimals.
 const WILD_BY_BIOME={
-  field:    {sparrow:4, eagle:1, rabbit:2, fox:1},
-  village:  {sparrow:3, eagle:1, rabbit:1, fox:1},
-  city:     {sparrow:3, eagle:0, rabbit:0, fox:1},
-  port:     {sparrow:4, eagle:2, rabbit:0, fox:0},
-  mountains:{sparrow:1, eagle:3, rabbit:1, fox:1}
+  field:    {sparrow:4, eagle:1, rabbit:2, fox:1, squirrel:1, hedgehog:1, deer:1},
+  village:  {sparrow:3, eagle:1, rabbit:1, fox:1, squirrel:1, hedgehog:1, deer:0},
+  city:     {sparrow:3, eagle:0, rabbit:0, fox:1, squirrel:0, hedgehog:0, deer:0},
+  port:     {sparrow:4, eagle:2, rabbit:0, fox:0, squirrel:0, hedgehog:0, deer:0},
+  mountains:{sparrow:1, eagle:3, rabbit:1, fox:1, squirrel:1, hedgehog:0, deer:1}
 };
 const MAX_ANIMALS_DEFAULT=clamp(Number(DEFAULT_SETTINGS.maxAnimals)||2,0,8);
 const ANIMAL_SPAWN_EVERY_DEFAULT=clamp(Number(DEFAULT_SETTINGS.animalSpawnEvery)||10,1,999);

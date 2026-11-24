@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="22" viewBox="0 0 34 22">
+  <title>Ёж</title>
+  <g stroke="#241a14" stroke-width="0.8" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M3 18c0-7 5-12 12-12s12 5 12 12z" fill="#6b4426"/>
+    <path d="M5 15 3 9l5 3M9 11 8 4l4 5M14 9l1-6 3 6M20 10l4-5-1 7M24 14l5-3-3 6" fill="#a9481c"/>
+    <path d="M8 17c3 1.4 8 1.6 12 0" fill="none" stroke="#4a2e18" stroke-width="0.8"/>
+    <ellipse cx="25" cy="16" rx="6" ry="4" fill="#d6b18c"/>
+    <circle cx="30" cy="15" r="1.6" fill="#241a14" stroke="none"/>
+    <circle cx="27" cy="14" r="0.9" fill="#16120f" stroke="none"/>
+    <circle cx="27.2" cy="13.8" r="0.3" fill="#f5e6d3" stroke="none"/>
+    <path d="M9 20h2m14 0h2" fill="none" stroke="#4a2e18" stroke-width="1.5"/>
+  </g>
+</svg>
