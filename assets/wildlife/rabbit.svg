@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="28" viewBox="0 0 32 28">
+  <title>Заяц</title>
+  <g stroke-linejoin="round">
+    <ellipse cx="15" cy="19" rx="10" ry="6" fill="#b9b3a7"/>
+    <circle cx="5" cy="19" r="3.5" fill="#e7e5e1"/>
+    <ellipse cx="12" cy="24" rx="6" ry="3" fill="#a8a298"/>
+    <circle cx="22" cy="15" r="5.2" fill="#cbc5b8"/>
+    <ellipse cx="20" cy="7" rx="2.4" ry="6" transform="rotate(-14 20 7)" fill="#cbc5b8"/>
+    <ellipse cx="25" cy="8" rx="2.4" ry="5.5" transform="rotate(9 25 8)" fill="#cbc5b8"/>
+    <ellipse cx="20" cy="7" rx="1" ry="4.1" transform="rotate(-14 20 7)" fill="#e3b7b4"/>
+    <ellipse cx="25" cy="8" rx="1" ry="3.7" transform="rotate(9 25 8)" fill="#e3b7b4"/>
+    <circle cx="24" cy="14" r="1" fill="#1d1a17"/>
+    <circle cx="27" cy="17" r="1" fill="#c27c7c"/>
+    <path d="M8 24h5" stroke="#8f887e" stroke-width="1.4" stroke-linecap="round"/>
+  </g>
+</svg>

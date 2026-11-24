@@ -1,5 +1,57 @@
 [
   {
+    "file": "eagle.svg",
+    "path": "assets/wildlife/eagle.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "fox.svg",
+    "path": "assets/wildlife/fox.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "rabbit.svg",
+    "path": "assets/wildlife/rabbit.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sparrow.svg",
+    "path": "assets/wildlife/sparrow.svg",
+    "type": "wildlife",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "angel_0.png",
     "path": "games/dungeon28/assets/sprites/heroes/angel_0.png",
     "type": "character",
@@ -1369,15 +1421,6 @@
     "dynamic_in": {}
   },
   {
-    "file": "staff_1.png",
-    "path": "games/dungeon28/assets/sprites/items/staff_1.png",
-    "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
     "file": "staff_1.svg",
     "path": "games/dungeon28/assets/sprites/items/staff_1.svg",
     "type": "weapon",
@@ -1387,26 +1430,8 @@
     "dynamic_in": {}
   },
   {
-    "file": "staff_2.png",
-    "path": "games/dungeon28/assets/sprites/items/staff_2.png",
-    "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
     "file": "staff_2.svg",
     "path": "games/dungeon28/assets/sprites/items/staff_2.svg",
-    "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "staff_3.png",
-    "path": "games/dungeon28/assets/sprites/items/staff_3.png",
     "type": "weapon",
     "used_in": [],
     "refs": [],
@@ -3116,6 +3141,6616 @@
     "refs": [
       "games/mm6/data.js"
     ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 234,
+    "path": "assets/trees/summer/wide_oak_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 235,
+    "path": "assets/trees/summer/slender_birch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 236,
+    "path": "assets/trees/summer/bushy_pine_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 237,
+    "path": "assets/trees/summer/curved_willow_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 238,
+    "path": "assets/trees/summer/gnarled_elm_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 239,
+    "path": "assets/trees/summer/tall_cedar_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 240,
+    "path": "assets/trees/summer/cluster_rowan_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 241,
+    "path": "assets/trees/summer/spiky_fir_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 242,
+    "path": "assets/trees/summer/drooping_larch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 243,
+    "path": "assets/trees/summer/dense_chestnut_1.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 244,
+    "path": "assets/trees/summer/wide_oak_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 245,
+    "path": "assets/trees/summer/slender_birch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 246,
+    "path": "assets/trees/summer/bushy_pine_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 247,
+    "path": "assets/trees/summer/curved_willow_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 248,
+    "path": "assets/trees/summer/gnarled_elm_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 249,
+    "path": "assets/trees/summer/tall_cedar_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 250,
+    "path": "assets/trees/summer/cluster_rowan_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 251,
+    "path": "assets/trees/summer/spiky_fir_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 252,
+    "path": "assets/trees/summer/drooping_larch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 253,
+    "path": "assets/trees/summer/dense_chestnut_2.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 254,
+    "path": "assets/trees/summer/wide_oak_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 255,
+    "path": "assets/trees/summer/slender_birch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 256,
+    "path": "assets/trees/summer/bushy_pine_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 257,
+    "path": "assets/trees/summer/curved_willow_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 258,
+    "path": "assets/trees/summer/gnarled_elm_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 259,
+    "path": "assets/trees/summer/tall_cedar_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 260,
+    "path": "assets/trees/summer/cluster_rowan_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 261,
+    "path": "assets/trees/summer/spiky_fir_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 262,
+    "path": "assets/trees/summer/drooping_larch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 263,
+    "path": "assets/trees/summer/dense_chestnut_3.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 264,
+    "path": "assets/trees/summer/wide_oak_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 265,
+    "path": "assets/trees/summer/slender_birch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 266,
+    "path": "assets/trees/summer/bushy_pine_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 267,
+    "path": "assets/trees/summer/curved_willow_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 268,
+    "path": "assets/trees/summer/gnarled_elm_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 269,
+    "path": "assets/trees/summer/tall_cedar_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 270,
+    "path": "assets/trees/summer/cluster_rowan_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 271,
+    "path": "assets/trees/summer/spiky_fir_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 272,
+    "path": "assets/trees/summer/drooping_larch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 273,
+    "path": "assets/trees/summer/dense_chestnut_4.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 274,
+    "path": "assets/trees/summer/wide_oak_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 275,
+    "path": "assets/trees/summer/slender_birch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 276,
+    "path": "assets/trees/summer/bushy_pine_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 277,
+    "path": "assets/trees/summer/curved_willow_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 278,
+    "path": "assets/trees/summer/gnarled_elm_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 279,
+    "path": "assets/trees/summer/tall_cedar_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 280,
+    "path": "assets/trees/summer/cluster_rowan_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 281,
+    "path": "assets/trees/summer/spiky_fir_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 282,
+    "path": "assets/trees/summer/drooping_larch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 283,
+    "path": "assets/trees/summer/dense_chestnut_5.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 284,
+    "path": "assets/trees/summer/wide_oak_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 285,
+    "path": "assets/trees/summer/slender_birch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 286,
+    "path": "assets/trees/summer/bushy_pine_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 287,
+    "path": "assets/trees/summer/curved_willow_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 288,
+    "path": "assets/trees/summer/gnarled_elm_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 289,
+    "path": "assets/trees/summer/tall_cedar_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 290,
+    "path": "assets/trees/summer/cluster_rowan_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 291,
+    "path": "assets/trees/summer/spiky_fir_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 292,
+    "path": "assets/trees/summer/drooping_larch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 293,
+    "path": "assets/trees/summer/dense_chestnut_6.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 294,
+    "path": "assets/trees/summer/wide_oak_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 295,
+    "path": "assets/trees/summer/slender_birch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 296,
+    "path": "assets/trees/summer/bushy_pine_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 297,
+    "path": "assets/trees/summer/curved_willow_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 298,
+    "path": "assets/trees/summer/gnarled_elm_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 299,
+    "path": "assets/trees/summer/tall_cedar_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 300,
+    "path": "assets/trees/summer/cluster_rowan_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 301,
+    "path": "assets/trees/summer/spiky_fir_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 302,
+    "path": "assets/trees/summer/drooping_larch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 303,
+    "path": "assets/trees/summer/dense_chestnut_7.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 304,
+    "path": "assets/trees/summer/wide_oak_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 305,
+    "path": "assets/trees/summer/slender_birch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 306,
+    "path": "assets/trees/summer/bushy_pine_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 307,
+    "path": "assets/trees/summer/curved_willow_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 308,
+    "path": "assets/trees/summer/gnarled_elm_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 309,
+    "path": "assets/trees/summer/tall_cedar_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 310,
+    "path": "assets/trees/summer/cluster_rowan_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 311,
+    "path": "assets/trees/summer/spiky_fir_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 312,
+    "path": "assets/trees/summer/drooping_larch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 313,
+    "path": "assets/trees/summer/dense_chestnut_8.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 314,
+    "path": "assets/trees/summer/wide_oak_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 315,
+    "path": "assets/trees/summer/slender_birch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 316,
+    "path": "assets/trees/summer/bushy_pine_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 317,
+    "path": "assets/trees/summer/curved_willow_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 318,
+    "path": "assets/trees/summer/gnarled_elm_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 319,
+    "path": "assets/trees/summer/tall_cedar_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 320,
+    "path": "assets/trees/summer/cluster_rowan_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 321,
+    "path": "assets/trees/summer/spiky_fir_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 322,
+    "path": "assets/trees/summer/drooping_larch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 323,
+    "path": "assets/trees/summer/dense_chestnut_9.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 324,
+    "path": "assets/trees/summer/wide_oak_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "wide_oak"
+    ],
+    "file": "wide_oak_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 325,
+    "path": "assets/trees/summer/slender_birch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "slender_birch"
+    ],
+    "file": "slender_birch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 326,
+    "path": "assets/trees/summer/bushy_pine_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 327,
+    "path": "assets/trees/summer/curved_willow_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "curved_willow"
+    ],
+    "file": "curved_willow_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 328,
+    "path": "assets/trees/summer/gnarled_elm_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 329,
+    "path": "assets/trees/summer/tall_cedar_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 330,
+    "path": "assets/trees/summer/cluster_rowan_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 331,
+    "path": "assets/trees/summer/spiky_fir_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 332,
+    "path": "assets/trees/summer/drooping_larch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 333,
+    "path": "assets/trees/summer/dense_chestnut_10.svg",
+    "type": "tree",
+    "group": "Деревья — Лето",
+    "tags": [
+      "summer",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 334,
+    "path": "assets/trees/autumn/wide_oak_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 335,
+    "path": "assets/trees/autumn/slender_birch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 336,
+    "path": "assets/trees/autumn/bushy_pine_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 337,
+    "path": "assets/trees/autumn/curved_willow_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 338,
+    "path": "assets/trees/autumn/gnarled_elm_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 339,
+    "path": "assets/trees/autumn/tall_cedar_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 340,
+    "path": "assets/trees/autumn/cluster_rowan_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 341,
+    "path": "assets/trees/autumn/spiky_fir_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 342,
+    "path": "assets/trees/autumn/drooping_larch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 343,
+    "path": "assets/trees/autumn/dense_chestnut_1.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 344,
+    "path": "assets/trees/autumn/wide_oak_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 345,
+    "path": "assets/trees/autumn/slender_birch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 346,
+    "path": "assets/trees/autumn/bushy_pine_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 347,
+    "path": "assets/trees/autumn/curved_willow_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 348,
+    "path": "assets/trees/autumn/gnarled_elm_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 349,
+    "path": "assets/trees/autumn/tall_cedar_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 350,
+    "path": "assets/trees/autumn/cluster_rowan_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 351,
+    "path": "assets/trees/autumn/spiky_fir_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 352,
+    "path": "assets/trees/autumn/drooping_larch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 353,
+    "path": "assets/trees/autumn/dense_chestnut_2.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 354,
+    "path": "assets/trees/autumn/wide_oak_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 355,
+    "path": "assets/trees/autumn/slender_birch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 356,
+    "path": "assets/trees/autumn/bushy_pine_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 357,
+    "path": "assets/trees/autumn/curved_willow_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 358,
+    "path": "assets/trees/autumn/gnarled_elm_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 359,
+    "path": "assets/trees/autumn/tall_cedar_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 360,
+    "path": "assets/trees/autumn/cluster_rowan_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 361,
+    "path": "assets/trees/autumn/spiky_fir_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 362,
+    "path": "assets/trees/autumn/drooping_larch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 363,
+    "path": "assets/trees/autumn/dense_chestnut_3.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 364,
+    "path": "assets/trees/autumn/wide_oak_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 365,
+    "path": "assets/trees/autumn/slender_birch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 366,
+    "path": "assets/trees/autumn/bushy_pine_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 367,
+    "path": "assets/trees/autumn/curved_willow_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 368,
+    "path": "assets/trees/autumn/gnarled_elm_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 369,
+    "path": "assets/trees/autumn/tall_cedar_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 370,
+    "path": "assets/trees/autumn/cluster_rowan_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 371,
+    "path": "assets/trees/autumn/spiky_fir_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 372,
+    "path": "assets/trees/autumn/drooping_larch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 373,
+    "path": "assets/trees/autumn/dense_chestnut_4.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 374,
+    "path": "assets/trees/autumn/wide_oak_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 375,
+    "path": "assets/trees/autumn/slender_birch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 376,
+    "path": "assets/trees/autumn/bushy_pine_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 377,
+    "path": "assets/trees/autumn/curved_willow_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 378,
+    "path": "assets/trees/autumn/gnarled_elm_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 379,
+    "path": "assets/trees/autumn/tall_cedar_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 380,
+    "path": "assets/trees/autumn/cluster_rowan_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 381,
+    "path": "assets/trees/autumn/spiky_fir_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 382,
+    "path": "assets/trees/autumn/drooping_larch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 383,
+    "path": "assets/trees/autumn/dense_chestnut_5.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 384,
+    "path": "assets/trees/autumn/wide_oak_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 385,
+    "path": "assets/trees/autumn/slender_birch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 386,
+    "path": "assets/trees/autumn/bushy_pine_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 387,
+    "path": "assets/trees/autumn/curved_willow_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 388,
+    "path": "assets/trees/autumn/gnarled_elm_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 389,
+    "path": "assets/trees/autumn/tall_cedar_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 390,
+    "path": "assets/trees/autumn/cluster_rowan_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 391,
+    "path": "assets/trees/autumn/spiky_fir_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 392,
+    "path": "assets/trees/autumn/drooping_larch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 393,
+    "path": "assets/trees/autumn/dense_chestnut_6.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 394,
+    "path": "assets/trees/autumn/wide_oak_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 395,
+    "path": "assets/trees/autumn/slender_birch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 396,
+    "path": "assets/trees/autumn/bushy_pine_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 397,
+    "path": "assets/trees/autumn/curved_willow_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 398,
+    "path": "assets/trees/autumn/gnarled_elm_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 399,
+    "path": "assets/trees/autumn/tall_cedar_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 400,
+    "path": "assets/trees/autumn/cluster_rowan_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 401,
+    "path": "assets/trees/autumn/spiky_fir_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 402,
+    "path": "assets/trees/autumn/drooping_larch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 403,
+    "path": "assets/trees/autumn/dense_chestnut_7.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 404,
+    "path": "assets/trees/autumn/wide_oak_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 405,
+    "path": "assets/trees/autumn/slender_birch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 406,
+    "path": "assets/trees/autumn/bushy_pine_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 407,
+    "path": "assets/trees/autumn/curved_willow_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 408,
+    "path": "assets/trees/autumn/gnarled_elm_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 409,
+    "path": "assets/trees/autumn/tall_cedar_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 410,
+    "path": "assets/trees/autumn/cluster_rowan_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 411,
+    "path": "assets/trees/autumn/spiky_fir_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 412,
+    "path": "assets/trees/autumn/drooping_larch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 413,
+    "path": "assets/trees/autumn/dense_chestnut_8.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 414,
+    "path": "assets/trees/autumn/wide_oak_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 415,
+    "path": "assets/trees/autumn/slender_birch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 416,
+    "path": "assets/trees/autumn/bushy_pine_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 417,
+    "path": "assets/trees/autumn/curved_willow_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 418,
+    "path": "assets/trees/autumn/gnarled_elm_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 419,
+    "path": "assets/trees/autumn/tall_cedar_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 420,
+    "path": "assets/trees/autumn/cluster_rowan_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 421,
+    "path": "assets/trees/autumn/spiky_fir_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 422,
+    "path": "assets/trees/autumn/drooping_larch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 423,
+    "path": "assets/trees/autumn/dense_chestnut_9.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 424,
+    "path": "assets/trees/autumn/wide_oak_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "wide_oak"
+    ],
+    "file": "wide_oak_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 425,
+    "path": "assets/trees/autumn/slender_birch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "slender_birch"
+    ],
+    "file": "slender_birch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 426,
+    "path": "assets/trees/autumn/bushy_pine_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 427,
+    "path": "assets/trees/autumn/curved_willow_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "curved_willow"
+    ],
+    "file": "curved_willow_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 428,
+    "path": "assets/trees/autumn/gnarled_elm_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 429,
+    "path": "assets/trees/autumn/tall_cedar_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 430,
+    "path": "assets/trees/autumn/cluster_rowan_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 431,
+    "path": "assets/trees/autumn/spiky_fir_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 432,
+    "path": "assets/trees/autumn/drooping_larch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 433,
+    "path": "assets/trees/autumn/dense_chestnut_10.svg",
+    "type": "tree",
+    "group": "Деревья — Осень",
+    "tags": [
+      "autumn",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 434,
+    "path": "assets/trees/winter/wide_oak_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 435,
+    "path": "assets/trees/winter/slender_birch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 436,
+    "path": "assets/trees/winter/bushy_pine_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 437,
+    "path": "assets/trees/winter/curved_willow_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 438,
+    "path": "assets/trees/winter/gnarled_elm_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 439,
+    "path": "assets/trees/winter/tall_cedar_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 440,
+    "path": "assets/trees/winter/cluster_rowan_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 441,
+    "path": "assets/trees/winter/spiky_fir_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 442,
+    "path": "assets/trees/winter/drooping_larch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 443,
+    "path": "assets/trees/winter/dense_chestnut_1.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 444,
+    "path": "assets/trees/winter/wide_oak_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 445,
+    "path": "assets/trees/winter/slender_birch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 446,
+    "path": "assets/trees/winter/bushy_pine_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 447,
+    "path": "assets/trees/winter/curved_willow_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 448,
+    "path": "assets/trees/winter/gnarled_elm_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 449,
+    "path": "assets/trees/winter/tall_cedar_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 450,
+    "path": "assets/trees/winter/cluster_rowan_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 451,
+    "path": "assets/trees/winter/spiky_fir_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 452,
+    "path": "assets/trees/winter/drooping_larch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 453,
+    "path": "assets/trees/winter/dense_chestnut_2.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 454,
+    "path": "assets/trees/winter/wide_oak_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 455,
+    "path": "assets/trees/winter/slender_birch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 456,
+    "path": "assets/trees/winter/bushy_pine_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 457,
+    "path": "assets/trees/winter/curved_willow_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 458,
+    "path": "assets/trees/winter/gnarled_elm_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 459,
+    "path": "assets/trees/winter/tall_cedar_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 460,
+    "path": "assets/trees/winter/cluster_rowan_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 461,
+    "path": "assets/trees/winter/spiky_fir_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 462,
+    "path": "assets/trees/winter/drooping_larch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 463,
+    "path": "assets/trees/winter/dense_chestnut_3.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 464,
+    "path": "assets/trees/winter/wide_oak_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 465,
+    "path": "assets/trees/winter/slender_birch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 466,
+    "path": "assets/trees/winter/bushy_pine_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 467,
+    "path": "assets/trees/winter/curved_willow_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 468,
+    "path": "assets/trees/winter/gnarled_elm_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 469,
+    "path": "assets/trees/winter/tall_cedar_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 470,
+    "path": "assets/trees/winter/cluster_rowan_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 471,
+    "path": "assets/trees/winter/spiky_fir_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 472,
+    "path": "assets/trees/winter/drooping_larch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 473,
+    "path": "assets/trees/winter/dense_chestnut_4.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 474,
+    "path": "assets/trees/winter/wide_oak_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 475,
+    "path": "assets/trees/winter/slender_birch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 476,
+    "path": "assets/trees/winter/bushy_pine_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 477,
+    "path": "assets/trees/winter/curved_willow_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 478,
+    "path": "assets/trees/winter/gnarled_elm_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 479,
+    "path": "assets/trees/winter/tall_cedar_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 480,
+    "path": "assets/trees/winter/cluster_rowan_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 481,
+    "path": "assets/trees/winter/spiky_fir_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 482,
+    "path": "assets/trees/winter/drooping_larch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 483,
+    "path": "assets/trees/winter/dense_chestnut_5.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 484,
+    "path": "assets/trees/winter/wide_oak_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 485,
+    "path": "assets/trees/winter/slender_birch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 486,
+    "path": "assets/trees/winter/bushy_pine_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 487,
+    "path": "assets/trees/winter/curved_willow_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 488,
+    "path": "assets/trees/winter/gnarled_elm_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 489,
+    "path": "assets/trees/winter/tall_cedar_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 490,
+    "path": "assets/trees/winter/cluster_rowan_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 491,
+    "path": "assets/trees/winter/spiky_fir_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 492,
+    "path": "assets/trees/winter/drooping_larch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 493,
+    "path": "assets/trees/winter/dense_chestnut_6.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 494,
+    "path": "assets/trees/winter/wide_oak_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 495,
+    "path": "assets/trees/winter/slender_birch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 496,
+    "path": "assets/trees/winter/bushy_pine_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 497,
+    "path": "assets/trees/winter/curved_willow_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 498,
+    "path": "assets/trees/winter/gnarled_elm_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 499,
+    "path": "assets/trees/winter/tall_cedar_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 500,
+    "path": "assets/trees/winter/cluster_rowan_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 501,
+    "path": "assets/trees/winter/spiky_fir_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 502,
+    "path": "assets/trees/winter/drooping_larch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 503,
+    "path": "assets/trees/winter/dense_chestnut_7.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 504,
+    "path": "assets/trees/winter/wide_oak_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 505,
+    "path": "assets/trees/winter/slender_birch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 506,
+    "path": "assets/trees/winter/bushy_pine_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 507,
+    "path": "assets/trees/winter/curved_willow_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 508,
+    "path": "assets/trees/winter/gnarled_elm_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 509,
+    "path": "assets/trees/winter/tall_cedar_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 510,
+    "path": "assets/trees/winter/cluster_rowan_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 511,
+    "path": "assets/trees/winter/spiky_fir_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 512,
+    "path": "assets/trees/winter/drooping_larch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 513,
+    "path": "assets/trees/winter/dense_chestnut_8.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 514,
+    "path": "assets/trees/winter/wide_oak_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 515,
+    "path": "assets/trees/winter/slender_birch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 516,
+    "path": "assets/trees/winter/bushy_pine_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 517,
+    "path": "assets/trees/winter/curved_willow_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 518,
+    "path": "assets/trees/winter/gnarled_elm_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 519,
+    "path": "assets/trees/winter/tall_cedar_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 520,
+    "path": "assets/trees/winter/cluster_rowan_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 521,
+    "path": "assets/trees/winter/spiky_fir_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 522,
+    "path": "assets/trees/winter/drooping_larch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 523,
+    "path": "assets/trees/winter/dense_chestnut_9.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 524,
+    "path": "assets/trees/winter/wide_oak_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "wide_oak"
+    ],
+    "file": "wide_oak_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 525,
+    "path": "assets/trees/winter/slender_birch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "slender_birch"
+    ],
+    "file": "slender_birch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 526,
+    "path": "assets/trees/winter/bushy_pine_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 527,
+    "path": "assets/trees/winter/curved_willow_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "curved_willow"
+    ],
+    "file": "curved_willow_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 528,
+    "path": "assets/trees/winter/gnarled_elm_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 529,
+    "path": "assets/trees/winter/tall_cedar_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 530,
+    "path": "assets/trees/winter/cluster_rowan_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 531,
+    "path": "assets/trees/winter/spiky_fir_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 532,
+    "path": "assets/trees/winter/drooping_larch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 533,
+    "path": "assets/trees/winter/dense_chestnut_10.svg",
+    "type": "tree",
+    "group": "Деревья — Зима",
+    "tags": [
+      "winter",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 534,
+    "path": "assets/trees/spring/wide_oak_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 535,
+    "path": "assets/trees/spring/slender_birch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 536,
+    "path": "assets/trees/spring/bushy_pine_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 537,
+    "path": "assets/trees/spring/curved_willow_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 538,
+    "path": "assets/trees/spring/gnarled_elm_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 539,
+    "path": "assets/trees/spring/tall_cedar_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 540,
+    "path": "assets/trees/spring/cluster_rowan_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 541,
+    "path": "assets/trees/spring/spiky_fir_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 542,
+    "path": "assets/trees/spring/drooping_larch_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 543,
+    "path": "assets/trees/spring/dense_chestnut_1.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 544,
+    "path": "assets/trees/spring/wide_oak_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 545,
+    "path": "assets/trees/spring/slender_birch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 546,
+    "path": "assets/trees/spring/bushy_pine_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 547,
+    "path": "assets/trees/spring/curved_willow_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 548,
+    "path": "assets/trees/spring/gnarled_elm_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 549,
+    "path": "assets/trees/spring/tall_cedar_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 550,
+    "path": "assets/trees/spring/cluster_rowan_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 551,
+    "path": "assets/trees/spring/spiky_fir_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 552,
+    "path": "assets/trees/spring/drooping_larch_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 553,
+    "path": "assets/trees/spring/dense_chestnut_2.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 554,
+    "path": "assets/trees/spring/wide_oak_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 555,
+    "path": "assets/trees/spring/slender_birch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 556,
+    "path": "assets/trees/spring/bushy_pine_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 557,
+    "path": "assets/trees/spring/curved_willow_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 558,
+    "path": "assets/trees/spring/gnarled_elm_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 559,
+    "path": "assets/trees/spring/tall_cedar_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 560,
+    "path": "assets/trees/spring/cluster_rowan_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 561,
+    "path": "assets/trees/spring/spiky_fir_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 562,
+    "path": "assets/trees/spring/drooping_larch_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 563,
+    "path": "assets/trees/spring/dense_chestnut_3.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 564,
+    "path": "assets/trees/spring/wide_oak_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 565,
+    "path": "assets/trees/spring/slender_birch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 566,
+    "path": "assets/trees/spring/bushy_pine_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 567,
+    "path": "assets/trees/spring/curved_willow_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 568,
+    "path": "assets/trees/spring/gnarled_elm_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 569,
+    "path": "assets/trees/spring/tall_cedar_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 570,
+    "path": "assets/trees/spring/cluster_rowan_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 571,
+    "path": "assets/trees/spring/spiky_fir_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 572,
+    "path": "assets/trees/spring/drooping_larch_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 573,
+    "path": "assets/trees/spring/dense_chestnut_4.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 574,
+    "path": "assets/trees/spring/wide_oak_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 575,
+    "path": "assets/trees/spring/slender_birch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 576,
+    "path": "assets/trees/spring/bushy_pine_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 577,
+    "path": "assets/trees/spring/curved_willow_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 578,
+    "path": "assets/trees/spring/gnarled_elm_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 579,
+    "path": "assets/trees/spring/tall_cedar_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 580,
+    "path": "assets/trees/spring/cluster_rowan_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 581,
+    "path": "assets/trees/spring/spiky_fir_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 582,
+    "path": "assets/trees/spring/drooping_larch_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 583,
+    "path": "assets/trees/spring/dense_chestnut_5.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 584,
+    "path": "assets/trees/spring/wide_oak_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 585,
+    "path": "assets/trees/spring/slender_birch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 586,
+    "path": "assets/trees/spring/bushy_pine_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 587,
+    "path": "assets/trees/spring/curved_willow_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 588,
+    "path": "assets/trees/spring/gnarled_elm_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 589,
+    "path": "assets/trees/spring/tall_cedar_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 590,
+    "path": "assets/trees/spring/cluster_rowan_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 591,
+    "path": "assets/trees/spring/spiky_fir_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 592,
+    "path": "assets/trees/spring/drooping_larch_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 593,
+    "path": "assets/trees/spring/dense_chestnut_6.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 594,
+    "path": "assets/trees/spring/wide_oak_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 595,
+    "path": "assets/trees/spring/slender_birch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 596,
+    "path": "assets/trees/spring/bushy_pine_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 597,
+    "path": "assets/trees/spring/curved_willow_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 598,
+    "path": "assets/trees/spring/gnarled_elm_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 599,
+    "path": "assets/trees/spring/tall_cedar_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 600,
+    "path": "assets/trees/spring/cluster_rowan_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 601,
+    "path": "assets/trees/spring/spiky_fir_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 602,
+    "path": "assets/trees/spring/drooping_larch_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 603,
+    "path": "assets/trees/spring/dense_chestnut_7.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 604,
+    "path": "assets/trees/spring/wide_oak_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 605,
+    "path": "assets/trees/spring/slender_birch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 606,
+    "path": "assets/trees/spring/bushy_pine_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 607,
+    "path": "assets/trees/spring/curved_willow_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 608,
+    "path": "assets/trees/spring/gnarled_elm_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 609,
+    "path": "assets/trees/spring/tall_cedar_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 610,
+    "path": "assets/trees/spring/cluster_rowan_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 611,
+    "path": "assets/trees/spring/spiky_fir_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 612,
+    "path": "assets/trees/spring/drooping_larch_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 613,
+    "path": "assets/trees/spring/dense_chestnut_8.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 614,
+    "path": "assets/trees/spring/wide_oak_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 615,
+    "path": "assets/trees/spring/slender_birch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 616,
+    "path": "assets/trees/spring/bushy_pine_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 617,
+    "path": "assets/trees/spring/curved_willow_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 618,
+    "path": "assets/trees/spring/gnarled_elm_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 619,
+    "path": "assets/trees/spring/tall_cedar_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 620,
+    "path": "assets/trees/spring/cluster_rowan_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 621,
+    "path": "assets/trees/spring/spiky_fir_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 622,
+    "path": "assets/trees/spring/drooping_larch_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 623,
+    "path": "assets/trees/spring/dense_chestnut_9.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 624,
+    "path": "assets/trees/spring/wide_oak_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "wide_oak"
+    ],
+    "file": "wide_oak_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 625,
+    "path": "assets/trees/spring/slender_birch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "slender_birch"
+    ],
+    "file": "slender_birch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 626,
+    "path": "assets/trees/spring/bushy_pine_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "bushy_pine"
+    ],
+    "file": "bushy_pine_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 627,
+    "path": "assets/trees/spring/curved_willow_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "curved_willow"
+    ],
+    "file": "curved_willow_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 628,
+    "path": "assets/trees/spring/gnarled_elm_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "gnarled_elm"
+    ],
+    "file": "gnarled_elm_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 629,
+    "path": "assets/trees/spring/tall_cedar_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "tall_cedar"
+    ],
+    "file": "tall_cedar_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 630,
+    "path": "assets/trees/spring/cluster_rowan_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "cluster_rowan"
+    ],
+    "file": "cluster_rowan_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 631,
+    "path": "assets/trees/spring/spiky_fir_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "spiky_fir"
+    ],
+    "file": "spiky_fir_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 632,
+    "path": "assets/trees/spring/drooping_larch_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "drooping_larch"
+    ],
+    "file": "drooping_larch_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 633,
+    "path": "assets/trees/spring/dense_chestnut_10.svg",
+    "type": "tree",
+    "group": "Деревья — Весна",
+    "tags": [
+      "spring",
+      "dense_chestnut"
+    ],
+    "file": "dense_chestnut_10.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 634,
+    "path": "assets/flora/grass_light_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_light"
+    ],
+    "file": "grass_light_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 635,
+    "path": "assets/flora/grass_light_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_light"
+    ],
+    "file": "grass_light_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 636,
+    "path": "assets/flora/grass_light_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_light"
+    ],
+    "file": "grass_light_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 637,
+    "path": "assets/flora/grass_light_4.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_light"
+    ],
+    "file": "grass_light_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 638,
+    "path": "assets/flora/grass_light_5.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_light"
+    ],
+    "file": "grass_light_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 639,
+    "path": "assets/flora/grass_mid_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_mid"
+    ],
+    "file": "grass_mid_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 640,
+    "path": "assets/flora/grass_mid_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_mid"
+    ],
+    "file": "grass_mid_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 641,
+    "path": "assets/flora/grass_mid_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_mid"
+    ],
+    "file": "grass_mid_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 642,
+    "path": "assets/flora/grass_mid_4.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_mid"
+    ],
+    "file": "grass_mid_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 643,
+    "path": "assets/flora/grass_mid_5.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_mid"
+    ],
+    "file": "grass_mid_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 644,
+    "path": "assets/flora/grass_dark_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_dark"
+    ],
+    "file": "grass_dark_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 645,
+    "path": "assets/flora/grass_dark_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_dark"
+    ],
+    "file": "grass_dark_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 646,
+    "path": "assets/flora/grass_dark_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_dark"
+    ],
+    "file": "grass_dark_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 647,
+    "path": "assets/flora/grass_dark_4.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_dark"
+    ],
+    "file": "grass_dark_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 648,
+    "path": "assets/flora/grass_dark_5.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_dark"
+    ],
+    "file": "grass_dark_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 649,
+    "path": "assets/flora/grass_olive_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_olive"
+    ],
+    "file": "grass_olive_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 650,
+    "path": "assets/flora/grass_olive_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_olive"
+    ],
+    "file": "grass_olive_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 651,
+    "path": "assets/flora/grass_olive_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_olive"
+    ],
+    "file": "grass_olive_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 652,
+    "path": "assets/flora/grass_olive_4.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_olive"
+    ],
+    "file": "grass_olive_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 653,
+    "path": "assets/flora/grass_olive_5.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "grass_olive"
+    ],
+    "file": "grass_olive_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 654,
+    "path": "assets/flora/moss_bright_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_bright"
+    ],
+    "file": "moss_bright_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 655,
+    "path": "assets/flora/moss_bright_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_bright"
+    ],
+    "file": "moss_bright_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 656,
+    "path": "assets/flora/moss_bright_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_bright"
+    ],
+    "file": "moss_bright_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 657,
+    "path": "assets/flora/moss_shadow_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_shadow"
+    ],
+    "file": "moss_shadow_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 658,
+    "path": "assets/flora/moss_shadow_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_shadow"
+    ],
+    "file": "moss_shadow_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 659,
+    "path": "assets/flora/moss_shadow_3.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "moss_shadow"
+    ],
+    "file": "moss_shadow_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 660,
+    "path": "assets/flora/pebble_gray_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "pebble_gray"
+    ],
+    "file": "pebble_gray_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 661,
+    "path": "assets/flora/pebble_gray_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "pebble_gray"
+    ],
+    "file": "pebble_gray_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 662,
+    "path": "assets/flora/pebble_warm_1.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "pebble_warm"
+    ],
+    "file": "pebble_warm_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 663,
+    "path": "assets/flora/pebble_warm_2.svg",
+    "type": "flora",
+    "group": "Флора",
+    "tags": [
+      "flora",
+      "pebble_warm"
+    ],
+    "file": "pebble_warm_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 664,
+    "path": "assets/mountains/mountain_1.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_1.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 665,
+    "path": "assets/mountains/mountain_2.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_2.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 666,
+    "path": "assets/mountains/mountain_3.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_3.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 667,
+    "path": "assets/mountains/mountain_4.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_4.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 668,
+    "path": "assets/mountains/mountain_5.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_5.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 669,
+    "path": "assets/mountains/mountain_6.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_6.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 670,
+    "path": "assets/mountains/mountain_7.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_7.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 671,
+    "path": "assets/mountains/mountain_8.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_8.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 672,
+    "path": "assets/mountains/mountain_9.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_9.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 673,
+    "path": "assets/mountains/mountain_10.svg",
+    "type": "mountain",
+    "group": "Горы",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ],
+    "file": "mountain_10.svg",
+    "used_in": [],
+    "refs": [],
     "dynamic": false,
     "dynamic_in": {}
   }

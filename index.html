@@ -405,8 +405,16 @@
             { id: 'armor', label: 'Броня' },
             { id: 'item', label: 'Предметы' },
             { id: 'herb', label: 'Травы' },
+            { id: 'flora', label: 'Флора', group: 'Флора' },
+            { id: 'wildlife', label: 'Животные' },
+            { id: 'mountain', label: 'Горы', group: 'Горы' },
             { id: 'tile', label: 'Тайлы' },
-            { id: 'ui', label: 'UI' }
+            { id: 'ui', label: 'UI' },
+            // Батчи из manifest.json: группа задаётся полем group, а не type.
+            { id: 'tree-summer', label: 'Деревья — Лето', group: 'Деревья — Лето' },
+            { id: 'tree-autumn', label: 'Деревья — Осень', group: 'Деревья — Осень' },
+            { id: 'tree-winter', label: 'Деревья — Зима', group: 'Деревья — Зима' },
+            { id: 'tree-spring', label: 'Деревья — Весна', group: 'Деревья — Весна' }
         ];
         const GAME_COLUMNS = [
             { id: 'dungeon', label: 'Подземелье' },
@@ -455,10 +463,24 @@
         }
 
         function render(entries) {
-            const groups = new Map(TYPE_GROUPS.map((group) => [group.id, []]));
+            // Старые записи группируются по type как раньше. У записей из батчей
+            // (деревья, флора, горы) есть поле group — оно имеет приоритет.
+            const descriptors = TYPE_GROUPS.slice();
+            const idByGroup = new Map(
+                descriptors.filter((group) => group.group).map((group) => [group.group, group.id])
+            );
             for (const entry of entries) {
-                const type = groups.has(entry.type) ? entry.type : 'item';
-                groups.get(type).push(entry);
+                if (!entry.group || idByGroup.has(entry.group)) continue;
+                const id = 'group-' + entry.group.toLowerCase().replace(/[^a-zа-я0-9]+/gi, '-').replace(/^-|-$/g, '');
+                idByGroup.set(entry.group, id);
+                descriptors.push({ id, label: entry.group, group: entry.group });
+            }
+
+            const groups = new Map(descriptors.map((group) => [group.id, []]));
+            for (const entry of entries) {
+                const id = (entry.group && idByGroup.get(entry.group)) ||
+                    (groups.has(entry.type) ? entry.type : 'item');
+                groups.get(id).push(entry);
             }
             for (const list of groups.values()) {
                 list.sort((a, b) => a.file.localeCompare(b.file, 'ru', {
@@ -469,7 +491,7 @@
 
             rowsEl.innerHTML = '';
 
-            for (const group of TYPE_GROUPS) {
+            for (const group of descriptors) {
                 const list = groups.get(group.id);
 
                 const groupRow = document.createElement('tr');

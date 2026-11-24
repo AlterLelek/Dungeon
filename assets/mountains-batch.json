@@ -1,0 +1,112 @@
+[
+  {
+    "id": 664,
+    "path": "assets/mountains/mountain_1.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 665,
+    "path": "assets/mountains/mountain_2.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 666,
+    "path": "assets/mountains/mountain_3.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 667,
+    "path": "assets/mountains/mountain_4.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 668,
+    "path": "assets/mountains/mountain_5.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 669,
+    "path": "assets/mountains/mountain_6.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 670,
+    "path": "assets/mountains/mountain_7.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 671,
+    "path": "assets/mountains/mountain_8.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 672,
+    "path": "assets/mountains/mountain_9.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  },
+  {
+    "id": 673,
+    "path": "assets/mountains/mountain_10.svg",
+    "type": "mountain",
+    "group": "Mountains",
+    "tags": [
+      "mountains",
+      "silhouette",
+      "background"
+    ]
+  }
+]
