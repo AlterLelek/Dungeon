@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
+  <title>Валун</title>
+  <g id="base" stroke-linejoin="miter" stroke-linecap="square">
+    <path d="M22 96L16 70L30 44L56 28L88 34L108 56L104 84L84 104L46 108Z" fill="#9b8774" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M24 70L34 46L58 32L68 54L44 72Z" fill="#c8b6a1" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M68 54L96 40L108 60L100 88L78 102L70 82Z" fill="#6b5b4c" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M44 72L68 54L70 82L52 88Z" fill="#9b8774" stroke="none"/><path d="M32 88L44 82L48 98L38 98Z" fill="#6b5b4c" stroke="none"/>
+  </g>
+</svg>

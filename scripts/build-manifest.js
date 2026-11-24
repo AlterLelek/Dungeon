@@ -54,6 +54,13 @@ const MOUNTAIN_BATCH = path.join(OUT_DIR, 'mountains-batch.json');
 const MOUNTAIN_GROUPS = {
   Mountains: 'Горы',
 };
+// Мастер-здания живут вне assets, поэтому приходят отдельным батчем.
+// sign_text хранится здесь — движок берёт название вывески из манифеста,
+// в SVG текст не вшит.
+const BUILDINGS_BATCH = path.join(OUT_DIR, 'buildings-batch.json');
+const BUILDINGS_GROUPS = {
+  Buildings: 'Здания',
+};
 const KNOWN_FOLDERS = new Set(['items', 'ui', 'monsters', 'heroes', 'tiles', 'wildlife']);
 const HAS_EXT_RE = /\.(png|svg|webp|jpe?g)/i;
 const END_EXT_RE = /\.(png|svg|webp|jpe?g)(?:[?#].*)?$/i;
@@ -468,7 +475,8 @@ function main() {
   const trees = collectBatchEntries(TREE_BATCH, TREE_GROUPS);
   const flora = collectBatchEntries(FLORA_BATCH, FLORA_GROUPS);
   const mountains = collectBatchEntries(MOUNTAIN_BATCH, MOUNTAIN_GROUPS);
-  const manifest = [...legacy, ...trees, ...flora, ...mountains];
+  const buildings = collectBatchEntries(BUILDINGS_BATCH, BUILDINGS_GROUPS);
+  const manifest = [...legacy, ...trees, ...flora, ...mountains, ...buildings];
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(OUT_FILE, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 
@@ -478,6 +486,7 @@ function main() {
   console.log('manifest: ' + relRoot(OUT_FILE));
   console.log('assets: ' + manifest.length + ', used: ' + used + ', dynamic: ' + dynamic);
   console.log('  trees: ' + trees.length + ', flora: ' + flora.length + ', mountains: ' + mountains.length);
+  console.log('  buildings: ' + buildings.length);
   for (const game of GAMES) {
     const count = legacy.filter((entry) => entry.used_in.includes(game.id)).length;
     console.log('  ' + game.label + ': ' + count);

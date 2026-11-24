@@ -37,6 +37,48 @@
         }
       ],
       "output": "test/hero_knight_0.svg"
+    },
+    {
+      "id": "hero_knight_0_vector",
+      "layers": [
+        {
+          "asset": "stages/wooden_background.svg",
+          "role": "background",
+          "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+        },
+        {
+          "asset": "stages/wooden_base.svg",
+          "role": "base",
+          "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+        },
+        {
+          "asset": "heroes/knight_0.svg",
+          "role": "hero",
+          "bbox": { "x": 150, "y": 35, "width": 724, "height": 960 }
+        }
+      ],
+      "output": "knight_0.svg"
+    },
+    {
+      "id": "monster_skeleton_0_vector",
+      "layers": [
+        {
+          "asset": "stages/wooden_background.svg",
+          "role": "background",
+          "bbox": { "x": 72, "y": 72, "width": 880, "height": 880 }
+        },
+        {
+          "asset": "stages/wooden_base.svg",
+          "role": "base",
+          "bbox": { "x": 200, "y": 760, "width": 624, "height": 240 }
+        },
+        {
+          "asset": "monsters/skeleton_0.svg",
+          "role": "monster",
+          "bbox": { "x": 155, "y": 19, "width": 523, "height": 789 }
+        }
+      ],
+      "output": "skeleton_0.svg"
     }
   ],
   "recipeGroups": [

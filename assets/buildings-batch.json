@@ -1,0 +1,156 @@
+[
+  {
+    "id": 800,
+    "path": "shared/assets/master/buildings/house_straw_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Соломенная хижина",
+    "sign_icon": "house",
+    "shop_kind": null,
+    "categories": ["Жилой дом"],
+    "tags": ["building", "house", "straw"]
+  },
+  {
+    "id": 801,
+    "path": "shared/assets/master/buildings/house_tile_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Черепичный дом",
+    "sign_icon": "house",
+    "shop_kind": null,
+    "categories": ["Жилой дом"],
+    "tags": ["building", "house", "tile"]
+  },
+  {
+    "id": 802,
+    "path": "shared/assets/master/buildings/stone_house_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Каменный дом",
+    "sign_icon": "house",
+    "shop_kind": null,
+    "categories": ["Жилой дом"],
+    "tags": ["building", "house", "stone"]
+  },
+  {
+    "id": 803,
+    "path": "shared/assets/master/buildings/barn_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Амбар",
+    "sign_icon": "barn",
+    "shop_kind": null,
+    "categories": ["Хозпостройка"],
+    "tags": ["building", "barn"]
+  },
+  {
+    "id": 804,
+    "path": "shared/assets/master/buildings/well_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Колодец",
+    "sign_icon": "well",
+    "shop_kind": null,
+    "categories": ["Колодец"],
+    "tags": ["building", "well"]
+  },
+  {
+    "id": 805,
+    "path": "shared/assets/master/buildings/forge_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Кузница",
+    "sign_icon": "anvil_hammer",
+    "shop_kind": ["forge"],
+    "categories": ["Мастерская", "Кузница"],
+    "tags": ["building", "forge"]
+  },
+  {
+    "id": 806,
+    "path": "shared/assets/master/buildings/shop_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Лавка",
+    "sign_icon": "coin_sack",
+    "shop_kind": ["market"],
+    "categories": ["Магазин", "Рынок"],
+    "tags": ["building", "shop"]
+  },
+  {
+    "id": 807,
+    "path": "shared/assets/master/buildings/tavern_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Таверна",
+    "sign_icon": "mug",
+    "shop_kind": ["tavern"],
+    "categories": ["Таверна"],
+    "tags": ["building", "tavern"]
+  },
+  {
+    "id": 808,
+    "path": "shared/assets/master/buildings/shed_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Сарай",
+    "sign_icon": "shed",
+    "shop_kind": null,
+    "categories": ["Хозпостройка"],
+    "tags": ["building", "shed"]
+  },
+  {
+    "id": 809,
+    "path": "shared/assets/master/buildings/stable_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Конюшня",
+    "sign_icon": "stable",
+    "shop_kind": null,
+    "categories": ["Конюшня"],
+    "tags": ["building", "stable"]
+  },
+  {
+    "id": 810,
+    "path": "shared/assets/master/buildings/armory_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Оружейня",
+    "sign_icon": "shield_sword",
+    "shop_kind": ["weapons", "armory", "armor"],
+    "categories": ["Магазин", "Оружейная"],
+    "tags": ["building", "armory", "weapons"]
+  },
+  {
+    "id": 811,
+    "path": "shared/assets/master/buildings/jewelry_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Ювелирная лавка",
+    "sign_icon": "ring_gem",
+    "shop_kind": ["jeweler"],
+    "categories": ["Магазин", "Ювелир"],
+    "tags": ["building", "jewelry"]
+  },
+  {
+    "id": 812,
+    "path": "shared/assets/master/buildings/magic_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Магазин магии",
+    "sign_icon": "scroll",
+    "shop_kind": ["magic"],
+    "categories": ["Магазин магии"],
+    "tags": ["building", "magic", "scroll"]
+  },
+  {
+    "id": 813,
+    "path": "shared/assets/master/buildings/inn_0.svg",
+    "type": "building",
+    "group": "Buildings",
+    "sign_text": "Гостиница",
+    "sign_icon": "bed",
+    "shop_kind": ["inn"],
+    "categories": ["Гостиница"],
+    "tags": ["building", "inn", "hotel"]
+  }
+]

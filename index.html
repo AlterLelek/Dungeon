@@ -529,6 +529,8 @@
                     nameCell.className = 'asset-name';
                     nameCell.textContent = entry.file;
                     nameCell.title = entry.path + (
+                        entry.sign_text ? '\nВывеска: ' + entry.sign_text : ''
+                    ) + (
                         entry.refs && entry.refs.length
                             ? '\nИспользуется: ' + entry.refs.join('\n')
                             : '\nВ коде игр не найдено'

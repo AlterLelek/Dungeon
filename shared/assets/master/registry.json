@@ -228,8 +228,8 @@
       },
       "sampledColors": 4097,
       "autoTraceMeanError": 47.95,
-      "vectorization": "requires_manual_vectorization",
-      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+      "vectorization": "manual",
+      "note": "Готовый ручной SVG 256×256; PNG-мастер оставлен без изменений"
     },
     {
       "file": "shared/assets/master/heroes/knight_1.png",
@@ -1636,8 +1636,8 @@
       },
       "sampledColors": 4097,
       "autoTraceMeanError": 103.92,
-      "vectorization": "requires_manual_vectorization",
-      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+      "vectorization": "manual",
+      "note": "Готовый ручной SVG 256×256; PNG-мастер оставлен без изменений"
     },
     {
       "file": "shared/assets/master/monsters/skeleton_1.png",

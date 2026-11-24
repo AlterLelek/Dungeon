@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
+  <title>Обломок камня</title>
+  <g id="base" stroke-linejoin="miter" stroke-linecap="square">
+    <path d="M18 96L26 62L50 48L58 72L42 104Z" fill="#9b8774" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M28 66L48 52L50 72L34 84Z" fill="#c8b6a1" stroke="none"/><path d="M54 104L70 70L98 58L110 88L90 108Z" fill="#878e98" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M72 74L96 64L100 88L78 94Z" fill="#b9c0c8" stroke="none"/><path d="M92 52L106 32L118 48L108 66Z" fill="#6b5b4c" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M104 40L114 48L106 58Z" fill="#9b8774" stroke="none"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
+  <title>Лопата 3/4</title>
+  <g id="base" transform="translate(0 6)" stroke-linejoin="miter" stroke-linecap="square">
+<path d="M92 12L102 16L56 88L48 84Z" fill="#6b4426" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M102 16L110 10L64 82L56 88Z" fill="#4a2e18" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M78 16L102 16L110 10L86 10Z" fill="#c8b6a1" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M42 84L68 94L56 120L30 108Z" fill="#878e98" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M68 94L78 86L66 112L56 120Z" fill="#5a5f68" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M46 90L62 96L52 110L38 102Z" fill="#b9c0c8" stroke="none"/>
+  </g>
+</svg>

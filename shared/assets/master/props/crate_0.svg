@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" shape-rendering="crispEdges">
+  <title>Ящик 3/4</title>
+  <g id="base" transform="translate(0 8)" stroke-linejoin="miter" stroke-linecap="square">
+<path d="M20 34L88 34L88 118L20 118Z" fill="#4a2e18" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M88 34L108 14L108 98L88 118Z" fill="#241a14" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M20 34L40 14L108 14L88 34Z" fill="#6b4426" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M24 40H39V112H24Z" fill="#6b4426" stroke="none"/><path d="M46 40H61V112H46Z" fill="#6b4426" stroke="none"/><path d="M68 40H83V112H68Z" fill="#6b4426" stroke="none"/><path d="M90 42H106V110H90Z" fill="#4a2e18" stroke="none"/><path d="M98 34H110V102H98Z" fill="#4a2e18" stroke="none"/><path d="M22 38L40 22L106 22L88 38Z" fill="#6b4426" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/><path d="M28 34L44 26H100L86 34Z" fill="#c8b6a1" stroke="none"/><path d="M24 46L88 46L88 54L24 54Z" fill="#878e98" stroke="#241a14" stroke-width="2.8" stroke-linejoin="miter" stroke-linecap="square"/>
+  </g>
+</svg>
