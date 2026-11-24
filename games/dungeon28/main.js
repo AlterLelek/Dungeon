@@ -22,7 +22,7 @@ let gameLoopStarted = false;
 
 // ===== Статичные наложения на героя поверх карты (оружие слева, щит справа) =====
 // Спрайты берём только из первого кадра D28; анимации кадров здесь нет.
-const HERO_OVERLAY_ITEMS = 'assets/sprites/items/';
+const HERO_OVERLAY_ITEMS = '../../assets/sprites/items/';
 const heroOverlayImages = {};
 function heroOverlayImage(src) {
     if (!src) return null;
@@ -107,7 +107,7 @@ function drawHeroShieldOverlay(c, cellX, cellY) {
     if (fill <= 0) return;
     const w = 14, h = 18;
     const x = cellX + 27, y = cellY + 9; // правая сторона, вне лица героя
-    const img = heroOverlayImage(HERO_OVERLAY_ITEMS + 'shield.png');
+    const img = heroOverlayImage('../../assets/sprites/ui/shield.png');
     c.save();
     // высота видимой части растёт снизу вверх вместе с броней
     c.beginPath(); c.rect(x, y + h * (1 - fill), w, h * fill + 0.5); c.clip();
@@ -517,7 +517,7 @@ function updateHUD() {
 
   const coinEl = document.getElementById('coin-hud');
   if (coinEl && !coinEl.innerHTML.includes('img')) {
-      coinEl.innerHTML = `<img src="assets/sprites/ui/coin.png" style="width:14px;height:14px;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='🪙';">`;
+      coinEl.innerHTML = `<img src="../../assets/sprites/ui/coin.png" style="width:14px;height:14px;object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerText='🪙';">`;
   }
   
   const w = state.weapons[state.weaponLevel];

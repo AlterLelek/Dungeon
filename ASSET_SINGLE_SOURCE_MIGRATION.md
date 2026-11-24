@@ -7,10 +7,10 @@
 ## Что реализовано
 
 ### 1. Мастер-хранилище
-- `shared/assets/master/heroes/` — 26 PNG, скопировано из `games/dungeon28/assets/sprites/heroes/`.
-- `shared/assets/master/monsters/` — 55 PNG, скопировано из `games/dungeon28/assets/sprites/monsters/`.
-- `shared/assets/master/items/` — 145 файлов, скопировано из `games/dungeon28/assets/sprites/items/` (45 PNG + 100 SVG).
-- `shared/assets/master/ui/` — 4 PNG, скопировано из `games/dungeon28/assets/sprites/ui/`.
+- `shared/assets/master/heroes/` — 26 PNG, скопировано из `assets/sprites/heroes/`.
+- `shared/assets/master/monsters/` — 55 PNG, скопировано из `assets/sprites/monsters/`.
+- `shared/assets/master/items/` — 145 файлов, скопировано из `assets/sprites/items/` (45 PNG + 100 SVG).
+- `shared/assets/master/ui/` — 4 PNG, скопировано из `assets/sprites/ui/`.
 
 ### 2. Конвертация PNG → SVG
 - Команда: `node scripts/build-game-assets.js --convert`
@@ -26,7 +26,7 @@
 - Вход: `shared/assets/master` + конфиг игры.
 - Слои: фон → подставка → персонаж.
 - Auto-crop: по alpha-bbox слоя персонажа (padding из конфига, по умолчанию 12px).
-- Выход: `games/dungeon28/assets/sprites/generated/...`
+- Выход: `assets/sprites/generated/...`
 - Режимы:
   - по умолчанию: SVG с относительными ссылками на мастер-файлы (без дубликатов пикселей);
   - `--inline`: встраивает PNG/SVG как base64 data URI в итоговый SVG (автономный файл).
@@ -37,16 +37,16 @@
 - Исходная SVG-обёртка: `shared/assets/master/heroes/knight_0.svg`, **258 байт**.
 - Фон: `shared/assets/master/stages/wooden_background.svg`, векторный.
 - Подставка: `shared/assets/master/stages/wooden_base.svg`, векторный.
-- Итог: `games/dungeon28/assets/sprites/generated/test/hero_knight_0.svg`, **617 байт**, `viewBox="60 23 904 989"`, auto-crop применён.
+- Итог: `assets/sprites/generated/test/hero_knight_0.svg`, **617 байт**, `viewBox="60 23 904 989"`, auto-crop применён.
 
 Пример итогового SVG (ссылочный, без дубликатов PNG):
 
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 23 904 989" width="904" height="989">
   <title>test_hero_knight_0</title>
-  <image href="../../../../../../shared/assets/master/stages/wooden_background.svg" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
-  <image href="../../../../../../shared/assets/master/stages/wooden_base.svg" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
-  <image href="../../../../../../shared/assets/master/heroes/knight_0.png" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
+  <image href="../../../../../shared/assets/master/stages/wooden_background.svg" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
+  <image href="../../../../../shared/assets/master/stages/wooden_base.svg" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
+  <image href="../../../../../shared/assets/master/heroes/knight_0.png" x="0" y="0" width="1024" height="1024" preserveAspectRatio="none"/>
 </svg>
 ```
 
@@ -56,11 +56,11 @@
 
 | Папка | PNG | Размер PNG | SVG | Размер SVG |
 |---|---:|---:|---:|---:|
-| `games/dungeon28/assets/sprites/heroes` | 26 | 23.59 MB | 0 | 0 |
-| `games/dungeon28/assets/sprites/monsters` | 55 | 44.35 MB | 0 | 0 |
-| `games/dungeon28/assets/sprites/items` | 42 | 4.39 MB | 100 | 0.17 MB |
-| `games/dungeon28/assets/sprites/ui` | 4 | 0.00 MB | 0 | 0 |
-| `games/dungeon28/assets/sprites` (root) | 3 | 0.00 MB | 0 | 0 |
+| `assets/sprites/heroes` | 26 | 23.59 MB | 0 | 0 |
+| `assets/sprites/monsters` | 55 | 44.35 MB | 0 | 0 |
+| `assets/sprites/items` | 42 | 4.39 MB | 100 | 0.17 MB |
+| `assets/sprites/ui` | 4 | 0.00 MB | 0 | 0 |
+| `assets/sprites` (root) | 3 | 0.00 MB | 0 | 0 |
 | **Итого игровые спрайты** | **130** | **72.34 MB** | **100** | **0.17 MB** |
 
 ### Мастер-копия
@@ -80,7 +80,7 @@
 При полной миграции на единый источник:
 
 - **Удаляем из игр дубликаты PNG героев/монстров/предметов/UI**, оставляем только сгенерированные SVG или ссылки на master.
-- Текущий объём дубликатов в `games/dungeon28/assets/sprites`: **130 PNG = 72.34 MB**.
+- Текущий объём дубликатов в `assets/sprites`: **130 PNG = 72.34 MB**.
 - Стоимость master (единственная копия): **~73.39 MB** (включает SVG-обёртки/реестр; сами PNG = ~73.05 MB).
 - Чистая экономия на *первой* игре при переносе в master: **около 0 MB** (переезд, не сжатие).
 - Реальная экономия появляется при **повторном использовании** в других играх/вариантах:

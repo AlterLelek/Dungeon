@@ -11,7 +11,7 @@ import {
   MONSTER_SKINS
 } from '../dungeon28/config.js';
 
-const D28_BASE = new URL('../dungeon28/', import.meta.url);
+const D28_BASE = new URL('../../', import.meta.url);
 const asset = path => new URL(path, D28_BASE).href;
 
 const HERO_KEYS = ['warrior', 'mage', 'paladin', 'angel', 'archer', 'druid', 'rogue', 'amazon', 'dwarf', 'dwarfmage'];

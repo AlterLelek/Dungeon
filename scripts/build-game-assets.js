@@ -21,6 +21,8 @@ const zlib = require('zlib');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_MASTER = path.join(ROOT, 'shared', 'assets', 'master');
+const DEFAULT_OUTPUT = path.join('assets', 'sprites', 'generated');
+const LINK_DEPTH = 5;
 const REGISTRY_NAME = 'registry.json';
 const ALPHA_THRESHOLD = 8;
 
@@ -428,7 +430,7 @@ function buildRecipe(masterDir, outputDir, recipe, config, registry, inline) {
     const asset = resolveAsset(masterDir, assetRef, registry);
     const box = alignBBox(asset, typeof layer === 'object' ? layer : null);
 
-    let href = toPosix(path.relative(outputFileDir, asset.file));
+    let href = '../'.repeat(LINK_DEPTH) + toPosix(path.relative(ROOT, asset.file));
     if (inline && asset.ext === '.png') {
       const base64 = asset.png.pixels.length
         ? fs.readFileSync(asset.file).toString('base64')
@@ -509,7 +511,11 @@ function expandGroups(config, masterDir) {
 function build(configPath, masterDir, only, inline) {
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const registry = loadRegistry(masterDir);
-  const outputDir = path.resolve(ROOT, config.output || path.join('games', config.game || 'game', 'assets', 'sprites'));
+  const outputDir = path.resolve(ROOT, config.output || DEFAULT_OUTPUT);
+  const canonicalOutput = path.resolve(ROOT, DEFAULT_OUTPUT);
+  if (path.relative(canonicalOutput, outputDir).startsWith('..')) {
+    throw new Error(`Output outside canonical folder: ${relFromRoot(outputDir)}`);
+  }
   const allRecipes = expandGroups(config, masterDir);
   const recipes = only ? allRecipes.filter((r) => r.id === only) : allRecipes;
   if (!recipes.length) throw new Error(`Рецепты не найдены${only ? `: ${only}` : ''}`);

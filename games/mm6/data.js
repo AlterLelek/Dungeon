@@ -11,11 +11,11 @@ export const QUALITY = [
 
 // 10 героев: первые пять — канонические герои Dungeon28, ещё пять — расширение MM6.
 export const EXTRA_HEROES = [
-  { name: 'Друид', set: 'mage', hp: 88, mp: 7, sprite: '../dungeon28/assets/sprites/heroes/wizard_0.png', desc: 'Лесной маг. Лечит травой и вызывает бурю.' },
-  { name: 'Разбойник', set: 'archer', hp: 84, mp: 3, sprite: '../dungeon28/assets/sprites/heroes/elf_archer_0.png', desc: 'Быстрый удар и находка монет.' },
-  { name: 'Амазонка', set: 'archer', hp: 86, mp: 4, sprite: '../dungeon28/assets/sprites/heroes/elf_archer_0.png', desc: 'Меткий выстрел пробивает броню.' },
-  { name: 'Гном-кулига', set: 'warrior', hp: 110, mp: 2, sprite: '../dungeon28/assets/sprites/heroes/knight_0.png', desc: 'Живуч, но медлителен. Не умеет колдовать — магия доступна только Гному-колдуну.' },
-  { name: 'Гном-колдун', set: 'mage', hp: 96, mp: 8, sprite: '../dungeon28/assets/sprites/heroes/wizard_0.png', desc: 'Единственный гном, владеющий магией. Кристаллы усиливают его чары.' }
+  { name: 'Друид', set: 'mage', hp: 88, mp: 7, sprite: '../../assets/sprites/heroes/wizard_0.png', desc: 'Лесной маг. Лечит травой и вызывает бурю.' },
+  { name: 'Разбойник', set: 'archer', hp: 84, mp: 3, sprite: '../../assets/sprites/heroes/elf_archer_0.png', desc: 'Быстрый удар и находка монет.' },
+  { name: 'Амазонка', set: 'archer', hp: 86, mp: 4, sprite: '../../assets/sprites/heroes/elf_archer_0.png', desc: 'Меткий выстрел пробивает броню.' },
+  { name: 'Гном-кулига', set: 'warrior', hp: 110, mp: 2, sprite: '../../assets/sprites/heroes/knight_0.png', desc: 'Живуч, но медлителен. Не умеет колдовать — магия доступна только Гному-колдуну.' },
+  { name: 'Гном-колдун', set: 'mage', hp: 96, mp: 8, sprite: '../../assets/sprites/heroes/wizard_0.png', desc: 'Единственный гном, владеющий магией. Кристаллы усиливают его чары.' }
 ];
 
 // Ограничения классов и рас: true = ограничение есть.
@@ -34,7 +34,7 @@ export const MONSTER_COLORS = [
   { id: 'gold', name: 'Золотой', tint: '#fbbf24', hp: 1.4, atk: 1.3, def: 1.3, speed: 1.05, gold: 2, magic: true }
 ];
 
-const M = '../dungeon28/assets/sprites/monsters/';
+const M = '../../assets/sprites/monsters/';
 // Classic RPG additions reuse existing d28 silhouettes with distinct tints when unique files are absent.
 export const EXTRA_MONSTERS = [
   { id: 'wolf', name: 'Волк', hp: 70, atk: 6, def: 1, speed: 8, sprite: M + 'rat_0.png', tint: '#cbd5e1', tier: 0, gold: [2, 4] },
@@ -143,9 +143,9 @@ export const SCROLLS = [
   { id: 'scroll_heal_all', name: 'Свиток исцеления отряда', spell: 'heal_all', cost: 26, icon: '📜' }
 ];
 
-const I = '../dungeon28/assets/sprites/items/';
-const UI = '../dungeon28/assets/sprites/ui/';
-const ARMOR_ICON = I + 'shield.png';
+const I = '../../assets/sprites/items/';
+const UI = '../../assets/sprites/ui/';
+const ARMOR_ICON = UI + 'shield.png';
 
 // 6 слотов, 29 уникальных предметов: у каждого слота своя пара «слот + защита».
 export const ARMOR_SLOTS = [

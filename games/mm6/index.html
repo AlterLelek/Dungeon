@@ -723,7 +723,7 @@ function bindSettings(){
 }
 
 /* --- Загрузка спрайтов и иконок из Dungeon28 (без покадровой анимации) --- */
-const SPRITE_BASE='../dungeon28/assets/sprites/';
+const SPRITE_BASE='../../assets/sprites/';
 const imgCache={};
 function spriteImg(path){
   if(!path) return null;
@@ -747,8 +747,8 @@ function drawSprite(path,x,y,w,h,tint){
   ctx.drawImage(tc,x,y,w,h); ctx.restore(); return true;
 }
 const ITEM_SPRITES={
-  coin:SPRITE_BASE+'items/coin.png', star:SPRITE_BASE+'items/star.png', shield:SPRITE_BASE+'items/shield.png',
-  lightning:SPRITE_BASE+'items/lightning.png', sword:SPRITE_BASE+'items/sword_0.png',
+  coin:SPRITE_BASE+'ui/coin.png', star:SPRITE_BASE+'ui/star.png', shield:SPRITE_BASE+'ui/shield.png',
+  lightning:SPRITE_BASE+'ui/lightning.png', sword:SPRITE_BASE+'items/sword_0.png',
   axe:SPRITE_BASE+'items/axe_0.png', staff:SPRITE_BASE+'items/staff_0.png', bow:SPRITE_BASE+'items/bow0_0.png'
 };
 function itemIconId(it){
@@ -2495,7 +2495,7 @@ function drawHeroFigure(x,y,s,h,now){
   // Щит справа: 0 — нет, 1 — около 1/4 высоты, 30 — около 3/4.
   if(armor>0){
     const frac=clamp(.25+(armor-1)/29*.5,.25,.75), sh=76*s*frac;
-    drawSprite(SPRITE_BASE+'items/shield.png',x+18*s,y-14*s-sh,30*s,sh);
+    drawSprite(SPRITE_BASE+'ui/shield.png',x+18*s,y-14*s-sh,30*s,sh);
     ctx.save(); ctx.strokeStyle='rgba(251,191,36,.6)'; ctx.lineWidth=1.2*s; ctx.strokeRect(x+18*s,y-14*s-sh,30*s,sh); ctx.restore();
   }
   if(!drawSprite(h.def.sprite,x-28*s,y-76*s,56*s,74*s)){

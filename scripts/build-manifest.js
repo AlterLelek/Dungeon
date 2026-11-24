@@ -23,12 +23,9 @@ const ROOT = path.resolve(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'assets');
 const OUT_FILE = path.join(OUT_DIR, 'manifest.json');
 
-// Реальные ассеты проекта лежат в games/dungeon28/assets.
+// Реальные ассеты проекта лежат в assets.
 // Корневую assets тоже проверяем — на случай, если её добавят позже.
-const ASSET_ROOTS = [
-  path.join(ROOT, 'assets'),
-  path.join(ROOT, 'games', 'dungeon28', 'assets'),
-];
+const ASSET_ROOTS = ['assets'];
 
 const GAMES = [
   { id: 'dungeon', label: 'Подземелье', dir: 'games/dungeon28' },
@@ -116,8 +113,9 @@ function collectAssets() {
   const byAbs = new Map();
 
   for (const root of ASSET_ROOTS) {
-    if (!fs.existsSync(root)) continue;
-    for (const abs of walk(root)) {
+    const rootDir = path.resolve(ROOT, root);
+    if (!fs.existsSync(rootDir)) continue;
+    for (const abs of walk(rootDir)) {
       // В манифест попадают только файлы ассетов, не служебные .js/.json.
       // Деревья, флора и горы добавляются отдельными батчами в конец манифеста.
       if (
@@ -127,8 +125,8 @@ function collectAssets() {
         abs.startsWith(MOUNTAIN_DIR + path.sep)
       ) continue;
       if (byAbs.has(abs)) continue;
-      const relAsset = toPosix(path.relative(root, abs));
-      byAbs.set(abs, { abs, root, relAsset });
+      const relAsset = toPosix(path.relative(rootDir, abs));
+      byAbs.set(abs, { abs, root: rootDir, relAsset });
     }
   }
 

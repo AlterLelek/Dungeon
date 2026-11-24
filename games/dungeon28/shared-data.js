@@ -38,7 +38,7 @@ const heroes = HEROES.map((h, i) => ({
   lightRange: h.lightRange,
   attackRange: h.attackRange,
   sprite: h.name === 'Ангел'
-    ? asset('assets/sprites/heroes/battle_angel_0.png')
+    ? asset('../../assets/sprites/heroes/battle_angel_0.png')
     : asset(h.skins[0]),
   ...(HERO_DOSSIERS[i] || {})
 }));
