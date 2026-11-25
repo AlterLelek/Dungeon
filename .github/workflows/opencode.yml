@@ -9,6 +9,7 @@ jobs:
   opencode:
     if: contains(github.event.comment.body, '/oc') || contains(github.event.comment.body, '/opencode')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       id-token: write
       contents: write
@@ -25,4 +26,3 @@ jobs:
         uses: sst/opencode/github@latest
         with:
           model: opencode/deepseek-v4.1-flash-free
-
