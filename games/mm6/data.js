@@ -147,14 +147,15 @@ const I = '../../assets/sprites/items/';
 const UI = '../../assets/sprites/ui/';
 const ARMOR_ICON = UI + 'shield.png';
 
-// 6 слотов, 29 уникальных предметов: у каждого слота своя пара «слот + защита».
+// 7 слотов, 29 уникальных предметов: у каждого слота своя пара «слот + защита».
 export const ARMOR_SLOTS = [
   { id: 'shield', name: 'Щит', icon: '🛡' },
   { id: 'helmet', name: 'Шлем', icon: '⛑' },
   { id: 'body', name: 'Тело', icon: '👕' },
   { id: 'legs', name: 'Ноги', icon: '👖' },
   { id: 'hands', name: 'Руки', icon: '🧤' },
-  { id: 'cloak', name: 'Плащ', icon: '🧥' }
+  { id: 'cloak', name: 'Плащ', icon: '🧥' },
+  { id: 'feet', name: 'Сапоги', icon: '🥾' }
 ];
 
 export const ARMORS = [
@@ -181,9 +182,9 @@ export const ARMORS = [
   { name: 'Лесной доспех', def: 9, cost: 16, set: 'archer', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Святые доспехи', def: 10, cost: 20, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Доспех круглого стола', def: 11, cost: 26, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Кожаные сапоги', def: 1, cost: 2, set: 'any', slot: 'legs', dir: 'def', sprite: ARMOR_ICON },
+  { name: 'Кожаные сапоги', def: 1, cost: 2, set: 'any', slot: 'feet', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Стальные поножи', def: 3, cost: 7, set: 'warrior', slot: 'legs', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Сапоги следопыта', def: 2, cost: 6, set: 'archer', slot: 'legs', dir: 'def', sprite: ARMOR_ICON },
+  { name: 'Сапоги следопыта', def: 2, cost: 6, set: 'archer', slot: 'feet', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Кожаные перчатки', def: 1, cost: 2, set: 'any', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Рыцарские рукавицы', def: 3, cost: 8, set: 'warrior', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Рукавицы чародея', def: 2, cost: 7, set: 'mage', slot: 'hands', dir: 'def', sprite: ARMOR_ICON }
