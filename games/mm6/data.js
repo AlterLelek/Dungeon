@@ -224,6 +224,33 @@ export const SHOP_TYPES = [
   { id: 'inn', title: 'Гостиница', icon: '🛏', accent: '#a78bfa', desc: 'Сон и восстановление.', names: ['Гостиница «Отдых»', 'Постоялый двор', 'Гостиница «Тихий двор»'] }
 ];
 
+// Каталог зданий. Поле shop_kind повторяет assets/manifest.json
+// (источник — assets/buildings-batch.json). null/[] означает, что торговли нет:
+// такое здание показывает только декоративную реплику.
+export const BUILDING_TYPES = [
+  { id: 'house_straw_0', title: 'Соломенная хижина', kind: 'house', shop_kind: null,
+    deco: 'В соломенной хижине тихо: хозяева ушли на рынок.' },
+  { id: 'house_tile_0', title: 'Черепичный дом', kind: 'house', shop_kind: null,
+    deco: 'Из-за черепичной двери доносится детский смех и запах похлёбки.' },
+  { id: 'stone_house_0', title: 'Каменный дом', kind: 'house', shop_kind: null,
+    deco: 'Каменный дом заперт на тяжёлый засов. Здесь живут, а не торгуют.' },
+  { id: 'barn_0', title: 'Амбар', kind: 'barn', shop_kind: null,
+    deco: 'В амбаре пахнет сеном и зерном. Ничего для продажи не выставлено.' },
+  { id: 'shed_0', title: 'Сарай', kind: 'shed', shop_kind: null,
+    deco: 'В сарае свалены старые грабли и бочки. Хозяин не любит гостей.' },
+  { id: 'well_0', title: 'Колодец', kind: 'well', shop_kind: null,
+    deco: 'Вы заглядываете в колодец: в тёмной воде отражается небо.' },
+  { id: 'stable_0', title: 'Конюшня', kind: 'stable', shop_kind: null,
+    deco: 'Лошади фыркают и косятся на вас. Конюх занят и не торгует.' },
+  { id: 'forge_0', title: 'Кузница', kind: 'forge', shop_kind: ['forge'] },
+  { id: 'shop_0', title: 'Лавка', kind: 'market', shop_kind: ['market'] },
+  { id: 'tavern_0', title: 'Таверна', kind: 'tavern', shop_kind: ['tavern'] },
+  { id: 'armory_0', title: 'Оружейня', kind: 'weapons', shop_kind: ['weapons', 'armory', 'armor'] },
+  { id: 'jewelry_0', title: 'Ювелирная лавка', kind: 'jeweler', shop_kind: ['jeweler'] },
+  { id: 'magic_0', title: 'Магазин магии', kind: 'magic', shop_kind: ['magic'] },
+  { id: 'inn_0', title: 'Гостиница', kind: 'inn', shop_kind: ['inn'] }
+];
+
 export const BIOMES = {
   field: { name: 'Поле', season: 'summer', ground: ['#3f6b3a', '#1f3a24'], road: '#a39064', roadDark: '#5d5238', tree: '#2f6b38', water: '#2b5d8a', rock: '#71717a', accent: '#86efac', scene: 'forest' },
   village: { name: 'Деревня', season: 'spring', ground: ['#56704a', '#273426'], road: '#b09a6b', roadDark: '#63563a', tree: '#3f7d43', water: '#3b6e97', rock: '#8b7f6a', accent: '#fcd34d', scene: 'town' },
