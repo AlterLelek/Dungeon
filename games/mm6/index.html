@@ -348,6 +348,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, EQUIPMENT_RULES, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
+import { TERRAIN_TYPES, TERRAIN_LABELS, generateTerrain, drawTerrain, terrainStats, serializeTerrain, applyTerrainSnapshot, terrainColorFor } from './terrain.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
 import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound } from '../dungeon28/audio.js';
@@ -1063,6 +1064,7 @@ function startGame(diffId,a,b){
   game.party=selHero.map((idx,slot)=>makeHeroState(HEROES[idx],slot));
   game.world=generateWorld(d.id);
   setMap(0,null);
+  saveTerrainState();
   updateWeatherByTurn();
   game.msg='Добро пожаловать! Ищите босса в дальнем углу карты.';
   phase='play';
@@ -1235,7 +1237,8 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     const s=freeSpot(4); if(!s) break;
     mons.push(spawnMonster(pick(pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
   }
-  return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},trees,
+  const terrainCounts=generateTerrain(cells,size,{seed:i*7919+size*131});
+  return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},trees,terrainCounts,
     boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
     wildlife:createWildlife(biome,size)};
 }
@@ -1367,7 +1370,7 @@ function tryMove(dx,dy){
   if(c.t==='treasure'){
     const foundName=(c.item&&c.item.name)||'находка';
     collectTreasure(c);
-    m.cells[ny][nx]={t:'grass',taken:true,foundName};
+    m.cells[ny][nx]={t:'grass',taken:true,foundName,terrain:c.terrain,terrainVariant:c.terrainVariant};
   }
   if(c.t==='chest'){ openSmallChest(c); }
   afterStep();
@@ -1389,8 +1392,8 @@ function maybeSpawnBonus(m){
     spots.push({x,y});
   }
   if(!spots.length) return;
-  const spot=pick(spots), t=pick(TREASURES);
-  m.cells[spot.y][spot.x]={t:'treasure',item:t};
+  const spot=pick(spots), t=pick(TREASURES), old=m.cells[spot.y][spot.x];
+  m.cells[spot.y][spot.x]={t:'treasure',item:t,terrain:old.terrain,terrainVariant:old.terrainVariant};
   pushHistory('На карте появилась находка: '+t.name+'.','neutral');
 }
 function afterStep(){
@@ -2658,18 +2661,6 @@ function drawSceneBackdrop(biome,now){
   }
   ctx.restore();
 }
-const MAP_TILES={
-  grass:[KENNEY_TILES+'tile_grass.png',KENNEY_TILES+'tile_grass_flowers.png',KENNEY_TILES+'tile_grass_flowers_bright.png'],
-  road:KENNEY_TILES+'tile_sand.png',
-  stone:KENNEY_TILES+'tile_stone.png',
-  dirt:KENNEY_TILES+'tile_dirt.png'
-};
-function groundTileFor(cell,sx,sy){
-  if(cell.t==='rock'||cell.t==='water') return MAP_TILES.stone;
-  if(cell.t==='road'||cell.t==='gate'||cell.t==='boss') return MAP_TILES.road;
-  const set=MAP_TILES.grass;
-  return set[Math.abs(Math.round(sx/17)+Math.round(sy/11))%set.length];
-}
 function drawCellPatch(sx,sy,sc,cell,biome,alpha){
   ctx.save(); ctx.globalAlpha=alpha;
   const b=BIOMES[biome]||BIOMES.field;
@@ -2679,11 +2670,7 @@ function drawCellPatch(sx,sy,sc,cell,biome,alpha){
   ctx.beginPath(); ctx.moveTo(sx-52*cellScale,top); ctx.lineTo(sx+52*cellScale,top);
   ctx.lineTo(farRight,bottom); ctx.lineTo(farLeft,bottom); ctx.closePath();
   ctx.save(); ctx.clip();
-  ctx.fillStyle=road?b.road:b.ground[0]; ctx.fillRect(farLeft,top,farRight-farLeft,bottom-top);
-  const tile=groundTileFor(cell,sx,sy), ts=Math.max(12,18*sc);
-  for(let tx=farLeft;tx<farRight;tx+=ts){
-    for(let ty=top;ty<bottom;ty+=ts) drawSprite(tile,tx,ty,ts,ts);
-  }
+  drawTerrain(ctx,cell,{left:farLeft,top,right:farRight,bottom},{season:currentSeason(),biome});
   ctx.restore();
   ctx.strokeStyle='rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
   if(road){ ctx.fillStyle=b.roadDark; ctx.fillRect(sx-2*sc,sy+13*sc,4*sc,16*sc); }
@@ -2855,7 +2842,7 @@ function drawMiniMap(m){
   panel(x-4,y-4,size+8,size+22);
   const s=size/m.size;
   ctx.fillStyle='rgba(0,0,0,.65)'; ctx.fillRect(x,y,size,size);
-  const p=game.player;
+  const p=game.player, miniSeason=currentSeason();
   for(let yy=0;yy<m.size;yy++) for(let xx=0;xx<m.size;xx++){
     if(!m.seen.has(ckey(xx,yy))) continue;
     const c=m.cells[yy][xx];
@@ -2863,7 +2850,7 @@ function drawMiniMap(m){
     ctx.globalAlpha=visible?1:.34;
     ctx.fillStyle=c.t==='water'?'#1d4ed8':c.t==='rock'?'#a1a1aa':
       c.t==='tree'?'#2f8d4d':(c.t==='road'||c.t==='gate')?'#b09a6b':
-      c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':(BIOMES[m.biome]||BIOMES.field).ground[0];
+      c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':terrainColorFor(c,miniSeason);
     ctx.fillRect(x+xx*s,y+yy*s,Math.max(1,s-1),Math.max(1,s-1));
   }
   ctx.globalAlpha=1;
@@ -3370,6 +3357,48 @@ function treesReport(){
     state:{ready:TREES_STATE.ready,error:TREES_STATE.error,source:TREES_STATE.source}
   };
 }
+const TERRAIN_SAVE_KEY='mm6_terrain_v1';
+function saveTerrainState(){
+  if(!game||!game.world) return null;
+  const snapshot={v:1,savedAt:Date.now(),season:game.seasonOverride||null,
+    world:{difficulty:game.world.difficulty,count:game.world.count,current:game.world.current,
+      maps:serializeTerrain(game.world.maps)}};
+  try{ localStorage.setItem(TERRAIN_SAVE_KEY,JSON.stringify(snapshot)); }
+  catch(e){ return null; }
+  return snapshot;
+}
+function loadTerrainState(){
+  if(!game||!game.world) return false;
+  try{
+    const raw=JSON.parse(localStorage.getItem(TERRAIN_SAVE_KEY)||'null');
+    if(!raw||!raw.world||!Array.isArray(raw.world.maps)) return false;
+    if(!applyTerrainSnapshot(game.world.maps,raw.world.maps)) return false;
+    game.seasonOverride=TREE_SEASONS.includes(raw.season)?raw.season:null;
+    updateWeatherByTurn();
+    return true;
+  }catch(e){ return false; }
+}
+function terrainReport(){
+  const maps=game&&game.world?game.world.maps:[];
+  const totals={}; TERRAIN_TYPES.forEach(type=>{ totals[type]=0; });
+  const errors=[];
+  if(!maps.length) errors.push('Карта не создана');
+  const perMap=maps.map(m=>{
+    const counts=terrainStats(m.cells);
+    TERRAIN_TYPES.forEach(type=>{ totals[type]+=counts[type]||0; });
+    const season=(game&&game.seasonOverride)||((BIOMES[m.biome]||BIOMES.field).season);
+    for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
+      const cell=m.cells[y][x];
+      if(!cell||!TERRAIN_TYPES.includes(cell.terrain))
+        errors.push('Клетка '+x+','+y+' без terrain на карте '+(m.index+1));
+    }
+    return {index:m.index,size:m.size,biome:m.biome,season,counts};
+  });
+  let saved=false;
+  try{ saved=!!localStorage.getItem(TERRAIN_SAVE_KEY); }catch(e){}
+  return {ok:!errors.length,errors,types:TERRAIN_TYPES.slice(),labels:TERRAIN_LABELS,
+    currentSeason:currentSeason(),totals,perMap,saved};
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
@@ -3379,9 +3408,13 @@ window.__mm6Debug={
     if(!game) return null;
     game.seasonOverride=TREE_SEASONS.includes(season)?season:null;
     updateWeatherByTurn();
-    return treesReport();
+    saveTerrainState();
+    return terrainReport();
   },
   treesReport:()=>treesReport(),
+  terrainReport:()=>terrainReport(),
+  saveTerrain:()=>saveTerrainState(),
+  loadTerrain:()=>loadTerrainState(),
   startBattle:(which)=>{
     if(!game||game.battle) return null;
     if(Array.isArray(which)&&which.length) return startBattle(which.map(e=>(e&&e.maxHp?e:spawnMonster(e,0,0,0,null,false,false))),null);

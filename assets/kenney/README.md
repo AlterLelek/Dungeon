@@ -2,8 +2,11 @@
 
 Минимальный набор PNG из двух паков Kenney (CC0 1.0, public domain):
 
-- **Tiny Town** — `tiles/`: земля, трава, дороги, деревья, здания.
+- **Tiny Town** — `tiles/`: здания.
 - **Tiny Dungeon** — `items/`: оружие, броня, зелья, свитки, сундуки, монеты.
+
+Земля, трава, песок, камень и цветы теперь рисуются программно в `games/mm6/terrain.js`
+в едином стиле с деревьями, поэтому соответствующие PNG-тайлы удалены.
 
 Источники:
 
@@ -15,12 +18,6 @@
 
 | Файл | Исходный тайл |
 | --- | --- |
-| `tiles/tile_grass.png` | Tiny Town `tile_0000.png` |
-| `tiles/tile_grass_flowers.png` | Tiny Town `tile_0001.png` |
-| `tiles/tile_grass_flowers_bright.png` | Tiny Town `tile_0002.png` |
-| `tiles/tile_sand.png` | Tiny Town `tile_0025.png` |
-| `tiles/tile_dirt.png` | Tiny Town `tile_0065.png` |
-| `tiles/tile_stone.png` | Tiny Town `tile_0061.png` |
 | `tiles/tile_building_straw.png` | Tiny Town `tile_0083.png` |
 | `tiles/tile_building_stone.png` | Tiny Town `tile_0100.png` |
 | `tiles/tile_building_blue.png` | Tiny Town `tile_0117.png` |
