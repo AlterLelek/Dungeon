@@ -24,7 +24,7 @@ jobs:
       - name: Run OpenCode
         uses: sst/opencode/github@latest
         with:
-          model: claude-sonnet-4-6
+          model: anthropic/claude-sonnet-4-6
           prompt: |
             Ты — опытный разработчик на JavaScript/TypeScript.
             Твоя задача — реализовать функционал из Issue.
