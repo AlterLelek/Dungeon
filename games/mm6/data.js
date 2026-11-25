@@ -346,6 +346,6 @@ export const DEFAULT_SETTINGS = {
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
   bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,
-  // Погода/животные.
-  weatherCycleSteps: 100, maxAnimals: 2, animalSpawnEvery: 10
+  // Погода/животные/лес.
+  weatherCycleSteps: 100, maxAnimals: 2, animalSpawnEvery: 10, treeDensity: 0.2
 };
