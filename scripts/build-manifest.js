@@ -107,7 +107,7 @@ function detectType(relAsset, file) {
     return 'tile';
   }
   if (base.startsWith('herb_') || base === 'herb') return 'herb';
-  if (/^(shield|robe|armor_|greaves|boots|gloves|helmet)/.test(base)) return 'armor';
+  if (/^(shield|robe|armor_|greaves|boots|bracers|gloves|helmet)/.test(base)) return 'armor';
   if (/^(dagger|mace|staff|bow|arrow|quiver|sword|axe|weapon|hammer|spear|katana|knife|machete|cleaver)/.test(base)) {
     return 'weapon';
   }

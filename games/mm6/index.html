@@ -37,6 +37,7 @@ button,input,select{font-family:inherit}
 .rightDock button{width:48px;height:48px;border-radius:9px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.24)}
 .rightDock button.hot{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.3)}
+#btnLog{position:absolute;right:8px;top:8px;width:auto;height:28px;padding:0 9px;border-radius:8px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto}
 #party{position:absolute;z-index:4;left:50%;top:4px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .pcard{width:122px;padding:3px 5px;border-radius:8px;background:rgba(6,8,18,.86);border:1px solid rgba(251,191,36,.35);font-size:9px}
 .pcard.active{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.35)}
@@ -132,6 +133,11 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mannequin .slot{margin-top:7px;padding:6px;border-radius:8px;background:rgba(255,255,255,.04);font-size:10px}
 .mannequin .slot b{display:block;color:#ffe9b0;font-size:11px}
 .mannequin .bad{color:#fca5a5;font-size:10px;margin-top:6px;line-height:1.35}
+.loadbar{position:relative;margin:6px 0;padding:6px 8px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(0,0,0,.35);font-size:10px;color:#d7dcf0;overflow:hidden}
+.loadbar .loadFill{position:absolute;left:0;top:0;bottom:0;opacity:.28}
+.loadbar.normal .loadFill{background:#4ade80}.loadbar.encumbered .loadFill{background:#fbbf24}.loadbar.overload .loadFill{background:#ef4444}
+.loadbar.normal{border-color:rgba(74,222,128,.45)}.loadbar.encumbered{border-color:rgba(251,191,36,.5)}.loadbar.overload{border-color:rgba(239,68,68,.6);color:#fecaca}
+.loadbar .loadText{position:relative;white-space:nowrap}
 .invRight{flex:1;min-width:0}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
 .tab{min-height:36px;padding:6px 9px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(255,255,255,.04);color:#c8cfe4;cursor:pointer;font-size:10px}
@@ -167,7 +173,10 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 #logList{max-height:52dvh;overflow:auto;margin:8px 0;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(0,0,0,.3)}
 .logLine{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;line-height:1.35;color:#c8cfe4;overflow-wrap:anywhere}
 .logLine.sel{background:rgba(251,191,36,.16);color:#ffe9b0}
-.logLine.hero{color:#86efac}.logLine.enemy{color:#fca5a5}.logLine.neutral{color:#fde68a}
+.logLine.npc{color:#fde68a}.logLine.loot{color:#86efac}.logLine.combat{color:#fca5a5}
+.logLine.system{color:#9aa4c2}.logLine.error{color:#b9bcc9}
+.logSpeaker{color:#fbbf24}
+.logDup{display:inline-block;margin-left:5px;padding:0 5px;border-radius:8px;background:rgba(251,191,36,.18);color:#ffe9b0;font-size:9px;font-weight:700}
 .logTurn{display:inline-block;min-width:30px;color:#7f8db0;font-size:9px}
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -225,6 +234,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
       <button id="btnInteract" aria-label="Взаимодействие" title="Взаимодействие [Enter]">↵</button>
       <button id="btnSettings" aria-label="Настройки" title="Настройки [P]">⚙</button>
     </div>
+    <button id="btnLog" aria-label="Журнал [L]" title="Открыть журнал сообщений [L]">📜 Журнал [L]</button>
   </div>
 </div>
 
@@ -244,7 +254,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <h3>Сложность</h3>
     <div class="diffRow" id="diffRow"></div>
     <div class="row"><input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя"><button class="play" id="playBtn">▶ Играть</button></div>
-    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка у здания · I — инвентарь · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
+    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка у здания · I — инвентарь · L — журнал · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
   </div>
 </div>
 
@@ -267,7 +277,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <details class="setAcc" open><summary>🎚️ Сложность и мир</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">Сложность</span><select id="setDiff"><option value="easy">🙂 Простая</option><option value="normal">🔥 Средняя</option><option value="hard">🧠 Сложная</option></select></div>
     <div class="setRow"><span class="setLabel">🏰 Этажей всего</span><input type="number" id="setFloors" min="1" max="20" step="1" value="5"></div>
-    <div class="setRow"><span class="setLabel">📐 Размер карты (клеток)</span><input type="number" id="setMapSize" min="8" max="24" step="1" value="14"></div>
+    <div class="setRow"><span class="setLabel">📐 Размер карты</span><input type="number" id="setMapSize" min="30" max="30" step="1" value="30" readonly title="30×30 закреплено в docs/DESIGN.md"></div>
     <div class="setRow"><span class="setLabel">🔲 Размер клетки</span><input type="number" id="setCellSize" min="8" max="28" step="1" value="16"></div>
     <div class="setRow"><span class="setLabel">👹 Монстров +</span><input type="number" id="setMonstersAdd" min="0" max="5" step="1" value="0"></div>
     <div class="setRow"><span class="setLabel">🧰 Спавн (раз в N)</span><input type="number" id="setItemRate" min="1" max="5" step="1" value="2"></div>
@@ -298,13 +308,13 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <div class="setRow"><span class="setLabel">Скорость героев</span><input type="number" id="setHeroSpeed" min="0.5" max="2" step="0.1" value="1"></div>
     <div class="setRow"><span class="setLabel">Скорость монстров</span><input type="number" id="setMonsterSpeed" min="0.5" max="2" step="0.1" value="1"></div>
     <div class="setRow"><span class="setLabel">Сила монстров</span><input type="number" id="setMonsterPower" min="0.5" max="2" step="0.1" value="1"></div>
-    <div class="setRow"><span class="setLabel">Журнал событий (строк)</span><input type="number" id="setLogLimit" min="100" max="1000" step="100" value="1000"></div>
-    <div class="setRow"><span class="setLabel">🌦 Цикл погоды (ходов)</span><input type="number" id="setWeatherCycle" min="10" max="500" step="10" value="100"></div>
+    <div class="legendItem">📜 Журнал сообщений: последние 100 событий, открывается клавишей L.</div>
+    <div class="setCheck"><span>🌦 Погода меняется только со сменой сезона — счётчик шагов отключён.</span></div>
     <div class="setRow"><span class="setLabel">🐾 Макс. животных</span><input type="number" id="setMaxAnimals" min="0" max="8" step="1" value="2"></div>
     <div class="setRow"><span class="setLabel">🐾 Появление животных (ходов)</span><input type="number" id="setAnimalSpawnEvery" min="1" max="200" step="1" value="10"></div>
     <div class="setCheck"><input type="checkbox" id="setFloatDamage" checked><span>Числа урона над целями</span></div>
     <div class="setCheck"><input type="checkbox" id="setBreathAnim" checked><span>Лёгкое «дыхание» спрайтов</span></div>
-    <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L/Д открывает журнал.</div>
+    <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L открывает и закрывает журнал, Esc закрывает.</div>
   </div></details>
   <details class="setAcc"><summary>🎮 Управление</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">Клавиши</span><select id="setKeysMode"><option value="all">WASD + Стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
@@ -335,8 +345,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 </div></div>
 
 <div id="eventLog" class="overlay hidden"><div class="box" style="width:min(720px,96vw)">
-  <div class="head"><h2>📜 Журнал событий</h2><button class="link" id="logClose">Закрыть [L/Д]</button></div>
-  <div class="keysHelp">Последние <span id="logCount">1000</span> событий. Прокрутка: ↑/↓, PageUp/PageDown.</div>
+  <div class="head"><h2>📜 Журнал сообщений</h2><button class="link" id="logClose">Закрыть [L/Esc]</button></div>
+  <div class="keysHelp">Последние <span id="logCount">0</span> сообщений · новые снизу с автоскроллом · повторы схлопываются (×N). Прокрутка: ↑/↓, PageUp/PageDown.</div>
   <div id="logList"></div>
   <div class="row" style="justify-content:space-between"><button class="link" id="logPrev">↑ Выше</button><button class="link" id="logNext">↓ Ниже</button></div>
 </div></div>
@@ -344,7 +354,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, CLASS_PENALTY, HERO_RESTRICTIONS, EQUIPMENT_RULES, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
@@ -356,7 +366,7 @@ import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 const W = 640, H = 360;
-const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
+const weather = createWeather(W, H);
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:300,heroScale:.5,msgY:178,msgH:84};
 const setFont=(px,bold=true)=>{ ctx.font=(bold?'700 ':'400 ')+px+'px '+UI_FONT; };
@@ -384,25 +394,97 @@ function bar(x,y,w,label,value,max,color){
   if(r>0){ ctx.fillStyle=color; roundRect(x+24,y+2,Math.max(3,(w-24)*r),8,4); ctx.fill(); }
   ctx.fillStyle='#fff'; ctx.textAlign='right'; ctx.fillText(Math.max(0,Math.round(value))+'/'+Math.max(0,Math.round(max)),x+w,y+6);
 }
+const LOG_LIMIT=100;
+const LOG_KEY='mm6_event_log_v1';
+const LOG_TYPES=['npc','combat','loot','system','error'];
 let toastTimer=0;
-function toast(text){ const t=$('toast'); t.textContent=text; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
-function pushHistory(text,side){
+function loadSavedLog(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(LOG_KEY)||'[]');
+    if(!Array.isArray(raw)) return [];
+    return raw.slice(-LOG_LIMIT).map(e=>({
+      type:LOG_TYPES.indexOf(e&&e.type)>=0?e.type:'system',
+      text:String((e&&e.text)||'').slice(0,500),
+      turn:Math.max(0,Number(e&&e.turn)||0),
+      count:Math.max(1,Math.min(999,Number(e&&e.count)||1)),
+      speaker:e&&e.speaker?String(e.speaker).slice(0,80):'',
+      source:['toast','history','status'].indexOf(e&&e.source)>=0?e.source:'history'
+    })).filter(e=>e.text);
+  }catch(e){ return []; }
+}
+function saveLog(){
+  try{ localStorage.setItem(LOG_KEY,JSON.stringify((game&&game.log||[]).slice(-LOG_LIMIT))); }catch(e){}
+}
+function resolveLogType(hint,text){
+  if(LOG_TYPES.indexOf(hint)>=0) return hint;
+  if(hint==='hero'||hint==='enemy') return 'combat';
+  const s=String(text||'');
+  if(/^(Не хватает|Нет |Рядом нет|Сначала|Заклинание не изучено|Сейчас не ваш ход|Оружие нельзя|Оружие нельзя зачаровать|Этот предмет нельзя|У предмета нет эффекта|Материал используется|Подойдите|Сундук уже пуст|Здесь не с чем|Проход закрыт|Край карты|Ржавое оружие|Достигнут предел|Усиление доступно)/i.test(s)) return 'error';
+  if(/(находка|сундук|победа!|награда|достижение|продано|куплен|куплено|создано|перековка|зачарование|усиление)/i.test(s)) return 'loot';
+  if(/(бой|атака|защита|скорость|урон|враг|применяет|яд|заклинани|маги|цель:|повержен|отравлен)/i.test(s)) return 'combat';
+  if(/^(ход \d+|поворот:|переход:|локация |сложность:|настройки|прогресс сохранён|отряд отдохнул|отряд выспался|заклинания доступны|использовано:)/i.test(s)) return 'system';
+  if(/^[^:]{2,40}: /.test(s)) return 'npc';
+  return 'system';
+}
+function logMessage(text,type,speaker,source){
   if(!game) return;
-  if(!game.history) game.history=[];
-  const max=clamp(Math.round(Number(settings&&settings.logLimit)||1000),100,1000);
-  game.history.push({text:String(text||''),side:side||'neutral',turn:game.world?game.world.turn:0});
-  if(game.history.length>max) game.history.splice(0,game.history.length-max);
+  const rawText=String(text==null?'':text).trim();
+  if(!rawText) return;
+  if(!Array.isArray(game.log)) game.log=[];
+  if(!Array.isArray(game.history)) game.history=game.log;
+  const who=speaker?String(speaker).slice(0,80):'';
+  let entryText=rawText;
+  if(who&&entryText.startsWith(who+': ')) entryText=entryText.slice(who.length+2).trim();
+  if(!entryText) return;
+  const kind=resolveLogType(type,entryText);
+  const from=source||'history';
+  const turn=Math.max(0,Number(game.world&&game.world.turn)||0);
+  const last=game.log[game.log.length-1];
+  // Status bar повторяет реплику целиком («Имя: текст»), а тост пишет её без имени.
+  if(from==='status'&&last&&last.speaker&&rawText===last.speaker+': '+last.text) return;
+  if(last&&last.text===entryText){
+    // Одно сообщение часто приходит сразу и в тост, и в status bar, и в историю.
+    // Оставляем одну запись, уточняя тип и говорящего от «визуального» вызова.
+    if(from==='toast'&&last.source!=='toast'){
+      last.type=kind; last.speaker=who; last.source='toast'; last.turn=turn;
+      saveLog(); if(game.logOpen) renderEventLog(true); return;
+    }
+    if(from!=='toast'&&last.source!=='toast'){
+      if(from!==last.source) return;
+    }else if(from!=='toast'&&last.source==='toast') return;
+    if(last.type===kind&&(last.speaker||'')===who){
+      last.count=(last.count||1)+1; last.turn=turn; saveLog(); if(game.logOpen) renderEventLog(true); return;
+    }
+  }
+  game.log.push({type:kind,text:entryText,turn,count:1,speaker:who,source:from});
+  if(game.log.length>LOG_LIMIT) game.log.splice(0,game.log.length-LOG_LIMIT);
+  saveLog();
   if(game.logOpen) renderEventLog(true);
+}
+function toast(text,type,speaker){
+  const t=$('toast'); if(t){ t.textContent=text; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+  logMessage(text,type,speaker,'toast');
+}
+function pushHistory(text,side,speaker){ logMessage(text,side,speaker,'history'); }
+// Любая строка status bar тоже становится событием журнала — без правок всех точек присваивания.
+function installMessageLogger(){
+  Object.defineProperty(game,'msg',{configurable:true,enumerable:true,
+    get(){ return this._msg||''; },
+    set(v){ const s=String(v==null?'':v); this._msg=s; if(s) logMessage(s,'','','status'); }
+  });
 }
 function renderEventLog(keepScroll){
   if(!game) return;
   const el=$('logList'); if(!el) return;
   const atBottom=keepScroll?(el.scrollTop+el.clientHeight>=el.scrollHeight-28):true;
-  const hist=game.history||[];
-  $('logCount').textContent=String(hist.length);
-  el.innerHTML=hist.length?hist.map((e,i)=>
-    '<div class="logLine '+esc(e.side||'neutral')+'"><span class="logTurn">'+(e.turn||0)+'</span> '+esc(e.text)+'</div>'
-  ).join(''):'<div class="logLine neutral">Журнал пока пуст. События появятся во время игры.</div>';
+  const entries=Array.isArray(game.log)?game.log:(Array.isArray(game.history)?game.history:[]);
+  $('logCount').textContent=entries.length+' / '+LOG_LIMIT;
+  el.innerHTML=entries.length?entries.map(e=>{
+    const type=LOG_TYPES.indexOf(e.type)>=0?e.type:'system';
+    const speaker=e.speaker?'<b class="logSpeaker">'+esc(e.speaker)+':</b> ':'';
+    const dup=(e.count||1)>1?'<span class="logDup">×'+e.count+'</span>':'';
+    return '<div class="logLine '+type+'"><span class="logTurn">'+(e.turn||0)+'</span> '+speaker+esc(e.text)+dup+'</div>';
+  }).join(''):'<div class="logLine system">Журнал пока пуст. Сообщения появятся во время игры.</div>';
   el.scrollTop=atBottom?el.scrollHeight:0;
 }
 function scrollEventLog(d){
@@ -411,12 +493,13 @@ function scrollEventLog(d){
   el.scrollTop+=d;
 }
 function toggleEventLog(open){
-  if(!game||phase!=='play') return;
+  if(!game||phase!=='play') return false;
   const show=open===undefined?!game.logOpen:!!open;
   game.logOpen=show;
   $('eventLog').classList.toggle('hidden',!show);
   if(show) renderEventLog(false);
   updateControls(); beep(430,.05);
+  return show;
 }
 function beep(freq,dur){ try{
   if(!game || (settings && Number(settings.sfx)<=0)) return;
@@ -471,7 +554,7 @@ const HEROES = D28_DATA.heroes.map((h,i)=>({
   name:h.name, key:h.key, set:h.set, emoji:h.emoji||'⚔️', sprite:h.sprite, hp:h.maxHp, mp:h.maxMp,
   desc:h.desc||HERO_DESC[i]||'Герой из Подземелья 28.',
   pros:h.pros||[], cons:h.cons||[], line:h.line||'',
-  weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name)}))
+  weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name),weight:weaponWeight({name:w.name})}))
 }));
 function moveEveryFor(m){
   if(m.id==='spider') return 5;
@@ -667,7 +750,7 @@ let progress=loadProgress();
 
 /* --- Настройки: полный дубль панели подземелья, сохраняются в localStorage --- */
 const SETTINGS_KEY='mm6_settings_v1';
-const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[8,24],monstersAdd:[0,5],itemRate:[1,5],
+const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,30],monstersAdd:[0,5],itemRate:[1,5],
   shieldVal:[1,10],starVal:[1,10],sound:[0,10],sfx:[0,10],amb:[0,10],music:[0,10],tempo:[300,1200],
   partySize:[1,3],heroSpeed:[.5,2],monsterSpeed:[.5,2],monsterPower:[.5,2],bonusEvery:[2,20],logLimit:[100,1000],
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200]};
@@ -704,7 +787,7 @@ function syncSettings(){
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
-    setWeatherCycle:'weatherCycleSteps',setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
+    setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
@@ -717,7 +800,7 @@ function bindSettings(){
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
-    setWeatherCycle:'weatherCycleSteps',setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
+    setMaxAnimals:'maxAnimals',setAnimalSpawnEvery:'animalSpawnEvery',
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{
@@ -761,14 +844,53 @@ const KENNEY_BASE='../../assets/kenney/';
 const KENNEY_TILES=KENNEY_BASE+'tiles/';
 const KENNEY_ITEMS=KENNEY_BASE+'items/';
 const imgCache={};
+const assetErrors=[], pendingAssetErrors=[];
+function assetErrorText(path,reason){
+  return 'Не загрузился ресурс: '+String(path||'(путь не задан)')+(reason?' ('+reason+')':'');
+}
+// Ошибка загрузки попадает в общий журнал событий и в __mm6Debug.logReport().
+function noteAssetError(path,reason){
+  const key=String(path||'');
+  if(assetErrors.some(e=>e.path===key)) return;
+  const rec={path:key,reason:String(reason||'load error').slice(0,120),turn:game&&game.world?game.world.turn:0};
+  assetErrors.push(rec);
+  if(game) logMessage(assetErrorText(key,rec.reason),'error','','asset');
+  else pendingAssetErrors.push(rec);
+}
+function flushAssetErrors(){
+  if(!game||!pendingAssetErrors.length) return;
+  pendingAssetErrors.splice(0).forEach(e=>logMessage(assetErrorText(e.path,e.reason),'error','','asset'));
+}
 function spriteImg(path){
   if(!path) return null;
-  if(!imgCache[path]){ const im=new Image(); im.dataset.ready='0'; im.onload=()=>{ im.dataset.ready='1'; }; im.src=path; imgCache[path]=im; }
+  if(!imgCache[path]){
+    const im=new Image(); im.dataset.ready='0';
+    im.onload=()=>{ im.dataset.ready='1'; };
+    im.onerror=()=>{ im.dataset.ready='error'; noteAssetError(path,'404 или ошибка загрузки'); };
+    im.src=path; imgCache[path]=im;
+  }
   return imgCache[path];
+}
+// Цветная заглушка с эмодзи вместо «тихого» пропуска отсутствующего спрайта.
+function drawSpriteFallback(path,x,y,w,h){
+  const src=String(path||'');
+  const emoji=/heroes\//.test(src)?'⚔️':/monsters\//.test(src)?'👹':/items\/|kenney\//.test(src)?'🎒':'❓';
+  let hash=0; for(let i=0;i<src.length;i++) hash=(hash*31+src.charCodeAt(i))|0;
+  const hue=Math.abs(hash)%360, fw=Math.max(2,w), fh=Math.max(2,h);
+  ctx.save();
+  ctx.fillStyle='hsla('+hue+',45%,30%,.88)';
+  roundRect(x,y,fw,fh,Math.min(8,fw/4)); ctx.fill();
+  ctx.strokeStyle='hsla('+hue+',70%,72%,.9)'; ctx.lineWidth=1; ctx.stroke();
+  setFont(Math.max(10,Math.min(fw,fh)*.6));
+  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#fff';
+  ctx.fillText(emoji,x+fw/2,y+fh/2);
+  ctx.restore();
 }
 function drawSprite(path,x,y,w,h,tint){
   const im=spriteImg(path);
-  if(!im||im.dataset.ready!=='1') return false;
+  if(!im) return false;
+  if(im.dataset.ready==='error'){ drawSpriteFallback(path,x,y,w,h); return true; }
+  if(im.dataset.ready!=='1') return false;
   ctx.save(); ctx.imageSmoothingEnabled=false;
   if(!tint){ ctx.drawImage(im,x,y,w,h); ctx.restore(); return true; }
   // Тинт рисуется на отдельном холсте, чтобы не окрашивать весь фон сцены.
@@ -832,15 +954,20 @@ function drawProcIcon(kind,x,y,s){
   }
   ctx.restore();
 }
+// Одна игровая клетка/тайл — эталон для всех предметных наложений на карте.
+// Иконки находок, скрещённых мечей и оружия на спине никогда не занимают больше её.
+function overlayCell(){ return clamp(Number(settings&&settings.cellSize)||16,8,28); }
+function overlaySize(px){ return Math.min(Math.max(0,Number(px)||0),overlayCell()); }
 function drawIcon(kind,x,y,s,label){
-  if(ITEM_SPRITES[kind]&&drawSprite(ITEM_SPRITES[kind],x-s/2,y-s/2,s,s)){
+  const sz=overlaySize(s);
+  if(ITEM_SPRITES[kind]&&drawSprite(ITEM_SPRITES[kind],x-sz/2,y-sz/2,sz,sz)){
     if(label){ ctx.save(); setFont(9); ctx.textAlign='center'; ctx.fillStyle='#ffe9b0';
-      ctx.fillText(label,x,y+s*.75); ctx.restore(); }
+      ctx.fillText(label,x,y+sz*.75); ctx.restore(); }
     return;
   }
-  drawProcIcon(kind,x,y,s);
+  drawProcIcon(kind,x,y,sz);
   if(label){ ctx.save(); setFont(9); ctx.textAlign='center'; ctx.fillStyle='#ffe9b0';
-    ctx.fillText(label,x,y+s*.75); ctx.restore(); }
+    ctx.fillText(label,x,y+sz*.75); ctx.restore(); }
 }
 function iconKind(icon){
   const s=String(icon||'');
@@ -874,18 +1001,79 @@ function slotIconHtml(slot){
   return slot&&slot.sprite?'<img class="ic" src="'+slot.sprite+'" alt="">':iconHtml(slot&&slot.icon);
 }
 function heroName(h){ return h===party()[0]?heroNameText:h.def.name; }
-function canCast(h){ const r=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set]; return !(r&&r.magic); }
-function restrictionText(h){ const r=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set]; return r&&r.reason?r.reason:''; }
+function canCast(h){ return !!h && !loadInfo(h).magicBlocked; }
+function restrictionText(h){
+  if(!h) return '';
+  const info=loadInfo(h);
+  if(info.magicBlocked) return 'Перегруз ('+info.weight+'/'+info.capacity+'): магия недоступна.';
+  if(info.failChance>0) return 'Металлическая броня: шанс провала магии '+info.failChance+'%.';
+  return '';
+}
 const round1=v=>Math.round((Number(v)||0)*10)/10;
 function magicValue(h){ return round1((h.magicPower||0)+((h.bonus&&h.bonus.magic)||0)); }
 function magicText(h){ return magicValue(h).toFixed(1); }
+/* Вес учитывается только у надетого. Сумка, золото и кристаллы не взвешиваются (§6 COMBAT_SPEC.md). */
+function itemWeight(it){
+  if(!it) return 0;
+  if(Number.isFinite(it.weight)) return it.weight;
+  if(it.type==='weapon') return weaponWeight(it);
+  if(it.type==='armor'){
+    const cat=armorCategory(it), def=Number(it.armorDef===undefined?it.def:it.armorDef)||0;
+    if(cat==='robe'||cat==='cloth') return clamp(def||1,1,3);
+    if(cat==='leather') return clamp(def+2,3,6);
+    if(cat==='light_metal') return clamp(def+1,5,8);
+    return clamp(def+1,8,15);
+  }
+  return 0;
+}
+function wornItems(h){
+  if(!h||!h.equip||!game) return [];
+  const seen=new Set(), out=[];
+  Object.values(h.equip).forEach(uid=>{
+    if(!uid||seen.has(uid)) return;
+    seen.add(uid);
+    const it=game.bag.find(i=>i.uid===uid);
+    if(it) out.push(it);
+  });
+  return out;
+}
+function isMetalArmor(it){
+  return !!it&&it.type==='armor'&&LOAD_RULES.metalCategories.indexOf(armorCategory(it))>=0;
+}
+function loadInfo(h,extra){
+  const capacity=Math.max(1,capacityFor(h&&h.def));
+  const worn=wornItems(h).filter(it=>it!==extra);
+  const weight=worn.reduce((sum,it)=>sum+itemWeight(it),0)+(extra?itemWeight(extra):0);
+  const ratio=weight/capacity;
+  const level=ratio>LOAD_RULES.encumberedMax?'overload':ratio>LOAD_RULES.normalMax?'encumbered':'normal';
+  const speedMult=level==='overload'?LOAD_RULES.overloadedSpeed:level==='encumbered'?LOAD_RULES.encumberedSpeed:LOAD_RULES.normalSpeed;
+  const magicBlocked=level==='overload';
+  const metalWeight=worn.filter(isMetalArmor).reduce((sum,it)=>sum+itemWeight(it),0)+(isMetalArmor(extra)?itemWeight(extra):0);
+  const failChance=magicBlocked?0:Math.min(LOAD_RULES.metalFailMax,metalWeight*LOAD_RULES.metalFailPerWeight);
+  return {weight,capacity,ratio,percent:Math.round(ratio*100),level,speedMult,magicBlocked,metalWeight,failChance};
+}
+function loadText(i){
+  return i.weight+'/'+i.capacity+' ('+i.percent+'%) · скорость ×'+i.speedMult+(i.magicBlocked?' · магия недоступна':'');
+}
+function loadTitle(h,it){
+  const i=loadInfo(h,it);
+  if(i.magicBlocked) return 'Перегруз: '+loadText(i);
+  if(i.level==='encumbered') return 'Заметная нагрузка: '+loadText(i)+'.';
+  return 'Нагрузка после надевания: '+loadText(i)+'.';
+}
+function weightForecast(h,it){
+  return ' · вес '+itemWeight(it)+' · после надевания '+loadText(loadInfo(h,it));
+}
 function heroSpeedValue(h){
   const base={mage:6,archer:9,paladin:7,angel:8,warrior:7}[h.def.set]||7;
   const w=equippedWeapon(h);
   const weaponMod=w?({dagger:2,bow:1,sword:0,staff:-1,axe:-1,hammer:-2}[w.wkind]||0):0;
   const slow=Math.max(-2,Math.min(2,Math.floor((h.poison>0?-1:0)+(statusSum(h,'slow')||0))));
   const mult=clamp(Number(settings&&settings.heroSpeed)||1,.5,2);
-  return Math.max(2,Math.round((base+weaponMod+magicValue(h)/4+slow)*mult*10)/10);
+  // Итоговая скорость из §6 COMBAT_SPEC.md: baseSpeed × settings.heroSpeed × loadMultiplier,
+  // округление до одного знака выполняется последним.
+  const baseSpeed=Math.max(2,base+weaponMod+magicValue(h)/4+slow);
+  return Math.max(1,round1(baseSpeed*mult*loadInfo(h).speedMult));
 }
 function monsterSpeedValue(m){
   const raw=(m&&m.speed)||combatSpeed(m||{name:''})||5;
@@ -896,34 +1084,22 @@ function monsterSpeedValue(m){
 function wornByOther(h,it){
   return !!(it&&party().some(x=>x&&x!==h&&Object.values(x.equip||{}).includes(it.uid)));
 }
-/* ограничения читаются из данных предмета и правил класса, а не из хардкода в UI */
-function equipmentRules(h){
-  return EQUIPMENT_RULES[h.def.name]||EQUIPMENT_RULES[h.def.set]||{};
+/* Категория нужна только для веса и провала магии, а не для запрета надевания. */
+function armorCategory(it){
+  if(!it||it.type!=='armor') return '';
+  if(ARMOR_CATEGORIES.indexOf(it.armorCategory)>=0) return it.armorCategory;
+  const n=String(it.name||''), def=Number(it.armorDef===undefined?it.def:it.armorDef)||0;
+  if(/роба|мантия|чарод|архимаг|чародея/i.test(n)) return 'robe';
+  if(/тяжёл|латн|латы|панцир|облач|броня/i.test(n)||def>=8) return 'heavy';
+  if(/сталь|желез|рыцар|кольчуг|серебр|золот|наруч/i.test(n)) return 'light_metal';
+  if(/кож|следопыт|разбойник|лесн/i.test(n)) return 'leather';
+  return def>=7?'light_metal':'cloth';
 }
-function classSetReason(h,it){
-  return it.set&&it.set!=='any'&&it.set!==h.def.set?'Предмет предназначен для другого класса.':'';
-}
-function weaponRuleReason(h,it){
-  if(!it) return '';
-  const kind=it.wkind||weaponKind(it.name||'');
-  const r=equipmentRules(h).weaponKinds;
-  if(r&&(r.kinds||[]).includes(kind)) return r.reason||'Этот герой не владеет таким оружием.';
-  const magic=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set];
-  if(kind==='staff'&&magic&&magic.magic) return magic.reason||'Этот герой не владеет магией.';
-  return classSetReason(h,it);
-}
-function armorRuleReason(h,it){
-  if(!it) return '';
-  const r=equipmentRules(h).armorHeavy;
-  if(r&&(it.armorDef||0)>=r.minDef) return r.reason||'Этот герой не носит тяжёлую броню.';
-  return classSetReason(h,it);
-}
+/* Экипировку ограничивает только нагрузка; класс предмета — атрибут данных. */
 function equipBlockReason(h,it){
   if(!it) return 'Предмет не найден.';
   if(it.owner!==undefined&&it.owner!==null&&it.owner!==h.slot) return 'Предмет закреплён за другим героем.';
   const worn=wornByOther(h,it); if(worn) return 'Предмет уже надет на другого героя.';
-  if(it.type==='weapon') return weaponRuleReason(h,it);
-  if(it.type==='armor') return armorRuleReason(h,it);
   return '';
 }
 function equipOnHero(h,slot,it){
@@ -940,18 +1116,17 @@ function equipOnHero(h,slot,it){
   }
   h.equip[slot]=it.uid;
   it.owner=h.slot;
-  if(it.type==='armor'&&(slot==='body'||!h.equip.armor)) h.equip.armor=it.uid;
+  // Псевдоним «armor» нужен только для старого слота «тело»; остальные слоты не трогаем.
+  if(it.type==='armor'&&slot==='body') h.equip.armor=it.uid;
   return true;
 }
-function gearRecipeBlock(r,h){
-  if(!h) return '';
-  const id=r.give&&r.give.id;
-  if(id==='craft_sword') return weaponRuleReason(h,{type:'weapon',name:'Кованый меч',wkind:'sword'});
-  if(id==='craft_axe') return weaponRuleReason(h,{type:'weapon',name:'Кованый топор',wkind:'axe'});
-  if(id==='craft_armor') return armorRuleReason(h,{type:'armor',name:'Сшитый доспех',armorDef:4,slot:'body',set:'any'});
-  if(id==='craft_shield') return armorRuleReason(h,{type:'armor',name:'Кованый щит',armorDef:3,slot:'shield',set:'any'});
-  return '';
+function unequipSlot(h,slot){
+  if(!h||!h.equip||!h.equip[slot]) return false;
+  h.equip[slot]=null;
+  if(slot==='body') h.equip.armor=null;
+  updateParty(); return true;
 }
+function gearRecipeBlock(){ return ''; }
 
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
@@ -959,25 +1134,27 @@ let selHero=[0,1,2], selDiff=settings.difficulty, heroNameText='Герой', pic
 let invTab='Общий';
 
 function makeItem(o){
-  return Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
+  const item=Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
+  if(!Number.isFinite(item.weight)) item.weight=itemWeight(item);
+  return item;
 }
 function makeHeroState(def,slot){
   const w=def.weapons[0];
   /* Кулаки — только подпись пустого слота: предмета в сумке нет, цены и торговли нет. */
   const weapon=isFists(w)?null:makeItem({type:'weapon',owner:slot,name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
-    sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality===undefined?1:w.quality,
+    sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality===undefined?1:w.quality,weight:w.weight,
     wkind:w.kind||weaponKind(w.name),set:def.set||'any',reforges:0,enchant:null,icon:'⚔'});
   const armor=makeItem({type:'armor',owner:slot,name:RAGS,def:0,cost:0,sell:0,armorDef:0,slot:'body',dir:'def',icon:'🛡',
-    unsellable:true,unequippable:true,starting:true});
+    weight:1,armorCategory:'cloth',unsellable:true,unequippable:true,starting:true});
   if(weapon) game.bag.push(weapon);
   game.bag.push(armor);
-  const restrictions=HERO_RESTRICTIONS[def.name]||{};
-  const spells=restrictions.magic?[]:(DEFAULT_SPELLS[def.set]||['heal']).slice();
+  const spells=(DEFAULT_SPELLS[def.set]||['heal']).slice();
   return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,
     magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
     bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
-    equip:{weapon:weapon?weapon.uid:null,body:armor.uid,armor:armor.uid,shield:null,helmet:null,legs:null,hands:null,cloak:null}};
+    equip:{weapon:weapon?weapon.uid:null,body:armor.uid,armor:armor.uid,shield:null,helmet:null,
+      legs:null,boots:null,bracers:null,hands:null,cloak:null}};
 }
 /* Временные эффекты живут ограниченное число ходов и исчезают сами.
    Постоянные бонусы боссов остаются в h.bonus. */
@@ -1008,23 +1185,20 @@ function equippedArmors(h){
   return game.bag.filter(i=>uids.includes(i.uid));
 }
 function armorTotal(h){ return equippedArmors(h).reduce((s,a)=>s+(a.armorDef||0),0); }
-function weaponPenalty(h,w){
-  const table=CLASS_PENALTY[h.def.name]||CLASS_PENALTY[h.def.set]||{};
-  return table[w&&w.wkind]||0;
-}
-function armorPenalty(h,a){
-  const table=CLASS_PENALTY[h.def.name]||CLASS_PENALTY[h.def.set]||{};
-  return (a&&a.armorDef>=7&&table.armor7)||0;
+// Кулаки не предмет: их атака зависит от класса и никогда не равна единице.
+function fistAttackValue(h){
+  const key=h&&h.def?h.def.name:'';
+  const set=h&&h.def?h.def.set:'';
+  return Math.max(2,Number(FIST_ATTACK[key]||FIST_ATTACK[set]||2)||2);
 }
 function heroAtk(h){
-  const w=equippedWeapon(h); if(!w) return 1;
-  let a=w.dmg+h.bonus.atk+statusSum(h,'atk')+weaponPenalty(h,w);
-  if(w.enchant&&w.enchant.stat==='atk') a+=w.enchant.value;
-  return Math.max(1,a);
+  const w=equippedWeapon(h), base=w?w.dmg:fistAttackValue(h);
+  let a=base+h.bonus.atk+statusSum(h,'atk');
+  if(w&&w.enchant&&w.enchant.stat==='atk') a+=w.enchant.value;
+  return Math.max(2,a);
 }
 function heroDef(h){
   let d=armorTotal(h)+h.bonus.def+statusSum(h,'def');
-  equippedArmors(h).forEach(a=>{ d+=armorPenalty(h,a); });
   const w=equippedWeapon(h);
   if(w&&w.enchant&&w.enchant.stat==='def') d+=w.enchant.value;
   return Math.max(0,d);
@@ -1060,10 +1234,13 @@ function startGame(diffId,a,b){
   const d=DIFFICULTY.find(x=>x.id===(diffId||selDiff))||DIFFICULTY[1];
   selHero=normalizeHeroList(a,b); selDiff=d.id;
   heroNameText=($('heroName').value||'').trim().slice(0,14)||'Герой';
+  const savedLog=loadSavedLog();
   game={difficulty:d.id,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
     battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
-    logOpen:false,history:[],bonusStep:0,
+    logOpen:false,log:savedLog,history:savedLog,bonusStep:0,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
+  installMessageLogger();
+  flushAssetErrors();
   game.party=selHero.map((idx,slot)=>makeHeroState(HEROES[idx],slot));
   game.world=generateWorld(d.id);
   setMap(0,null);
@@ -1100,8 +1277,9 @@ function emptyCells(size){
   const g=[]; for(let y=0;y<size;y++){ g[y]=[]; for(let x=0;x<size;x++) g[y][x]={t:'grass'}; } return g;
 }
 function generateMap(i,total,slot,d,pos,cols,rows){
-  const baseSize=clamp(Math.round(Number(settings.mapSize)||d.size[1]),8,28);
-  const size=clamp(rnd(Math.max(8,baseSize-2),baseSize+2),8,28);
+  // Размер карт закреплён: 30×30 (docs/DESIGN.md). Настройка сделана только для чтения.
+  const baseSize=30;
+  const size=clamp(baseSize,30,30);
   const biome=BIOME_KEYS[i%BIOME_KEYS.length];
   const cells=emptyCells(size);
   const cx=Math.floor(size/2),cy=Math.floor(size/2);
@@ -1250,8 +1428,9 @@ function buildingReply(cell){
   return name+': '+(fallback[kind]||'Это здание не открывает торговый интерфейс.');
 }
 function interactBuilding(cell){
-  const text=buildingReply(cell);
-  game.msg=text; toast(text); pushHistory(text,'neutral'); beep(180,.08);
+  const speaker=buildingTitleOf(cell), text=buildingReply(cell);
+  toast(text,'npc',speaker);
+  game.msg=text; beep(180,.08);
   return false;
 }
 function openBuilding(cell){
@@ -1471,16 +1650,14 @@ function updateControls(){
   $('party').classList.toggle('hidden',phase!=='play');
   const b=game.battle, inBattle=!!b;
   const heroTurn=inBattle&&!b.end&&!b.busy&&b.turn==='hero';
-  const active=heroTurn?party()[b.heroIdx]:null;
-  const canMagic=!!active&&active.spells.length>0&&canCast(active);
-  const magicReason=!active?'':!active.spells.length?'Заклинаний не изучено':(!canCast(active)?(restrictionText(active)||'Магия недоступна'):'');
+  const attackReason=attackBlockReason(), spellReason=spellBlockReason(), fleeReason=fleeBlockReason();
   $('party').classList.toggle('in-battle',inBattle);
-  $('btnAttack').classList.toggle('hot',heroTurn);
-  $('btnSpell').classList.toggle('hot',canMagic);
-  $('btnFlee').classList.toggle('hot',inBattle&&!b.end);
-  setActionButton('btnAttack',!heroTurn,!inBattle?'Атака доступна только в бою':b.end?'Бой завершён':b.busy?'Дождитесь завершения удара':b.turn!=='hero'?'Сейчас ход врага':'Атака [Пробел]');
-  setActionButton('btnSpell',!canMagic,!inBattle?'Магия доступна только в бою':b.end?'Бой завершён':magicReason||'Заклинание [F]');
-  setActionButton('btnFlee',!inBattle||!!b.end,!inBattle?'Бегство доступно только в бою':'Бой завершён — бегство не нужно');
+  $('btnAttack').classList.toggle('hot',!attackReason);
+  $('btnSpell').classList.toggle('hot',!spellReason);
+  $('btnFlee').classList.toggle('hot',!fleeReason);
+  setActionButton('btnAttack',!!attackReason,attackReason||'Атака [Пробел] · цель выбирается щёлчком по врагу');
+  setActionButton('btnSpell',!!spellReason,spellReason||'Заклинание [F] · мана и эффекты проверены');
+  setActionButton('btnFlee',!!fleeReason,fleeReason||FLEE_TITLE);
   setActionButton('btnShop',inBattle,'Лавка закрыта во время боя');
   setActionButton('btnInteract',!canInteractHere(),'Рядом не с чем взаимодействовать');
   $('party').style.display=(settings.showHints===false&&!inBattle)?'none':'';
@@ -1555,6 +1732,10 @@ function startBattle(list,mapRef){
   });
   b.order=b.units.slice().sort((a,c)=>(c.speed-a.speed)||(a.side==='hero'?-1:1));
   pushLog('В бой вступают все участники:',C_NEUTRAL,'neutral');
+  party().forEach(h=>{
+    const li=loadInfo(h);
+    if(li.magicBlocked) pushLog('⚠ '+heroName(h)+' перегружен: '+li.weight+'/'+li.capacity+' ('+li.percent+'%). Скорость ×0.5, магия недоступна.',C_NEUTRAL,'neutral');
+  });
   party().forEach(h=>pushLog('  '+heroName(h)+' — атака '+heroAtk(h)+', защита '+heroDef(h)+', магия '+magicText(h)+', скорость '+heroSpeedValue(h)+'.',C_HERO,'hero'));
   enemies.forEach(e=>pushLog(e.name+' — атака '+e.atk+', защита '+e.defVal+', скорость '+monsterSpeedValue(e)+'.',C_ENEMY,'enemy'));
   pushHistory('Бой начался: '+party().map(heroName).join(', ')+' против '+enemies.map(e=>e.name).join(', ')+'.','neutral');
@@ -1632,26 +1813,73 @@ function attackVerb(m){
   if(/виверн|дракон/.test(n)) return 'укусила';
   return 'ударил';
 }
+// Замороженный формат строки боя: «Кто ударил Чем и получил N атаки против защиты M. Кто получил K урона.»
+// Никаких крититов, дробей, процентов и увертываний — только attack, defense и max(0, attack - defense).
+function genderVerb(name,male,female){
+  const n=String(name||'').toLowerCase();
+  // Мягкий знак и окончание -а бывают разного рода: уточняем известные имена.
+  if(/гном-кулига/.test(n)) return male;
+  const feminine=/а$|я$|мышь|крыс|черепах|муми|сирен|виверн|амазон/.test(n);
+  return feminine?female:male;
+}
+function combatLog(attacker,verb,weapon,attack,defense,dmg,target){
+  const got=genderVerb(attacker,'получил','получила');
+  const targetGot=genderVerb(target,'получил','получила');
+  return attacker+' '+verb+(weapon?' '+weapon:'')+' и '+got+' '+attack+' атаки против защиты '+defense+'. '+
+    target+' '+targetGot+' '+dmg+' урона.';
+}
+function attackBlockReason(){
+  const b=game&&game.battle;
+  if(!b) return 'Атака доступна только в бою.';
+  if(b.end) return 'Бой завершён — атака недоступна.';
+  if(b.busy) return 'Дождитесь завершения удара.';
+  if(b.turn!=='hero') return 'Сейчас ход врага.';
+  const h=party()[b.heroIdx]; if(!h||h.hp<=0) return 'Герой без сознания — атака недоступна.';
+  if(!selectedTarget(b)) return 'Выберите цель: щёлкните по врагу или стрелками влево/вправо.';
+  return '';
+}
+function spellBlockReason(){
+  const b=game&&game.battle;
+  if(!b) return 'Магия доступна только в бою.';
+  if(b.end) return 'Бой завершён — магия недоступна.';
+  if(b.busy||b.turn!=='hero') return 'Сейчас ход врага.';
+  const h=party()[b.heroIdx]; if(!h) return 'Герой не выбран.';
+  if(!h.spells||!h.spells.some(id=>spellHasEffect(spell(id)))) return 'Заклинаний не изучено.';
+  if(!canCast(h)) return restrictionText(h)||'Магия недоступна из-за перегруза.';
+  const affordable=h.spells.some(id=>{
+    const s=spell(id); return !!s&&spellHasEffect(s)&&h.mp>=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
+  });
+  if(!affordable) return 'Не хватает маны ни на одно заклинание.';
+  return '';
+}
+// Шанс бегства зафиксирован и не масштабируется скоростью: 50% в ход героя.
+// Условия: живой бой, не завершён, не занят анимацией, сейчас ход героя.
+// При неудаче ход переходит самому быстрому живому врагу — без «тихой» атаки.
+const FLEE_CHANCE=0.5;
+const FLEE_TITLE='Бегство [R] · шанс 50% · только в ход героя';
+function fleeBlockReason(){
+  const b=game&&game.battle;
+  if(!b) return 'Бегство доступно только в бою.';
+  if(b.end) return 'Бой завершён — бегство не нужно.';
+  if(b.busy||b.turn!=='hero') return 'Дождитесь своего хода — бегство недоступно.';
+  return '';
+}
 function heroAttack(){
-  const b=game&&game.battle; if(!b||b.end||b.busy||b.turn!=='hero') return;
-  const h=party()[b.heroIdx]; if(!h||h.hp<=0) return;
-  const target=selectedTarget(b); if(!target) return;
+  const reason=attackBlockReason(); if(reason){ toast(reason); return false; }
+  const b=game.battle, h=party()[b.heroIdx], target=selectedTarget(b);
   b.busy=true;
   const w=equippedWeapon(h);
-  let atk=heroAtk(h);
+  let attack=heroAtk(h);
   if(w&&w.enchant){
-    if(w.enchant.stat==='light'&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) atk+=w.enchant.value;
+    if(w.enchant.stat==='light'&&/скелет|призрак|зомби|мумия|лич|некромант|вампир/i.test(target.name)) attack+=w.enchant.value;
   }
-  const crit=Math.random()*100<weaponCrit(h,w);
-  const raw=Math.max(1,Math.round((atk+rnd(0,2))*(crit?2:1)));
+  // Замороженное правило: урон = max(0, атака - защита). Критов и случайных надбавок нет.
   const defense=Math.max(0,target.defVal);
-  const dmg=Math.max(0,raw-defense);
+  const dmg=Math.max(0,attack-defense);
   target.hp=Math.max(0,target.hp-dmg);
-  b.lastHit={attacker:heroName(h),weapon:w?w.name:FISTS,raw,defense,final:dmg,crit};
   const weaponText=instrumental(w?w.name:FISTS);
-  pushLog(crit
-    ? h.def.name+' нанес критический удар '+weaponText+' на '+raw+', но '+target.name+' защитилась на '+defense+' и получила '+dmg+' урона.'
-    : h.def.name+' ударил '+weaponText+' и нанес '+raw+' урона, но '+target.name+' защитилась на '+defense+' и получила '+dmg+' урона.',C_HERO,'hero');
+  b.lastHit={attacker:heroName(h),weapon:w?w.name:FISTS,raw:attack,defense,final:dmg,crit:false};
+  pushLog(combatLog(h.def.name,genderVerb(h.def.name,'ударил','ударила'),weaponText,attack,defense,dmg,target.name),C_HERO,'hero');
   if(w&&w.enchant){
     const en=w.enchant;
     if(en.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+en.value);
@@ -1661,8 +1889,9 @@ function heroAttack(){
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
   if(target.hp<=0){ target.alive=false; b.targetIdx=firstAliveEnemyIdx(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
   beep(440,.09); updateParty();
-  if(checkBattleEnd()) return;
+  if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
+  return true;
 }
 function enemyAct(b,idx){
   if(!game||game.battle!==b||b.end) return;
@@ -1670,17 +1899,17 @@ function enemyAct(b,idx){
   const targets=aliveHeroes(); if(!targets.length){ finishBattle(false); return; }
   const h=settings.criticalAI?targets.slice().sort((a,c)=>a.hp-c.hp)[0]:pick(targets);
   const hIdx=party().indexOf(h);
-  const magicHit=m.magic&&Math.random()<.35;
-  const raw=Math.max(1,Math.round(m.atk+m.magicBonus+(magicHit?0:0)+rnd(0,2)));
-  const defense=magicHit?Math.round(heroDef(h)*.5):heroDef(h);
-  const dmg=Math.max(0,raw-defense);
-  b.lastHit={attacker:m.name,weapon:magicHit?'чары':attackVerb(m),raw,defense,final:dmg,crit:false};
-  pushLog(magicHit
-    ? m.name+' наложил чары на '+h.def.name+' и нанес '+raw+' урона, но '+h.def.name+' защитился на '+defense+' и получил '+dmg+' урона.'
-    : m.name+' '+attackVerb(m)+' и нанес '+raw+' урона, но '+h.def.name+' защитился на '+defense+' и получил '+dmg+' урона.',C_ENEMY,'enemy');
+  const magicHit=!!m.magic;
+  // Та же замороженная формула: урон = max(0, атака - защита), без процентов и случайных множителей.
+  const attack=Math.max(1,Math.round((Number(m.atk)||1)+(magicHit?(Number(m.magicBonus)||0):0)));
+  const defense=heroDef(h);
+  const dmg=Math.max(0,attack-defense);
+  const verb=magicHit?genderVerb(m.name,'колдовал','колдовала')+' чарами':attackVerb(m);
+  b.lastHit={attacker:m.name,weapon:magicHit?'чары':attackVerb(m),raw:attack,defense,final:dmg,crit:false};
+  pushLog(combatLog(m.name,verb,'',attack,defense,dmg,h.def.name),C_ENEMY,'enemy');
   h.hp=Math.max(0,h.hp-dmg);
   addBattleFloater(battleHeroPoint(b,hIdx),'-'+dmg,C_ENEMY);
-  if(m.poison&&Math.random()<.35&&h.hp>0){
+  if(m.poison&&h.hp>0){
     h.poison=3; h.poisonTurns=2;
     addStatus(h,'poison',2,{icon:'☠'});
     pushLog(m.name+' наложил яд на '+h.def.name+'.',C_ENEMY,'enemy');
@@ -1695,13 +1924,21 @@ function castSpell(id,targetIdx){
   const b=game&&game.battle;
   if(!b||b.end){ toast('Заклинания доступны в бою.'); return false; }
   if(b.turn!=='hero'||b.busy){ toast('Сейчас не ваш ход.'); return false; }
-  const s=spell(id); if(!spellHasEffect(s)) return false;
+  const s=spell(id); if(!spellHasEffect(s)){ toast('У этого заклинания нет эффекта.'); return false; }
   const h=party()[b.heroIdx];
   if(!h||h.spells.indexOf(id)<0){ toast('Заклинание не изучено.'); return false; }
-  if(!canCast(h)){ toast(restrictionText(h)||'Этот герой не владеет магией.'); return false; }
+  if(!canCast(h)){ toast(restrictionText(h)||'Магия недоступна из-за перегруза.'); return false; }
   const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
   if(h.mp<cost){ toast('Не хватает маны: нужно '+cost+'.'); return false; }
   h.mp-=cost;
+  const failInfo=loadInfo(h);
+  if(!failInfo.magicBlocked&&failInfo.failChance>0&&Math.random()*100<failInfo.failChance){
+    pushLog('«'+heroName(h)+' пытался применить «'+s.name+'», но метал сковал чары: провал ('+failInfo.failChance+'%). Мана потрачена.»',C_NEUTRAL,'neutral');
+    b.anim={who:'hero',t:1,jump:6}; beep(180,.12);
+    closeSpellMenu(); updateParty();
+    setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
+    return true;
+  }
   const target=Number.isInteger(targetIdx)?(b.enemies[targetIdx]||selectedTarget(b)):selectedTarget(b);
   const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||SPELL_TIERS[1]).name;
   const magic=magicValue(h);
@@ -1737,8 +1974,9 @@ function castSpell(id,targetIdx){
   return true;
 }
 function fleeBattle(){
-  const b=game&&game.battle; if(!b||b.end) return false;
-  if(Math.random()<.5){
+  const reason=fleeBlockReason(); if(reason){ toast(reason); return false; }
+  const b=game.battle;
+  if(Math.random()<FLEE_CHANCE){
     const maxSum=party().reduce((s,h)=>s+h.maxHp,0);
     const loss=Math.max(2,Math.ceil(maxSum*.05));
     let left=loss;
@@ -1842,25 +2080,27 @@ function finishRun(win){
 
 /* ============================ 7. МЕНЮ ЗАКЛИНАНИЙ ============================ */
 function openSpellMenu(){
-  if(!game||phase!=='play') return;
+  if(!game||phase!=='play'){ toast('Игра не начата.'); return false; }
+  // Меню открывается только у выбранного героя и только когда есть эффект и mana.
+  const reason=spellBlockReason(); if(reason){ toast(reason); return false; }
   $('spellMenu').classList.remove('hidden'); game.spellOpen=true;
-  const b=game.battle;
-  if(!b){ $('spellList').innerHTML='<p class="sec">Заклинания можно применять только в бою.</p>'; updateControls(); return; }
-  const h=party()[b.heroIdx];
+  const b=game.battle, h=party()[b.heroIdx];
   const tierName=id=>{ const s=spell(id),t=SPELL_TIERS.find(x=>x.id===(s&&s.tier))||SPELL_TIERS[1]; return t.name; };
-  $('spellList').innerHTML=(restrictionText(h)?'<div class="sec bad">⚠ '+restrictionText(h)+'</div>':'')+
+  $('spellList').innerHTML='<div class="sec">Заклинания героя '+esc(h.def.name)+' · мана '+Math.round(h.mp)+'/'+h.maxMp+' · сила магии '+magicText(h)+'</div>'+
+    (restrictionText(h)?'<div class="sec bad">⚠ '+restrictionText(h)+'</div>':'')+
     h.spells.filter(id=>spellHasEffect(spell(id))).map(id=>{
     const s=spell(id); if(!s) return '';
     const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
     const target=s.aoe?'по всем':(s.heal||s.shield||s.atk||s.gain?'на себя':'на врага');
-    const disabled=h.mp<cost||b.turn!=='hero'||!canCast(h);
-    const reason=h.mp<cost?'Не хватает маны':b.turn!=='hero'?'Сейчас ход врага':(!canCast(h)?(restrictionText(h)||'Магия недоступна'):'');
+    const disabled=h.mp<cost||b.turn!=='hero'||!canCast(h)||b.busy;
+    const spellReason=h.mp<cost?('Не хватает маны: нужно '+cost+', сейчас '+Math.round(h.mp)):b.turn!=='hero'?'Сейчас ход врага':b.busy?'Дождитесь завершения удара':(!canCast(h)?(restrictionText(h)||'Магия недоступна'):'');
     return '<div class="rowItem"><span class="ic">'+s.icon+'</span><div class="info"><b class="ellip">'+s.name+'</b><small>'+
-      s.desc+' · '+tierName(id)+' · цель: '+target+' · сила магии '+magicText(h)+(disabled?' · ⚠ '+reason:'')+'</small></div>'+
-      '<button class="act magic" data-spell="'+s.id+'"'+(disabled?' disabled title="'+esc(reason)+'"':'')+'>'+cost+' MP</button></div>';
+      s.desc+' · '+tierName(id)+' · цель: '+target+' · сила магии '+magicText(h)+(disabled?' · ⚠ '+spellReason:'')+'</small></div>'+
+      '<button class="act magic" data-spell="'+s.id+'"'+(disabled?' disabled title="'+esc(spellReason)+'"':'')+'>'+cost+' MP</button></div>';
   }).join('')||'<p class="sec">Заклинаний пока нет.</p>';
   $('spellList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>castSpell(btn.dataset.spell));
   updateControls();
+  return true;
 }
 function closeSpellMenu(){ $('spellMenu').classList.add('hidden'); if(game) game.spellOpen=false; updateControls(); }
 
@@ -1916,7 +2156,7 @@ function shopButton(text,fn,disabled,cls,reason){
   const b=document.createElement('button'); b.className='act'+(cls?' '+cls:''); b.textContent=text;
   if(disabled){
     b.disabled=true;
-    const why=reason||(/^🪙/.test(text)?'Не хватает золота':/Изучено/.test(text)?'Заклинание уже изучено':/⚠/.test(text)?'Действие недоступно для этого героя':'Действие сейчас недоступно');
+    const why=reason||(/^🪙/.test(text)?'Не хватает золота':/Изучено/.test(text)?'Заклинание уже изучено':'Действие сейчас недоступно');
     b.title=why;
     if(!/⚠/.test(b.textContent)) b.textContent+=' ⚠';
   } else b.onclick=fn;
@@ -1955,36 +2195,37 @@ function priceMult(def,base){
 }
 function addShopWeapon(def,w,h){
   const price=priceMult(def,w);
-  const block=equipBlockReason(h,{type:'weapon',name:w.name,wkind:w.kind||weaponKind(w.name),quality:w.quality,set:w.set||'any'});
-  shopRow(weaponIcon(w.kind),w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name+' · '+(w.set||'любой')+' класс'+
-    (block?' · ⚠ '+block:'')+(game.gold<price?' · ⚠ не хватает золота':''),
+  const preview={type:'weapon',name:w.name,wkind:w.kind||weaponKind(w.name),quality:w.quality,set:w.set||'any',weight:w.weight};
+  shopRow(weaponIcon(w.kind),w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name+' · '+(w.set||'любой')+' набор'+
+    weightForecast(h,preview)+(game.gold<price?' · ⚠ не хватает золота':''),
     [shopButton('🪙 '+price,()=>buy(price,()=>{
       const it=addItem({type:'weapon',owner:h.slot,name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:price,
         sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),quality:w.quality,wkind:w.kind||weaponKind(w.name),set:w.set||'any',
-        reforges:0,enchant:null,icon:'⚔'});
+        weight:w.weight,reforges:0,enchant:null,icon:'⚔'});
       equipOnHero(h,'weapon',it); toast('Куплено и надето на '+heroName(h)+': '+w.name);
-    }),game.gold<price||!!block)],'ПОКУПКА');
+    }),game.gold<price)],'ПОКУПКА');
 }
 function addShopArmor(def,a,h){
   const price=priceMult(def,a);
   const slot=a.slot||'body';
-  const block=equipBlockReason(h,{type:'armor',name:a.name,armorDef:a.def,slot,set:a.set});
+  const preview={type:'armor',name:a.name,armorDef:a.def,slot,set:a.set,weight:a.weight,armorCategory:a.armorCategory};
   shopRow(itemIconHtml(a),a.name,'Защита +'+a.def+(a.tier?' · тир '+a.tier:'')+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+
-    ' · '+(a.set==='any'?'любой класс':a.set)+(block?' · ⚠ '+block:'')+(game.gold<price?' · ⚠ не хватает золота':''),
+    ' · '+(a.set==='any'?'любой набор':a.set)+weightForecast(h,preview)+(game.gold<price?' · ⚠ не хватает золота':''),
     [shopButton('🪙 '+price,()=>buy(price,()=>{
       const it=addItem({type:'armor',owner:h.slot,name:a.name,armorDef:a.def,baseArmor:a.def,cost:price,
         sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),slot,dir:a.dir||'def',set:a.set||'any',
-        quality:1,upgrades:0,icon:a.icon||'🛡',sprite:a.sprite||null,tier:a.tier||null,id:a.id||null,group:a.group||null});
+        weight:a.weight,armorCategory:a.armorCategory,quality:1,upgrades:0,icon:a.icon||'🛡',sprite:a.sprite||null,tier:a.tier||null,id:a.id||null,group:a.group||null});
       equipOnHero(h,slot,it); toast('Надето на '+heroName(h)+': '+a.name);
-    }),game.gold<price||!!block)],'ПОКУПКА');
+    }),game.gold<price)],'ПОКУПКА');
 }
 function weaponIcon(kind){
   return kind==='axe'?'🪓':kind==='bow'?'🏹':kind==='staff'?'🪄':kind==='dagger'?'🗡':'⚔';
 }
-function reforgeSection(h){
-  shopSec('Перековка и усиление одежды');
-  game.bag.filter(i=>(i.type==='weapon'||i.type==='armor')&&!isStartingRags(i)&&!equipBlockReason(h,i)).forEach(it=>{
-    const isArmor=it.type==='armor';
+/* Раздел усиления привязан к зданию: кузница — только оружие, бронница — только броня. */
+function reforgeSection(h,kind){
+  const isArmor=kind==='armor';
+  shopSec(isArmor?'Усиление доспехов · бронница':'Перековка оружия · кузница');
+  game.bag.filter(i=>(isArmor?i.type==='armor':i.type==='weapon')&&!isStartingRags(i)&&!wornByOther(h,i)).forEach(it=>{
     const q=isArmor?(it.quality===undefined?1:it.quality):(QUALITY[it.quality]||QUALITY[0]).id;
     const upgrades=isArmor?(it.upgrades||0):(it.reforges||0);
     const cost=forgeCost({quality:q,reforges:upgrades});
@@ -1996,7 +2237,7 @@ function reforgeSection(h){
         if(buy(cost,()=>{
           upgrades++;
           const inc=Math.max(1,Math.ceil(((isArmor?it.baseArmor:it.baseDmg)||1)/5));
-          if(isArmor){ it.upgrades=upgrades; it.armorDef+=inc; toast('Усиление одежды: '+it.name+' +'+inc+' защиты'); }
+          if(isArmor){ it.upgrades=upgrades; it.armorDef+=inc; toast('Усиление брони: '+it.name+' +'+inc+' защиты'); }
           else { it.reforges=upgrades; it.dmg+=inc; toast('Перековка: '+it.name+' +'+inc+' урона'); }
         })) renderShop();
       },!ok)],'УСИЛЕНИЕ');
@@ -2025,9 +2266,10 @@ function renderShop(){
   $('shopList').innerHTML='';
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
 
-  const showsWeapons=['weapons','armory','market'].includes(def.id);
+  // Оружейная/кузница — только оружие, палата/бронница — только броня.
+  // Рынок остаётся общим лавком, но не продаёт предметы комплекта.
+  const showsWeapons=['weapons','forge','market'].includes(def.id);
   const showsArmor=['armory','armor','market'].includes(def.id);
-  const showsReforge=['weapons','armory','armor','forge','jeweler'].includes(def.id);
 
   if(showsWeapons){
     shopSec('Оружие · '+def.title+' · для '+h.def.name);
@@ -2040,7 +2282,7 @@ function renderShop(){
     });
   }
   if(showsArmor){
-    shopSec('Броня · 6 слотов');
+    shopSec('Броня · '+ARMOR_SLOTS.length+' слотов');
     (stock.armor||[]).forEach(idx=>{
       const a=ARMORS[idx%ARMORS.length]; if(!a||isStartingRags(a)) return; // стартовые лохмотья не продаются
       if(stock.noHeavy&&a.def>=7) return;
@@ -2054,7 +2296,9 @@ function renderShop(){
     shopSec(group.name+' · тиры 1–10');
     list.forEach(a=>addShopArmor(def,a,h));
   });
-  if(showsReforge) reforgeSection(h);
+  // Каждый раздел усиления живёт только в своём здании.
+  if(def.id==='forge') reforgeSection(h,'weapon');
+  if(def.id==='armor') reforgeSection(h,'armor');
 
   if(def.id==='magic'){
     shopSec('Свитки и заклинания');
@@ -2070,9 +2314,9 @@ function renderShop(){
       const price=Math.max(2,Math.round((7+SPELLS.indexOf(s)*2)*stock.price*(stock.spellDiscount||1)));
       const known=h.spells.includes(s.id), restricted=!canCast(h);
       shopRow(s.icon,s.name,s.desc+' · '+((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+s.mp+' MP',
-        [shopButton(known?'Изучено':restricted?'⚠ нельзя':'🪙 '+price+' выучить',()=>buy(price,()=>{
+        [shopButton(known?'Изучено':restricted?'⚠ перегруз':'🪙 '+price+' выучить',()=>buy(price,()=>{
           h.spells.push(s.id); h.mpDiscount=stock.spellDiscount||1; toast('Изучено: '+s.name+' (мана дешевле)');
-        }),known||restricted||game.gold<price)],'ОБУЧЕНИЕ');
+        }),known||restricted||game.gold<price,null,restrictionText(h))],'ОБУЧЕНИЕ');
     });
     shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 6',()=>buy(6,()=>{
       addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3});
@@ -2088,7 +2332,7 @@ function renderShop(){
       shopButton('🪙 11',()=>buy(11,()=>{
         addItem({id:l.id,type:'liquid',name:l.name,icon:l.icon,color:l.color,stat:l.stat,value:l.value,cost:11,sell:6});
       }),game.gold<11)],'ПОКУПКА'));
-    shopSec('Перековка + зачарование кристаллом');
+    shopSec('Зачарование кристаллом');
     const crystals=crystalCount();
     game.bag.filter(i=>i.type==='weapon'&&!equipBlockReason(h,i)).forEach(it=>{
       const row=document.createElement('div'); row.className='rowItem';
@@ -2134,7 +2378,7 @@ function renderShop(){
   if(def.id==='tavern'){
     shopSec('Слухи');
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
-      const rumor=pick(TAVERN_RUMORS); toast(rumor); pushHistory('Слух: '+rumor,'neutral'); beep(520,.08);
+      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); beep(520,.08);
     })],'СЛУХИ');
   }
   if(def.id==='inn'){
@@ -2171,8 +2415,6 @@ function renderShop(){
 function crystalCount(){ return game?game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0):0; }
 function forgeItem(uid){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
-  const block=equipBlockReason(party()[game.invHero||0],it);
-  if(block){ toast(block); return false; }
   const cost=forgeCost(it);
   if((QUALITY[it.quality]||QUALITY[0]).id<1){ toast('Ржавое оружие нельзя перековать.'); return false; }
   if((it.reforges||0)>=5){ toast('Достигнут предел перековок (5).'); return false; }
@@ -2184,8 +2426,6 @@ function forgeItem(uid){
 }
 function enchantItem(uid,liquidId,withCrystal){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
-  const block=equipBlockReason(party()[game.invHero||0],it);
-  if(block){ toast(block); return false; }
   const liq=liquid(liquidId); if(!liq) return false;
   if((QUALITY[it.quality]||QUALITY[0]).id<1||(it.reforges||0)>=5||!game.shopOpen){ toast('Оружие нельзя зачаровать.'); return false; }
   const liqItem=game.bag.find(i=>i.type==='liquid'&&i.id===liquidId);
@@ -2347,6 +2587,12 @@ function renderInventory(){
   $('invTabs').innerHTML=INV_TABS.map(t=>'<button class="tab'+(t===invTab?' sel':'')+'" data-tab="'+t+'">'+t+'</button>').join('');
   $('invTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ invTab=b.dataset.tab; renderInventory(); });
   const h=party()[game.invHero||0], list=$('invList'); list.innerHTML='';
+  const li=loadInfo(h);
+  const loadEl=document.createElement('div');
+  loadEl.className='loadbar '+li.level;
+  loadEl.title=loadTitle(h,null);
+  loadEl.innerHTML='<span class="loadFill" style="width:'+Math.min(100,li.percent)+'%"></span><span class="loadText">🎒 Нагрузка · '+loadText(li)+'</span>';
+  list.appendChild(loadEl);
   const row=(icon,name,sub,buttons)=>{
     const r=document.createElement('div'); r.className='rowItem';
     r.innerHTML=iconHtml(icon)+'<div class="info"><b class="ellip" title="'+esc(name)+'">'+esc(name)+'</b><small>'+sub+'</small></div>';
@@ -2366,8 +2612,7 @@ function renderInventory(){
     party().forEach((x,i)=>row(x.def.emoji,heroName(x),
       'HP '+Math.round(x.hp)+'/'+x.maxHp+' · MP '+Math.round(x.mp)+'/'+x.maxMp+' · атака '+heroAtk(x)+
       ' · защита '+heroDef(x)+' · сила магии '+magicText(x)+
-      ' · опыт '+x.exp+' · статус: '+(x.poison>0?'отравлен':x.hp>0?'здоров':'без сознания')+' · '+
-      (restrictionText(x)||'ограничений нет'),[]));
+      ' · опыт '+x.exp+' · статус: '+(x.poison>0?'отравлен':x.hp>0?'здоров':'без сознания')+' · нагрузка '+loadText(loadInfo(x)),[]));
     sec('Ресурсы');
     row('🪙','Золото','🪙 '+game.gold+' · на покупки и усиление',[]);
     row('💎','Кристаллы','💎 '+crystalCount()+' · на зачарование',[]);
@@ -2376,6 +2621,7 @@ function renderInventory(){
     ARMOR_SLOTS.forEach(s=>{
       const a=game.bag.find(i=>i.uid===h.equip[s.id]);
       row(a?itemIconHtml(a):slotIconHtml(s),s.name,a?a.name+' (+'+(a.armorDef||0)+' защиты)'+(a.tier?' · тир '+a.tier:''):'пусто',[]);
+      if($('invList').lastElementChild) $('invList').lastElementChild.dataset.slot=s.id;
     });
     sec('Быстрые действия');
     row('🧪','Использовать зелье','Лечение и мана',[
@@ -2385,41 +2631,50 @@ function renderInventory(){
   }else if(invTab==='Оружие'){
     sec('Оружие отряда');
     game.bag.filter(i=>i.type==='weapon').forEach(it=>{
-      const pen=weaponPenalty(h,it), eq=Object.values(h.equip).includes(it.uid), block=equipBlockReason(h,it);
-      const cost=forgeCost(it);
+      const eq=Object.values(h.equip).includes(it.uid), cost=forgeCost(it);
+      const equipBtn=btn(eq?'Снять':'Надеть',()=>{
+        if(eq) unequipSlot(h,'weapon'); else equipOnHero(h,'weapon',it);
+        renderInventory(); updateParty();
+      },'use',false,eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it));
+      equipBtn.title=eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it);
       row(itemIconHtml(it),it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+(it.reforges||0)+'/5'+
         ' · крит '+weaponCrit(h,it)+'%'+(it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+
-        (pen?' · ⚠ штраф '+pen:'')+(block?' · ⚠ '+block:''),[
-        btn(block?'⚠ нельзя':(eq?'Надето':'Надеть'),()=>{ equipOnHero(h,'weapon',it); renderInventory(); updateParty(); },'use',eq||!!block,eq?'Уже надето':block),
+        weightForecast(h,it),[
+        equipBtn,
         btn('Усилить 🪙'+cost,()=>{
-          if(!game.shopOpen){ toast('Усиление доступно в кузнице.'); return; }
+          if(!game.shopOpen||game.shopType!=='forge'){ toast('Перековка доступна в кузнице.'); return; }
           if(buy(cost,()=>forgeItemFree(it))){ toast('Оружие усилено: +'+Math.max(1,Math.ceil(it.baseDmg/5))); renderInventory(); }
-        },null,(it.reforges||0)>=5||(QUALITY[it.quality]||QUALITY[0]).id<1||game.gold<cost||!game.shopOpen||!!block,
-          (it.reforges||0)>=5?'Достигнут лимит перековок':(QUALITY[it.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':game.gold<cost?'Не хватает золота':!game.shopOpen?'Нужна кузница':block),
+        },null,(it.reforges||0)>=5||(QUALITY[it.quality]||QUALITY[0]).id<1||game.gold<cost||game.shopType!=='forge',
+          (it.reforges||0)>=5?'Достигнут лимит перековок':(QUALITY[it.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':game.gold<cost?'Не хватает золота':'Нужна кузница'),
         sellBtn(it)
       ]);
     });
   }else if(invTab==='Броня'){
     sec('Доспехи по слотам');
     game.bag.filter(i=>i.type==='armor').forEach(it=>{
-      const pen=armorPenalty(h,it), slot=it.slot||'body', eq=h.equip[slot]===it.uid, block=equipBlockReason(h,it);
+      const slot=it.slot||'body', eq=h.equip[slot]===it.uid;
       const starter=isStartingRags(it);
       const q=it.quality===undefined?1:it.quality, cost=forgeCost({quality:q,reforges:it.upgrades||0});
+      const equipBtn=starter?null:btn(eq?'Снять':'Надеть',()=>{
+        if(eq) unequipSlot(h,slot); else equipOnHero(h,slot,it);
+        renderInventory(); updateParty();
+      },'use',false,eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it));
+      if(equipBtn) equipBtn.title=eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it);
       row(itemIconHtml(it),it.name,'Слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+' · защита +'+(it.armorDef||0)+
         (it.tier?' · тир '+it.tier:'')+' · улучшений '+(it.upgrades||0)+'/5'+(starter?' · стартовая, нельзя снять и продать':'')+
-        (pen?' · ⚠ штраф '+pen:'')+(block?' · ⚠ '+block:''),[
-        btn(starter?'Не снимается':(block?'⚠ нельзя':(eq?'Надето':'Надеть')),()=>{ equipOnHero(h,slot,it); renderInventory(); updateParty(); },'use',starter||eq||!!block,starter?'Стартовая одежда неснимаема':eq?'Уже надето':block),
+        weightForecast(h,it),[
+        equipBtn,
         btn(starter?'Не усиливается':'Усилить 🪙'+cost,()=>{
-          if(!game.shopOpen){ toast('Усиление доступно в лавке.'); return; }
-          if(buy(cost,()=>{ it.upgrades=(it.upgrades||0)+1; it.armorDef+=Math.max(1,Math.ceil((it.baseArmor||it.armorDef)/5)); })){ toast('Одежда усилена.'); renderInventory(); }
-        },null,starter||(it.upgrades||0)>=5||game.gold<cost||!game.shopOpen||!!block,
-          starter?'Стартовая одежда не усиливается':(it.upgrades||0)>=5?'Достигнут лимит улучшений':game.gold<cost?'Не хватает золота':!game.shopOpen?'Нужна лавка':block),
+          if(!game.shopOpen||game.shopType!=='armor'){ toast('Усиление доступно в броннице.'); return; }
+          if(buy(cost,()=>{ it.upgrades=(it.upgrades||0)+1; it.armorDef+=Math.max(1,Math.ceil((it.baseArmor||it.armorDef)/5)); })){ toast('Броня усилена.'); renderInventory(); }
+        },null,starter||(it.upgrades||0)>=5||game.gold<cost||game.shopType!=='armor',
+          starter?'Стартовая одежда не усиливается':(it.upgrades||0)>=5?'Достигнут лимит улучшений':game.gold<cost?'Не хватает золота':'Нужна бронница'),
         sellBtn(it)
       ]);
     });
   }else if(invTab==='Магия'){
     sec('Изучённые заклинания · сила магии '+magicText(h));
-    if(restrictionText(h)) sec('⚠ '+restrictionText(h));
+    if(loadInfo(h).magicBlocked||loadInfo(h).failChance>0) sec('⚠ '+restrictionText(h));
     h.spells.filter(id=>spellHasEffect(spell(id))).forEach(id=>{ const s=spell(id); if(s) row(s.icon,s.name,s.desc+' · '+
       ((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+(s.aoe?'по всем врагам':'одна цель')+' · '+s.mp+' MP',[]); });
     sec('Зелья и жидкости');
@@ -2455,16 +2710,17 @@ function renderInventory(){
       if((r.kind||'herb')==='herb'&&!anyHerb) return;
       craftRow(r,list,false);
     });
-    sec('Усиление одежды и оружия');
+    sec('Усиление оружия — кузница, усиление брони — бронница');
     const w=equippedWeapon(h), a=equippedArmor(h);
     row('🔨','Перековка оружия',w?w.name+' · урон '+w.dmg:'нет оружия',[
-      btn('Усилить',()=>{ if(w&&forgeItem(w.uid)) renderInventory(); },'use',!w||!game.shopOpen||(QUALITY[w.quality]||QUALITY[0]).id<1||(w.reforges||0)>=5,
-        !w?'Нет оружия':!game.shopOpen?'Нужна кузница':(QUALITY[w.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':'Достигнут лимит перековок')]);
-    row('🧵','Усиление одежды',a?a.name+' · защита '+a.armorDef:'нет брони',[
-      btn('Усилить',()=>{ if(!a||!game.shopOpen) return; const cost=forgeCost({quality:a.quality||1,reforges:a.upgrades||0});
+      btn('Усилить',()=>{ if(w&&game.shopType==='forge'&&forgeItem(w.uid)) renderInventory(); },'use',
+        !w||game.shopType!=='forge'||(QUALITY[w.quality]||QUALITY[0]).id<1||(w.reforges||0)>=5,
+        !w?'Нет оружия':game.shopType!=='forge'?'Нужна кузница':(QUALITY[w.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':'Достигнут лимит перековок')]);
+    row('🧵','Усиление брони',a?a.name+' · защита '+a.armorDef:'нет брони',[
+      btn('Усилить',()=>{ if(!a||game.shopType!=='armor') return; const cost=forgeCost({quality:a.quality||1,reforges:a.upgrades||0});
         if(buy(cost,()=>{ a.upgrades=(a.upgrades||0)+1; a.armorDef+=Math.max(1,Math.ceil((a.baseArmor||a.armorDef)/5)); })) renderInventory(); },'use',
-        !a||!game.shopOpen||(a.upgrades||0)>=5||game.gold<forgeCost({quality:a.quality||1,reforges:a.upgrades||0}),
-        !a?'Нет брони':!game.shopOpen?'Нужна лавка':(a.upgrades||0)>=5?'Достигнут лимит улучшений':'Не хватает золота')]);
+        !a||game.shopType!=='armor'||(a.upgrades||0)>=5||game.gold<forgeCost({quality:a.quality||1,reforges:a.upgrades||0}),
+        !a?'Нет брони':game.shopType!=='armor'?'Нужна бронница':(a.upgrades||0)>=5?'Достигнут лимит улучшений':'Не хватает золота')]);
   }else{
     sec('Сундуки');
     game.bag.filter(i=>i.type==='chest').forEach(it=>row('🧰',it.name+(it.count>1?' ×'+it.count:''),'Нажмите «Открыть»',[
@@ -2486,21 +2742,22 @@ function craftRow(r,list,inShop){
 }
 function renderMannequin(){
   const h=party()[game.invHero||0];
-  const w=equippedWeapon(h), a=equippedArmor(h);
-  const pen=w?weaponPenalty(h,w):0, apen=a?armorPenalty(h,a):0;
+  const w=equippedWeapon(h), info=loadInfo(h);
   $('mannequin').innerHTML='<div style="display:flex;gap:4px;justify-content:center">'+
     party().map((x,i)=>'<button class="tab'+(i===(game.invHero||0)?' sel':'')+'" data-h="'+i+'" style="min-height:30px">'+x.def.emoji+'</button>').join('')+'</div>'+
     '<div class="face">'+h.def.emoji+'</div><b class="ellip" style="color:#ffe9b0;font-size:12px">'+esc(heroName(h))+'</b>'+
     '<div class="slot">HP / MP<br><b>'+Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp+'</b></div>'+
     '<div class="slot">⚔ Атака / 🛡 Защита<br><b>'+heroAtk(h)+' / '+heroDef(h)+'</b></div>'+
     '<div class="slot">✨ Сила магии<br><b>'+magicText(h)+'</b></div>'+
+    '<div class="slot">⚡ Скорость<br><b>'+heroSpeedValue(h)+' · сила '+heroStrength(h.def)+'</b></div>'+
+    '<div class="loadbar '+info.level+'"><span class="loadFill" style="width:'+Math.min(100,info.percent)+'%"></span><span class="loadText">🎒 '+loadText(info)+'</span></div>'+
     '<div class="slot">⚔ Оружие<br><b class="ellip">'+esc(w?w.name:FISTS)+'</b></div>'+
     '<div class="slot">🪙 Золото / 💎 Кристаллы<br><b>'+game.gold+' / '+crystalCount()+'</b></div>'+
     ARMOR_SLOTS.map(s=>{ const it=game.bag.find(i=>i.uid===h.equip[s.id]);
-      return '<div class="slot">'+(it?itemIconHtml(it):slotIconHtml(s))+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b>'+
+      return '<div class="slot" data-slot="'+s.id+'">'+(it?itemIconHtml(it):slotIconHtml(s))+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b>'+
+        (it?'<small>вес '+itemWeight(it)+'</small>':'')+
         (it&&isStartingRags(it)?'<small>неснимаемая стартовая одежда</small>':'')+'</div>'; }).join('')+
     '<div class="slot">Статус<br><b>'+(h.poison>0?'отравлен':h.hp>0?'здоров':'без сознания')+'</b></div>'+
-    ((pen||apen)?'<div class="bad">⚠ Несоответствие класса: '+(pen?'−'+pen+' атаки':'')+(pen&&apen?', ':'')+(apen?'−'+apen+' защиты':'')+'</div>':'')+
     (restrictionText(h)?'<div class="bad">⚠ '+restrictionText(h)+'</div>':'');
   $('mannequin').querySelectorAll('button').forEach(b=>b.onclick=()=>{ game.invHero=Number(b.dataset.h); renderInventory(); });
 }
@@ -2545,7 +2802,7 @@ function useItem(uid){
     toast(heroName(h)+': '+it.name+' · '+gained.join(' '));
   }else if(it.type==='material'){ toast('Материал используется в ремесле.'); return false;
   }else if(it.type==='scroll'){
-    if(!canCast(h)){ toast(restrictionText(h)||'Герой не владеет магией.'); return false; }
+    if(!canCast(h)){ toast(restrictionText(h)||'Магия недоступна из-за перегруза.'); return false; }
     if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
     else if(game.battle){ castSpell(it.spell); }
   }else if(it.type==='chest'){
@@ -2765,20 +3022,24 @@ function drawHeroFigure(x,y,s,h,now){
   if(w){
     const id=itemIconId(w);
     ctx.save(); ctx.shadowColor=w.enchant&&w.enchant.color?w.enchant.color:'transparent'; ctx.shadowBlur=8*s;
+    // Оружие на спине — одно наложение размером не более одной клетки.
     drawIcon(id,x-30*s,y-48*s,34*s); ctx.restore();
   }
-  // Щит справа: 0 — нет, 1 — около 1/4 высоты, 30 — около 3/4.
+  // Щит справа: видимая часть растёт с броней, но не больше одной клетки.
   if(armor>0){
-    const frac=clamp(.25+(armor-1)/29*.5,.25,.75), sh=76*s*frac;
-    drawSprite(SPRITE_BASE+'ui/shield.png',x+18*s,y-14*s-sh,30*s,sh);
-    ctx.save(); ctx.strokeStyle='rgba(251,191,36,.6)'; ctx.lineWidth=1.2*s; ctx.strokeRect(x+18*s,y-14*s-sh,30*s,sh); ctx.restore();
+    const frac=clamp(.25+(armor-1)/29*.5,.25,.75);
+    const sw=overlaySize(30*s), sh=overlaySize(76*s*frac);
+    drawSprite(SPRITE_BASE+'ui/shield.png',x+18*s,y-14*s-sh,sw,sh);
+    ctx.save(); ctx.strokeStyle='rgba(251,191,36,.6)'; ctx.lineWidth=1.2*s; ctx.strokeRect(x+18*s,y-14*s-sh,sw,sh); ctx.restore();
   }
   if(!drawSprite(h.def.sprite,x-28*s,y-76*s,56*s,74*s)){
     ctx.save(); ctx.fillStyle='#28304e'; ctx.beginPath(); ctx.moveTo(x-20*s,y-54*s);
     ctx.quadraticCurveTo(0,y-70*s,20*s,y-54*s); ctx.lineTo(24*s,y); ctx.quadraticCurveTo(0,y+8*s,-24*s,y); ctx.closePath(); ctx.fill();
     ctx.fillStyle='#52608e'; ctx.fillRect(x-18*s,y-56*s,36*s,22*s);
     ctx.restore();
-    ctx.save(); setFont(Math.round(45*s)); ctx.textAlign='center'; ctx.textBaseline='middle';
+    // Скрещённые мечи — тоже предметное наложение: не больше одной клетки.
+    const emojiSize=/[⚔🗡]/.test(h.def.emoji||'')?overlaySize(45*s):Math.round(45*s);
+    ctx.save(); setFont(Math.round(emojiSize)); ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(h.def.emoji,x,y-42*s); ctx.restore();
   }
   endSpriteBreath(breath);
@@ -3027,14 +3288,14 @@ function updateProgressUI(){
 }
 function renderHeroPick(slot){
   const h=HEROES[selHero[slot]];
-  const r=HERO_RESTRICTIONS[h.name]||HERO_RESTRICTIONS[h.set];
   const cardId=['h1Card','h2Card','h3Card'][slot]||'h1Card';
   $(cardId).innerHTML='<span class="big">'+h.emoji+'</span><div style="min-width:0"><b class="ellip">'+h.name+'</b><small>'+esc(h.desc.slice(0,110))+
-    '<br>HP '+h.hp+' · MP '+h.mp+' · '+h.weapons.length+' видов оружия'+(r&&r.reason?'<br>⚠ '+r.reason:'')+'</small></div>';
+    '<br>HP '+h.hp+' · MP '+h.mp+' · '+h.weapons.length+' видов оружия'+
+    '<br>Сила '+heroStrength(h)+' · вместимость '+capacityFor(h)+'</small></div>';
 }
 function renderDiff(){
   $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
-    '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · '+d.size[0]+'–'+d.size[1]+' клеток</small></button>').join('');
+    '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · 30×30 клеток</small></button>').join('');
   $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); beep(420,.05); });
 }
 function renderStart(){ updateProgressUI(); renderHeroPick(0); renderHeroPick(1); renderHeroPick(2); renderDiff(); }
@@ -3065,6 +3326,7 @@ $('shopClose').onclick=()=>toggleShop(false);
 $('invClose').onclick=()=>toggleInventory(false);
 $('spellClose').onclick=closeSpellMenu;
 $('logClose').onclick=()=>toggleEventLog(false);
+$('btnLog').onclick=()=>toggleEventLog();
 $('logPrev').onclick=()=>scrollEventLog(-120);
 $('logNext').onclick=()=>scrollEventLog(120);
 $('turnLeft').onclick=()=>turnPlayer(-1); $('turnRight').onclick=()=>turnPlayer(1);
@@ -3088,7 +3350,8 @@ cv.addEventListener('pointerdown',e=>{
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
     updateParty(); return;
   }
-  heroAttack();
+  // Щёлчок по пустому месту никогда не превращается в атаку — только подсказка о цели.
+  toast('Выберите цель: щёлкните по врагу или стрелками влево/вправо.');
 });
 
 const MOVE_KEYS={arrowup:[1,0],w:[1,0],ц:[1,0],arrowdown:[-1,0],s:[-1,0],ы:[-1,0],
@@ -3105,6 +3368,14 @@ function keyAllowed(k){
 }
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
+  // Пока журнал открыт, все клавиши доминируют над управлением героем и другими панелями.
+  if(game&&game.logOpen){
+    e.preventDefault();
+    if(e.key==='Escape'||k==='l'||k==='д') toggleEventLog(false);
+    else if(e.key==='ArrowUp'||e.key==='PageUp') scrollEventLog(-120);
+    else if(e.key==='ArrowDown'||e.key==='PageDown') scrollEventLog(120);
+    return;
+  }
   if(k==='p'||k==='з'){ e.preventDefault();
     if($('settings').classList.contains('hidden')) openSettings(); else closeSettings(); return; }
   if(!$('settings').classList.contains('hidden')){
@@ -3123,13 +3394,6 @@ document.addEventListener('keydown',e=>{
   }
   if(!game) return;
   if(k==='l'||k==='д'){ e.preventDefault(); toggleEventLog(); return; }
-  if(game.logOpen){
-    e.preventDefault();
-    if(e.key==='ArrowUp'||e.key==='PageUp') scrollEventLog(-120);
-    else if(e.key==='ArrowDown'||e.key==='PageDown') scrollEventLog(120);
-    else if(e.key==='Escape'||k==='l'||k==='д') toggleEventLog(false);
-    return;
-  }
   if(k==='m'||k==='ь'||e.key==='Escape'){
     e.preventDefault();
     if(game.spellOpen) closeSpellMenu();
@@ -3179,15 +3443,11 @@ function regenOutsideBattle(now){
     h.mp=Math.min(h.maxMp,h.mp+ticks*per);
   });
 }
-function weatherCycleSteps(){
-  return clamp(Number(settings&&settings.weatherCycleSteps!=null?settings.weatherCycleSteps:WEATHER_CYCLE_STEPS)||WEATHER_CYCLE_STEPS,10,500);
-}
+// Счётчик шагов отключён: погода следует за сезоном, а не за ходом игрока (docs/DESIGN.md).
 function updateWeatherByTurn(){
   if(!game) return;
   const m=currentMap(); const biome=BIOMES[(m&&m.biome)||'field']||BIOMES.field;
-  const cfg=Object.assign({}, SEASON_WEATHER[biome.season]||{}, { cycleSteps: weatherCycleSteps() });
-  weather.setSeason(biome.season, cfg);
-  weather.onTurn(game.world.turn||0, cfg);
+  weather.setSeason(biome.season, SEASON_WEATHER[biome.season]||{});
 }
 function loop(now){
   requestAnimationFrame(loop);
@@ -3201,7 +3461,7 @@ function loop(now){
     p.px=p.fromX+(p.x-p.fromX)*t; p.py=p.fromY+(p.y-p.fromY)*t;
   }
   const map=currentMap(), biome=BIOMES[(map&&map.biome)||'field']||BIOMES.field;
-  weather.setSeason(biome.season, Object.assign({}, SEASON_WEATHER[biome.season]||{}, { cycleSteps: weatherCycleSteps() }));
+  weather.setSeason(biome.season, SEASON_WEATHER[biome.season]||{});
   weather.update(dt);
   if(!game.battle) updateWildlife(dt,now);
   if(game.battle) drawBattle(now,dt); else drawMap(now);
@@ -3217,6 +3477,66 @@ function armorDuplicates(){
     else seen.set(key,i);
   });
   return duplicates;
+}
+/* Проверка независимости четырёх слотов и их отображения в манекене/инвентаре. */
+function equipmentReport(){
+  const errors=[];
+  const four=['legs','boots','bracers','hands'];
+  const slots=ARMOR_SLOTS.filter(s=>four.includes(s.id));
+  if(slots.length!==4) errors.push('Ожидалось четыре независимых слота, найдено '+slots.length);
+  const mannequin=$('mannequin')?Array.from($('mannequin').querySelectorAll('[data-slot]')).map(el=>el.dataset.slot):[];
+  const inventory=$('invList')?Array.from($('invList').querySelectorAll('[data-slot]')).map(el=>el.dataset.slot):[];
+  if(mannequin.length&&!four.every(id=>mannequin.includes(id))) errors.push('Манекен показывает не все четыре слота');
+  if(inventory.length&&!four.every(id=>inventory.includes(id))) errors.push('Инвентарь показывает не все четыре слота');
+  const h=party()[0];
+  let integrity=[];
+  if(h){
+    const snapshot=Object.assign({},h.equip), made=[];
+    four.forEach(slot=>{
+      const it=makeItem({type:'armor',owner:h.slot,name:'Проверка '+slot,armorDef:1,baseArmor:1,slot,dir:'def',set:'any',quality:1,icon:'🛡',weight:1,armorCategory:'cloth'});
+      game.bag.push(it); made.push(it);
+      if(!equipOnHero(h,slot,it)) errors.push('Не удалось надеть слот '+slot);
+    });
+    integrity=four.map(slot=>({slot,ok:h.equip[slot]===made[four.indexOf(slot)].uid}));
+    if(integrity.some(x=>!x.ok)) errors.push('Надевание одного слота снимает другой');
+    made.forEach(it=>{ const i=game.bag.indexOf(it); if(i>=0) game.bag.splice(i,1); });
+    Object.keys(snapshot).forEach(k=>{ h.equip[k]=snapshot[k]; });
+  }else errors.push('Игра не запущена');
+  return {ok:!errors.length,errors,slots:slots.map(s=>({id:s.id,name:s.name})),
+    mannequinSlots:mannequin,inventorySlots:inventory,integrity};
+}
+/* Все наложения на карте ограничены одной клеткой/тайлом, включая третьего героя. */
+function mapOverlayReport(){
+  const errors=[], cell=overlayCell();
+  const sword=overlaySize(34*(phase==='battle'?BF.heroScale:.86));
+  const treasure=overlaySize(26);
+  const shieldW=overlaySize(30*.86), shieldH=overlaySize(76*.86*.75);
+  if(sword>cell) errors.push('Иконка скрещённых мечей занимает больше одной клетки');
+  if(treasure>cell) errors.push('Иконка находки занимает больше одной клетки');
+  if(shieldW>cell||shieldH>cell) errors.push('Щит занимает больше одной клетки');
+  const heroes=party().map((h,i)=>{
+    const actual=equippedWeapon(h);
+    const px=overlaySize(34*(phase==='battle'?BF.heroScale:.86));
+    // Проверяем наложение даже у героев с «Кулаками»: надеваем тестовый меч и возвращаем слот.
+    let check=actual, temp=null;
+    if(!check){
+      temp=makeItem({type:'weapon',owner:h.slot,name:'Проверочный меч',dmg:1,baseDmg:1,cost:0,sell:0,
+        quality:1,wkind:'sword',set:'any',icon:'⚔'});
+      game.bag.push(temp); equipOnHero(h,'weapon',temp); check=temp;
+    }
+    const checkKind=itemIconId(check), checkPx=actual?px:overlaySize(34*(phase==='battle'?BF.heroScale:.86));
+    if(temp){
+      const ix=game.bag.indexOf(temp); if(ix>=0) game.bag.splice(ix,1);
+      h.equip.weapon=null;
+    }
+    if(checkPx>cell) errors.push('Оружие героя '+h.def.name+' занимает больше одной клетки');
+    return {index:i,name:h.def.name,emoji:h.def.emoji,weapon:actual?actual.name:FISTS,
+      kind:actual?itemIconId(actual):null,px:actual?px:0,cells:actual?Math.round(px/cell*100)/100:0,
+      overlayCheck:{weapon:check.name,kind:checkKind,px:checkPx,cells:cell?Math.round(checkPx/cell*100)/100:0,ok:checkPx<=cell},
+      ok:(actual?px:0)<=cell&&checkPx<=cell};
+  });
+  return {ok:!errors.length,errors,cell,sword:{px:sword,cells:cell?sword/cell:0},
+    treasure:{px:treasure,cells:cell?treasure/cell:0},shield:{w:shieldW,h:shieldH},heroes,thirdHero:heroes[2]||null};
 }
 function shopReport(){
   const errors=[];
@@ -3243,12 +3563,32 @@ function shopReport(){
     finally{ game.shopOpen=true; }
   }
   if(!sellBlocked) errors.push('Продажа без открытой лавки не заблокирована');
+  // Ассортименты разделены: оружейные лавки не продают броню, бронницы — оружие.
+  const weaponShops=['weapons','forge'], armorShops=['armory','armor'];
+  const wrongWeapon=weaponShops.filter(id=>(SHOP_STOCK[id]||{}).armor.length||TIERED_EQUIPMENT.some(a=>(a.shops||[]).includes(id)));
+  const wrongArmor=armorShops.filter(id=>(SHOP_STOCK[id]||{}).weapons.length);
+  const wrongTiered=TIERED_EQUIPMENT.filter(a=>{
+    const shops=a.shops||[];
+    return shops.some(s=>['market','forge','weapons'].includes(s))||
+      (shops.includes('magic')&&shops.some(s=>armorShops.includes(s))) ||
+      (a.tier<=3?!shops.includes('magic')||shops.some(s=>armorShops.includes(s)):!shops.some(s=>armorShops.includes(s)));
+  });
+  if(wrongWeapon.length) errors.push('Оружейные лавки продают броню: '+wrongWeapon.join(', '));
+  if(wrongArmor.length) errors.push('Бронницы продают оружие: '+wrongArmor.join(', '));
+  if(wrongTiered.length) errors.push('Предметы комплекта в чужих лавках: '+wrongTiered.map(a=>a.id).join(', '));
+  const reforge={weaponShop:def.id==='forge',armorShop:def.id==='armor'};
+  if(opened&&def.id==='forge'&&!/Перековка оружия/.test(shopText)) errors.push('В кузнице нет раздела перековки оружия');
+  if(opened&&def.id==='forge'&&/Усиление доспехов/.test(shopText)) errors.push('В кузнице продаётся усиление брони');
+  if(opened&&def.id==='armor'&&!/Усиление доспехов/.test(shopText)) errors.push('В броннице нет раздела усиления брони');
+  if(opened&&def.id==='armor'&&/Перековка оружия/.test(shopText)) errors.push('В броннице продаётся перековка оружия');
   return {
     ok:!errors.length, errors, open:opened, shop:def.id, title:def.title,
     gold:game?game.gold:0, crystals:crystalCount(),
     stockKeys:stock?Object.keys(stock):[], buyButtons:priceButtons.length,
     disabledBuyButtons:priceButtons.filter(b=>b.disabled).length,
     sellables:sellables.length, sellBlocked,
+    separation:{weaponShops,armorShops,wrongWeapon,wrongArmor,wrongTiered:wrongTiered.map(a=>a.id)},
+    reforge,
     arithmetic:{priceButtons:priceButtons.length,overBudget:over.length,forgeRule:'1 + quality + level'}
   };
 }
@@ -3281,6 +3621,7 @@ function craftReport(){
     tieredCount:TIERED_EQUIPMENT.length, armorSlots:ARMOR_SLOTS.map(s=>s.id),
     duplicates:dups, recipes:RECIPES.length, materials:MATERIALS.length,
     maxReforges:5, reforgeCostRule:'1 + quality + level',
+    reforgeBuildings:{weapon:'forge',armor:'armor'},
     items:game?game.bag.filter(i=>i.type==='weapon'||i.type==='armor').map(i=>({
       name:i.name,type:i.type,quality:i.quality,reforges:i.reforges||0,upgrades:i.upgrades||0,
       cost:forgeCost(i.type==='armor'?{quality:(i.quality===undefined?1:i.quality),reforges:i.upgrades||0}:i)
@@ -3306,10 +3647,31 @@ window.__mm6Debug={
   tryMove:(dx,dy)=>tryMove(dx,dy),
   fleeBattle:()=>fleeBattle(),
   toggleShop:(open,type)=>toggleShop(open,type),
+  forceShop:(type)=>{
+    if(!game||!SHOP_TYPES.some(s=>s.id===type)) return null;
+    game.shopType=type; game.shopOpen=true; game.shopKinds=[type]; game.shopCell=null;
+    $('shop').classList.remove('hidden'); renderShop(); return shopReport();
+  },
   openBossChest:()=>openBossChest(),
   shopReport:()=>shopReport(),
   combatReport:()=>combatReport(),
   craftReport:()=>craftReport(),
+  equipmentReport:()=>equipmentReport(),
+  loadReport:()=>party().map(h=>{ const i=loadInfo(h); return {hero:h.def.name,strength:heroStrength(h.def),...i}; }),
+  equipByUid:(uid,slot)=>{
+    if(!game) return false;
+    const h=party()[game.invHero||0], it=game.bag.find(x=>x.uid===uid);
+    if(!h||!it) return false;
+    const ok=equipOnHero(h,slot||(it.type==='weapon'?'weapon':it.slot||'body'),it);
+    renderInventory(); updateParty(); return ok;
+  },
+  unequipBySlot:(slot)=>{
+    if(!game) return false;
+    const h=party()[game.invHero||0];
+    const ok=unequipSlot(h,slot);
+    renderInventory(); updateParty(); return ok;
+  },
+  mapOverlayReport:()=>mapOverlayReport(),
   setSettings:(patch)=>{
     settings=normalizeSettings(Object.assign({},settings,patch||{}));
     saveSettings(); syncSettings();
@@ -3317,8 +3679,13 @@ window.__mm6Debug={
     return normalizeSettings(settings);
   },
   mechanicsReport:()=>({
-    party:party().map(h=>({name:h.def.name,slot:h.slot,hp:h.hp,mp:h.mp,maxMp:h.maxMp,
-      magic:magicText(h),speed:heroSpeedValue(h),weapon:equippedWeapon(h)?equippedWeapon(h).name:FISTS})),
+    party:party().map(h=>{
+      const li=loadInfo(h);
+      return {name:h.def.name,slot:h.slot,hp:h.hp,mp:h.mp,maxMp:h.maxMp,
+        magic:magicText(h),speed:heroSpeedValue(h),strength:heroStrength(h.def),
+        capacity:li.capacity,wornWeight:li.weight,loadPercent:li.percent,loadLevel:li.level,magicFailChance:li.failChance,
+        weapon:equippedWeapon(h)?equippedWeapon(h).name:FIST_ATTACK[h.def.set]||2};
+    }),
     gear:game?game.bag.filter(i=>i.type==='weapon'||i.type==='armor').map(i=>({
       uid:i.uid,name:i.name,owner:i.owner===undefined||i.owner===null?null:i.owner})):[],
     selection:window.UnifiedLaunch?window.UnifiedLaunch.heroIndexes.slice():[],
@@ -3327,18 +3694,62 @@ window.__mm6Debug={
     history:game?game.history.length:0,
     settings:normalizeSettings(settings)
   }),
+  logReport:()=>{
+    const entries=Array.isArray(game&&game.log)?game.log:[];
+    const types={npc:0,combat:0,loot:0,system:0,error:0};
+    let collapsed=0,duplicateGroups=0,maxCount=1;
+    entries.forEach(e=>{
+      if(Object.prototype.hasOwnProperty.call(types,e.type)) types[e.type]++;
+      const n=Math.max(1,Number(e.count)||1);
+      collapsed+=n-1; if(n>1) duplicateGroups++; maxCount=Math.max(maxCount,n);
+    });
+    let saved=[]; try{ const raw=JSON.parse(localStorage.getItem(LOG_KEY)||'[]'); if(Array.isArray(raw)) saved=raw; }catch(e){}
+    return {
+      length:entries.length,historyLength:game&&Array.isArray(game.history)?game.history.length:0,
+      limit:LOG_LIMIT,savedLength:saved.length,types,collapsed,duplicateGroups,maxCount,
+      oldestTurn:entries.length?entries[0].turn:0,newestTurn:entries.length?entries[entries.length-1].turn:0,
+      open:!!(game&&game.logOpen),last:entries.slice(-5),
+      assetErrorCount:assetErrors.length,assetErrors:assetErrors.map(e=>({...e}))
+    };
+  },
+  assetsReport:()=>({
+    cached:Object.keys(imgCache).length,
+    broken:Object.keys(imgCache).filter(p=>imgCache[p].dataset.ready==='error'),
+    errors:assetErrors.map(e=>({...e}))
+  }),
   compatibilityReport:()=>{
     const check=(def,it)=>equipBlockReason({def,slot:-1,equip:{}},it);
-    return HEROES.map(h=>({hero:h.name,set:h.set,
-      armor:ARMORS.filter(a=>!isStartingRags(a)).concat(TIERED_EQUIPMENT).map(a=>{
-        const reason=check(h,{type:'armor',name:a.name,armorDef:a.def,slot:a.slot,set:a.set});
-        return {name:a.name,slot:a.slot,itemSet:a.set,def:a.def,tier:a.tier||null,sprite:a.sprite||null,allow:!reason,reason};
-      }),
-      weapons:allShopWeapons().map(w=>{
-        const reason=check(h,{type:'weapon',name:w.name,wkind:w.kind,set:w.set});
-        return {name:w.name,kind:w.kind,itemSet:w.set,allow:!reason,reason};
-      })
-    }));
+    const report=HEROES.map(h=>{
+      const cap=capacityFor(h);
+      return {hero:h.name,set:h.set,strength:heroStrength(h),capacity:cap,
+        allowedCategories:ARMOR_CATEGORIES.slice(),
+        allowedText:ARMOR_CATEGORIES.map(c=>ARMOR_CATEGORY_NAMES[c]||c).join(', '),
+        armor:ARMORS.filter(a=>!isStartingRags(a)).concat(TIERED_EQUIPMENT).map(a=>{
+          const item={type:'armor',name:a.name,armorDef:a.def,slot:a.slot,set:a.set,weight:a.weight,armorCategory:a.armorCategory};
+          const w=itemWeight(item), reason=check(h,item);
+          const expected=Number.isFinite(w)&&w>0;
+          return {name:a.name,slot:a.slot,itemSet:a.set,def:a.def,tier:a.tier||null,sprite:a.sprite||null,
+            category:armorCategory(item),weight:w,expected,allow:!reason,mismatch:!!reason!==!expected,reason};
+        }),
+        weapons:allShopWeapons().map(w=>{
+          const item={type:'weapon',name:w.name,wkind:w.kind,set:w.set,weight:w.weight};
+          const reason=check(h,item), weight=itemWeight(item);
+          const expected=Number.isFinite(weight)&&weight>=0;
+          return {name:w.name,kind:w.kind,itemSet:w.set,weight,expected,allow:!reason,mismatch:!!reason!==!expected,reason};
+        })};
+    });
+    // Расхождение — несовпадение фактического доступа с весовыми правилами.
+    // Класс предмета больше ничего не запрещает.
+    const mismatches=report.reduce((n,h)=>n+h.armor.filter(a=>a.mismatch).length+h.weapons.filter(w=>w.mismatch).length,0);
+    const classMismatches=report.reduce((n,h)=>n+h.armor.filter(a=>a.itemSet!=='any'&&!a.allow).length,0);
+    const weaponMismatches=report.reduce((n,h)=>n+h.weapons.filter(w=>!w.allow).length,0);
+    const anyArmor=report.every(h=>h.armor.every(a=>a.allow));
+    report.mismatches=mismatches;
+    report.classMismatches=classMismatches;
+    report.weaponMismatches=weaponMismatches;
+    report.anyArmorAvailableToAll=anyArmor;
+    report.ok=mismatches===0&&classMismatches===0&&weaponMismatches===0&&anyArmor;
+    return report;
   },
   auditReport:()=>{
     const items=[
