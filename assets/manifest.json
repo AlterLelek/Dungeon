@@ -309,41 +309,6 @@
     "dynamic_in": {}
   },
   {
-    "file": "tile_tree_autumn.png",
-    "path": "assets/kenney/tiles/tile_tree_autumn.png",
-    "type": "tile",
-    "used_in": [
-      "adventurer"
-    ],
-    "refs": [
-      "games/mm6/index.html"
-    ],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_tree_green_large.png",
-    "path": "assets/kenney/tiles/tile_tree_green_large.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_tree_green.png",
-    "path": "assets/kenney/tiles/tile_tree_green.png",
-    "type": "tile",
-    "used_in": [
-      "adventurer"
-    ],
-    "refs": [
-      "games/mm6/index.html"
-    ],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
     "file": "angel_0.svg",
     "path": "assets/sprites/generated/angel_0.svg",
     "type": "item",

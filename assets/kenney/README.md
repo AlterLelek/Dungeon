@@ -21,9 +21,6 @@
 | `tiles/tile_sand.png` | Tiny Town `tile_0025.png` |
 | `tiles/tile_dirt.png` | Tiny Town `tile_0065.png` |
 | `tiles/tile_stone.png` | Tiny Town `tile_0061.png` |
-| `tiles/tile_tree_green.png` | Tiny Town `tile_0016.png` |
-| `tiles/tile_tree_green_large.png` | Tiny Town `tile_0019.png` |
-| `tiles/tile_tree_autumn.png` | Tiny Town `tile_0022.png` |
 | `tiles/tile_building_straw.png` | Tiny Town `tile_0083.png` |
 | `tiles/tile_building_stone.png` | Tiny Town `tile_0100.png` |
 | `tiles/tile_building_blue.png` | Tiny Town `tile_0117.png` |
