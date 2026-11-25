@@ -243,7 +243,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <h3>Сложность</h3>
     <div class="diffRow" id="diffRow"></div>
     <div class="row"><input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя"><button class="play" id="playBtn">▶ Играть</button></div>
-    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка · I — инвентарь · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
+    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка у здания · I — инвентарь · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
   </div>
 </div>
 
@@ -311,7 +311,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <div class="keysHelp">
       <div><span class="keyCap">WASD</span><span class="keyCap">↑↓←→</span> ход</div>
       <div><span class="keyCap">Q/E</span><span class="keyCap">й/у</span> поворот (E — также диалог у прилавка)</div>
-      <div><span class="keyCap">Enter</span> взаимодействие · <span class="keyCap">B</span> лавка · <span class="keyCap">I</span> инвентарь</div>
+      <div><span class="keyCap">Enter</span> взаимодействие · <span class="keyCap">B</span> лавка у здания · <span class="keyCap">I</span> инвентарь</div>
       <div><span class="keyCap">Пробел</span> атака в бою · <span class="keyCap">F</span> магия · <span class="keyCap">R</span> бегство</div>
       <div><span class="keyCap">L/Д</span> журнал событий · <span class="keyCap">↑/↓</span> прокрутка журнала</div>
       <div><span class="keyCap">M/Esc</span> меню · <span class="keyCap">P</span> настройки</div>
@@ -343,7 +343,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
@@ -980,7 +980,7 @@ function startGame(diffId,a,b){
   selHero=normalizeHeroList(a,b); selDiff=d.id;
   heroNameText=($('heroName').value||'').trim().slice(0,14)||'Герой';
   game={difficulty:d.id,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
-    battle:null,shopType:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
+    battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,history:[],bonusStep:0,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
   game.party=selHero.map((idx,slot)=>makeHeroState(HEROES[idx],slot));
@@ -1040,10 +1040,14 @@ function generateMap(i,total,slot,d,pos,cols,rows){
   cells[farY][farX]={t:'boss',opened:false};
   const chestX=clamp(farX+(farX>cx?-1:1),0,size-1);
   if(cells[farY][chestX].t==='grass') cells[farY][chestX]={t:'chest',boss:true,opened:false};
-  const shopKinds=[SHOP_TYPES[i%SHOP_TYPES.length].id];
-  if(size>=12) shopKinds.push(SHOP_TYPES[(i+2)%SHOP_TYPES.length].id);
-  if(size>=16) shopKinds.push(SHOP_TYPES[(i+5)%SHOP_TYPES.length].id);
-  if(size>=20) shopKinds.push('tavern',(i%2?'inn':'forge'));
+  const tradeBuildings=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&b.shop_kind.length);
+  const decoBuildings=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
+  const shopPlan=[];
+  const shopCount=size>=20?4:size>=16?3:size>=12?2:1;
+  for(let k=0;k<shopCount;k++){
+    const b=tradeBuildings[(i*2+k*3)%tradeBuildings.length];
+    if(b&&!shopPlan.includes(b)) shopPlan.push(b);
+  }
   const occupied=new Set([ckey(cx,cy),ckey(farX,farY),ckey(chestX,farY)]);
   function freeSpot(minDist){
     for(let k=0;k<160;k++){
@@ -1056,21 +1060,23 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     return null;
   }
   const shops=[];
-  shopKinds.forEach(kind=>{
+  shopPlan.forEach(b=>{
     const s=freeSpot(2); if(!s) return;
-    const def=SHOP_TYPES.find(x=>x.id===kind)||SHOP_TYPES[0];
-    const name=pick(def.names||[def.title]);
-    cells[s.y][s.x]={t:'shop',kind,shopName:name};
-    shops.push({kind,name,x:s.x,y:s.y});
+    const kind=b.shop_kind[0];
+    const name=b.title;
+    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:b.shop_kind.slice(),shopName:name,buildingTitle:b.title};
+    shops.push({buildingId:b.id,kind,kinds:b.shop_kind.slice(),name,x:s.x,y:s.y});
   });
   const decoCount=Math.floor(size*size*.18);
   for(let k=0;k<decoCount;k++){
     const s=freeSpot(2); if(!s) break;
-    let t='tree';
+    let t='tree', deco=null;
     if(biome==='port'&&Math.random()<.55) t='water';
     else if(biome==='mountains'&&Math.random()<.7) t='rock';
-    else if((biome==='village'||biome==='city')&&Math.random()<.7) t='house';
-    cells[s.y][s.x]=t==='house'?{t,houseName:pick(['Жилой дом','Дом ремесленника','Каменный дом','Дом у дороги'])}:{t};
+    else if((biome==='village'||biome==='city')&&Math.random()<.7){ t='house'; deco=pick(decoBuildings); }
+    cells[s.y][s.x]=t==='house'
+      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco}
+      :{t};
   }
   const rate=clamp(Number(settings.itemRate)||2,1,5);
   const treasureCount=rnd(2,4)+Math.floor(rate/2);
@@ -1141,6 +1147,38 @@ function setMap(index,fromDir){
 }
 function enemyAt(x,y){ const m=currentMap(); return m.monsters.find(e=>e.alive&&e.x===x&&e.y===y)||null; }
 function isBlocking(c){ return ['tree','water','rock','house','shop','boss'].includes(c.t); }
+function shopKindsOf(cell){
+  const raw=cell&&cell.shop_kind;
+  const list=Array.isArray(raw)?raw:(raw?[raw]:[]);
+  return list.filter(id=>SHOP_TYPES.some(s=>s.id===id));
+}
+function buildingTitleOf(cell){
+  return (cell&&(cell.shopName||cell.buildingTitle||cell.houseName))||'Здание';
+}
+function buildingReply(cell){
+  const name=buildingTitleOf(cell);
+  if(cell&&cell.deco) return name+': '+cell.deco;
+  const kind=cell&&cell.kind;
+  const fallback={
+    house:'Дверь закрыта: здесь живут, а не торгуют.',
+    barn:'Амбар заперт. Внутри только сено и зерно.',
+    shed:'Сарай завален старым хламом. Торговать здесь нечем.',
+    well:'Колодец холодно блестит водой. Никакой лавки тут нет.',
+    stable:'Конюшня пахнет лошадьми. Конюх не продаёт снаряжение.'
+  };
+  return name+': '+(fallback[kind]||'Это здание не открывает торговый интерфейс.');
+}
+function interactBuilding(cell){
+  const text=buildingReply(cell);
+  game.msg=text; toast(text); pushHistory(text,'neutral'); beep(180,.08);
+  return false;
+}
+function openBuilding(cell){
+  if(!cell) return false;
+  const kinds=shopKindsOf(cell);
+  if(!kinds.length) return interactBuilding(cell);
+  return openShop(kinds[0],buildingTitleOf(cell),cell);
+}
 function battleGroup(seed){
   const m=currentMap();
   const list=m.monsters.filter(e=>e.alive&&Math.max(Math.abs(e.x-game.player.x),Math.abs(e.y-game.player.y))<=2);
@@ -1169,7 +1207,8 @@ function tryMove(dx,dy){
   const c=m.cells[ny][nx];
   if(isBlocking(c)){
     if(c.t==='boss'){ startBattle([m.boss.def,...battleGroup(null)],m); return; }
-    if(c.t==='shop'){ openShop(c.kind); return; }
+    if(c.t==='shop'){ openBuilding(c); return; }
+    if(c.t==='house'){ interactBuilding(c); return; }
     game.msg='Проход закрыт.'; beep(120,.05); return;
   }
   p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
@@ -1307,19 +1346,21 @@ function tryInteract(){
   const m=currentMap(), p=game.player;
   const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
   const here=m.cells[p.y][p.x];
-  if(here.t==='shop'){ openShop(here.kind); return; }
+  if(here.t==='shop'){ openBuilding(here); return; }
+  if(here.t==='house'){ interactBuilding(here); return; }
   if(here.t==='chest'&&!here.opened){ openSmallChest(here); return; }
   if(Math.abs(p.x-m.boss.x)+Math.abs(p.y-m.boss.y)<=2&&m.boss.dead){ openBossChest(); return; }
-  if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop'){ openShop(m.cells[ny][nx].kind); return; }
+  if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop'){ openBuilding(m.cells[ny][nx]); return; }
+  if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='house'){ interactBuilding(m.cells[ny][nx]); return; }
   game.msg='Здесь не с чем взаимодействовать.';
 }
 function canInteractHere(){
   if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return false;
   const m=currentMap(), p=game.player, here=m.cells[p.y][p.x];
-  if(here.t==='shop'||(here.t==='chest'&&!here.opened)) return true;
+  if(here.t==='shop'||here.t==='house'||(here.t==='chest'&&!here.opened)) return true;
   if(Math.abs(p.x-m.boss.x)+Math.abs(p.y-m.boss.y)<=2&&m.boss.dead&&!m.cells[m.boss.y][m.boss.x].bossOpened) return true;
   const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
-  return nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&m.cells[ny][nx].t==='shop';
+  return nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&(m.cells[ny][nx].t==='shop'||m.cells[ny][nx].t==='house');
 }
 
 /* ============================ 5. ВЕРХНЯЯ ПОЛОСА ОТРЯДА ============================ */
@@ -1719,21 +1760,51 @@ function openSpellMenu(){
 function closeSpellMenu(){ $('spellMenu').classList.add('hidden'); if(game) game.spellOpen=false; updateControls(); }
 
 /* ============================ 8. ЛАВКИ, КУЗНИЦЫ, ТАВЕРНЫ ============================ */
-function openShop(type,name){
-  if(!game||phase!=='play'||game.battle) return;
-  const def=SHOP_TYPES.find(s=>s.id===type)||SHOP_TYPES[0];
+function findBuildingCell(includeDeco){
+  if(!game) return null;
+  const m=currentMap(); if(!m) return null;
+  const ok=cell=>cell&&(cell.t==='shop'||(includeDeco&&cell.t==='house'));
+  const p=game.player, here=m.cells[p.y]&&m.cells[p.y][p.x];
+  if(ok(here)) return here;
+  const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
+  if(nx>=0&&ny>=0&&nx<m.size&&ny<m.size){
+    const next=m.cells[ny][nx];
+    if(ok(next)) return next;
+  }
+  return null;
+}
+function findShopCell(){ return findBuildingCell(false); }
+function openShop(type,name,cell){
+  if(!game||phase!=='play'||game.battle) return false;
+  const target=cell||findShopCell();
+  const allowed=shopKindsOf(target);
+  if(!allowed.length){
+    if(target) return interactBuilding(target);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    return false;
+  }
+  const def=SHOP_TYPES.find(s=>s.id===type&&allowed.includes(s.id))||
+    SHOP_TYPES.find(s=>s.id===allowed[0]);
+  game.shopKinds=allowed.slice();
   game.shopType=def.id;
-  const found=currentMap()&&currentMap().shops.find(s=>s.kind===def.id&&s.x===game.player.x&&s.y===game.player.y);
-  game.shopName=name||(found&&found.name)||(currentMap()&&currentMap().shops.find(s=>s.kind===def.id)||{}).name||def.title;
+  game.shopCell=target;
+  game.shopName=name||buildingTitleOf(target)||def.title;
   game.shopOpen=true; $('shop').classList.remove('hidden');
   renderShop(); updateControls(); beep(520,.1);
+  return true;
 }
 function toggleShop(open,type){
-  if(!game||phase!=='play') return;
-  if(open===false){ game.shopOpen=false; $('shop').classList.add('hidden'); updateControls(); return; }
-  const ids=SHOP_TYPES.map(s=>s.id);
-  const wanted=(ids.indexOf(open)>=0?open:null)||(ids.indexOf(type)>=0?type:null)||game.shopType||'market';
-  openShop(wanted);
+  if(!game||phase!=='play') return false;
+  if(open===false){ game.shopOpen=false; $('shop').classList.add('hidden'); updateControls(); return false; }
+  const cell=findBuildingCell(true);
+  const allowed=shopKindsOf(cell);
+  const wanted=(allowed.includes(open)?open:null)||(allowed.includes(type)?type:null)||allowed[0];
+  if(!wanted){
+    if(cell) return interactBuilding(cell);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    return false;
+  }
+  return openShop(wanted,null,cell);
 }
 function shopSec(title){ const d=document.createElement('div'); d.className='sec'; d.textContent=title; $('shopList').appendChild(d); }
 function shopButton(text,fn,disabled,cls){
@@ -1820,32 +1891,50 @@ function reforgeSection(h){
       },!ok)],'УСИЛЕНИЕ');
   });
 }
+const TAVERN_RUMORS=[
+  'Говорят, в горах видели виверну. Лучше держаться дороги.',
+  'Кузнец берёт за перековку больше, но и оружие после него крепче.',
+  'В ювелирной лавке принимают кристаллы без лишних вопросов.',
+  'Старики шепчутся: золотой сундук открывается только после босса.',
+  'В гостинице можно выспаться и оставить отметку о своём походе.',
+  'На рынке травы дешевле, зато в магической лавке — свитки редкость.'
+];
 function renderShop(){
   if(!game) return;
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
   const stock=SHOP_STOCK[def.id]||SHOP_STOCK.market;
   const h=party()[game.invHero||0];
+  const allowed=(Array.isArray(game.shopKinds)&&game.shopKinds.length)
+    ? game.shopKinds.filter(id=>SHOP_TYPES.some(s=>s.id===id))
+    : shopKindsOf(game.shopCell);
+  const tabs=SHOP_TYPES.filter(s=>allowed.includes(s.id));
   $('shopTitle').textContent=def.icon+' '+(game.shopName||def.title);
-  $('shopTabs').innerHTML=SHOP_TYPES.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
+  $('shopTabs').innerHTML=tabs.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
   $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
   $('shopList').innerHTML='';
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
 
-  shopSec('Оружие · '+def.title);
-  const weapons=allShopWeapons();
-  (stock.weapons||[]).forEach(idx=>{
-    const w=weapons[idx%weapons.length]; if(!w) return;
-    if(def.id==='jeweler'&&w.kind==='bow') return;
-    addShopWeapon(def,w,h);
-  });
-  shopSec('Броня · 6 слотов');
-  (stock.armor||[]).forEach(idx=>{
-    const a=ARMORS[idx%ARMORS.length]; if(!a) return;
-    if((stock.noHeavy||def.id==='magic')&&a.def>=7) return;
-    addShopArmor(def,a,h);
-  });
+  const showsWeapons=['weapons','armory','market'].includes(def.id);
+  const showsArmor=['armory','armor','market'].includes(def.id);
+  const showsReforge=['weapons','armory','armor','forge','jeweler'].includes(def.id);
 
-  if(['weapons','armory','forge','armor','jeweler'].includes(def.id)) reforgeSection(h);
+  if(showsWeapons){
+    shopSec('Оружие · '+def.title);
+    const weapons=allShopWeapons();
+    (stock.weapons||[]).forEach(idx=>{
+      const w=weapons[idx%weapons.length]; if(!w) return;
+      addShopWeapon(def,w,h);
+    });
+  }
+  if(showsArmor){
+    shopSec('Броня · 6 слотов');
+    (stock.armor||[]).forEach(idx=>{
+      const a=ARMORS[idx%ARMORS.length]; if(!a) return;
+      if(stock.noHeavy&&a.def>=7) return;
+      addShopArmor(def,a,h);
+    });
+  }
+  if(showsReforge) reforgeSection(h);
 
   if(def.id==='magic'){
     shopSec('Свитки и заклинания');
@@ -1896,17 +1985,16 @@ function renderShop(){
     });
   }
 
-  const basicPotion=(price,name,sub,props,id)=>shopRow('🧪',name,sub,[shopButton('🪙 '+price,()=>buy(price,()=>{
-    addItem(Object.assign({id:id,type:'potion',name:name,icon:'🧪',cost:price,sell:Math.floor(price*.5)},props));
-  }),game.gold<price)],'ПОКУПКА');
-  shopSec('Зелья и товары');
-  basicPotion(6,'Зелье жизни','Лечит 40 HP',{heal:40},'potion_hp');
-  if(def.id!=='magic') basicPotion(7,'Зелье маны','Восстанавливает 15 MP',{mp:15},'potion_mp');
-  MATERIALS.forEach(mat=>shopRow(mat.icon,mat.name,mat.desc,[shopButton('🪙 '+mat.cost,()=>buy(mat.cost,()=>{
-    addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
-  }),game.gold<mat.cost)],'ПОКУПКА'));
-
   if(def.id==='market'){
+    const basicPotion=(price,name,sub,props,id)=>shopRow('🧪',name,sub,[shopButton('🪙 '+price,()=>buy(price,()=>{
+      addItem(Object.assign({id:id,type:'potion',name:name,icon:'🧪',cost:price,sell:Math.floor(price*.5)},props));
+    }),game.gold<price)],'ПОКУПКА');
+    shopSec('Зелья и товары');
+    basicPotion(6,'Зелье жизни','Лечит 40 HP',{heal:40},'potion_hp');
+    basicPotion(7,'Зелье маны','Восстанавливает 15 MP',{mp:15},'potion_mp');
+    MATERIALS.forEach(mat=>shopRow(mat.icon,mat.name,mat.desc,[shopButton('🪙 '+mat.cost,()=>buy(mat.cost,()=>{
+      addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
+    }),game.gold<mat.cost)],'ПОКУПКА'));
     shopSec('Ягоды · только покупка');
     shopRow('🫐','Ягода','Покупка за 2 монеты · продажа недоступна',[shopButton('🪙 2 купить',()=>buy(2,()=>{
       addItem({id:'berry',type:'herb',name:'Ягода',icon:'🫐',desc:'+8 HP',effect:'hp',value:8,cost:2,sell:1});
@@ -1927,6 +2015,10 @@ function renderShop(){
     shopRow('🍺','Эль','Восстанавливает 6 MP и ускоряет регенерацию',[shopButton('🪙 4 выпить',()=>buy(4,()=>{
       h.mp=Math.min(h.maxMp,h.mp+6); boostRegen(18); toast('Вы выпили: +6 MP, регенерация ускорена.');
     }),game.gold<4)],'ЕДА');
+    shopSec('Слухи');
+    shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
+      const rumor=pick(TAVERN_RUMORS); toast(rumor); pushHistory('Слух: '+rumor,'neutral'); beep(520,.08);
+    })],'СЛУХИ');
   }
   if(def.id==='inn'){
     shopSec('Отдых и сон');
@@ -1937,18 +2029,24 @@ function renderShop(){
     shopRow('🌙','Полный сон','Полностью восстанавливает HP и MP',[shopButton('🪙 12 спать',()=>buy(12,()=>{
       party().forEach(x=>{ x.hp=x.maxHp; x.mp=x.maxMp; x.poison=0; x.poisonTurns=0; }); boostRegen(45); toast('Отряд выспался.');
     }),game.gold<12)],'ОТДЫХ');
+    shopSec('Сохранение');
+    shopRow('📖','Книга постояльцев','Отметить поход и сохранить прогресс',[shopButton('Сохранить',()=>{
+      saveProgress(); toast('Прогресс сохранён.'); beep(620,.1);
+    })],'СОХРАНЕНИЕ');
   }
 
-  shopSec('Продажа товаров');
-  const equipped=new Set();
-  party().forEach(x=>Object.values(x.equip).forEach(uid=>{ if(uid) equipped.add(uid); }));
-  const sellables=game.bag.filter(i=>!equipped.has(i.uid));
-  if(!sellables.length) shopRow('•','Пока пусто','Находите предметы на карте',[shopButton('—',null,true)],'ПРОДАЖА');
-  sellables.forEach(it=>{
-    const total=Math.max(1,Math.round(it.sell||1))*(it.count||1);
-    shopRow(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),'Цена продажи: 🪙 '+total,
-      [shopButton('Продать '+total,()=>{ sellBagItem(it.uid,true); renderShop(); },false,'sell')],'ПРОДАЖА');
-  });
+  if(!['tavern','inn'].includes(def.id)){
+    shopSec('Продажа товаров');
+    const equipped=new Set();
+    party().forEach(x=>Object.values(x.equip).forEach(uid=>{ if(uid) equipped.add(uid); }));
+    const sellables=game.bag.filter(i=>!equipped.has(i.uid));
+    if(!sellables.length) shopRow('•','Пока пусто','Находите предметы на карте',[shopButton('—',null,true)],'ПРОДАЖА');
+    sellables.forEach(it=>{
+      const total=Math.max(1,Math.round(it.sell||1))*(it.count||1);
+      shopRow(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),'Цена продажи: 🪙 '+total,
+        [shopButton('Продать '+total,()=>{ sellBagItem(it.uid,true); renderShop(); },false,'sell')],'ПРОДАЖА');
+    });
+  }
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=crystalCount();
   updateParty();
@@ -2401,10 +2499,12 @@ function drawWater(x,y,s,b){
 }
 function drawHouse(x,y,s,kind,label){
   const def=SHOP_TYPES.find(t=>t.id===kind)||{};
-  const titles={weapons:'Оружейная',armory:'Оружейная палата',forge:'Кузница',armor:'Бронница',magic:'Магазия',
-    jeweler:'Ювелир',market:'Рынок',tavern:'Таверна',inn:'Гостиница',house:'Жилой дом'};
+  const titles={weapons:'Оружейная',armory:'Оружейная палата',forge:'Кузница',armor:'Бронница',magic:'Магазин магии',
+    jeweler:'Ювелир',market:'Рынок',tavern:'Таверна',inn:'Гостиница',house:'Жилой дом',
+    barn:'Амбар',shed:'Сарай',well:'Колодец',stable:'Конюшня'};
   const accents={weapons:'#f87171',armory:'#fb923c',forge:'#f97316',armor:'#60a5fa',magic:'#c084fc',
-    jeweler:'#34d399',market:'#fbbf24',tavern:'#fcd34d',inn:'#a78bfa',house:'#c9b89a'};
+    jeweler:'#34d399',market:'#fbbf24',tavern:'#fcd34d',inn:'#a78bfa',house:'#c9b89a',
+    barn:'#b08968',shed:'#8a7a66',well:'#7dd3fc',stable:'#d6b37a'};
   const title=label||titles[kind]||'Дом';
   const accent=accents[kind]||(def.accent)||accents.market;
   ctx.save(); ctx.fillStyle=kind==='tavern'?'#8a5a37':(kind==='inn'?'#7a6b8c':'#c9b89a');
