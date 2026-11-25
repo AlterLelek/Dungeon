@@ -344,7 +344,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, CLASS_PENALTY, HERO_RESTRICTIONS, EQUIPMENT_RULES, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, CLASS_PENALTY, HERO_RESTRICTIONS, EQUIPMENT_RULES, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
@@ -861,9 +861,17 @@ function iconKind(icon){
   return null;
 }
 function iconHtml(icon){
+  if(typeof icon==='string'&&icon.indexOf('<img')===0) return icon;
   const kind=iconKind(icon);
   if(kind&&ITEM_SPRITES[kind]) return '<img class="ic" src="'+ITEM_SPRITES[kind]+'" alt="">';
   return '<span class="ic">'+icon+'</span>';
+}
+/* Предметы комплекта хранят SVG в поле sprite; старые предметы продолжают использовать emoji. */
+function itemIconHtml(it){
+  return it&&it.sprite?'<img class="ic" src="'+it.sprite+'" alt="">':iconHtml(it&&it.icon);
+}
+function slotIconHtml(slot){
+  return slot&&slot.sprite?'<img class="ic" src="'+slot.sprite+'" alt="">':iconHtml(slot&&slot.icon);
 }
 function heroName(h){ return h===party()[0]?heroNameText:h.def.name; }
 function canCast(h){ const r=HERO_RESTRICTIONS[h.def.name]||HERO_RESTRICTIONS[h.def.set]; return !(r&&r.magic); }
@@ -1961,12 +1969,12 @@ function addShopArmor(def,a,h){
   const price=priceMult(def,a);
   const slot=a.slot||'body';
   const block=equipBlockReason(h,{type:'armor',name:a.name,armorDef:a.def,slot,set:a.set});
-  shopRow('🛡',a.name,'Защита +'+a.def+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+
+  shopRow(itemIconHtml(a),a.name,'Защита +'+a.def+(a.tier?' · тир '+a.tier:'')+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+
     ' · '+(a.set==='any'?'любой класс':a.set)+(block?' · ⚠ '+block:'')+(game.gold<price?' · ⚠ не хватает золота':''),
     [shopButton('🪙 '+price,()=>buy(price,()=>{
       const it=addItem({type:'armor',owner:h.slot,name:a.name,armorDef:a.def,baseArmor:a.def,cost:price,
         sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),slot,dir:a.dir||'def',set:a.set||'any',
-        quality:1,upgrades:0,icon:'🛡'});
+        quality:1,upgrades:0,icon:a.icon||'🛡',sprite:a.sprite||null,tier:a.tier||null,id:a.id||null,group:a.group||null});
       equipOnHero(h,slot,it); toast('Надето на '+heroName(h)+': '+a.name);
     }),game.gold<price||!!block)],'ПОКУПКА');
 }
@@ -2039,6 +2047,13 @@ function renderShop(){
       addShopArmor(def,a,h);
     });
   }
+  // Новый комплект: каждая лавка продаёт только свои группы/тиры.
+  EQUIPMENT_GROUPS.forEach(group=>{
+    const list=TIERED_EQUIPMENT.filter(a=>a.group===group.id&&(a.shops||[]).includes(def.id)&&!(stock.noHeavy&&a.def>=7));
+    if(!list.length) return;
+    shopSec(group.name+' · тиры 1–10');
+    list.forEach(a=>addShopArmor(def,a,h));
+  });
   if(showsReforge) reforgeSection(h);
 
   if(def.id==='magic'){
@@ -2360,7 +2375,7 @@ function renderInventory(){
     sec('Экипировка по слотам');
     ARMOR_SLOTS.forEach(s=>{
       const a=game.bag.find(i=>i.uid===h.equip[s.id]);
-      row(s.icon,s.name,a?a.name+' (+'+(a.armorDef||0)+' защиты)':'пусто',[]);
+      row(a?itemIconHtml(a):slotIconHtml(s),s.name,a?a.name+' (+'+(a.armorDef||0)+' защиты)'+(a.tier?' · тир '+a.tier:''):'пусто',[]);
     });
     sec('Быстрые действия');
     row('🧪','Использовать зелье','Лечение и мана',[
@@ -2372,7 +2387,7 @@ function renderInventory(){
     game.bag.filter(i=>i.type==='weapon').forEach(it=>{
       const pen=weaponPenalty(h,it), eq=Object.values(h.equip).includes(it.uid), block=equipBlockReason(h,it);
       const cost=forgeCost(it);
-      row(weaponIcon(it.wkind),it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+(it.reforges||0)+'/5'+
+      row(itemIconHtml(it),it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+(it.reforges||0)+'/5'+
         ' · крит '+weaponCrit(h,it)+'%'+(it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+
         (pen?' · ⚠ штраф '+pen:'')+(block?' · ⚠ '+block:''),[
         btn(block?'⚠ нельзя':(eq?'Надето':'Надеть'),()=>{ equipOnHero(h,'weapon',it); renderInventory(); updateParty(); },'use',eq||!!block,eq?'Уже надето':block),
@@ -2390,8 +2405,8 @@ function renderInventory(){
       const pen=armorPenalty(h,it), slot=it.slot||'body', eq=h.equip[slot]===it.uid, block=equipBlockReason(h,it);
       const starter=isStartingRags(it);
       const q=it.quality===undefined?1:it.quality, cost=forgeCost({quality:q,reforges:it.upgrades||0});
-      row(slot==='shield'?'🛡':slot==='helmet'?'⛑':'👕',it.name,'Слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+' · защита +'+(it.armorDef||0)+
-        ' · улучшений '+(it.upgrades||0)+'/5'+(starter?' · стартовая, нельзя снять и продать':'')+
+      row(itemIconHtml(it),it.name,'Слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+' · защита +'+(it.armorDef||0)+
+        (it.tier?' · тир '+it.tier:'')+' · улучшений '+(it.upgrades||0)+'/5'+(starter?' · стартовая, нельзя снять и продать':'')+
         (pen?' · ⚠ штраф '+pen:'')+(block?' · ⚠ '+block:''),[
         btn(starter?'Не снимается':(block?'⚠ нельзя':(eq?'Надето':'Надеть')),()=>{ equipOnHero(h,slot,it); renderInventory(); updateParty(); },'use',starter||eq||!!block,starter?'Стартовая одежда неснимаема':eq?'Уже надето':block),
         btn(starter?'Не усиливается':'Усилить 🪙'+cost,()=>{
@@ -2482,7 +2497,7 @@ function renderMannequin(){
     '<div class="slot">⚔ Оружие<br><b class="ellip">'+esc(w?w.name:FISTS)+'</b></div>'+
     '<div class="slot">🪙 Золото / 💎 Кристаллы<br><b>'+game.gold+' / '+crystalCount()+'</b></div>'+
     ARMOR_SLOTS.map(s=>{ const it=game.bag.find(i=>i.uid===h.equip[s.id]);
-      return '<div class="slot">'+s.icon+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b>'+
+      return '<div class="slot">'+(it?itemIconHtml(it):slotIconHtml(s))+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b>'+
         (it&&isStartingRags(it)?'<small>неснимаемая стартовая одежда</small>':'')+'</div>'; }).join('')+
     '<div class="slot">Статус<br><b>'+(h.poison>0?'отравлен':h.hp>0?'здоров':'без сознания')+'</b></div>'+
     ((pen||apen)?'<div class="bad">⚠ Несоответствие класса: '+(pen?'−'+pen+' атаки':'')+(pen&&apen?', ':'')+(apen?'−'+apen+' защиты':'')+'</div>':'')+
@@ -3195,9 +3210,10 @@ requestAnimationFrame(loop);
 
 function armorDuplicates(){
   const seen=new Map(), duplicates=[];
-  ARMORS.forEach((a,i)=>{
-    const key=(a.slot||'body')+'|'+(a.dir||'def')+'|'+(a.def||0);
-    if(seen.has(key)) duplicates.push({key,first:seen.get(key),second:i,names:[ARMORS[seen.get(key)].name,a.name]});
+  // group отделяет варианты одного слота (поножи/сапоги/перчатки) с одинаковой защитой.
+  [...ARMORS,...TIERED_EQUIPMENT].forEach((a,i)=>{
+    const key=(a.group||'base')+'|'+(a.slot||'body')+'|'+(a.dir||'def')+'|'+(a.def||0);
+    if(seen.has(key)) duplicates.push({key,first:seen.get(key),second:i,names:[(ARMORS[seen.get(key)]||TIERED_EQUIPMENT[seen.get(key)-ARMORS.length]).name,a.name]});
     else seen.set(key,i);
   });
   return duplicates;
@@ -3261,7 +3277,8 @@ function craftReport(){
     .map(el=>String(el.textContent||'')).join(' ');
   if(/почин/i.test(bodyText)) errors.push('В интерфейсе осталось слово «Починка»');
   return {
-    ok:!errors.length, errors, armorCount:ARMORS.length, armorSlots:ARMOR_SLOTS.map(s=>s.id),
+    ok:!errors.length, errors, armorCount:ARMORS.length+TIERED_EQUIPMENT.length,
+    tieredCount:TIERED_EQUIPMENT.length, armorSlots:ARMOR_SLOTS.map(s=>s.id),
     duplicates:dups, recipes:RECIPES.length, materials:MATERIALS.length,
     maxReforges:5, reforgeCostRule:'1 + quality + level',
     items:game?game.bag.filter(i=>i.type==='weapon'||i.type==='armor').map(i=>({
@@ -3313,9 +3330,9 @@ window.__mm6Debug={
   compatibilityReport:()=>{
     const check=(def,it)=>equipBlockReason({def,slot:-1,equip:{}},it);
     return HEROES.map(h=>({hero:h.name,set:h.set,
-      armor:ARMORS.filter(a=>!isStartingRags(a)).map(a=>{
+      armor:ARMORS.filter(a=>!isStartingRags(a)).concat(TIERED_EQUIPMENT).map(a=>{
         const reason=check(h,{type:'armor',name:a.name,armorDef:a.def,slot:a.slot,set:a.set});
-        return {name:a.name,slot:a.slot,itemSet:a.set,def:a.def,allow:!reason,reason};
+        return {name:a.name,slot:a.slot,itemSet:a.set,def:a.def,tier:a.tier||null,sprite:a.sprite||null,allow:!reason,reason};
       }),
       weapons:allShopWeapons().map(w=>{
         const reason=check(h,{type:'weapon',name:w.name,wkind:w.kind,set:w.set});
@@ -3325,19 +3342,22 @@ window.__mm6Debug={
   },
   auditReport:()=>{
     const items=[
-      ...ARMORS.filter(a=>!isStartingRags(a)).map(a=>({source:'броня',name:a.name,effect:'защита +'+a.def+' · '+a.slot})),
-      ...allShopWeapons().map(w=>({source:'оружие',name:w.name,effect:'урон '+w.dmg+' · '+w.kind})),
-      ...FOODS.map(f=>({source:'еда',name:f.name,effect:(f.hp?'+'+f.hp+' HP ':'')+(f.mp?'+'+f.mp+' MP':'').trim()})),
-      ...HERBS.map(h=>({source:'трава',name:h.name,effect:h.desc})),
-      ...LIQUIDS.map(l=>({source:'жидкость',name:l.name,effect:l.stat+' +'+l.value})),
-      ...SCROLLS.map(s=>({source:'свиток',name:s.name,effect:'заклинание '+(spell(s.spell)||{}).name})),
-      ...MATERIALS.map(m=>({source:'материал',name:m.name,effect:m.desc})),
-      ...RECIPES.map(r=>({source:'рецепт',name:r.name,effect:r.desc}))
+      ...ARMORS.filter(a=>!isStartingRags(a)).map(a=>({source:'броня',name:a.name,effect:'защита +'+a.def+' · '+a.slot,icon:a.sprite||a.icon})),
+      ...TIERED_EQUIPMENT.map(a=>({source:'комплект',name:a.name,effect:'защита +'+a.def+' · тир '+a.tier+' · '+a.slot,icon:a.sprite})),
+      ...allShopWeapons().map(w=>({source:'оружие',name:w.name,effect:'урон '+w.dmg+' · '+w.kind,icon:w.icon||'⚔'})),
+      ...FOODS.map(f=>({source:'еда',name:f.name,effect:(f.hp?'+'+f.hp+' HP ':'')+(f.mp?'+'+f.mp+' MP':'').trim(),icon:f.icon})),
+      ...HERBS.map(h=>({source:'трава',name:h.name,effect:h.desc,icon:h.icon})),
+      ...LIQUIDS.map(l=>({source:'жидкость',name:l.name,effect:l.stat+' +'+l.value,icon:l.icon})),
+      ...SCROLLS.map(s=>({source:'свиток',name:s.name,effect:'заклинание '+(spell(s.spell)||{}).name,icon:s.icon})),
+      ...MATERIALS.map(m=>({source:'материал',name:m.name,effect:m.desc,icon:m.icon})),
+      ...RECIPES.map(r=>({source:'рецепт',name:r.name,effect:r.desc,icon:r.icon}))
     ];
     return {
       spells:SPELLS.map(s=>({id:s.id,name:s.name,mp:s.mp,shown:spellHasEffect(s)})),
       hiddenSpells:SPELLS.filter(s=>!spellHasEffect(s)).map(s=>s.id),
-      items, emptyItems:items.filter(i=>!i.effect).map(i=>i.name)
+      items, emptyItems:items.filter(i=>!i.effect).map(i=>i.name),
+      iconlessItems:items.filter(i=>!i.icon).map(i=>i.name),
+      tiered:{count:TIERED_EQUIPMENT.length,groups:EQUIPMENT_GROUPS.map(g=>({id:g.id,name:g.name,count:TIERED_EQUIPMENT.filter(a=>a.group===g.id).length}))}
     };
   }
 };

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a97fd0"/><stop offset="1" stop-color="#4a2a6a"/></linearGradient></defs><g stroke="#241a14" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" >
+  <path d="M18 9 H30 V40 L33 46 Q36 49 33 54 Q31 58 27 58 H9 Q6 58 8 54 L13 48 Q18 44 18 39 Z" fill="url(#b)" stroke="#241a14" stroke-width="1.8"/>
+  <path d="M17 13 H31" fill="none" stroke="#e8b84b" stroke-width="2.2"/>
+  <path d="M20 21 H28 M20 29 H28" stroke="#6b4a2a" stroke-width="2.6" fill="none"/>
+  <path d="M25.6 31.7 A4.4 4.4 0 1 0 25.6 40.3 A3.4 3.4 0 1 1 25.6 31.7 Z" fill="#ffe6a1" stroke="#241a14" stroke-width="0.9"/>
+  <path d="M9 55 H31" stroke="#241a14" stroke-width="2.6" opacity="0.45"/>
+  <path d="M10 54 H31" fill="none" stroke="#e8b84b" stroke-width="1.6"/>
+  <g transform="translate(64 0) scale(-1 1)">
+    <path d="M18 9 H30 V40 L33 46 Q36 49 33 54 Q31 58 27 58 H9 Q6 58 8 54 L13 48 Q18 44 18 39 Z" fill="url(#b)" stroke="#241a14" stroke-width="1.8"/>
+    <path d="M17 13 H31" fill="none" stroke="#e8b84b" stroke-width="2.2"/>
+    <path d="M20 21 H28 M20 29 H28" stroke="#6b4a2a" stroke-width="2.6" fill="none"/>
+    <path d="M25.6 31.7 A4.4 4.4 0 1 0 25.6 40.3 A3.4 3.4 0 1 1 25.6 31.7 Z" fill="#ffe6a1" stroke="#241a14" stroke-width="0.9"/>
+    <path d="M9 55 H31" stroke="#241a14" stroke-width="2.6" opacity="0.45"/>
+    <path d="M10 54 H31" fill="none" stroke="#e8b84b" stroke-width="1.6"/>
+  </g>
+</g></svg>

@@ -173,12 +173,12 @@ const ARMOR_ICON = K + 'armor_0.png';
 
 // 6 слотов, 29 уникальных предметов: у каждого слота своя пара «слот + защита».
 export const ARMOR_SLOTS = [
-  { id: 'shield', name: 'Щит', icon: '🛡' },
+  { id: 'shield', name: 'Щит', icon: '🛡', sprite: I + 'shield_5.svg' },
   { id: 'helmet', name: 'Шлем', icon: '⛑' },
   { id: 'body', name: 'Тело', icon: '👕' },
-  { id: 'legs', name: 'Ноги', icon: '👖' },
-  { id: 'hands', name: 'Руки', icon: '🧤' },
-  { id: 'cloak', name: 'Плащ', icon: '🧥' }
+  { id: 'legs', name: 'Ноги', icon: '👖', sprite: I + 'greaves_5.svg' },
+  { id: 'hands', name: 'Руки', icon: '🧤', sprite: I + 'gloves_5.svg' },
+  { id: 'cloak', name: 'Плащ', icon: '🧥', sprite: I + 'robe_5.svg' }
 ];
 
 export const ARMORS = [
@@ -213,6 +213,51 @@ export const ARMORS = [
   { name: 'Кожаные перчатки', def: 1, cost: 2, set: 'any', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Рыцарские рукавицы', def: 3, cost: 8, set: 'warrior', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Рукавицы чародея', def: 2, cost: 7, set: 'mage', slot: 'hands', dir: 'def', sprite: ARMOR_ICON }
+];
+
+// Комплект иконок по тирам: tier === номер SVG. Лёгкое — магу, среднее — следопыту,
+// тяжёлое (защита 7+) — воину. Поле group разделяет варианты одного слота в аудитах.
+export const EQUIPMENT_GROUPS = [
+  { id: 'greaves', name: 'Поножи', sprite: I + 'greaves_5.svg' },
+  { id: 'boots', name: 'Сапоги', sprite: I + 'boots_5.svg' },
+  { id: 'gloves', name: 'Перчатки', sprite: I + 'gloves_5.svg' }
+];
+
+// 30 предметов батча 1. Цена растёт вместе с тиром; def = тир, поэтому
+// EQUIPMENT_RULES.armorHeavy (защита 7+) автоматически закрывает магу старшие тиры.
+export const TIERED_EQUIPMENT = [
+  { id: 'greaves_1', group: 'greaves', tier: 1, name: 'Тряпичные обмотки', def: 1, cost: 2, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'greaves_1.svg', icon: '🛡' },
+  { id: 'greaves_2', group: 'greaves', tier: 2, name: 'Тканевые поножи', def: 2, cost: 4, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'greaves_2.svg', icon: '🛡' },
+  { id: 'greaves_3', group: 'greaves', tier: 3, name: 'Кожаные поножи', def: 3, cost: 7, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'greaves_3.svg', icon: '🛡' },
+  { id: 'greaves_4', group: 'greaves', tier: 4, name: 'Походные поножи', def: 4, cost: 11, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_4.svg', icon: '🛡' },
+  { id: 'greaves_5', group: 'greaves', tier: 5, name: 'Лесные поножи', def: 5, cost: 16, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_5.svg', icon: '🛡' },
+  { id: 'greaves_6', group: 'greaves', tier: 6, name: 'Стрелецкие поножи', def: 6, cost: 22, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_6.svg', icon: '🛡' },
+  { id: 'greaves_7', group: 'greaves', tier: 7, name: 'Железные поножи', def: 7, cost: 29, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'greaves_7.svg', icon: '🛡' },
+  { id: 'greaves_8', group: 'greaves', tier: 8, name: 'Латные поножи', def: 8, cost: 37, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'greaves_8.svg', icon: '🛡' },
+  { id: 'greaves_9', group: 'greaves', tier: 9, name: 'Серебряные латные поножи', def: 9, cost: 46, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'greaves_9.svg', icon: '🛡' },
+  { id: 'greaves_10', group: 'greaves', tier: 10, name: 'Золотые латные поножи', def: 10, cost: 56, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'greaves_10.svg', icon: '🛡' },
+
+  { id: 'boots_1', group: 'boots', tier: 1, name: 'Тряпичные сандалии', def: 1, cost: 2, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'boots_1.svg', icon: '🛡' },
+  { id: 'boots_2', group: 'boots', tier: 2, name: 'Тканевые башмаки', def: 2, cost: 4, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'boots_2.svg', icon: '🛡' },
+  { id: 'boots_3', group: 'boots', tier: 3, name: 'Мягкие сапожки', def: 3, cost: 6, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic', 'market'], sprite: I + 'boots_3.svg', icon: '🛡' },
+  { id: 'boots_4', group: 'boots', tier: 4, name: 'Походные сапоги', def: 4, cost: 9, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor', 'market'], sprite: I + 'boots_4.svg', icon: '🛡' },
+  { id: 'boots_5', group: 'boots', tier: 5, name: 'Лесные сапоги', def: 5, cost: 13, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor', 'market'], sprite: I + 'boots_5.svg', icon: '🛡' },
+  { id: 'boots_6', group: 'boots', tier: 6, name: 'Сапоги лучника', def: 6, cost: 18, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor', 'market'], sprite: I + 'boots_6.svg', icon: '🛡' },
+  { id: 'boots_7', group: 'boots', tier: 7, name: 'Укреплённые сапоги', def: 7, cost: 24, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_7.svg', icon: '🛡' },
+  { id: 'boots_8', group: 'boots', tier: 8, name: 'Стальные сапоги', def: 8, cost: 31, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'boots_8.svg', icon: '🛡' },
+  { id: 'boots_9', group: 'boots', tier: 9, name: 'Рыцарские сапоги', def: 9, cost: 39, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'boots_9.svg', icon: '🛡' },
+  { id: 'boots_10', group: 'boots', tier: 10, name: 'Золотые сапоги', def: 10, cost: 48, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'boots_10.svg', icon: '🛡' },
+
+  { id: 'gloves_1', group: 'gloves', tier: 1, name: 'Тряпичные варежки', def: 1, cost: 2, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic', 'market'], sprite: I + 'gloves_1.svg', icon: '🛡' },
+  { id: 'gloves_2', group: 'gloves', tier: 2, name: 'Тканевые перчатки', def: 2, cost: 4, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic', 'market'], sprite: I + 'gloves_2.svg', icon: '🛡' },
+  { id: 'gloves_3', group: 'gloves', tier: 3, name: 'Мягкие рукавицы', def: 3, cost: 7, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic', 'market'], sprite: I + 'gloves_3.svg', icon: '🛡' },
+  { id: 'gloves_4', group: 'gloves', tier: 4, name: 'Походные перчатки', def: 4, cost: 11, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_4.svg', icon: '🛡' },
+  { id: 'gloves_5', group: 'gloves', tier: 5, name: 'Лесные рукавицы', def: 5, cost: 16, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_5.svg', icon: '🛡' },
+  { id: 'gloves_6', group: 'gloves', tier: 6, name: 'Рукавицы стрелка', def: 6, cost: 22, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_6.svg', icon: '🛡' },
+  { id: 'gloves_7', group: 'gloves', tier: 7, name: 'Укреплённые рукавицы', def: 7, cost: 29, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_7.svg', icon: '🛡' },
+  { id: 'gloves_8', group: 'gloves', tier: 8, name: 'Железные рукавицы', def: 8, cost: 37, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'gloves_8.svg', icon: '🛡' },
+  { id: 'gloves_9', group: 'gloves', tier: 9, name: 'Рыцарские рукавицы', def: 9, cost: 46, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'gloves_9.svg', icon: '🛡' },
+  { id: 'gloves_10', group: 'gloves', tier: 10, name: 'Золотые рукавицы', def: 10, cost: 56, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armor', 'armory', 'forge'], sprite: I + 'gloves_10.svg', icon: '🛡' }
 ];
 
 export const CLASS_PENALTY = {
