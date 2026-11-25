@@ -1,4 +1,5 @@
 name: OpenCode Agent
+
 on:
   issue_comment:
     types: [created]
@@ -18,13 +19,11 @@ jobs:
 
       - name: Run OpenCode
         uses: sst/opencode/github@latest
-        env:
-          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
         with:
           model: anthropic/claude-sonnet-3:5
           prompt: |
             Ты — опытный разработчик на JavaScript/TypeScript.
             Твоя задача — реализовать функционал из Issue.
             У тебя есть доступ к папке assets (там все спрайты) и games/mm6/index.html (структура UI).
-            Если нужно, создай новые файлы, измени существующие.
+            Если нужно, создай новые файлы или измени существующие.
             В конце дай команду для создания Pull Request.
