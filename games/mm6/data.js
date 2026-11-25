@@ -25,6 +25,21 @@ export const HERO_RESTRICTIONS = {
   warrior: { staff: true, reason: 'Воин плохо владеет посохом.' }
 };
 
+// Правила экипировки описаны данными, а не проверками в UI.
+// Ключ — имя героя, затем set. Отсутствие правила означает «можно».
+export const EQUIPMENT_RULES = {
+  mage: {
+    weaponKinds: { kinds: ['hammer', 'axe', 'bow'], reason: 'Маг не носит тяжёлое оружие и лук.' },
+    armorHeavy: { minDef: 7, reason: 'Маг не носит тяжёлую броню (защита 7+).' }
+  },
+  warrior: {
+    weaponKinds: { kinds: ['staff'], reason: 'Воин плохо владеет посохом.' }
+  },
+  archer: {
+    weaponKinds: { kinds: ['hammer', 'mace'], reason: 'Следопыт не владеет тяжёлым оружием.' }
+  }
+};
+
 // Colors give classic RPG subtypes. Gold monsters always cast spells.
 export const MONSTER_COLORS = [
   { id: 'red', name: 'Красный', tint: '#ef4444', hp: 1.15, atk: 1.15, def: 0.9, speed: 1, gold: 1.2 },
@@ -96,6 +111,14 @@ export const HERBS = [
   { id: 'iceflower', name: 'Ледяной цветок', icon: '❄', effect: 'slow', value: 2, desc: 'замедление' }
 ];
 
+// Еда и напитки: эффект хранится прямо в предмете и применяется useItem().
+export const FOODS = [
+  { id: 'bread', name: 'Хлеб', icon: '🍞', hp: 12, mp: 0, cost: 2, sell: 1, desc: 'Восстанавливает 12 HP' },
+  { id: 'porridge', name: 'Каша', icon: '🥣', hp: 12, mp: 0, cost: 3, sell: 1, desc: 'Восстанавливает 12 HP' },
+  { id: 'roast', name: 'Жаркое', icon: '🍖', hp: 30, mp: 0, cost: 7, sell: 3, desc: 'Восстанавливает 30 HP' },
+  { id: 'ale', name: 'Эль', icon: '🍺', hp: 0, mp: 6, cost: 4, sell: 2, desc: 'Восстанавливает 6 MP' }
+];
+
 // Материалы для ремесла.
 export const MATERIALS = [
   { id: 'ore', name: 'Руда', icon: '⛏', desc: 'Для ковки оружия и доспехов', cost: 4, sell: 2 },
@@ -145,7 +168,8 @@ export const SCROLLS = [
 
 const I = '../../assets/sprites/items/';
 const UI = '../../assets/sprites/ui/';
-const ARMOR_ICON = UI + 'shield.png';
+const K = '../../assets/kenney/items/';
+const ARMOR_ICON = K + 'armor_0.png';
 
 // 6 слотов, 29 уникальных предметов: у каждого слота своя пара «слот + защита».
 export const ARMOR_SLOTS = [
@@ -158,14 +182,16 @@ export const ARMOR_SLOTS = [
 ];
 
 export const ARMORS = [
-  { name: 'Тряпичная одежда', def: 0, cost: 0, set: 'any', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Деревянный щит', def: 1, cost: 2, set: 'any', slot: 'shield', dir: 'def', sprite: UI + 'shield.png' },
-  { name: 'Кожаный щит', def: 3, cost: 5, set: 'any', slot: 'shield', dir: 'def', sprite: UI + 'shield.png' },
-  { name: 'Рыцарский щит', def: 6, cost: 11, set: 'warrior', slot: 'shield', dir: 'def', sprite: UI + 'shield.png' },
-  { name: 'Золотой щит', def: 9, cost: 18, set: 'any', slot: 'shield', dir: 'def', sprite: UI + 'shield.png' },
-  { name: 'Тканевый капюшон', def: 1, cost: 2, set: 'any', slot: 'helmet', dir: 'def', sprite: UI + 'star.png' },
-  { name: 'Кожаный шлем', def: 2, cost: 4, set: 'warrior', slot: 'helmet', dir: 'def', sprite: UI + 'star.png' },
-  { name: 'Стальной шлем', def: 4, cost: 9, set: 'warrior', slot: 'helmet', dir: 'def', sprite: UI + 'star.png' },
+  // Стартовые лохмотья: нельзя снять и нельзя продать, при надевании другой одежды удаляются.
+  { name: 'Тряпичная одежда', def: 0, cost: 0, set: 'any', slot: 'body', dir: 'def', sprite: ARMOR_ICON,
+    unsellable: true, unequippable: true, starting: true },
+  { name: 'Деревянный щит', def: 1, cost: 2, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
+  { name: 'Кожаный щит', def: 3, cost: 5, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
+  { name: 'Рыцарский щит', def: 6, cost: 11, set: 'warrior', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
+  { name: 'Золотой щит', def: 9, cost: 18, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
+  { name: 'Тканевый капюшон', def: 1, cost: 2, set: 'any', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
+  { name: 'Кожаный шлем', def: 2, cost: 4, set: 'warrior', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
+  { name: 'Стальной шлем', def: 4, cost: 9, set: 'warrior', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
   { name: 'Кожаный жилет', def: 1, cost: 2, set: 'any', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Кожаный доспех', def: 2, cost: 4, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
   { name: 'Кольчуга', def: 3, cost: 6, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
@@ -207,7 +233,7 @@ export const SHOP_STOCK = {
   armor: { weapons: [0, 5, 10], armor: [1, 2, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28], price: 1, sell: 0.6, magic: false },
   magic: { weapons: [0, 5, 6, 10, 11], armor: [5, 16, 17, 18, 28], price: 1.25, sell: 0.58, magic: true, spellDiscount: 0.65, crystals: 2 },
   jeweler: { weapons: [10, 11, 14, 15], armor: [4, 18, 27, 28], price: 1.6, sell: 0.75, magic: true, crystals: 5, noHeavy: true },
-  market: { weapons: [0, 1, 5], armor: [1, 8, 24, 26], price: 0.95, sell: 0.5, berries: true },
+  market: { weapons: [0, 1, 5], armor: [1, 8, 24, 26], price: 0.95, sell: 0.5, berries: true, food: true },
   tavern: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, food: true },
   inn: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, rest: true }
 };

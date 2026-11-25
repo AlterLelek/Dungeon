@@ -1,5 +1,349 @@
 [
   {
+    "file": "armor_0.png",
+    "path": "assets/kenney/items/armor_0.png",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "axe.png",
+    "path": "assets/kenney/items/axe.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bow.png",
+    "path": "assets/kenney/items/bow.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon",
+      "adventurer"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "chest.png",
+    "path": "assets/kenney/items/chest.png",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "coin.png",
+    "path": "assets/kenney/items/coin.png",
+    "type": "item",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dagger.png",
+    "path": "assets/kenney/items/dagger.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "helmet.png",
+    "path": "assets/kenney/items/helmet.png",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "herb.png",
+    "path": "assets/kenney/items/herb.png",
+    "type": "herb",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "potion_blue.png",
+    "path": "assets/kenney/items/potion_blue.png",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "potion_green.png",
+    "path": "assets/kenney/items/potion_green.png",
+    "type": "item",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "potion_purple.png",
+    "path": "assets/kenney/items/potion_purple.png",
+    "type": "item",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "potion_red.png",
+    "path": "assets/kenney/items/potion_red.png",
+    "type": "item",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "scroll.png",
+    "path": "assets/kenney/items/scroll.png",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "shield.png",
+    "path": "assets/kenney/items/shield.png",
+    "type": "armor",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "staff.png",
+    "path": "assets/kenney/items/staff.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "sword.png",
+    "path": "assets/kenney/items/sword.png",
+    "type": "weapon",
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_building_blue.png",
+    "path": "assets/kenney/tiles/tile_building_blue.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_building_stone.png",
+    "path": "assets/kenney/tiles/tile_building_stone.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_building_straw.png",
+    "path": "assets/kenney/tiles/tile_building_straw.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_dirt.png",
+    "path": "assets/kenney/tiles/tile_dirt.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_grass_flowers_bright.png",
+    "path": "assets/kenney/tiles/tile_grass_flowers_bright.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_grass_flowers.png",
+    "path": "assets/kenney/tiles/tile_grass_flowers.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_grass.png",
+    "path": "assets/kenney/tiles/tile_grass.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_sand.png",
+    "path": "assets/kenney/tiles/tile_sand.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_stone.png",
+    "path": "assets/kenney/tiles/tile_stone.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_tree_autumn.png",
+    "path": "assets/kenney/tiles/tile_tree_autumn.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_tree_green_large.png",
+    "path": "assets/kenney/tiles/tile_tree_green_large.png",
+    "type": "tile",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "tile_tree_green.png",
+    "path": "assets/kenney/tiles/tile_tree_green.png",
+    "type": "tile",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "angel_0.svg",
     "path": "assets/sprites/generated/angel_0.svg",
     "type": "item",
@@ -1180,14 +1524,9 @@
     "path": "assets/sprites/items/axe_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon",
-      "dungeon28",
-      "adventurer"
+      "dungeon28"
     ],
     "refs": [
-      "games/dungeon28/config.js",
-      "games/dungeon28/main.js",
-      "games/mm6/index.html",
       "games/sf2_battles/index.html"
     ],
     "dynamic": false,
@@ -1197,12 +1536,8 @@
     "file": "axe_1.png",
     "path": "assets/sprites/items/axe_1.png",
     "type": "weapon",
-    "used_in": [
-      "dungeon"
-    ],
-    "refs": [
-      "games/dungeon28/config.js"
-    ],
+    "used_in": [],
+    "refs": [],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -1319,14 +1654,9 @@
     "path": "assets/sprites/items/bow0_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon",
-      "dungeon28",
-      "adventurer"
+      "dungeon28"
     ],
     "refs": [
-      "games/dungeon28/config.js",
-      "games/dungeon28/main.js",
-      "games/mm6/index.html",
       "games/sf2_battles/index.html"
     ],
     "dynamic": false,
@@ -1364,12 +1694,9 @@
     "path": "assets/sprites/items/bow1_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon",
       "dungeon28"
     ],
     "refs": [
-      "games/dungeon28/config.js",
-      "games/dungeon28/main.js",
       "games/sf2_battles/index.html"
     ],
     "dynamic": false,
@@ -2037,14 +2364,9 @@
     "path": "assets/sprites/items/staff_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon",
-      "dungeon28",
-      "adventurer"
+      "dungeon28"
     ],
     "refs": [
-      "games/dungeon28/config.js",
-      "games/dungeon28/main.js",
-      "games/mm6/index.html",
       "games/sf2_battles/index.html"
     ],
     "dynamic": false,
@@ -2171,8 +2493,13 @@
     "file": "staff.png",
     "path": "assets/sprites/items/staff.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
+    "used_in": [
+      "dungeon"
+    ],
+    "refs": [
+      "games/dungeon28/config.js",
+      "games/dungeon28/main.js"
+    ],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -2181,14 +2508,9 @@
     "path": "assets/sprites/items/sword_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon",
-      "dungeon28",
-      "adventurer"
+      "dungeon28"
     ],
     "refs": [
-      "games/dungeon28/config.js",
-      "games/dungeon28/main.js",
-      "games/mm6/index.html",
       "games/sf2_battles/index.html"
     ],
     "dynamic": false,
@@ -2198,12 +2520,8 @@
     "file": "sword_1.png",
     "path": "assets/sprites/items/sword_1.png",
     "type": "weapon",
-    "used_in": [
-      "dungeon"
-    ],
-    "refs": [
-      "games/dungeon28/config.js"
-    ],
+    "used_in": [],
+    "refs": [],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -2211,12 +2529,8 @@
     "file": "sword_2.png",
     "path": "assets/sprites/items/sword_2.png",
     "type": "weapon",
-    "used_in": [
-      "dungeon"
-    ],
-    "refs": [
-      "games/dungeon28/config.js"
-    ],
+    "used_in": [],
+    "refs": [],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -3751,9 +4065,7 @@
       "adventurer"
     ],
     "refs": [
-      "games/dungeon28/main.js",
       "games/dungeon28/ui.js",
-      "games/mm6/data.js",
       "games/mm6/index.html",
       "games/sf2_battles/index.html"
     ],
@@ -3770,7 +4082,6 @@
     ],
     "refs": [
       "games/dungeon28/ui.js",
-      "games/mm6/data.js",
       "games/mm6/index.html"
     ],
     "dynamic": false,

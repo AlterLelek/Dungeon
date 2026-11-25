@@ -23,6 +23,7 @@ let gameLoopStarted = false;
 // ===== Статичные наложения на героя поверх карты (оружие слева, щит справа) =====
 // Спрайты берём только из первого кадра D28; анимации кадров здесь нет.
 const HERO_OVERLAY_ITEMS = '../../assets/sprites/items/';
+const KENNEY_ITEMS = '../../assets/kenney/items/';
 const heroOverlayImages = {};
 function heroOverlayImage(src) {
     if (!src) return null;
@@ -35,19 +36,19 @@ function heroOverlayImage(src) {
 }
 
 function heroOverlayWeaponSprite(w) {
-    // Из D28 берём только first-frame варианты: sword_0 / axe_0 / staff_0 / bow0_0 / bow1_0.
-    const file = w && w.sprite ? String(w.sprite).split('/').pop().toLowerCase() : '';
-    if (/^bow1/.test(file)) return HERO_OVERLAY_ITEMS + 'bow1_0.png';
-    if (/^bow0/.test(file)) return HERO_OVERLAY_ITEMS + 'bow0_0.png';
-    if (/^staff/.test(file)) return HERO_OVERLAY_ITEMS + 'staff_0.png';
-    if (/^axe/.test(file)) return HERO_OVERLAY_ITEMS + 'axe_0.png';
-    if (/^sword/.test(file)) return HERO_OVERLAY_ITEMS + 'sword_0.png';
+    const sprite = w && w.sprite ? String(w.sprite) : '';
+    if (/\/kenney\/items\//.test(sprite)) return sprite;
+    const file = sprite.split('/').pop().toLowerCase();
+    if (/^bow/.test(file)) return KENNEY_ITEMS + 'bow.png';
+    if (/^staff/.test(file)) return KENNEY_ITEMS + 'staff.png';
+    if (/^axe/.test(file)) return KENNEY_ITEMS + 'axe.png';
+    if (/^sword/.test(file)) return KENNEY_ITEMS + 'sword.png';
     const name = ((w && w.name) || '').toLowerCase();
-    if (/арбалет|bow1|crossbow/.test(name)) return HERO_OVERLAY_ITEMS + 'bow1_0.png';
-    if (/лук|bow/.test(name)) return HERO_OVERLAY_ITEMS + 'bow0_0.png';
-    if (/палоч|посох|staff|wand/.test(name)) return HERO_OVERLAY_ITEMS + 'staff_0.png';
-    if (/топор|молот|axe|hammer|mace/.test(name)) return HERO_OVERLAY_ITEMS + 'axe_0.png';
-    return HERO_OVERLAY_ITEMS + 'sword_0.png';
+    if (/арбалет|crossbow|лук|bow/.test(name)) return KENNEY_ITEMS + 'bow.png';
+    if (/палоч|посох|staff|wand|книг/.test(name)) return KENNEY_ITEMS + 'staff.png';
+    if (/топор|молот|axe|hammer|mace/.test(name)) return KENNEY_ITEMS + 'axe.png';
+    if (/кинжал|dagger/.test(name)) return KENNEY_ITEMS + 'dagger.png';
+    return KENNEY_ITEMS + 'sword.png';
 }
 
 function heroOverlayArmor() { return (state.permanentShield || 0) + (state.tempDef || 0); }
@@ -107,7 +108,7 @@ function drawHeroShieldOverlay(c, cellX, cellY) {
     if (fill <= 0) return;
     const w = 14, h = 18;
     const x = cellX + 27, y = cellY + 9; // правая сторона, вне лица героя
-    const img = heroOverlayImage('../../assets/sprites/ui/shield.png');
+    const img = heroOverlayImage(KENNEY_ITEMS + 'shield.png');
     c.save();
     // высота видимой части растёт снизу вверх вместе с броней
     c.beginPath(); c.rect(x, y + h * (1 - fill), w, h * fill + 0.5); c.clip();
