@@ -23,6 +23,6 @@ jobs:
           persist-credentials: false
 
       - name: Run OpenCode
-        uses: sst/opencode/github@latest
+        uses: sst/opencode/github@v2.2.5
         with:
           model: opencode/deepseek-v4.1-flash-free
