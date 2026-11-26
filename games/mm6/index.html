@@ -426,9 +426,18 @@ const ckey = (x,y) => x+','+y;
 let uidSeq = 0;
 const uid = () => 'i'+(++uidSeq);
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Подбор размера текста зависит только от строки, ширины и базового размера:
+// повторные measureText в каждом кадре боя не нужны. Кэш ограничен, чтобы не копить строки.
+const fitTextSizes=new Map();
 function fitText(text,maxW,size,color,x,y){
-  let s=size; setFont(s);
-  while(ctx.measureText(text).width>maxW && s>8){ s--; setFont(s); }
+  const key=size+'|'+maxW+'|'+text;
+  let s=fitTextSizes.get(key);
+  if(s===undefined){
+    s=size; setFont(s);
+    while(ctx.measureText(text).width>maxW && s>8){ s--; setFont(s); }
+    if(fitTextSizes.size>400) fitTextSizes.clear();
+    fitTextSizes.set(key,s);
+  }else setFont(s);
   ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
 }
 function roundRect(x,y,w,h,r){
@@ -4158,11 +4167,24 @@ function wrapCanvasText(text,maxW,size){
   if(line) lines.push(line);
   return lines;
 }
+// Записи журнала создаются один раз и после этого не меняются: переносы строк
+// кешируются на самой записи, пока она держится в b.log (несколько кадров подряд).
+const wrappedLogCache=new WeakMap();
+function wrapLogEntry(entry,maxW,size){
+  let byKey=wrappedLogCache.get(entry);
+  if(!byKey){ byKey=new Map(); wrappedLogCache.set(entry,byKey); }
+  const key=maxW+'|'+size+'|'+(entry.side==='hero'?'h':'n');
+  let lines=byKey.get(key);
+  if(lines===undefined){
+    lines=wrapCanvasText((entry.side==='hero'?'    ':'')+entry.text,maxW,size);
+    byKey.set(key,lines);
+  }
+  return lines;
+}
 function drawWrappedLog(entries,x,y,maxW,maxLines,size,lineH){
   const rows=[];
   entries.slice(-6).forEach(entry=>{
-    const prefix=entry.side==='hero'?'    ':'';
-    wrapCanvasText(prefix+entry.text,maxW,size).forEach(text=>rows.push({text,color:entry.color}));
+    wrapLogEntry(entry,maxW,size).forEach(text=>rows.push({text,color:entry.color}));
   });
   rows.slice(-maxLines).forEach((row,i)=>{
     setFont(size,false); ctx.fillStyle=row.color||'#c8cfe4'; ctx.textAlign='left'; ctx.textBaseline='middle';
