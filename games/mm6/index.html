@@ -186,6 +186,11 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .containerTab:hover,.containerTab:focus-visible{border-color:#fbbf24;outline:none}
 .invCell .moveBtn{position:absolute;right:1px;top:1px;width:15px;height:15px;padding:0;border:1px solid rgba(251,191,36,.4);
   border-radius:4px;background:rgba(10,14,26,.85);color:#ffe9b0;font-size:10px;line-height:13px;cursor:pointer;z-index:2}
+#bigMapCanvas{display:block;width:min(100%,66vh);height:auto;border:1px solid rgba(251,191,36,.35);
+  border-radius:9px;background:#05070f;image-rendering:pixelated;cursor:crosshair}
+.bigMapInfo{margin-top:7px;padding:6px 8px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
+  background:rgba(255,255,255,.035);color:#c8d2f0;font-size:11px;line-height:1.4;min-height:30px}
+.bigMapInfo b{color:#ffe9b0}
 .invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);grid-auto-rows:48px;gap:6px;justify-content:start;align-content:start;
   max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
   background:rgba(0,0,0,.2);min-height:160px}
@@ -321,7 +326,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <h3>Сложность</h3>
     <div class="diffRow" id="diffRow"></div>
     <div class="row"><input id="heroName" type="text" maxlength="14" value="Герой" placeholder="Имя героя" aria-label="Имя героя"><button class="play" id="playBtn">▶ Играть</button></div>
-    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка у здания · I — инвентарь · L — журнал · Пробел — атака · F — магия · R — бегство · M/Esc — меню</p>
+    <p class="hint">Стрелки/WASD — движение · Q/E (й/у) — поворот · Enter — взаимодействие · B — лавка у здания · I — инвентарь · L — журнал · Пробел — атака · F — магия · R — бегство · M/Ь — карта · Esc — меню</p>
   </div>
 </div>
 
@@ -344,7 +349,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <details class="setAcc" open><summary>🎚️ Сложность и мир</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">Сложность</span><select id="setDiff"><option value="easy">🙂 Простая</option><option value="normal">🔥 Средняя</option><option value="hard">🧠 Сложная</option></select></div>
     <div class="setRow"><span class="setLabel">🏰 Этажей всего</span><input type="number" id="setFloors" min="1" max="20" step="1" value="5"></div>
-    <div class="setRow"><span class="setLabel">📐 Размер карты (клеток)</span><input type="number" id="setMapSize" min="8" max="30" step="1" value="30" title="По умолчанию 30×30; допустимый диапазон 8–30"></div>
+    <div class="setRow"><span class="setLabel">📐 Мин. размер карты</span><input type="number" id="setMapSize" min="30" max="100" step="30" value="30" title="Пресеты 30×30, 60×60, 100×100; размер этажа выбирается автоматически"></div>
     <div class="setRow"><span class="setLabel">🔲 Размер клетки</span><input type="number" id="setCellSize" min="8" max="28" step="1" value="16"></div>
     <div class="setRow"><span class="setLabel">👹 Монстров +</span><input type="number" id="setMonstersAdd" min="0" max="5" step="1" value="0"></div>
     <div class="setRow"><span class="setLabel">🧰 Спавн (раз в N)</span><input type="number" id="setItemRate" min="1" max="5" step="1" value="2"></div>
@@ -393,7 +398,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
       <div><span class="keyCap">Enter</span> взаимодействие · <span class="keyCap">B</span> лавка у здания · <span class="keyCap">I</span> инвентарь</div>
       <div><span class="keyCap">Пробел</span> атака в бою · <span class="keyCap">F</span> магия · <span class="keyCap">R</span> бегство</div>
       <div><span class="keyCap">L/Д</span> журнал событий · <span class="keyCap">↑/↓</span> прокрутка журнала</div>
-      <div><span class="keyCap">M/Esc</span> меню · <span class="keyCap">P</span> настройки</div>
+      <div><span class="keyCap">M/Ь</span> карта · <span class="keyCap">Esc</span> меню · <span class="keyCap">P</span> настройки</div>
     </div>
   </div></details>
   <div class="row"><button class="link" id="resetSettings">↺ Сбросить настройки</button></div>
@@ -402,6 +407,12 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="inventory" class="overlay hidden"><div class="box">
   <div class="head"><h2>🎒 Инвентарь</h2><button class="link" id="invClose">Закрыть [I]</button></div>
   <div class="invBody"><div class="mannequin" id="mannequin"></div><div class="invRight"><div class="tabs" id="invTabs"></div><div id="invList"></div></div></div>
+</div></div>
+
+<div id="bigMap" class="overlay hidden"><div class="box" style="width:min(720px,96vw)">
+  <div class="head"><h2 id="bigMapTitle">🗺️ Карта</h2><button class="link" id="bigMapClose">Закрыть [M]</button></div>
+  <canvas id="bigMapCanvas" width="640" height="640" aria-label="Большая карта мира"></canvas>
+  <div id="bigMapInfo" class="bigMapInfo">Кликните по разведанной клетке, чтобы узнать её тип. Ход не расходуется.</div>
 </div></div>
 
 <div id="reward" class="overlay hidden"><div class="box" style="width:min(440px,94vw)">
@@ -866,7 +877,7 @@ let progress=loadProgress();
 
 /* --- Настройки: полный дубль панели подземелья, сохраняются в localStorage --- */
 const SETTINGS_KEY='mm6_settings_v1';
-const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[8,30],monstersAdd:[0,5],itemRate:[1,5],
+const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd:[0,5],itemRate:[1,5],
   shieldVal:[1,10],starVal:[1,10],sound:[0,10],sfx:[0,10],amb:[0,10],music:[0,10],tempo:[300,1200],
   partySize:[1,3],heroSpeed:[.5,2],monsterSpeed:[.5,2],monsterPower:[.5,2],bonusEvery:[2,20],logLimit:[100,1000],
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
@@ -1465,7 +1476,7 @@ function normalizeHeroList(a,b){
 }
 function freshGameShell(diffId){
   return {difficulty:diffId,bag:[],containers:ensureContainers(null),gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
-    battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
+    battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,mapOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
 }
@@ -1498,7 +1509,8 @@ const WORLD_SAVE_KEY='mm6_world_save_v1';
 function saveWorldState(){
   if(!game||!game.world) return false;
   const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
-    world:game.world,player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
+    world:game.world,fog:game.world.maps.map(m=>[...(m.seen||[])]),
+    player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
     seasonOverride:game.seasonOverride,log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
   try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
   catch(e){ return false; }
@@ -1530,8 +1542,10 @@ function loadWorldState(){
     const w=equippedWeapon(h);
     if(w&&isTwoHanded(w)) h.equip.offhand=w.uid;
   });
-  game.world.maps.forEach(m=>{
+  game.world.maps.forEach((m,mi)=>{
     if(!(m.seen instanceof Set)) m.seen=new Set(Array.isArray(m.seen)?m.seen:[]);
+    /* Явный туман войны в сейве: объединяем с seen из cells на случай старых сохранений. */
+    if(Array.isArray(data.fog)&&Array.isArray(data.fog[mi])) data.fog[mi].forEach(k=>m.seen.add(k));
     (m.cells||[]).forEach(row=>row.forEach(c=>{
       if(!c.ground) c.ground=GROUND_IDS.includes(c.t)?c.t:'grass';
       if(c.water&&!c.t) c.t='water';
@@ -1780,11 +1794,21 @@ function generateForest(cells,size,occupied,cx,cy,farX,farY,rng){
   }
   return trees;
 }
+/* Размер карты выбирается автоматически по номеру этажа: первые карты 30×30,
+   затем 60×60, финальные 100×100. Настройка mapSize задаёт минимальный пресет. */
+const MAP_SIZE_PRESETS=[30,60,100];
+function presetMapSize(n){
+  const v=clamp(Math.round(Number(n)||30),30,100);
+  return MAP_SIZE_PRESETS.find(s=>v<=s)||100;
+}
+function autoMapSize(i,total){
+  const ratio=total>1?i/(total-1):0;
+  return MAP_SIZE_PRESETS[ratio<1/3?0:ratio<2/3?1:2];
+}
 function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   const seed=makeSeed(worldSeed||1,i+1), rng=makeRng(seed);
-  // По умолчанию 30×30; настройка из main допускает 8–30, рельеф работает для любого размера.
-  const baseSize=clamp(Math.round(Number(settings.mapSize)||d.size[1]||30),8,30);
-  const size=clamp(rngInt(rng,Math.max(8,baseSize-2),Math.min(30,baseSize+2)),8,30);
+  const baseSize=Math.max(autoMapSize(i,total),presetMapSize(settings.mapSize));
+  const size=baseSize;
   const biome=BIOME_KEYS[i%BIOME_KEYS.length];
   const cells=emptyCells(size,rng);
   const cx=Math.floor(size/2),cy=Math.floor(size/2);
@@ -3320,6 +3344,17 @@ function containerReport(){
     totalUsed:rows.reduce((s,r)=>s+r.used,0),totalCapacity:rows.reduce((s,r)=>s+r.capacity,0),
     weight:li.containerWeight,gearWeight:li.gearWeight,totalWeight:li.weight};
 }
+function mapReport(){
+  const errors=[], m=currentMap();
+  if(!m||!game) return {ok:false,errors:['Карта не загружена']};
+  const sizes=game.world.maps.map(x=>x.size);
+  if(!sizes.every(s=>MAP_SIZE_PRESETS.includes(s))) errors.push('Размер карты вне пресетов 30/60/100');
+  if(MINIMAP_VIEW!==30) errors.push('Миникарта должна быть 30×30');
+  return {ok:!errors.length,errors,sizes,current:m.size,view:MINIMAP_VIEW,origin:minimapOrigin(m),
+    rect:minimapRect(),mapOpen:!!game.mapOpen,
+    fog:game.world.maps.map(x=>({size:x.size,seen:x.seen instanceof Set?x.seen.size:0})),
+    hint:mapHint?{x:mapHint.x,y:mapHint.y,title:mapHint.title,desc:mapHint.desc}:null};
+}
 function toggleInventory(open){
   if(!game||phase!=='play') return;
   game.invOpen=!!open;
@@ -4376,39 +4411,118 @@ function drawHeroFigure(x,y,s,h,now){
 }
 
 /* ============================ 11. КАРТА ============================ */
+const MINIMAP_VIEW=30, MINIMAP_PX=112;
+function minimapRect(){ return {x:W-MINIMAP_PX-12,y:12,w:MINIMAP_PX,h:MINIMAP_PX}; }
+function minimapOrigin(m){
+  const p=game&&game.player;
+  if(!m||!p) return {x:0,y:0};
+  return {x:clamp(Math.round(p.px)-Math.floor(MINIMAP_VIEW/2),0,Math.max(0,m.size-MINIMAP_VIEW)),
+    y:clamp(Math.round(p.py)-Math.floor(MINIMAP_VIEW/2),0,Math.max(0,m.size-MINIMAP_VIEW))};
+}
+function cellMapColor(c,m){
+  return c.t==='water'?'#1d4ed8':c.t==='ice'?'#dff2ff':c.t==='bridge'?'#a97642':
+    (c.t==='rock'||c.t==='mountain')?'#a1a1aa':c.t==='swamp'?'#31532f':
+    c.t==='tree'?'#2f8d4d':c.t==='flowers'?'#e5a7d2':c.t==='sand'?'#dfcb93':
+    (c.t==='road'||c.t==='gate')?'#b09a6b':
+    c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':(BIOMES[m.biome]||BIOMES.field).ground[0];
+}
 function drawMiniMap(m){
-  const size=112, x=W-size-12, y=12;
+  const size=MINIMAP_PX, x=W-size-12, y=12, view=MINIMAP_VIEW, s=size/view, origin=minimapOrigin(m);
   panel(x-4,y-4,size+8,size+22);
-  const s=size/m.size;
   ctx.fillStyle='rgba(0,0,0,.65)'; ctx.fillRect(x,y,size,size);
   const p=game.player;
-  for(let yy=0;yy<m.size;yy++) for(let xx=0;xx<m.size;xx++){
-    if(!m.seen.has(ckey(xx,yy))) continue;
+  for(let vy=0;vy<view;vy++) for(let vx=0;vx<view;vx++){
+    const xx=origin.x+vx, yy=origin.y+vy;
+    if(xx>=m.size||yy>=m.size||!m.seen.has(ckey(xx,yy))) continue; // туман войны: неразведанное скрыто
     const c=m.cells[yy][xx];
     const visible=Math.max(Math.abs(xx-p.x),Math.abs(yy-p.y))<=2;
     ctx.globalAlpha=visible?1:.34;
-    ctx.fillStyle=c.t==='water'?'#1d4ed8':c.t==='ice'?'#dff2ff':c.t==='bridge'?'#a97642':
-      (c.t==='rock'||c.t==='mountain')?'#a1a1aa':c.t==='swamp'?'#31532f':
-      c.t==='tree'?'#2f8d4d':c.t==='flowers'?'#e5a7d2':c.t==='sand'?'#dfcb93':
-      (c.t==='road'||c.t==='gate')?'#b09a6b':
-      c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':(BIOMES[m.biome]||BIOMES.field).ground[0];
-    ctx.fillRect(x+xx*s,y+yy*s,Math.max(1,s-1),Math.max(1,s-1));
+    ctx.fillStyle=cellMapColor(c,m);
+    ctx.fillRect(x+vx*s,y+vy*s,Math.max(1,s-1),Math.max(1,s-1));
   }
   ctx.globalAlpha=1;
-  m.monsters.forEach(e=>{ if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
-    ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+e.x*s+s/2,y+e.y*s+s/2,Math.max(2,s*.3),0,6.29); ctx.fill(); });
-  // Иконки building/chest/находок на мини-карте.
-  for(let yy=0;yy<m.size;yy++) for(let xx=0;xx<m.size;xx++){
-    if(!m.seen.has(ckey(xx,yy))) continue;
+  m.monsters.forEach(e=>{
+    const vx=e.x-origin.x, vy=e.y-origin.y;
+    if(!e.alive||vx<0||vy<0||vx>=view||vy>=view||!m.seen.has(ckey(e.x,e.y))) return;
+    ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.arc(x+vx*s+s/2,y+vy*s+s/2,Math.max(2,s*.3),0,6.29); ctx.fill(); });
+  for(let vy=0;vy<view;vy++) for(let vx=0;vx<view;vx++){
+    const xx=origin.x+vx, yy=origin.y+vy;
+    if(xx>=m.size||yy>=m.size||!m.seen.has(ckey(xx,yy))) continue;
     const c=m.cells[yy][xx]; if(!['shop','chest','treasure','boss'].includes(c.t)) continue;
     setFont(Math.max(7,Math.min(11,s*.9))); ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillStyle=c.t==='shop'?'#fbbf24':c.t==='chest'?(c.opened?'#6b7280':'#fde68a'):c.t==='treasure'?'#86efac':'#ef4444';
-    ctx.fillText(c.t==='shop'?'⌂':c.t==='chest'?(c.opened?'◇':'▣'):c.t==='treasure'?'✦':'★',x+xx*s+s/2,y+yy*s+s/2);
+    ctx.fillText(c.t==='shop'?'⌂':c.t==='chest'?(c.opened?'◇':'▣'):c.t==='treasure'?'✦':'★',x+vx*s+s/2,y+vy*s+s/2);
   }
-  ctx.save(); ctx.translate(x+p.px*s+s/2,y+p.py*s+s/2); ctx.rotate(p.dir*Math.PI/2);
+  const hvx=p.px-origin.x, hvy=p.py-origin.y;
+  ctx.save(); ctx.translate(x+hvx*s+s/2,y+hvy*s+s/2); ctx.rotate(p.dir*Math.PI/2);
   ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
   ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count,x,y+size+11);
+  ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count+' · 30×30',x,y+size+11);
+}
+function minimapCellAt(px,py){
+  const r=minimapRect(), m=currentMap(); if(!m) return null;
+  if(px<r.x||py<r.y||px>=r.x+r.w||py>=r.y+r.h) return null;
+  const view=MINIMAP_VIEW, s=r.w/view, origin=minimapOrigin(m);
+  const x=origin.x+clamp(Math.floor((px-r.x)/s),0,view-1), y=origin.y+clamp(Math.floor((py-r.y)/s),0,view-1);
+  return (x<m.size&&y<m.size)?{x,y,seen:m.seen.has(ckey(x,y))}:null;
+}
+function showCellInfo(x,y,source){
+  const m=currentMap(); if(!m||!m.cells[y]||!m.cells[y][x]) return null;
+  const seen=m.seen.has(ckey(x,y));
+  const def=TERRAIN_TYPES.find(t=>t.id===m.cells[y][x].t);
+  const title=seen?(def?def.name:m.cells[y][x].t):'Неразведанная клетка';
+  const desc=seen?((def&&def.toast)||(def&&def.passable?'Проходимо · '+def.cost+' ход':'Непроходимо')):'Туман войны — откройте, подойдя ближе';
+  mapHint={x,y,title,desc,t:performance.now()};
+  toast(source+': '+title+' ('+x+','+y+') — '+desc);
+  if(source==='Большая карта'){
+    const el=document.getElementById('bigMapInfo');
+    if(el) el.innerHTML='<b>'+esc(title)+'</b> · '+x+','+y+' — '+esc(desc);
+  }
+  return {x,y,seen,title,desc};
+}
+const BIG_MAP_PX=640;
+function bigMapCanvas(){ return document.getElementById('bigMapCanvas'); }
+function drawBigMap(){
+  const cvBig=bigMapCanvas(), m=currentMap(); if(!cvBig||!m) return;
+  const g=cvBig.getContext('2d'), s=BIG_MAP_PX/m.size, p=game.player;
+  g.fillStyle='#05070f'; g.fillRect(0,0,BIG_MAP_PX,BIG_MAP_PX);
+  for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
+    if(!m.seen.has(ckey(x,y))) continue; // неразведанное скрыто и в большом виде
+    const c=m.cells[y][x], visible=Math.max(Math.abs(x-p.x),Math.abs(y-p.y))<=2;
+    g.globalAlpha=visible?1:.45; g.fillStyle=cellMapColor(c,m);
+    g.fillRect(x*s,y*s,Math.max(1,s-1),Math.max(1,s-1));
+  }
+  g.globalAlpha=1;
+  m.monsters.forEach(e=>{
+    if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
+    g.fillStyle='#ef4444'; g.beginPath(); g.arc(e.x*s+s/2,e.y*s+s/2,Math.max(2,s*.25),0,6.29); g.fill(); });
+  for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
+    if(!m.seen.has(ckey(x,y))) continue;
+    const c=m.cells[y][x]; if(!['shop','chest','treasure','boss'].includes(c.t)) continue;
+    g.fillStyle=c.t==='shop'?'#fbbf24':c.t==='chest'?'#fde68a':c.t==='treasure'?'#86efac':'#ef4444';
+    g.beginPath(); g.arc(x*s+s/2,y*s+s/2,Math.max(2,s*.28),0,6.29); g.fill();
+  }
+  g.fillStyle='#ffe9a8'; g.beginPath(); g.arc(p.px*s+s/2,p.py*s+s/2,Math.max(3,s*.3),0,6.29); g.fill();
+  const t=document.getElementById('bigMapTitle');
+  if(t) t.textContent='🗺️ Карта · '+m.size+'×'+m.size+' · '+(BIOMES[m.biome]||BIOMES.field).name;
+}
+function toggleBigMap(open){
+  if(!game||phase!=='play'||game.battle) return false;
+  game.mapOpen=open===undefined?!game.mapOpen:!!open;
+  const el=document.getElementById('bigMap');
+  if(el) el.classList.toggle('hidden',!game.mapOpen);
+  if(game.mapOpen) drawBigMap();
+  updateControls(); beep(420,.06);
+  return game.mapOpen;
+}
+function bigMapCellAt(clientX,clientY){
+  const cvBig=bigMapCanvas(), m=currentMap(); if(!cvBig||!m) return null;
+  const r=cvBig.getBoundingClientRect();
+  if(clientX<r.left||clientY<r.top||clientX>=r.right||clientY>=r.bottom) return null;
+  const cx=(clientX-r.left)*BIG_MAP_PX/Math.max(1,r.width), cy=(clientY-r.top)*BIG_MAP_PX/Math.max(1,r.height);
+  const s=BIG_MAP_PX/m.size;
+  const x=clamp(Math.floor(cx/s),0,m.size-1), y=clamp(Math.floor(cy/s),0,m.size-1);
+  return {x,y,seen:m.seen.has(ckey(x,y))};
 }
 /* Тёмные панели врагов на карте: имя, живое HP и MP, если поле действительно есть. */
 const MAP_ENEMY_PANEL_W=92, MAP_ENEMY_PANEL_H=30;
@@ -4700,7 +4814,7 @@ function renderHeroPick(slot){
 }
 function renderDiff(){
   $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
-    '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · 30×30 клеток</small></button>').join('');
+    '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · 30/60/100 клеток</small></button>').join('');
   $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); beep(420,.05); });
 }
 function renderStart(){ updateProgressUI(); renderHeroPick(0); renderHeroPick(1); renderHeroPick(2); renderDiff(); }
@@ -4729,6 +4843,10 @@ $('recordsBtn').onclick=()=>toggleRecords();
 $('recordsClose').onclick=()=>toggleRecords(false);
 $('shopClose').onclick=()=>toggleShop(false);
 $('invClose').onclick=()=>toggleInventory(false);
+$('bigMapClose').onclick=()=>toggleBigMap(false);
+if(bigMapCanvas()) bigMapCanvas().addEventListener('pointerdown',e=>{
+  const c=bigMapCellAt(e.clientX,e.clientY); if(c) showCellInfo(c.x,c.y,'Большая карта');
+});
 $('spellClose').onclick=closeSpellMenu;
 $('logClose').onclick=()=>toggleEventLog(false);
 $('btnLog').onclick=()=>toggleEventLog();
@@ -4762,7 +4880,9 @@ cv.addEventListener('pointermove',e=>{
 });
 cv.addEventListener('pointerdown',e=>{
   if(game&&!game.battle&&!game.invOpen&&!game.shopOpen){
-    const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
+    const p=pointerCanvasPos(e), mini=minimapCellAt(p.x,p.y);
+    if(mini){ showCellInfo(mini.x,mini.y,'Миникарта'); return; } // клик по миникарте не двигает героя
+    showMapHintAt(p.x,p.y);
   }
   const b=game&&game.battle; if(!b||b.end) return;
   if(game.invOpen||game.shopOpen||game.spellOpen||game.reward) return;
@@ -4827,14 +4947,24 @@ document.addEventListener('keydown',e=>{
   }
   if(!game) return;
   if(k==='l'||k==='д'){ e.preventDefault(); toggleEventLog(); return; }
-  if(k==='m'||k==='ь'||e.key==='Escape'){
+  if(k==='m'||k==='ь'){
     e.preventDefault();
     if(game.spellOpen) closeSpellMenu();
     else if(game.invOpen) toggleInventory(false);
     else if(game.shopOpen) toggleShop(false);
     else if(game.reward) return;
+    else toggleBigMap(); return;
+  }
+  if(e.key==='Escape'){
+    e.preventDefault();
+    if(game.mapOpen) toggleBigMap(false);
+    else if(game.spellOpen) closeSpellMenu();
+    else if(game.invOpen) toggleInventory(false);
+    else if(game.shopOpen) toggleShop(false);
+    else if(game.reward) return;
     else goHub(); return;
   }
+  if(game.mapOpen) return;
   if(k==='i'||k==='ш'||k==='і'){ e.preventDefault(); toggleInventory(!game.invOpen); return; }
   if(game.invOpen) return;
   if(k==='b'||k==='б'){ e.preventDefault(); toggleShop(!game.shopOpen); return; }
@@ -5291,6 +5421,11 @@ window.__mm6Debug={
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
   },
   containerReport:()=>containerReport(),
+  mapReport:()=>mapReport(),
+  toggleBigMap:(open)=>toggleBigMap(open),
+  showMinimapCell:(x,y)=>showCellInfo(x,y,'Миникарта'),
+  minimapCellAt:(px,py)=>minimapCellAt(px,py),
+  bigMapCellAt:(x,y)=>bigMapCellAt(x,y),
   addItemBySpec:(o)=>{ const it=addItem(o); renderInventory(); updateParty(); return it?it.uid:null; },
   moveToContainer:(uid,id)=>moveContainerItem(uid,id),
   upgradeContainer:(id)=>upgradeContainer(id),
