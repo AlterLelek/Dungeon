@@ -143,7 +143,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mq-slot.empty .mq-empty svg{width:24px;height:24px}
 .mq-slot.filled{border-style:solid;border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.05)}
 .mq-slot.sel{border-color:#ffe09a;background:rgba(251,191,36,.13);box-shadow:0 0 0 2px rgba(251,191,36,.45),0 0 18px rgba(251,191,36,.35);z-index:6}
-.mq-slot img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
+.mq-slot img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
 .mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
 .mq-slot img.rot-bow{transform:rotate(-4deg)}
 .mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(0,0,0,.55);border:1px solid rgba(251,191,36,.4);color:#ffe9b0;font-size:19px;font-weight:800}
@@ -161,22 +161,24 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .loadbar .loadText{position:relative;white-space:nowrap}
 .invRight{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .invSlotStrip{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px}
-.invSlotChip{flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
+.invSlotChip{position:relative;flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
   background:rgba(255,255,255,.035);color:#9fb0d8;cursor:pointer;font-size:9px;line-height:1.2;text-align:left}
+.invSlotChip.withIcon{padding-right:24px}
+.invSlotChip img{position:absolute;right:4px;top:5px;width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
 .invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
 .invSlotChip b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .invSlotChip small{display:block;color:#8b94b2;font-size:8px}
-.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);gap:6px;justify-content:start;align-content:start;
+.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);grid-auto-rows:48px;gap:6px;justify-content:start;align-content:start;
   max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
   background:rgba(0,0,0,.2);min-height:160px}
-.invCell{position:relative;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
-  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;
+.invCell{position:relative;flex:0 0 48px;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;overflow:hidden;
   cursor:pointer;color:#c8d2f0}
 .invCell:hover,.invCell:focus-visible{border-color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.3);outline:none}
 .invCell.craftable{border-color:rgba(125,255,178,.45)}
 .invCell.blocked{border-color:rgba(248,113,113,.35)}
-.invCell img{width:100%;height:100%;max-width:40px;max-height:40px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.invCell img{display:block;flex:0 1 auto;width:36px;height:36px;max-width:36px;max-height:36px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .invCell .ph{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;
   background:rgba(0,0,0,.5);border:1px solid rgba(251,191,36,.3);color:#ffe9b0;font-size:18px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
@@ -3396,6 +3398,7 @@ function renderInventory(){
     chip.dataset.slot=s.id;
     chip.title=s.label+': '+(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint);
     if(s.id==='weapon'&&it&&itemSpritePath(it)){
+      chip.classList.add('withIcon');
       const img=document.createElement('img'); img.src=itemSpritePath(it); img.alt='';
       chip.appendChild(img);
     }
