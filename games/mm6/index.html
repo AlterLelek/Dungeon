@@ -434,7 +434,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
-import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, MONSTER_PROFILES, resolveProfile, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, RULES_SUMMARY } from './rules.js';
+import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, skillForWeapon, MONSTER_PROFILES, resolveProfile, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
@@ -2130,6 +2130,7 @@ function afterStep(cost){
   const m=currentMap(), steps=clamp(Math.round(Number(cost)||1),1,2);
   markSeen(m,game.player.x,game.player.y);
   game.world.turn+=steps; game.totalTurns+=steps;
+  tickSkillCooldowns();
   maybeSpawnBonus(m);
   pushHistory('Ход '+game.world.turn+': '+DIR_NAMES[game.player.dir]+', клетка '+game.player.x+','+game.player.y+
     (steps>1?' · болото '+steps+' хода':'')+'.','neutral');
@@ -2456,7 +2457,7 @@ function nextTurn(){
         const pd=Math.min(h.poison,h.hp); h.hp-=pd;
         pushLog('Яд снимает '+pd+' HP с '+heroName(h)+'.',C_ENEMY,'enemy');
       }
-      tickStatuses(h);
+      tickStatuses(h); tickSkillCooldowns();
       b.turn='hero'; b.heroIdx=u.idx; b.busy=false;
       updateParty(); updateControls(); return;
     }
@@ -2568,6 +2569,8 @@ function heroAttack(){
     if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
   }
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
+  /* Навык качает только реальный эффект: пустая атака (нет цели/нулевой урон) — ничего. */
+  if(dmg>0){ awardSkill(h,skillForWeapon(w)); awardSkill(h,'accuracy'); }
   if(target.hp<=0) onEnemyKilled(b,target);
   beep(440,.09); updateParty();
   if(checkBattleEnd()) return true;
@@ -2589,6 +2592,9 @@ function enemyAct(b,idx){
   b.lastHit={attacker:m.name,weapon:magicHit?'чары':attackVerb(m),raw:attack,defense,final:dmg,crit:false};
   pushLog(combatLog(m.name,verb,'',attack,defense,dmg,h.def.name),C_ENEMY,'enemy');
   h.hp=Math.max(0,h.hp-dmg);
+  /* Выдержанный удар качает защиту; полностью заблокированный — уклонение. */
+  if(dmg>0&&h.hp>0) awardSkill(h,'defense');
+  else if(dmg===0) awardSkill(h,'dodge');
   addBattleFloater(battleHeroPoint(b,hIdx),'-'+dmg,C_ENEMY);
   if(m.poison&&h.hp>0){
     h.poison=3; h.poisonTurns=2;
@@ -2650,6 +2656,8 @@ function castSpell(id,targetIdx){
   else if(s.gain){ h.mp=Math.min(h.maxMp,h.mp+s.gain); txt=h.def.name+' восстанавливает ману +'+s.gain+'.'; }
   else if(s.id==='teleport'){ closeBattleKeep(); closeSpellMenu(); toast('Прыжок: бой оставлен без штрафа.'); return true; }
   else txt=h.def.name+' применяет «'+s.name+'» ('+tier+').';
+  /* Заклинание качает магию/заклинания только когда эффект действительно случился. */
+  awardSkill(h,s.power?'magic':'spells');
   pushLog(txt,C_HERO,'hero');
   b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
   closeSpellMenu(); updateParty();
@@ -2700,6 +2708,56 @@ function grantPartyXp(amount,quest){
   /* Опыт общий: каждый герой получает полную сумму, включая переживших смерти. */
   party().forEach(h=>{ h.exp=(h.exp||0)+xp; if(!quest) h.magicPower=(h.magicPower||0)+0.05; });
   return xp;
+}
+/* --- Навыки: очки приходят только от реального эффекта, ранги — у тренера. --- */
+function skillRank(h,id){ return Math.max(0,Math.floor((h&&h.skills&&h.skills[id])||0)); }
+function skillPoints(h,id){ return Math.max(0,Math.floor((h&&h.skillXp&&h.skillXp[id])||0)); }
+function skillCap(h){ return Math.max(1,Math.floor((h&&h.level)||1))*SKILL_CAP_PER_LEVEL; }
+function tickSkillCooldowns(){
+  party().forEach(h=>{
+    if(!h.skillCooldown) return;
+    Object.keys(h.skillCooldown).forEach(id=>{ h.skillCooldown[id]=Math.max(0,(h.skillCooldown[id]||0)-1); });
+  });
+}
+function awardSkill(h,id,amount){
+  if(!h||!skillDef(id)) return false;
+  const n=Math.max(1,Math.floor(Number(amount)||1));
+  /* Пустые действия и повторы в кулдауне не качают навык. */
+  if((h.skillCooldown&&h.skillCooldown[id]||0)>0) return false;
+  h.skillXp=h.skillXp||{}; h.skillCooldown=h.skillCooldown||{};
+  h.skillXp[id]=skillPoints(h,id)+n;
+  h.skillCooldown[id]=SKILL_COOLDOWN_TURNS;
+  return true;
+}
+function trainSkill(idx,id){
+  const h=party()[idx], def=skillDef(id);
+  if(!h||!def||!game||!game.shopOpen) return false;
+  if(game.shopType!==def.building){ toast('Этот навык тренируют в другом здании.'); return false; }
+  if(!guildAtLeast((h.promotion&&h.promotion.guild)||'novice',def.guild)){
+    toast('Нужен ранг гильдии: '+def.guild+'.'); return false;
+  }
+  const rank=skillRank(h,id), cap=skillCap(h);
+  if(rank>=cap){ toast('Достигнут предел ранга: '+cap+'.'); return false; }
+  const need=SKILL_POINTS_PER_RANK*(rank+1);
+  if(skillPoints(h,id)<need){ toast('Нужно ещё '+(need-skillPoints(h,id))+' очков навыка.'); return false; }
+  const cost=skillCost(id,rank+1);
+  if(game.gold<cost){ toast('Не хватает золота наставнику: нужно '+cost+'.'); return false; }
+  return buy(cost,()=>{
+    h.skills=h.skills||{}; h.skills[id]=rank+1;
+    h.skillXp[id]=skillPoints(h,id)-need;
+    if(def.building==='magic'){ h.promotion=h.promotion||{}; h.promotion.spells=h.promotion.guild; }
+    restParty(); toast(def.name+': ранг '+h.skills[id]+' выучен за 🪙 '+cost+' и отдых.');
+  });
+}
+function promoteGuild(idx){
+  const h=party()[idx]; if(!h||!game||!game.shopOpen||game.shopType!=='magic') return false;
+  h.promotion=h.promotion||{};
+  const cur=GUILD_RANKS.indexOf(h.promotion.guild||'novice');
+  if(cur<0||cur>=GUILD_RANKS.length-1){ toast('Высший ранг гильдии уже достигнут.'); return false; }
+  const next=GUILD_RANKS[cur+1], cost=trainerCost({kind:'guild',rank:cur+2});
+  if(game.gold<cost){ toast('Не хватает золота гильдии: нужно '+cost+'.'); return false; }
+  return buy(cost,()=>{ h.promotion.guild=next; h.promotion.spells=next; restParty();
+    toast('Гильдия магии: ранг «'+next+'» открыт за 🪙 '+cost+' и отдых.'); });
 }
 function restParty(minutes){
   if(!game) return false;
@@ -2993,6 +3051,24 @@ const TAVERN_RUMORS=[
   'В гостинице можно выспаться и оставить отметку о своём походе.',
   'На рынке травы дешевле, зато в магической лавке — свитки редкость.'
 ];
+function renderSkillTrainers(building){
+  const defs=SKILL_DEFS.filter(s=>s.building===building);
+  if(!defs.length) return;
+  shopSec(building==='tavern'?'Тренер · боевые навыки':building==='magic'?'Гильдия магии · навыки':'Оружейная · ремесло');
+  party().forEach((hero,i)=>{
+    defs.forEach(def=>{
+      const rank=skillRank(hero,def.id), cap=skillCap(hero), need=SKILL_POINTS_PER_RANK*(rank+1);
+      const pts=skillPoints(hero,def.id), cost=skillCost(def.id,rank+1);
+      const gated=!guildAtLeast((hero.promotion&&hero.promotion.guild)||'novice',def.guild);
+      const lock=gated?'Нужен ранг '+def.guild:rank>=cap?'Предел ранга '+cap:
+        pts<need?'Нужно '+(need-pts)+' очков':game.gold<cost?'Не хватает золота':'';
+      shopRow('✦',heroName(hero)+' · '+def.name,
+        'Ранг '+rank+'/'+cap+' · очков '+pts+'/'+need+(gated?' · доступ с ранга '+def.guild:''),[
+        shopButton(lock?lock:'🪙 '+cost+' тренировать',()=>trainSkill(i,def.id),!!lock,lock)
+      ],'НАВЫК');
+    });
+  });
+}
 function renderShop(){
   if(!game) return;
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
@@ -3041,6 +3117,7 @@ function renderShop(){
   // Каждый раздел усиления живёт только в своём здании.
   if(def.id==='forge') reforgeSection(h,'weapon');
   if(def.id==='armor') reforgeSection(h,'armor');
+  if(def.id==='weapons') renderSkillTrainers('weapons');
 
   if(def.id==='magic'){
     shopSec('Свитки и заклинания');
@@ -3063,6 +3140,17 @@ function renderShop(){
     shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 6',()=>buy(6,()=>{
       addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3});
     }),game.gold<6)],'ПОКУПКА');
+    shopSec('Гильдия магии · ранг');
+    party().forEach((hero,i)=>{
+      const cur=(hero.promotion&&hero.promotion.guild)||'novice';
+      const gi=GUILD_RANKS.indexOf(cur), next=GUILD_RANKS[gi+1];
+      const cost=next?trainerCost({kind:'guild',rank:gi+2}):0;
+      shopRow('🏛',heroName(hero),'Ранг: '+cur+' · открывает навыки старших кругов',[
+        shopButton(next?'🪙 '+cost+' повысить ранг':'Высший ранг',()=>promoteGuild(i),
+          !next||game.gold<cost,!next?'Высший ранг уже достигнут':'Не хватает золота')
+      ],'ГИЛЬДИЯ');
+    });
+    renderSkillTrainers('magic');
   }
 
   if(def.id==='jeweler'){
@@ -3122,6 +3210,7 @@ function renderShop(){
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
       const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); beep(520,.08);
     })],'СЛУХИ');
+    renderSkillTrainers('tavern');
   }
   if(def.id==='inn'){
     shopSec('Отдых и сон');
@@ -5127,6 +5216,28 @@ function progressionReport(){
     migration:{from:1,to:moved.version,gold:moved.gold,items:moved.bag.length,exp:h.exp,level:h.level},
     party:live,rules:RULES_SUMMARY};
 }
+/* Навыки: проверяем живое состояние и то, что очки приходят только из эффектов боя. */
+function skillReport(){
+  const errors=[];
+  const srcs={weapon:String(heroAttack),incoming:String(enemyAct),spell:String(castSpell),train:String(trainSkill)};
+  const hooks={weapon:/awardSkill\(h,skillForWeapon\(w\)\)/.test(srcs.weapon),
+    accuracy:/awardSkill\(h,'accuracy'\)/.test(srcs.weapon),
+    zeroWeapon:/if\(dmg>0\)/.test(srcs.weapon),
+    defense:/awardSkill\(h,'defense'\)/.test(srcs.incoming),
+    dodge:/awardSkill\(h,'dodge'\)/.test(srcs.incoming),
+    spell:/awardSkill\(h,s\.power\?'magic':'spells'\)/.test(srcs.spell),
+    trainer:/restParty\(\)/.test(srcs.train)};
+  Object.entries(hooks).forEach(([k,v])=>{ if(!v) errors.push('Не найдена точка начисления навыка: '+k); });
+  if(SKILL_DEFS.length<10||SKILL_CAP_PER_LEVEL!==2||SKILL_COOLDOWN_TURNS<1) errors.push('Таблицы навыков не полны');
+  if(SKILL_DEFS.filter(s=>s.building==='tavern').length<7) errors.push('В таверне не хватает боевых навыков');
+  if(SKILL_DEFS.filter(s=>s.building==='magic').length<2||SKILL_DEFS.filter(s=>s.building==='weapons').length<1) errors.push('Неверное распределение навыков по зданиям');
+  const heroes=party().map(h=>({name:heroName(h),level:h.level||1,cap:skillCap(h),
+    skills:Object.assign({},h.skills||{}),points:Object.assign({},h.skillXp||{}),
+    cooldown:Object.assign({},h.skillCooldown||{}),guild:(h.promotion&&h.promotion.guild)||'novice'}));
+  if(heroes.some(x=>Object.values(x.skills).some(r=>r>x.cap))) errors.push('Ранг навыка превышает level*2');
+  return {ok:!errors.length,errors,hooks,heroes,defs:SKILL_DEFS,pointsPerRank:SKILL_POINTS_PER_RANK,
+    cooldownTurns:SKILL_COOLDOWN_TURNS};
+}
 
 function armorDuplicates(){
   const seen=new Map(), duplicates=[];
@@ -5463,6 +5574,16 @@ window.__mm6Debug={
   setHeroExp:(i,xp)=>{ const h=party()[i]; if(!h) return false; h.exp=Math.max(0,Math.floor(Number(xp)||0)); updateParty(); return true; },
   setPartyGold:(n)=>{ if(!game) return false; game.gold=Math.max(0,Math.floor(Number(n)||0)); updateParty(); return true; },
   trainLevel:(i)=>({ok:trainLevel(i),state:window.__mm6Debug.progressionState()}),
+  skillReport:()=>skillReport(),
+  awardSkill:(i,id,n)=>{ const h=party()[i]; const ok=awardSkill(h,id,n);
+    return {ok,state:window.__mm6Debug.skillReport()}; },
+  setSkillXp:(i,id,n)=>{ const h=party()[i]; if(!h) return false;
+    h.skillXp=h.skillXp||{}; h.skillXp[id]=Math.max(0,Math.floor(Number(n)||0)); return true; },
+  setSkillCooldown:(i,id,n)=>{ const h=party()[i]; if(!h) return false;
+    h.skillCooldown=h.skillCooldown||{}; h.skillCooldown[id]=Math.max(0,Math.floor(Number(n)||0)); return true; },
+  tickSkillCooldowns:()=>{ tickSkillCooldowns(); return window.__mm6Debug.skillReport(); },
+  trainSkill:(i,id)=>({ok:trainSkill(i,id),state:window.__mm6Debug.skillReport()}),
+  promoteGuild:(i)=>({ok:promoteGuild(i),state:window.__mm6Debug.skillReport()}),
   simulateKill:(spec,win)=>{
     if(!game) return null;
     const e=spawnMonster(spec||{id:'mouse',name:'Мышь',hp:20,atk:1,def:0,combatSpeed:1,acts:1,moveEvery:1,gold:[1,3]},0,0,0,null,false,false);

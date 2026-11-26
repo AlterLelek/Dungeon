@@ -85,8 +85,10 @@ export const SKILL_DEFS = [
   { id: 'blades',   name: 'Клинки',      building: 'tavern',  guild: 'novice' },
   { id: 'axes',     name: 'Топоры',      building: 'tavern',  guild: 'novice' },
   { id: 'bows',     name: 'Луки',        building: 'tavern',  guild: 'novice' },
+  { id: 'accuracy', name: 'Меткость',    building: 'tavern',  guild: 'novice' },
   { id: 'throwing', name: 'Метание',     building: 'tavern',  guild: 'novice' },
   { id: 'defense',  name: 'Защита',      building: 'tavern',  guild: 'novice' },
+  { id: 'dodge',    name: 'Уклонение',   building: 'tavern',  guild: 'novice' },
   { id: 'magic',    name: 'Магия',       building: 'magic',   guild: 'novice' },
   { id: 'spells',   name: 'Заклинания',  building: 'magic',   guild: 'leading' },
   { id: 'craft',    name: 'Ремесло',     building: 'weapons', guild: 'novice' }
@@ -94,6 +96,18 @@ export const SKILL_DEFS = [
 export const GUILD_RANKS = ['novice', 'leading', 'expert'];
 export const SKILL_COOLDOWN_TURNS = 2;
 export const SKILL_POINTS_PER_RANK = 10;
+export const skillDef = (id) => SKILL_DEFS.find(s => s.id === id) || null;
+export const guildAtLeast = (have, need) => GUILD_RANKS.indexOf(have) >= GUILD_RANKS.indexOf(need);
+/* Попадание оружием качает профиль оружия и меткость; пустая атака — ничего. */
+export function skillForWeapon(w) {
+  const kind = String((w && (w.wkind || w.kind)) || '');
+  const name = String((w && w.name) || '');
+  if (/лук|арбалет|bow|crossbow/i.test(kind + ' ' + name)) return 'bows';
+  if (/топор|молот|axe|hammer/i.test(kind + ' ' + name)) return 'axes';
+  if (/копь|пик|spear|клинок|меч|сабл|кинжал|sword|dagger/i.test(kind + ' ' + name)) return 'blades';
+  if (/посох|палоч|книг|staff|wand|book/i.test(kind + ' ' + name)) return 'magic';
+  return 'accuracy';
+}
 
 /* Лут: частый 40-70%, средний/редкий — по таблице. Редкие вещи приходят
    из гнёзд и кладов, а не из бесконечного гринда. */
@@ -202,7 +216,7 @@ export function defaultHeroProgression() {
     skillXp: {},
     skills: {},
     skillCooldown: {},
-    promotion: { guild: 'novice' }
+    promotion: { guild: 'novice', spells: 'novice' }
   };
 }
 export function migrateSave(raw) {
