@@ -1205,8 +1205,17 @@ function equipKeysForSlot(slotId){
 }
 function clearEquipSlot(h,slotId){
   if(!h||!h.equip) return;
-  equipKeysForSlot(slotId).forEach(k=>{ h.equip[k]=null; });
+  const keys=equipKeysForSlot(slotId);
+  const uids=keys.map(k=>h.equip[k]).filter(Boolean);
+  keys.forEach(k=>{ h.equip[k]=null; });
   if(slotId==='body') h.equip.armor=null;
+  /* Привязка «надел — закрепился» живёт только пока предмет надет.
+     Любой выход из слота снимает owner — иначе снятый предмет блокируется
+     у других героев и пропадает из общей сетки инвентаря. */
+  if(game&&uids.length){
+    const released=new Set(uids);
+    game.bag.forEach(it=>{ if(released.has(it.uid)) delete it.owner; });
+  }
 }
 function equippedUidSet(){
   const set=new Set();
@@ -1257,7 +1266,7 @@ function equipOnHero(h,slot,it){
     party().forEach(x=>Object.keys(x.equip||{}).forEach(k=>{ if(x.equip[k]===prevUid) x.equip[k]=null; }));
   }
   let shieldDropped=false;
-  if(target==='weapon'&&isTwoHanded(it)&&h.equip.shield){ h.equip.shield=null; shieldDropped=true; }
+  if(target==='weapon'&&isTwoHanded(it)&&h.equip.shield){ clearEquipSlot(h,'shield'); shieldDropped=true; }
   clearEquipSlot(h,target);
   const assignKey=it.type==='armor'?(it.slot||'body'):(it.type==='amulet'?'amulet':'weapon');
   h.equip[assignKey]=it.uid;
@@ -1268,8 +1277,7 @@ function equipOnHero(h,slot,it){
 }
 function unequipSlot(h,slot){
   if(!h||!h.equip||!h.equip[slot]) return false;
-  h.equip[slot]=null;
-  if(slot==='body') h.equip.armor=null;
+  clearEquipSlot(h,slot);
   updateParty(); return true;
 }
 function gearRecipeBlock(){ return ''; }
