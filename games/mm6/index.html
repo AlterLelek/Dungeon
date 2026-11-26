@@ -2157,7 +2157,9 @@ function updateParty(){
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
       '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
-      '<div class="mini"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i><i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
+      '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
+      '<i title="Итоговая защита: броня, эффекты">🛡 Защита '+heroDef(h)+'</i>'+
+      '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
       (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   $('shopGold').textContent=game.gold;
@@ -3587,7 +3589,7 @@ function renderMannequin(){
     mannequinStage()+
     '<div class="mq-stats">'+
       statCell('HP / MP',Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp)+
-      statCell('Атака / Защита',heroAtk(h)+' / '+heroDef(h))+
+      statCell('Атака / Защита','итог '+heroAtk(h)+' / '+heroDef(h))+
       statCell('Сила магии',magicText(h))+
       statCell('Скорость / Сила',heroSpeedValue(h)+' · '+heroStrength(h.def))+
       statCell('Оружие',w?w.name:FISTS)+
@@ -4155,6 +4157,46 @@ function drawMiniMap(m){
   ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
   ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count,x,y+size+11);
 }
+/* Тёмные панели врагов на карте: имя, живое HP и MP, если поле действительно есть. */
+const MAP_ENEMY_PANEL_W=92, MAP_ENEMY_PANEL_H=30;
+function mapEnemyHasMp(e){ return !!e&&Number.isFinite(Number(e.mp))&&Number.isFinite(Number(e.maxMp===undefined?e.mp:e.maxMp)); }
+function visibleMapEnemies(){
+  const m=currentMap(), p=game&&game.player; if(!m||!p) return [];
+  const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4], out=[];
+  m.monsters.forEach(e=>{
+    if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
+    const dx=e.x-p.x, dy=e.y-p.py, forward=dx*f[0]+dy*f[1], side=dx*r[0]+dy*r[1];
+    if(forward<0||forward>2||Math.abs(side)>2) return;
+    const sc=forward===0?1.05:(forward===1?1:.62);
+    out.push({e,forward,side,sc,sx:W/2+side*(forward===2?60:96),sy:forward===0?320:(forward===1?272:210)});
+  });
+  return out;
+}
+function mapEnemyPanelRect(item){
+  const w=MAP_ENEMY_PANEL_W, h=MAP_ENEMY_PANEL_H+(mapEnemyHasMp(item.e)?12:0);
+  const cx=W/2+item.side*(item.forward===2?60:96);
+  // Ряды по глубине и шахматный сдвиг дальнего ряда не дают панелям перекрываться.
+  const y=item.forward===0?230:item.forward===1?180:(108+(Math.abs(item.side)%2)*32);
+  return {x:clamp(cx-w/2,8,W-w-8),y,w,h};
+}
+function drawMapEnemyPanels(items){
+  items.forEach(item=>{
+    const e=item.e, r=mapEnemyPanelRect(item), hasMp=mapEnemyHasMp(e);
+    roundRect(r.x,r.y,r.w,r.h,6); ctx.fillStyle='rgba(3,7,18,.94)'; ctx.fill();
+    ctx.strokeStyle=e.isBoss?'rgba(251,191,36,.85)':'rgba(56,189,248,.65)'; ctx.lineWidth=1.2; ctx.stroke();
+    fitText(e.name||'Враг',r.w-42,9,'#dbeafe',r.x+7,r.y+9);
+    setFont(9); ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle='#fca5a5';
+    ctx.fillText(Math.max(0,Math.round(e.hp))+'/'+Math.max(0,Math.round(e.maxHp===undefined?e.hp:e.maxHp)),r.x+r.w-7,r.y+9);
+    ctx.fillStyle='rgba(255,255,255,.12)'; roundRect(r.x+7,r.y+16,r.w-14,4,2); ctx.fill();
+    const ratio=(e.maxHp||e.hp)>0?clamp(e.hp/(e.maxHp||e.hp),0,1):0;
+    if(ratio>0){ ctx.fillStyle='#ef4444'; roundRect(r.x+7,r.y+16,Math.max(2,(r.w-14)*ratio),4,2); ctx.fill(); }
+    if(hasMp){
+      setFont(9,false); ctx.fillStyle='#93c5fd'; ctx.textAlign='left';
+      ctx.fillText('MP '+Math.round(e.mp)+'/'+Math.round(e.maxMp===undefined?e.mp:e.maxMp),r.x+7,r.y+27);
+    }
+  });
+  ctx.textAlign='left';
+}
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
   mapHints.length=0; // подсказки относятся только к текущему кадру
@@ -4189,21 +4231,14 @@ function drawMap(now){
     }
   }
   drawWildlife('animal',now);
-  m.monsters.forEach(e=>{
-    if(!e.alive) return;
-    const dx=e.x-px,dy=e.y-py,forward=dx*f[0]+dy*f[1],side=dx*r[0]+dy*r[1];
-    if(forward<0||forward>2||Math.abs(side)>2) return;
-    if(!m.seen.has(ckey(e.x,e.y))) return;
-    const sc=forward===0?1.05:(forward===1?1:.62);
-    const sx=W/2+side*(forward===0?96:(forward===1?96:60));
-    const sy=forward===0?320:(forward===1?272:210);
-    drawMonsterArt(sx,sy,sc,e,now);
-  });
+  const shownEnemies=visibleMapEnemies();
+  shownEnemies.forEach(item=>drawMonsterArt(item.sx,item.sy,item.sc,item.e,now));
   const moveBob=p.moveT>0?Math.sin((1-p.moveT)*Math.PI)*2:0;
   const own=m.cells[Math.round(p.py)]&&m.cells[Math.round(p.py)][Math.round(p.px)];
   if(own&&own.t==='bridge') drawBridge(W/2,344,.86,season,bridgeAxis(m,Math.round(p.px),Math.round(p.py)));
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
+  drawMapEnemyPanels(shownEnemies); // панели выше фигуры героя и верхнего HUD.
   // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
   panel(10,10,214,86);
   fitText(heroNameText+' · '+party()[0].def.name,126,11,'#ffe6a8',18,22);
@@ -4981,6 +5016,11 @@ window.__mm6Debug={
   mapOverlayReport:()=>mapOverlayReport(),
   mapHintHudReport:()=>({hintW:MAP_HINT_W,warnW:MAP_WARN_W,hintRight:12+MAP_HINT_W,warnRight:12+MAP_WARN_W,
     heroLeft:MAP_HERO_LEFT,hint:mapHint?{title:mapHint.title,desc:mapHint.desc}:null}),
+  mapEnemyPanelsReport:()=>({panels:visibleMapEnemies().map(item=>({
+    name:item.e.name||'Враг',hp:Math.round(item.e.hp),maxHp:Math.round(item.e.maxHp===undefined?item.e.hp:item.e.maxHp),
+    hasMp:mapEnemyHasMp(item.e),mp:mapEnemyHasMp(item.e)?Math.round(item.e.mp):null,
+    rect:mapEnemyPanelRect(item)})),hero:{x:W/2,y:344},hud:{x:10,y:10,w:214,h:86}}),
+  statsReport:()=>party().map(h=>({hero:h.def.name,attack:heroAtk(h),defense:heroDef(h)})),
   terrainReport:()=>terrainReport(),
   spriteCoverageReport:()=>spriteCoverageReport(),
   mapHintReport:()=>mapHint?{title:mapHint.title,desc:mapHint.desc,age:performance.now()-mapHint.t,count:mapHints.length}
