@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <title>Магический меч</title>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 0.16; }
+      50% { opacity: 0.42; }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.15; }
+    }
+    .aura { animation: pulse 2s ease-in-out infinite; }
+    .spark { animation: twinkle 1.2s steps(2, end) infinite; }
+  </style>
+  <g class="aura">
+    <rect x="11" y="4" width="1" height="3" fill="#a04ae8"/>
+    <rect x="11" y="10" width="1" height="3" fill="#a04ae8"/>
+    <rect x="11" y="16" width="1" height="2" fill="#a04ae8"/>
+    <rect x="20" y="4" width="1" height="3" fill="#ff4ad8"/>
+    <rect x="20" y="10" width="1" height="3" fill="#ff4ad8"/>
+    <rect x="20" y="16" width="1" height="2" fill="#ff4ad8"/>
+  </g>
+  <g class="spark">
+    <rect x="9" y="4" width="1" height="1" fill="#ffd84a"/>
+    <rect x="22" y="7" width="1" height="1" fill="#e0a8ff"/>
+    <rect x="8" y="13" width="1" height="1" fill="#ff4ad8"/>
+    <rect x="23" y="16" width="1" height="1" fill="#ffd84a"/>
+    <rect x="11" y="2" width="1" height="1" fill="#ffffff"/>
+    <rect x="20" y="19" width="1" height="1" fill="#e0a8ff"/>
+  </g>
+  <rect x="15" y="1" width="2" height="1" fill="#240a3a"/>
+  <rect x="15" y="2" width="2" height="1" fill="#e0a8ff"/>
+  <rect x="13" y="3" width="1" height="18" fill="#240a3a"/>
+  <rect x="18" y="3" width="1" height="18" fill="#240a3a"/>
+  <rect x="14" y="3" width="4" height="17" fill="#a04ae8"/>
+  <rect x="14" y="3" width="1" height="17" fill="#e0a8ff"/>
+  <rect x="15" y="3" width="1" height="17" fill="#b85af4"/>
+  <rect x="17" y="3" width="1" height="17" fill="#5a1a9a"/>
+  <rect x="14" y="20" width="4" height="1" fill="#240a3a"/>
+  <rect x="15" y="6" width="2" height="1" fill="#ffd84a"/>
+  <rect x="16" y="9" width="1" height="2" fill="#ffd84a"/>
+  <rect x="15" y="13" width="2" height="1" fill="#ffd84a"/>
+  <rect x="16" y="16" width="1" height="2" fill="#ffd84a"/>
+  <rect x="8" y="20" width="16" height="3" fill="#3a105a"/>
+  <rect x="9" y="20" width="14" height="2" fill="#d4a83c"/>
+  <rect x="10" y="21" width="12" height="1" fill="#a87a24"/>
+  <rect x="9" y="20" width="2" height="1" fill="#ffe88a"/>
+  <rect x="21" y="20" width="2" height="1" fill="#ffe88a"/>
+  <rect x="15" y="20" width="2" height="1" fill="#ff4ad8"/>
+  <rect x="13" y="23" width="6" height="5" fill="#2a0a3a"/>
+  <rect x="14" y="23" width="4" height="5" fill="#7a2aa8"/>
+  <rect x="14" y="24" width="4" height="1" fill="#ffd84a"/>
+  <rect x="14" y="26" width="4" height="1" fill="#ffd84a"/>
+  <rect x="12" y="28" width="8" height="2" fill="#3a105a"/>
+  <rect x="13" y="28" width="6" height="1" fill="#d4a83c"/>
+</svg>

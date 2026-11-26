@@ -80,7 +80,7 @@
   {
     "file": "helmet.png",
     "path": "assets/kenney/items/helmet.png",
-    "type": "item",
+    "type": "armor",
     "used_in": [
       "adventurer"
     ],
@@ -1447,6 +1447,136 @@
     "dynamic_in": {}
   },
   {
+    "file": "boots_1.svg",
+    "path": "assets/sprites/items/boots_1.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_2.svg",
+    "path": "assets/sprites/items/boots_2.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_3.svg",
+    "path": "assets/sprites/items/boots_3.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_4.svg",
+    "path": "assets/sprites/items/boots_4.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_5.svg",
+    "path": "assets/sprites/items/boots_5.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_6.svg",
+    "path": "assets/sprites/items/boots_6.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_7.svg",
+    "path": "assets/sprites/items/boots_7.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_8.svg",
+    "path": "assets/sprites/items/boots_8.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_9.svg",
+    "path": "assets/sprites/items/boots_9.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "boots_10.svg",
+    "path": "assets/sprites/items/boots_10.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "bow_1.svg",
     "path": "assets/sprites/items/bow_1.svg",
     "type": "weapon",
@@ -1617,6 +1747,136 @@
     "dynamic_in": {}
   },
   {
+    "file": "bracers_1.svg",
+    "path": "assets/sprites/items/bracers_1.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_2.svg",
+    "path": "assets/sprites/items/bracers_2.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_3.svg",
+    "path": "assets/sprites/items/bracers_3.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_4.svg",
+    "path": "assets/sprites/items/bracers_4.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_5.svg",
+    "path": "assets/sprites/items/bracers_5.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_6.svg",
+    "path": "assets/sprites/items/bracers_6.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_7.svg",
+    "path": "assets/sprites/items/bracers_7.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_8.svg",
+    "path": "assets/sprites/items/bracers_8.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_9.svg",
+    "path": "assets/sprites/items/bracers_9.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "bracers_10.svg",
+    "path": "assets/sprites/items/bracers_10.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "dagger_1.svg",
     "path": "assets/sprites/items/dagger_1.svg",
     "type": "weapon",
@@ -1703,6 +1963,266 @@
     "type": "weapon",
     "used_in": [],
     "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_1.svg",
+    "path": "assets/sprites/items/gloves_1.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_2.svg",
+    "path": "assets/sprites/items/gloves_2.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_3.svg",
+    "path": "assets/sprites/items/gloves_3.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_4.svg",
+    "path": "assets/sprites/items/gloves_4.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_5.svg",
+    "path": "assets/sprites/items/gloves_5.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_6.svg",
+    "path": "assets/sprites/items/gloves_6.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_7.svg",
+    "path": "assets/sprites/items/gloves_7.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_8.svg",
+    "path": "assets/sprites/items/gloves_8.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_9.svg",
+    "path": "assets/sprites/items/gloves_9.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "gloves_10.svg",
+    "path": "assets/sprites/items/gloves_10.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_1.svg",
+    "path": "assets/sprites/items/greaves_1.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_2.svg",
+    "path": "assets/sprites/items/greaves_2.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_3.svg",
+    "path": "assets/sprites/items/greaves_3.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_4.svg",
+    "path": "assets/sprites/items/greaves_4.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_5.svg",
+    "path": "assets/sprites/items/greaves_5.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_6.svg",
+    "path": "assets/sprites/items/greaves_6.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_7.svg",
+    "path": "assets/sprites/items/greaves_7.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_8.svg",
+    "path": "assets/sprites/items/greaves_8.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_9.svg",
+    "path": "assets/sprites/items/greaves_9.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "greaves_10.svg",
+    "path": "assets/sprites/items/greaves_10.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -2106,8 +2626,12 @@
     "file": "robe_5.svg",
     "path": "assets/sprites/items/robe_5.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
     "dynamic": false,
     "dynamic_in": {}
   },
@@ -2196,8 +2720,12 @@
     "file": "shield_5.svg",
     "path": "assets/sprites/items/shield_5.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js"
+    ],
     "dynamic": false,
     "dynamic_in": {}
   },
