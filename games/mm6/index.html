@@ -147,10 +147,12 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
 .mq-slot img.rot-bow{transform:rotate(-4deg)}
 .mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:19px;font-weight:800}
-.mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px}
+/* Высота блока стат тоже фиксирована: смена экипировки не сдвигает панели описания. */
+.mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px;min-height:128px;max-height:128px;overflow-y:auto}
 .mq-stat{padding:5px 6px;border-radius:8px;background:rgba(255,255,255,.045);font-size:9px;color:#9fb0d8;text-align:left;line-height:1.25}
 .mq-stat b{display:block;color:#ffe9b0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mq-desc{margin-top:7px;padding:7px 8px;border-radius:8px;border:1px solid rgba(251,191,36,.22);background:rgba(251,191,36,.06);font-size:10px;line-height:1.4;color:#c8cfe4;text-align:left;min-height:48px}
+/* Высота панелей описания фиксирована: длинные тексты прокручиваются внутри, внешняя геометрия не меняется. */
+.mq-desc{margin-top:7px;padding:7px 8px;border-radius:8px;border:1px solid rgba(251,191,36,.22);background:rgba(251,191,36,.06);font-size:10px;line-height:1.4;color:#c8cfe4;text-align:left;min-height:48px;max-height:48px;overflow-y:auto;overflow-wrap:anywhere}
 .mq-desc b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .mq-desc small{display:block;color:#9aa4c2;font-size:9px;margin-top:3px}
 .mannequin .bad{color:#fca5a5;font-size:10px;margin-top:6px;line-height:1.35}
@@ -183,7 +185,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:18px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
 .invCell .spellRune{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:#e9d5ff;font-size:22px;font-weight:800}
-.invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px}
+.invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px;max-height:42px;overflow-y:auto;overflow-wrap:anywhere}
 .invDetail b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .invNote{padding:10px;border-radius:9px;border:1px dashed rgba(255,255,255,.12);color:#8b94b2;font-size:11px;line-height:1.45;text-align:center}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
@@ -227,6 +229,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .logTurn{display:inline-block;min-width:30px;color:#7f8db0;font-size:9px}
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* В бою тост поднимается над плашками героев, чтобы не закрывать данные отряда. */
+#toast.in-battle{bottom:calc(var(--toast-bottom,110px) + env(safe-area-inset-bottom,0px))}
 @media (max-width:620px){.invBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(200px,68vw)}.invGrid{grid-template-columns:repeat(auto-fill,48px);max-height:none}.box{padding:12px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
@@ -418,6 +422,8 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:300,heroScale:.5,msgY:178,msgH:84};
+// Информационные панели карты не заходят на фигуру героя (левый край спрайта с оружием).
+const MAP_HINT_W=270, MAP_WARN_W=270, MAP_HERO_LEFT=W/2-30*.86;
 const setFont=(px,bold=true)=>{ ctx.font=(bold?'700 ':'400 ')+px+'px '+UI_FONT; };
 const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
@@ -519,8 +525,18 @@ function logMessage(text,type,speaker,source){
   saveLog();
   if(game.logOpen) renderEventLog(true);
 }
+// В бою тост поднимается над плашками героев — отступ считается по их реальной высоте.
+function syncToastPlacement(){
+  const t=$('toast'); if(!t) return;
+  const inBattle=!!(game&&game.battle);
+  t.classList.toggle('in-battle',inBattle);
+  if(inBattle){
+    const p=$('party'), r=p&&p.getBoundingClientRect();
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-(r?r.top:window.innerHeight)+10)+'px');
+  } else t.style.removeProperty('--toast-bottom');
+}
 function toast(text,type,speaker){
-  const t=$('toast'); if(t){ t.textContent=text; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+  const t=$('toast'); if(t){ t.textContent=text; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
   logMessage(text,type,speaker,'toast');
 }
 function pushHistory(text,side,speaker){ logMessage(text,side,speaker,'history'); }
@@ -2143,6 +2159,7 @@ function updateParty(){
   }).join('');
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+  syncToastPlacement();
 }
 function setActionButton(id,disabled,title){
   const el=$(id); if(!el) return;
@@ -4172,9 +4189,9 @@ function drawMap(now){
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
   if(near.length){
-    roundRect(12,296,300,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
+    roundRect(12,296,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
     ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
-    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',284,10,C_ENEMY,20,307);
+    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,307);
   }
   roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
@@ -4183,10 +4200,10 @@ function drawMap(now){
   ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
   ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
   if(mapHint&&now-mapHint.t<2600){
-    const lines=wrapCanvasText(mapHint.desc,300,9).slice(0,3);
+    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,3);
     const h=28+lines.length*12, ty=H-34-h;
-    panel(12,ty,314,h);
-    fitText(mapHint.title,300,11,'#ffe9b0',20,ty+13);
+    panel(12,ty,MAP_HINT_W,h);
+    fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
     ctx.fillStyle='#c8d2f0'; setFont(9,false); ctx.textAlign='left'; ctx.textBaseline='middle';
     lines.forEach((line,i)=>ctx.fillText(line,20,ty+27+i*12));
   }
@@ -4504,7 +4521,7 @@ document.addEventListener('keydown',e=>{
   // Пробел вне боя ничего не открывает — только атака в бою.
   if(e.key===' '){ e.preventDefault(); return; }
   if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
-  if(k==='e'||k==='у'){ e.preventDefault(); if(canInteractHere()) tryInteract(); else turnPlayer(1); return; }
+  if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
   if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
   const mv=MOVE_KEYS[k]; if(mv&&keyAllowed(k)){ e.preventDefault(); relativeMove(mv[0],mv[1]); }
 });
@@ -4903,6 +4920,8 @@ window.__mm6Debug={
     renderInventory(); updateParty(); return ok;
   },
   mapOverlayReport:()=>mapOverlayReport(),
+  mapHintHudReport:()=>({hintW:MAP_HINT_W,warnW:MAP_WARN_W,hintRight:12+MAP_HINT_W,warnRight:12+MAP_WARN_W,
+    heroLeft:MAP_HERO_LEFT,hint:mapHint?{title:mapHint.title,desc:mapHint.desc}:null}),
   terrainReport:()=>terrainReport(),
   spriteCoverageReport:()=>spriteCoverageReport(),
   mapHintReport:()=>mapHint?{title:mapHint.title,desc:mapHint.desc,age:performance.now()-mapHint.t,count:mapHints.length}
