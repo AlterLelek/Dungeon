@@ -2198,6 +2198,32 @@ function battleHeroPoint(b,i){
   const gap=Math.min(200,480/Math.max(1,n-1));
   return {x:W/2-gap*(n-1)/2+i*gap,y:BF.heroY};
 }
+// Геометрия кликабельных «фишек» боя — одна и та же для отрисовки и hit-test'а.
+const BATTLE_CHIPS={mw:500,innerPad:10,gap:6,height:22,ids:['attack','spell','flee','inv']};
+function battleChipRects(){
+  const w=BATTLE_CHIPS.mw-BATTLE_CHIPS.innerPad*2, gap=BATTLE_CHIPS.gap;
+  const cw=(w-gap*(BATTLE_CHIPS.ids.length-1))/BATTLE_CHIPS.ids.length;
+  const x=(W-BATTLE_CHIPS.mw)/2+BATTLE_CHIPS.innerPad, y=BF.msgY+8;
+  return BATTLE_CHIPS.ids.map((id,i)=>({id,x:x+i*(cw+gap),y,w:cw,h:BATTLE_CHIPS.height}));
+}
+function battleChipAt(p){
+  return battleChipRects().find(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)||null;
+}
+function spellNeedsTarget(s){ return !!s&&!!(s.power||s.poison||s.stun||s.def); }
+// Действие, выбранное мышью/тапом, ждёт подтверждения цели кликом по врагу.
+let armedAction=null;
+function clearArmedAction(){ armedAction=null; }
+function armBattleAction(action){
+  const b=game&&game.battle;
+  if(!b||b.end){ clearArmedAction(); return false; }
+  const reason=action.kind==='attack'?attackBlockReason():spellBlockReason();
+  if(reason){ clearArmedAction(); toast(reason); return false; }
+  armedAction=action;
+  const label=action.kind==='attack'?'Атака':('Заклинание «'+(spell(action.id)||{}).name+'»');
+  toast('Цель не выбрана: щёлкните или коснитесь врага — '+label);
+  updateControls();
+  return true;
+}
 function canvasPoint(e){
   const r=cv.getBoundingClientRect();
   const scale=Math.min(r.width/W,r.height/H);
@@ -2223,6 +2249,7 @@ function addBattleFloater(p,text,color){
 }
 function startBattle(list,mapRef){
   if(!game||phase!=='play'||game.battle) return null;
+  clearArmedAction();
   const enemies=list.filter(e=>e&&e.alive);
   if(!enemies.length) return null;
   const b={enemies,fromMap:!mapRef,map:mapRef,units:[],order:[],clock:0,turnIndex:-1,
@@ -2263,6 +2290,7 @@ function checkBattleEnd(){
 }
 function nextTurn(){
   const b=game&&game.battle; if(!b||b.end) return;
+  clearArmedAction();
   let guard=0;
   while(guard++<240){
     if(checkBattleEnd()) return;
@@ -2370,6 +2398,7 @@ function fleeBlockReason(){
   return '';
 }
 function heroAttack(){
+  clearArmedAction();
   const reason=attackBlockReason(); if(reason){ toast(reason); return false; }
   const b=game.battle, h=party()[b.heroIdx], target=selectedTarget(b);
   b.busy=true;
@@ -2426,6 +2455,7 @@ function enemyAct(b,idx){
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
 }
 function castSpell(id,targetIdx){
+  clearArmedAction();
   const b=game&&game.battle;
   if(!b||b.end){ toast('Заклинания доступны в бою.'); return false; }
   if(b.turn!=='hero'||b.busy){ toast('Сейчас не ваш ход.'); return false; }
@@ -2479,6 +2509,7 @@ function castSpell(id,targetIdx){
   return true;
 }
 function fleeBattle(){
+  clearArmedAction();
   const reason=fleeBlockReason(); if(reason){ toast(reason); return false; }
   const b=game.battle;
   if(Math.random()<FLEE_CHANCE){
@@ -2501,11 +2532,13 @@ function fleeBattle(){
 }
 function closeBattleKeep(){
   if(!game||!game.battle) return;
+  clearArmedAction();
   game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
   clearStatuses(); updateControls();
 }
 function finishBattle(win){
   const b=game&&game.battle; if(!b||b.end) return;
+  clearArmedAction();
   b.end=win?'win':'lose';
   clearStatuses();
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
@@ -2585,6 +2618,7 @@ function finishRun(win){
 
 /* ============================ 7. МЕНЮ ЗАКЛИНАНИЙ ============================ */
 function openSpellMenu(){
+  clearArmedAction();
   if(!game||phase!=='play'){ toast('Игра не начата.'); return false; }
   // Меню открывается только у выбранного героя и только когда есть эффект и mana.
   const reason=spellBlockReason(); if(reason){ toast(reason); return false; }
@@ -2603,7 +2637,13 @@ function openSpellMenu(){
       s.desc+' · '+tierName(id)+' · цель: '+target+' · сила магии '+magicText(h)+(disabled?' · ⚠ '+spellReason:'')+'</small></div>'+
       '<button class="act magic" data-spell="'+s.id+'"'+(disabled?' disabled title="'+esc(spellReason)+'"':'')+'>'+cost+' MP</button></div>';
   }).join('')||'<p class="sec">Заклинаний пока нет.</p>';
-  $('spellList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>castSpell(btn.dataset.spell));
+  $('spellList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>{
+    const s=spell(btn.dataset.spell);
+    if(spellNeedsTarget(s)){
+      closeSpellMenu();
+      armBattleAction({kind:'spell',id:btn.dataset.spell});
+    }else castSpell(btn.dataset.spell);
+  });
   updateControls();
   return true;
 }
@@ -4191,21 +4231,20 @@ function drawWrappedLog(entries,x,y,maxW,maxLines,size,lineH){
     ctx.fillText(row.text,x,y+i*lineH);
   });
 }
-function drawActionChips(x,y,w,b){
+function drawActionChips(b){
   const items=[
     {icon:'⚔',label:'Атака',hot:!!b&&b.turn==='hero'},
     {icon:'✨',label:'Магия',hot:!!b&&b.turn==='hero'},
     {icon:'🏃',label:'Бегство',hot:!!b&&!b.end},
     {icon:'🎒',label:'Инв.',hot:false}
   ];
-  const gap=6, cw=(w-gap*(items.length-1))/items.length;
-  items.forEach((it,i)=>{
-    const cx=x+i*(cw+gap);
-    roundRect(cx,y,cw,22,6);
-    ctx.fillStyle=it.hot?'rgba(251,191,36,.2)':'rgba(255,255,255,.05)'; ctx.fill();
-    ctx.strokeStyle=it.hot?'rgba(125,255,178,.65)':'rgba(255,255,255,.16)'; ctx.lineWidth=1; ctx.stroke();
-    setFont(10,false); ctx.fillStyle=it.hot?'#d9ffe9':'#d7dcf0'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(it.icon+' '+it.label,cx+cw/2,y+11);
+  battleChipRects().forEach((r,i)=>{
+    const it=items[i], armed=!!armedAction&&armedAction.kind===r.id;
+    roundRect(r.x,r.y,r.w,r.h,6);
+    ctx.fillStyle=armed?'rgba(251,191,36,.32)':(it.hot?'rgba(251,191,36,.2)':'rgba(255,255,255,.05)'); ctx.fill();
+    ctx.strokeStyle=armed?'#ffe09a':(it.hot?'rgba(125,255,178,.65)':'rgba(255,255,255,.16)'); ctx.lineWidth=armed?2:1; ctx.stroke();
+    setFont(10,false); ctx.fillStyle=it.hot||armed?'#d9ffe9':'#d7dcf0'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(it.icon+' '+it.label,r.x+r.w/2,r.y+r.h/2);
   });
 }
 function drawBattleScenery(biome,now){
@@ -4286,7 +4325,7 @@ function drawBattle(now,dt){
   const mw=500, mx=(W-mw)/2, my=BF.msgY, mh=BF.msgH;
   roundRect(mx,my,mw,mh,8); ctx.fillStyle='rgba(5,7,15,.96)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
-  drawActionChips(mx+10,my+8,mw-20,b);
+  drawActionChips(b);
   drawWrappedLog(b.log,mx+12,my+40,mw-24,4,10,13);
 }
 /* ============================ 13. СТАРТОВЫЙ ЭКРАН ============================ */
@@ -4370,11 +4409,27 @@ cv.addEventListener('pointerdown',e=>{
     const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
   }
   const b=game&&game.battle; if(!b||b.end) return;
+  if(game.invOpen||game.shopOpen||game.spellOpen||game.reward) return;
+  const p=canvasPoint(e), chip=battleChipAt(p);
+  if(chip){
+    if(chip.id==='attack') armBattleAction({kind:'attack'});
+    else if(chip.id==='spell') openSpellMenu();
+    else if(chip.id==='flee') fleeBattle();
+    else if(chip.id==='inv') toggleInventory(!game.invOpen);
+    return;
+  }
   const idx=pickBattleEnemyAt(e);
   if(idx>=0){
     b.targetIdx=idx; beep(520,.05);
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
-    updateParty(); return;
+    updateParty();
+    const action=armedAction;
+    clearArmedAction();
+    if(action){
+      if(action.kind==='attack') heroAttack();
+      else if(action.kind==='spell') castSpell(action.id,idx);
+    }
+    return;
   }
   // Щёлчок по пустому месту никогда не превращается в атаку — только подсказка о цели.
   toast('Выберите цель: щёлкните по врагу или стрелками влево/вправо.');
@@ -4829,6 +4884,8 @@ window.__mm6Debug={
   openBossChest:()=>openBossChest(),
   shopReport:()=>shopReport(),
   combatReport:()=>combatReport(),
+  battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
+  battleEnemyCanvasPoint:(i)=>{const b=game&&game.battle;if(!b)return null;const p=battleEnemyPoint(b,i);return {x:p.x,y:p.y-34*BF.enemyScale};},
   craftReport:()=>craftReport(),
   equipmentReport:()=>equipmentReport(),
   loadReport:()=>party().map(h=>{ const i=loadInfo(h); return {hero:h.def.name,strength:heroStrength(h.def),...i}; }),
