@@ -143,6 +143,10 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mq-slot.empty .mq-empty{display:flex;align-items:center;justify-content:center;width:24px;height:24px;opacity:.5}
 .mq-slot.empty .mq-empty svg{width:24px;height:24px}
 .mq-slot.filled{border-style:solid;border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.05)}
+/* Двуручник блокирует вторую руку: слот остаётся на месте, но показывает древко/рукоять. */
+.mq-slot.busy{border-style:solid;border-color:rgba(74,222,128,.45);background:rgba(74,222,128,.07);cursor:not-allowed}
+.mq-slot.busy .mq-grip{opacity:.9;color:#86efac;display:flex;align-items:center;justify-content:center;width:24px;height:24px}
+.mq-slot.busy .mq-grip svg{width:22px;height:22px}
 .mq-slot.sel{border-color:#ffe09a;background:rgba(251,191,36,.13);box-shadow:0 0 0 2px rgba(251,191,36,.45),0 0 18px rgba(251,191,36,.35);z-index:6}
 .mq-slot img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
 .mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
@@ -169,6 +173,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .invSlotChip.withIcon{padding-right:24px}
 .invSlotChip img{position:absolute;right:4px;top:5px;width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
 .invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
+.invSlotChip.busy{border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.08);color:#bbf7d0}
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
 .invSlotChip b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .invSlotChip small{display:block;color:#8b94b2;font-size:8px}
@@ -1222,6 +1227,16 @@ function isTwoHanded(it){
   if(kind==='bow'||kind==='axe'||kind==='hammer'||kind==='spear') return true;
   return /двуруч|двухруч|цвайхендер/i.test(it.name||'');
 }
+/* Вторая рука — отдельный слот. Двуручник хранит в нём тот же uid, что и в weapon:
+   это маркер занятости, а не второй предмет (вес и урон от него не удваиваются). */
+const OFFHAND_SLOT='offhand';
+function isShieldItem(it){ return !!it&&it.type==='armor'&&(it.slot||'body')==='shield'; }
+function isSecondHandItem(it){ return !!it&&it.type==='weapon'&&!isTwoHanded(it)&&!isRingItem(it)&&!isAmmoItem(it); }
+function twoHandedWeapon(h){ const w=equippedWeapon(h); return w&&isTwoHanded(w)?w:null; }
+function isOffhandMarker(h,slotId){
+  if(!h||!h.equip||slotId!=='offhand'||!h.equip.weapon||h.equip.offhand!==h.equip.weapon) return false;
+  return !!twoHandedWeapon(h);
+}
 function mannequinSlotForItem(it){
   if(!it) return null;
   if(it.type==='weapon') return isRingItem(it)?null:'weapon';
@@ -1244,8 +1259,12 @@ function equipKeysForSlot(slotId){
 function clearEquipSlot(h,slotId){
   if(!h||!h.equip) return;
   const keys=equipKeysForSlot(slotId);
+  // Маркер второй руки — не второй предмет: его снятие не трогает оружие в главной руке.
+  if(isOffhandMarker(h,slotId)){ h.equip.offhand=null; return; }
+  const weaponMarker=slotId==='weapon'&&h.equip.offhand&&h.equip.offhand===h.equip.weapon;
   const uids=keys.map(k=>h.equip[k]).filter(Boolean);
   keys.forEach(k=>{ h.equip[k]=null; });
+  if(weaponMarker) h.equip.offhand=null;
   if(slotId==='body') h.equip.armor=null;
   /* Привязка «надел — закрепился» живёт только пока предмет надет.
      Любой выход из слота снимает owner — иначе снятый предмет блокируется
@@ -1276,21 +1295,25 @@ function unequipMannequinSlot(h,slotId){
 }
 /* Экипировку ограничивает только нагрузка; класс предмета — атрибут данных.
    Манекен добавляет только удобный доступ к слотам и двуручное оружие. */
-function equipBlockReason(h,it){
+function equipBlockReason(h,it,slot){
   if(!it) return 'Предмет не найден.';
+  const target=slot||mannequinSlotForItem(it);
   if(isRingItem(it)) return 'Кольца пока не экипируются.';
   if(isAmmoItem(it)) return 'Боеприпасы не экипируются.';
   if(!mannequinSlotForItem(it)) return 'Для этого предмета нет слота.';
+  if(h&&h.equip&&twoHandedWeapon(h)&&(isShieldItem(it)||target===OFFHAND_SLOT))
+    return 'Руки заняты: двуручное оружие занимает обе руки.';
   if(it.owner!==undefined&&it.owner!==null&&it.owner!==h.slot) return 'Предмет закреплён за другим героем.';
   const worn=wornByOther(h,it); if(worn) return 'Предмет уже надет на другого героя.';
-  if(it.type==='armor'&&it.slot==='shield'&&isTwoHanded(equippedWeapon(h))) return 'Руки заняты';
   return '';
 }
 function equipOnHero(h,slot,it){
-  if(!h||!it||equipBlockReason(h,it)) return false;
-  const target=mannequinSlotForItem(it);
+  if(!h||!it) return false;
+  const requested=slot||'';
+  const target=requested===OFFHAND_SLOT&&isSecondHandItem(it)?OFFHAND_SLOT:mannequinSlotForItem(it);
+  if(equipBlockReason(h,it,requested||target)) return false;
   if(!target) return false;
-  if(slot&&slot!==target&&!((target==='body'||target==='cloak')&&(slot==='body'||slot==='cloak'))) return false;
+  if(requested&&requested!==target&&!((target==='body'||target==='cloak')&&(requested==='body'||requested==='cloak'))) return false;
   const prev=heroSlotItem(h,target);
   const prevUid=prev?prev.uid:null;
   party().forEach(x=>{
@@ -1303,14 +1326,20 @@ function equipOnHero(h,slot,it){
     if(idx>=0) game.bag.splice(idx,1);
     party().forEach(x=>Object.keys(x.equip||{}).forEach(k=>{ if(x.equip[k]===prevUid) x.equip[k]=null; }));
   }
-  let shieldDropped=false;
-  if(target==='weapon'&&isTwoHanded(it)&&h.equip.shield){ clearEquipSlot(h,'shield'); shieldDropped=true; }
+  let shieldDropped=false, offhandDropped=false;
+  if(target==='weapon'&&isTwoHanded(it)){
+    if(heroSlotItem(h,'shield')){ clearEquipSlot(h,'shield'); shieldDropped=true; }
+    if(h.equip.offhand&&!isOffhandMarker(h,OFFHAND_SLOT)){ clearEquipSlot(h,OFFHAND_SLOT); offhandDropped=true; }
+  }
   clearEquipSlot(h,target);
-  const assignKey=it.type==='armor'?(it.slot||'body'):(it.type==='amulet'?'amulet':'weapon');
+  const assignKey=target===OFFHAND_SLOT?OFFHAND_SLOT:(it.type==='armor'?(it.slot||'body'):(it.type==='amulet'?'amulet':'weapon'));
   h.equip[assignKey]=it.uid;
   it.owner=h.slot;
   if(assignKey==='body') h.equip.armor=it.uid;
-  if(shieldDropped) toast('Руки заняты: щит снят.');
+  if(target==='weapon'&&isTwoHanded(it)) h.equip[OFFHAND_SLOT]=it.uid;
+  if(shieldDropped||offhandDropped){
+    toast('Руки заняты: двуручное оружие занимает обе руки.'+(shieldDropped?' Щит снят.':'')+(offhandDropped?' Вторая рука освобождена.':''));
+  }
   return true;
 }
 function unequipSlot(h,slot){
@@ -1345,7 +1374,7 @@ function makeHeroState(def,slot){
     magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
     bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
-    equip:{weapon:weapon?weapon.uid:null,body:armor.uid,armor:armor.uid,shield:null,helmet:null,
+    equip:{weapon:weapon?weapon.uid:null,offhand:null,body:armor.uid,armor:armor.uid,shield:null,helmet:null,
       legs:null,boots:null,bracers:null,hands:null,cloak:null,feet:null,amulet:null}};
 }
 /* Временные эффекты живут ограниченное число ходов и исчезают сами.
@@ -1474,6 +1503,13 @@ function loadWorldState(){
   installMessageLogger();
   game._msg=String(data.msg||'');
   game.log=Array.isArray(game.log)?game.log:[]; game.history=Array.isArray(game.history)?game.history:game.log;
+  /* Старые сейвы не знали слота второй руки — восстанавливаем блокировку по двуручнику. */
+  game.party.forEach(h=>{
+    if(!h.equip) h.equip={};
+    if(h.equip.offhand===undefined) h.equip.offhand=null;
+    const w=equippedWeapon(h);
+    if(w&&isTwoHanded(w)) h.equip.offhand=w.uid;
+  });
   game.world.maps.forEach(m=>{
     if(!(m.seen instanceof Set)) m.seen=new Set(Array.isArray(m.seen)?m.seen:[]);
     (m.cells||[]).forEach(row=>row.forEach(c=>{
@@ -3187,6 +3223,7 @@ const MANNEQUIN_SLOTS=[
   {id:'feet',label:'Сапоги',hint:'сапоги',x:28,y:86,w:44,h:10},
   {id:'shield',label:'Щит',hint:'щит',x:3,y:21,w:27,h:26},
   {id:'weapon',label:'Руки',hint:'оружие',x:64,y:18,w:34,h:42},
+  {id:'offhand',label:'Вторая рука',hint:'свободна',x:72,y:78,w:24,h:8},
   {id:'hands',label:'Перчатки',hint:'перчатки',x:4,y:48,w:25,h:14},
   {id:'helmet',label:'Голова',hint:'шлем',x:22,y:3,w:20,h:15},
   {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:15,w:16,h:8},
@@ -3199,6 +3236,7 @@ const SLOT_GLYPHS={
   body:'<path d="M9 4l3 2 3-2 3 3-2 3v9H8v-9L6 7z"/>',
   cloak:'<path d="M8 4l4 3 4-3 4 4-3 4 2 8H5l2-8-3-4z"/>',
   weapon:'<path d="M15 3l6 6-8 8-4 1 1-4z"/><path d="M4 20l4-4"/>',
+  offhand:'<path d="M12 2v12"/><path d="M9 14h6v4H9z"/><path d="M10 21h4"/>',
   hands:'<path d="M7 12V7a1.5 1.5 0 0 1 3 0v4-5a1.5 1.5 0 0 1 3 0v5-3a1.5 1.5 0 0 1 3 0v8a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4a1.5 1.5 0 0 1 3 0"/>',
   shield:'<path d="M12 3l7 3v6c0 5-3 7-7 9-4-2-7-4-7-9V6z"/>',
   legs:'<path d="M7 3h10l-1 8-2 10h-4l1-10H8z"/>',
@@ -3323,14 +3361,16 @@ function invTabItems(tab){
   return bag;
 }
 function itemCell(it,h){
-  const block=equipBlockReason(h,it);
   const target=mannequinSlotForItem(it);
+  // Выбранный на манекене слот второй руки направляет туда одноручное оружие.
+  const preferred=invSlot===OFFHAND_SLOT&&isSecondHandItem(it)?OFFHAND_SLOT:target;
+  const block=equipBlockReason(h,it,preferred);
   let action=null;
   if(it.type==='weapon'||it.type==='armor'){
     action=()=>{
       if(block){ toast(block); return; }
-      if(target&&equipOnHero(h,target,it)){
-        invSlot=target; invArmedSlot=null;
+      if(preferred&&equipOnHero(h,preferred,it)){
+        invSlot=preferred; invArmedSlot=null;
         toast('Надето: '+it.name);
         renderInventory(); updateParty();
       }
@@ -3412,6 +3452,7 @@ function showInvDetail(cell){
   d.appendChild(b); d.appendChild(s);
 }
 function mannequinStage(){
+  const hero=party()[game.invHero||0];
   const silhouette='<svg class="mq-silhouette" viewBox="0 0 200 350" aria-hidden="true">'+
     '<g fill="#26304d" stroke="#3e4b70" stroke-width="2">'+
       '<rect x="82" y="16" width="36" height="40" rx="9"/>'+
@@ -3439,11 +3480,14 @@ function mannequinStage(){
     '</g>'+
   '</svg>';
   return '<div class="mq-stage">'+silhouette+MANNEQUIN_SLOTS.map(slot=>{
-    const it=heroSlotItem(party()[game.invHero||0],slot.id);
-    const sprite=it?itemSpritePath(it):null;
+    const it=heroSlotItem(hero,slot.id);
+    const busy=isOffhandMarker(hero,slot.id);
+    const sprite=it&&!busy?itemSpritePath(it):null;
     const selected=invSlot===slot.id?' sel':'';
     let inner;
-    if(it&&sprite){
+    if(busy){
+      inner='<span class="mq-grip">'+slotGlyph(slot.id)+'</span>';
+    }else if(it&&sprite){
       const kind=it.type==='weapon'?(it.wkind||weaponKind(it.name||'')):'';
       const rot=kind==='spear'?' rot-spear':kind==='bow'?' rot-bow':'';
       inner='<img class="'+rot.trim()+'" src="'+sprite+'" alt="" onerror="this.style.display=\'none\'">';
@@ -3452,7 +3496,9 @@ function mannequinStage(){
     }else{
       inner='<span class="mq-empty">'+slotGlyph(slot.id)+'</span>';
     }
-    return '<button type="button" class="mq-slot '+(it?'filled':'empty')+selected+'" data-slot="'+slot.id+'" style="left:'+slot.x+'%;top:'+slot.y+'%;width:'+slot.w+'%;height:'+slot.h+'%" title="'+esc(slot.label+': '+(it?it.name:slot.hint))+'">'+inner+'</button>';
+    const cls=busy?'busy':(it?'filled':'empty');
+    const title=slot.label+': '+(busy?'занято древком '+it.name:(it?it.name:slot.hint));
+    return '<button type="button" class="mq-slot '+cls+selected+'" data-slot="'+slot.id+'" style="left:'+slot.x+'%;top:'+slot.y+'%;width:'+slot.w+'%;height:'+slot.h+'%" title="'+esc(title)+'">'+inner+'</button>';
   }).join('')+'</div>';
 }
 function mannequinDesc(h){
@@ -3464,6 +3510,11 @@ function mannequinDesc(h){
 }
 function handleSlotTap(h,slotId){
   const it=heroSlotItem(h,slotId);
+  if(isOffhandMarker(h,slotId)){
+    invSlot=slotId; invArmedSlot=null;
+    toast('Руки заняты: снимите двуручное оружие, чтобы освободить вторую руку.');
+    renderInventory(); return;
+  }
   if(!it){ invSlot=slotId; invArmedSlot=null; renderInventory(); return; }
   if(invArmedSlot===slotId){
     const removed=unequipMannequinSlot(h,slotId);
@@ -3500,11 +3551,12 @@ function renderInventory(){
   const strip=document.createElement('div'); strip.className='invSlotStrip';
   MANNEQUIN_SLOTS.forEach(s=>{
     const it=heroSlotItem(h,s.id);
+    const busy=isOffhandMarker(h,s.id);
     const chip=document.createElement('button');
     chip.type='button';
-    chip.className='invSlotChip'+(it?' filled':'')+(invSlot===s.id?' sel':'');
+    chip.className='invSlotChip'+(busy?' busy':(it?' filled':''))+(invSlot===s.id?' sel':'');
     chip.dataset.slot=s.id;
-    chip.title=s.label+': '+(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint);
+    chip.title=s.label+': '+(busy?'занято древком '+it.name:(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint));
     if(s.id==='weapon'&&it&&itemSpritePath(it)){
       chip.classList.add('withIcon');
       const img=document.createElement('img'); img.src=itemSpritePath(it); img.alt='';
@@ -5021,6 +5073,22 @@ window.__mm6Debug={
     hasMp:mapEnemyHasMp(item.e),mp:mapEnemyHasMp(item.e)?Math.round(item.e.mp):null,
     rect:mapEnemyPanelRect(item)})),hero:{x:W/2,y:344},hud:{x:10,y:10,w:214,h:86}}),
   statsReport:()=>party().map(h=>({hero:h.def.name,attack:heroAtk(h),defense:heroDef(h)})),
+  handsReport:()=>{
+    const hero=party()[0], w=hero&&equippedWeapon(hero), two=!!w&&isTwoHanded(w);
+    const marker=!!hero&&isOffhandMarker(hero,OFFHAND_SLOT);
+    const off=hero&&heroSlotItem(hero,OFFHAND_SLOT);
+    const el=document.querySelector('#mannequin [data-slot="offhand"]');
+    const chip=document.querySelector('#invList [data-slot="offhand"]');
+    const dom=el?{cls:el.className,title:el.title,glyph:!!el.querySelector('.mq-grip')}:null;
+    const errors=[];
+    if(two&&!marker) errors.push('Двуручное оружие не блокирует вторую руку');
+    if(!two&&marker) errors.push('Вторая рука осталась заблокированной после снятия двуручника');
+    if(two&&dom&&(!dom.cls.includes('busy')||!dom.glyph)) errors.push('Манекен не показывает занятую вторую руку');
+    return {ok:!errors.length,errors,twoHanded:two,weapon:w?w.name:null,offhand:off?off.name:null,
+      offhandUid:hero&&hero.equip?hero.equip.offhand||null:null,marker,
+      shieldUid:hero&&hero.equip?hero.equip.shield||null:null,
+      dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
+  },
   terrainReport:()=>terrainReport(),
   spriteCoverageReport:()=>spriteCoverageReport(),
   mapHintReport:()=>mapHint?{title:mapHint.title,desc:mapHint.desc,age:performance.now()-mapHint.t,count:mapHints.length}
