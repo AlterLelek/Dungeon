@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <title>Ржавый меч</title>
+  <desc>Старый зазубренный меч, покрытый ржавчиной.</desc>
+  <g shape-rendering="crispEdges">
+    <rect x="31" y="2" width="2" height="2" fill="#1c2124"/>
+    <rect x="30" y="4" width="4" height="3" fill="#1c2124"/>
+    <rect x="29" y="7" width="6" height="2" fill="#1c2124"/>
+    <rect x="27" y="9" width="10" height="32" fill="#1c2124"/>
+
+    <rect x="31" y="3" width="2" height="2" fill="#b9b3a3"/>
+    <rect x="30" y="5" width="4" height="3" fill="#a9a598"/>
+    <rect x="29" y="8" width="6" height="2" fill="#94938a"/>
+    <rect x="28" y="10" width="8" height="30" fill="#8d8f8a"/>
+    <rect x="29" y="10" width="2" height="30" fill="#aeb0a8"/>
+    <rect x="31" y="10" width="2" height="30" fill="#6f716b"/>
+    <rect x="34" y="10" width="2" height="30" fill="#666a66"/>
+
+    <rect x="29" y="12" width="2" height="2" fill="#a75a28"/>
+    <rect x="33" y="14" width="2" height="3" fill="#7d3f1a"/>
+    <rect x="28" y="18" width="2" height="2" fill="#c07a3b"/>
+    <rect x="30" y="23" width="3" height="2" fill="#8a4a1e"/>
+    <rect x="34" y="20" width="2" height="4" fill="#a75a28"/>
+    <rect x="29" y="30" width="2" height="3" fill="#7d3f1a"/>
+    <rect x="33" y="32" width="3" height="2" fill="#c07a3b"/>
+    <rect x="28" y="37" width="5" height="2" fill="#8a4a1e"/>
+    <rect x="30" y="16" width="1" height="5" fill="#5f6260"/>
+    <rect x="33" y="26" width="1" height="4" fill="#5f6260"/>
+
+    <rect x="35" y="11" width="1" height="4" fill="#1c2124"/>
+    <rect x="34" y="11" width="1" height="2" fill="#1c2124"/>
+    <rect x="27" y="25" width="1" height="3" fill="#1c2124"/>
+    <rect x="28" y="25" width="1" height="1" fill="#1c2124"/>
+    <rect x="35" y="33" width="1" height="4" fill="#1c2124"/>
+    <rect x="34" y="36" width="1" height="1" fill="#1c2124"/>
+
+    <rect x="20" y="40" width="3" height="6" fill="#1c2124"/>
+    <rect x="41" y="40" width="3" height="6" fill="#1c2124"/>
+    <rect x="21" y="41" width="22" height="4" fill="#1c2124"/>
+    <rect x="21" y="41" width="2" height="4" fill="#6d6f68"/>
+    <rect x="41" y="41" width="2" height="4" fill="#6d6f68"/>
+    <rect x="23" y="42" width="18" height="2" fill="#6d6f68"/>
+    <rect x="23" y="42" width="18" height="1" fill="#94968c"/>
+    <rect x="25" y="43" width="3" height="1" fill="#a75a28"/>
+    <rect x="37" y="42" width="2" height="1" fill="#7d3f1a"/>
+
+    <rect x="29" y="44" width="6" height="13" fill="#1c2124"/>
+    <rect x="30" y="44" width="4" height="13" fill="#4a3527"/>
+    <rect x="30" y="46" width="4" height="1" fill="#6b4d33"/>
+    <rect x="30" y="49" width="4" height="1" fill="#6b4d33"/>
+    <rect x="30" y="52" width="4" height="1" fill="#6b4d33"/>
+    <rect x="30" y="55" width="4" height="1" fill="#6b4d33"/>
+    <rect x="30" y="44" width="1" height="13" fill="#6b4d33"/>
+
+    <rect x="28" y="56" width="8" height="5" fill="#1c2124"/>
+    <rect x="29" y="56" width="6" height="4" fill="#7d6a50"/>
+    <rect x="29" y="56" width="2" height="2" fill="#a38f70"/>
+    <rect x="33" y="58" width="2" height="2" fill="#a75a28"/>
+  </g>
+</svg>
