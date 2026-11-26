@@ -213,7 +213,7 @@ try {
     const cards=[...document.querySelectorAll('#party .pcard')].map(e=>e.getBoundingClientRect());
     return {text:t.textContent,shown:t.classList.contains('show'),bottom:+r.bottom.toFixed(1),
       partyTop:+Math.min(...cards.map(c=>c.top)).toFixed(1),cards:cards.length};})()`);
-  check('тост «Цель не выбрана» показан', toastInfo.shown && /Цель не выбрана/.test(toastInfo.text), JSON.stringify(toastInfo.text));
+  check('тост «Выберите цель» показан', toastInfo.shown && /Выберите цель/.test(toastInfo.text), JSON.stringify(toastInfo.text));
   check('тост в бою не заступает на плашки героев',
     toastInfo.cards === 3 && toastInfo.bottom < toastInfo.partyTop,
     JSON.stringify({ toastBottom: toastInfo.bottom, partyTop: toastInfo.partyTop }));

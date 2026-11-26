@@ -2180,7 +2180,7 @@ function updateControls(){
   $('btnAttack').classList.toggle('hot',!attackReason);
   $('btnSpell').classList.toggle('hot',!spellReason);
   $('btnFlee').classList.toggle('hot',!fleeReason);
-  setActionButton('btnAttack',!!attackReason,attackReason||'Атака [Пробел] · цель выбирается щёлчком по врагу');
+  setActionButton('btnAttack',!!attackReason,attackReason||'Атака [Пробел] · удар по выбранной цели');
   setActionButton('btnSpell',!!spellReason,spellReason||'Заклинание [F] · мана и эффекты проверены');
   setActionButton('btnFlee',!!fleeReason,fleeReason||FLEE_TITLE);
   setActionButton('btnShop',inBattle,'Лавка закрыта во время боя');
@@ -2204,6 +2204,8 @@ function enemyGroupLabel(b){
 }
 function selectedTarget(b){
   const battle=b||(game&&game.battle); if(!battle) return null;
+  // -1 — осознанное «цели ещё нет»: запрос цели вместо молчаливого автовыбора.
+  if(battle.targetIdx===-1) return null;
   let m=battle.enemies[battle.targetIdx];
   if(!m||!m.alive){ battle.targetIdx=firstAliveEnemyIdx(battle); m=battle.enemies[battle.targetIdx]; }
   return m||null;
@@ -2213,8 +2215,15 @@ function cycleTarget(d){
   const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive);
   if(!live.length) return;
   const at=live.findIndex(o=>o.i===b.targetIdx);
-  const next=(at+d+live.length)%live.length;
-  b.targetIdx=live[next].i; beep(520,.05); toast('Цель: '+live[next].e.name);
+  const next=at<0?(d>0?0:live.length-1):(at+d+live.length)%live.length;
+  b.targetIdx=live[next].i; clearArmedAction(); beep(520,.05); toast('Цель: '+live[next].e.name);
+}
+// Погибшая цель не заменяется молча: при одном оставшемся враге он берётся сам,
+// при нескольких — выдаётся запрос выбора.
+function retargetAfterKill(b){
+  if(!b||!b.enemies) return;
+  const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive);
+  b.targetIdx=live.length===1?live[0].i:-1;
 }
 function battleEnemyPoint(b,i){
   const n=Math.max(1,(b&&b.enemies?b.enemies.length:1));
@@ -2239,17 +2248,26 @@ function battleChipAt(p){
   return battleChipRects().find(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)||null;
 }
 function spellNeedsTarget(s){ return !!s&&!!(s.power||s.poison||s.stun||s.def); }
-// Действие, выбранное мышью/тапом, ждёт подтверждения цели кликом по врагу.
+// Действие ждёт выбора цели только тогда, когда цели действительно нет.
+// Если цель уже выбрана, атака/заклинание срабатывают сразу — второй клик не нужен.
 let armedAction=null;
 function clearArmedAction(){ armedAction=null; }
 function armBattleAction(action){
   const b=game&&game.battle;
   if(!b||b.end){ clearArmedAction(); return false; }
-  const reason=action.kind==='attack'?attackBlockReason():spellBlockReason();
-  if(reason){ clearArmedAction(); toast(reason); return false; }
-  armedAction=action;
+  const reason=action.kind==='attack'?attackBlockReason(true):spellBlockReason();
+  if(reason){
+    clearArmedAction(); toast(reason); updateControls(); return false;
+  }
+  // selectedTarget() не меняет выбор живой цели — он сохраняется между ходами.
+  if(selectedTarget(b)){
+    clearArmedAction();
+    if(action.kind==='attack') return heroAttack();
+    if(action.kind==='spell') return castSpell(action.id,b.targetIdx);
+  }
+  armedAction=Object.assign({},action,{hadTarget:false});
   const label=action.kind==='attack'?'Атака':('Заклинание «'+(spell(action.id)||{}).name+'»');
-  toast('Цель не выбрана: щёлкните или коснитесь врага — '+label);
+  toast('Выберите цель: щёлкните или коснитесь врага — '+label);
   updateControls();
   return true;
 }
@@ -2282,7 +2300,7 @@ function startBattle(list,mapRef){
   const enemies=list.filter(e=>e&&e.alive);
   if(!enemies.length) return null;
   const b={enemies,fromMap:!mapRef,map:mapRef,units:[],order:[],clock:0,turnIndex:-1,
-    turn:'hero',heroIdx:0,targetIdx:firstAliveEnemyIdx({enemies}),
+    turn:'hero',heroIdx:0,targetIdx:enemies.length===1?0:-1,
     busy:false,end:null,log:[],anim:null,floaters:[],boss:mapRef?mapRef.boss.def:null};
   game.battle=b;
   party().forEach((h,i)=>b.units.push({side:'hero',idx:i,speed:heroSpeedValue(h),next:0}));
@@ -2350,7 +2368,7 @@ function nextTurn(){
       addBattleFloater(battleEnemyPoint(b,u.idx),'-'+pd,C_HERO);
       pushLog('Яд снимает '+pd+' HP с '+m.name+'.',C_HERO,'hero');
       m.poison=Math.max(0,m.poison-1);
-      if(m.hp<=0){ m.alive=false; b.targetIdx=firstAliveEnemyIdx(b); if(checkBattleEnd()) return; }
+      if(m.hp<=0){ m.alive=false; retargetAfterKill(b); if(checkBattleEnd()) return; }
     }
     if(m.stun>0){ m.stun--; pushLog(m.name+' пропускает ход.',C_NEUTRAL,'neutral'); continue; }
     b.turn='enemy'; b.busy=true; updateParty(); updateControls();
@@ -2390,14 +2408,14 @@ function combatLog(attacker,verb,weapon,attack,defense,dmg,target){
   return attacker+' '+verb+(weapon?' '+weapon:'')+' и '+got+' '+attack+' атаки против защиты '+defense+'. '+
     target+' '+targetGot+' '+dmg+' урона.';
 }
-function attackBlockReason(){
+function attackBlockReason(ignoreTarget){
   const b=game&&game.battle;
   if(!b) return 'Атака доступна только в бою.';
   if(b.end) return 'Бой завершён — атака недоступна.';
   if(b.busy) return 'Дождитесь завершения удара.';
   if(b.turn!=='hero') return 'Сейчас ход врага.';
   const h=party()[b.heroIdx]; if(!h||h.hp<=0) return 'Герой без сознания — атака недоступна.';
-  if(!selectedTarget(b)) return 'Выберите цель: щёлкните по врагу или стрелками влево/вправо.';
+  if(!ignoreTarget&&!selectedTarget(b)) return 'Выберите цель: щёлкните по врагу или стрелками влево/вправо.';
   return '';
 }
 function spellBlockReason(){
@@ -2450,7 +2468,7 @@ function heroAttack(){
     if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
   }
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
-  if(target.hp<=0){ target.alive=false; b.targetIdx=firstAliveEnemyIdx(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
+  if(target.hp<=0){ target.alive=false; retargetAfterKill(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
   beep(440,.09); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -2492,6 +2510,9 @@ function castSpell(id,targetIdx){
   const h=party()[b.heroIdx];
   if(!h||h.spells.indexOf(id)<0){ toast('Заклинание не изучено.'); return false; }
   if(!canCast(h)){ toast(restrictionText(h)||'Магия недоступна из-за перегруза.'); return false; }
+  const target=Number.isInteger(targetIdx)?(b.enemies[targetIdx]||selectedTarget(b)):selectedTarget(b);
+  // Целевое заклинание не расходует ману, когда цели нет.
+  if(spellNeedsTarget(s)&&!target){ toast('Выберите цель: щёлкните по врагу или стрелками влево/вправо.'); return false; }
   const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
   if(h.mp<cost){ toast('Не хватает маны: нужно '+cost+'.'); return false; }
   h.mp-=cost;
@@ -2503,7 +2524,6 @@ function castSpell(id,targetIdx){
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
     return true;
   }
-  const target=Number.isInteger(targetIdx)?(b.enemies[targetIdx]||selectedTarget(b)):selectedTarget(b);
   const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||SPELL_TIERS[1]).name;
   const magic=magicValue(h);
   let txt='';
@@ -2514,7 +2534,7 @@ function castSpell(id,targetIdx){
     victims.forEach(v=>{
       v.hp=Math.max(0,v.hp-dmg);
       addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(v)),'-'+Math.round(dmg),C_HERO);
-      if(v.hp<=0){ v.alive=false; b.targetIdx=firstAliveEnemyIdx(b); }
+      if(v.hp<=0){ v.alive=false; retargetAfterKill(b); }
       if(s.id==='ice') v.slow=(v.slow||0)+1;
       if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
     });
@@ -4468,15 +4488,11 @@ cv.addEventListener('pointerdown',e=>{
   }
   const idx=pickBattleEnemyAt(e);
   if(idx>=0){
-    b.targetIdx=idx; beep(520,.05);
+    // Клик/тап по врагу только выбирает цель: он не бьёт и не тратит ману.
+    // Удар/заклинание выполняются отдельной кнопкой или пробелом по выбранной цели.
+    b.targetIdx=idx; clearArmedAction(); beep(520,.05);
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
-    updateParty();
-    const action=armedAction;
-    clearArmedAction();
-    if(action){
-      if(action.kind==='attack') heroAttack();
-      else if(action.kind==='spell') castSpell(action.id,idx);
-    }
+    updateParty(); updateControls();
     return;
   }
   // Щёлчок по пустому месту никогда не превращается в атаку — только подсказка о цели.

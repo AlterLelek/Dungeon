@@ -109,7 +109,7 @@ try {
   const tapEnemy = async i => { const p = await enemyPoint(i); await tap(p.x, p.y); };
   const state = () => ev(`(()=>{const g=window.__mm6State(),b=g&&g.battle;if(!b)return null;
     return {hp:b.enemies.map(e=>Math.round(e.hp)),targetIdx:b.targetIdx,busy:b.busy,turn:b.turn,heroIdx:b.heroIdx,
-      armed:window.__mm6Debug.battleInputReport().armed,mp:Math.round(g.party[0].mp),
+      armed:window.__mm6Debug.battleInputReport().armed,mp:g.party.map(h=>Math.round(h.mp)),
       log:b.log.map(e=>e.text),toast:document.getElementById('toast').textContent};})()`);
   async function waitHero(heroIdx = null) {
     await waitFor(`(()=>{const b=window.__mm6State().battle;return !!b&&!b.end&&b.turn==='hero'&&!b.busy&&` +
@@ -139,46 +139,64 @@ try {
   check('оверлей старта скрыт, слои не перехватывают клик',
     layers.overlay === 'none' && layers.controls === 'none' && layers.party === 'none' && layers.toast === 'none', JSON.stringify(layers));
 
-  let s0 = await state();
+  const s0 = await state();
   const atkChip = await chipPoint('attack');
   const elAtChip = await ev(`(()=>{const n=document.elementFromPoint(${atkChip.x},${atkChip.y});return n?(n.id||n.tagName):null;})()`);
   check('фишка «Атака» доступна canvas', elAtChip === 'cv', String(elAtChip));
-  await click(atkChip.x, atkChip.y);
-  let s1 = await state();
-  check('клик по фишке подготавливает атаку, но не бьёт сразу',
-    s1.armed && s1.armed.kind === 'attack' && s1.hp[1] === s0.hp[1], JSON.stringify(s1.armed));
+
+  // Без цели атака только просит выбрать врага.
+  await clickChip('attack');
+  const s1 = await state();
+  check('без цели атака ждёт выбора и не бьёт',
+    !!s1.armed && s1.armed.kind === 'attack' && s1.hp[1] === s0.hp[1] && /Выберите цель/.test(s1.toast),
+    JSON.stringify({ armed: s1.armed, hp: s1.hp, toast: s1.toast }));
+
+  // Выбор цели сам по себе не наносит урона и не тратит ману.
   await clickEnemy(1);
-  let s2 = await state();
-  check('клик по врагу подтверждает цель и наносит удар',
-    s2.targetIdx === 1 && !s2.armed && s2.hp[1] < s1.hp[1] && s2.log.some(t => /ударил|ударила/.test(t)),
-    JSON.stringify({ target: s2.targetIdx, hp: s2.hp }));
+  const s2 = await state();
+  check('клик по врагу выбирает цель, но не атакует',
+    s2.targetIdx === 1 && !s2.armed && s2.hp[1] === s1.hp[1] && s2.mp[s2.heroIdx] === s1.mp[s1.heroIdx],
+    JSON.stringify({ target: s2.targetIdx, hp: s2.hp, mp: s2.mp }));
+
+  // Ключевой сценарий: атака по уже выбранной цели бьёт без второго клика по врагу.
+  await clickChip('attack');
+  const s3 = await state();
+  check('атака по выбранной цели бьёт без повторного клика',
+    s3.targetIdx === 1 && !s3.armed && s3.hp[1] < s2.hp[1] && s3.log.some(t => /ударил|ударила/.test(t)),
+    JSON.stringify({ target: s3.targetIdx, hp: s3.hp, armed: s3.armed }));
 
   await waitHero();
   const beforeSwitch = await state();
-  await clickChip('attack');
   await clickEnemy(0);
   const afterSwitch = await state();
-  check('клик по другому врагу переключает цель и бьёт по ней',
-    afterSwitch.targetIdx === 0 && afterSwitch.hp[0] < beforeSwitch.hp[0],
-    JSON.stringify({ target: afterSwitch.targetIdx, hp: afterSwitch.hp }));
+  check('клик по другому врагу только переключает цель',
+    afterSwitch.targetIdx === 0 && afterSwitch.hp.every((hp, i) => hp === beforeSwitch.hp[i]) &&
+    afterSwitch.mp[afterSwitch.heroIdx] === beforeSwitch.mp[beforeSwitch.heroIdx],
+    JSON.stringify({ target: afterSwitch.targetIdx, hp: afterSwitch.hp, mp: afterSwitch.mp }));
 
-  await waitHero(0);
+  await waitHero();
   await clickChip('spell');
   check('фишка «Магия» открывает меню', await ev(`!document.getElementById('spellMenu').classList.contains('hidden')`));
   const spellBtn = await ev(`(()=>{const b=document.querySelector('#spellList button[data-spell="fire"]');if(!b)return null;const r=b.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()`);
   check('кнопка огненного шара доступна', !!spellBtn, JSON.stringify(spellBtn));
+  const beforeSpell = await state();
   await click(spellBtn.x, spellBtn.y);
-  const armedSpell = await state();
-  check('целевое заклинание ждёт клика по врагу',
-    armedSpell.armed && armedSpell.armed.kind === 'spell' && armedSpell.armed.id === 'fire' &&
-    await ev(`document.getElementById('spellMenu').classList.contains('hidden')`), JSON.stringify(armedSpell.armed));
-  await clickEnemy(1);
   const cast = await state();
-  check('клик по врагу применяет заклинание',
-    !cast.armed && cast.hp[1] < armedSpell.hp[1] && cast.mp < armedSpell.mp &&
-    cast.log.some(t => /применяет/.test(t)), JSON.stringify({ hp: cast.hp, mp: cast.mp }));
+  check('целевая магия по выбранной цели срабатывает сразу',
+    !cast.armed && cast.hp[0] < beforeSpell.hp[0] && cast.mp[cast.heroIdx] < beforeSpell.mp[beforeSpell.heroIdx] &&
+    cast.log.some(t => /применяет/.test(t)) &&
+    await ev(`document.getElementById('spellMenu').classList.contains('hidden')`),
+    JSON.stringify({ hp: cast.hp, mp: cast.mp }));
 
-  await waitHero(0);
+  await waitHero();
+  const beforeMpSwitch = await state();
+  await clickEnemy(1);
+  const mpSwitch = await state();
+  check('смена цели кликом не расходует ману',
+    mpSwitch.targetIdx === 1 && mpSwitch.mp[mpSwitch.heroIdx] === beforeMpSwitch.mp[beforeMpSwitch.heroIdx] &&
+    mpSwitch.hp.every((hp, i) => hp === beforeMpSwitch.hp[i]),
+    JSON.stringify({ target: mpSwitch.targetIdx, mp: mpSwitch.mp }));
+
   await clickChip('spell');
   const shieldBtn = await ev(`(()=>{const b=document.querySelector('#spellList button[data-spell="shield"]');const r=b.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()`);
   await click(shieldBtn.x, shieldBtn.y);
@@ -187,40 +205,36 @@ try {
     !selfSpell.armed && selfSpell.log.some(t => /щит/.test(t)), JSON.stringify({ armed: selfSpell.armed }));
 
   await waitHero();
-  await clickChip('attack');
   const beforeArrows = await state();
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39, nativeVirtualKeyCode: 39 });
   await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39, nativeVirtualKeyCode: 39 });
   const afterArrows = await state();
-  check('стрелки переключают цель при подготовленной атаке',
-    afterArrows.targetIdx !== beforeArrows.targetIdx && !!afterArrows.armed && afterArrows.armed.kind === 'attack',
-    JSON.stringify({ from: beforeArrows.targetIdx, to: afterArrows.targetIdx, armed: afterArrows.armed }));
-  await clickEnemy(afterArrows.targetIdx);
-  const arrowAttack = await state();
-  check('после стрелок клик по выбранному врагу наносит удар',
-    !arrowAttack.armed && arrowAttack.hp.some((hp, i) => hp < afterArrows.hp[i]),
-    JSON.stringify(arrowAttack.hp));
+  check('стрелки переключают цель и сохраняют её между ходами',
+    afterArrows.targetIdx !== beforeArrows.targetIdx && !afterArrows.armed,
+    JSON.stringify({ from: beforeArrows.targetIdx, to: afterArrows.targetIdx }));
 
-  await waitHero();
   const beforeSpace = await state();
   await send('Input.dispatchKeyEvent', { type: 'keyDown', key: ' ', code: 'Space', windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
   await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space', windowsVirtualKeyCode: 32, nativeVirtualKeyCode: 32 });
   const afterSpace = await state();
-  check('пробел по-прежнему подтверждает атаку', afterSpace.hp.some((hp, i) => hp < beforeSpace.hp[i]), JSON.stringify(afterSpace.hp));
+  check('пробел бьёт по выбранной цели без клика по ней',
+    afterSpace.hp[afterArrows.targetIdx] < beforeSpace.hp[afterArrows.targetIdx],
+    JSON.stringify({ target: afterArrows.targetIdx, hp: afterSpace.hp }));
 
-  // --- Мобильный тап ---
+  // --- Мобильный тап: выбор цели и удар по ней отдельными действиями ---
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
   await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 });
   await playWith(tap);
   await setupBattle();
   const m0 = await state();
   await tapChip('attack');
+  await tapEnemy(0);
   const m1 = await state();
-  await tapEnemy(1);
+  await tapChip('attack');
   const m2 = await state();
-  check('тап по фишке и по врагу работает на мобильном',
-    !!m1.armed && m1.armed.kind === 'attack' && !m2.armed && m2.targetIdx === 1 && m2.hp[1] < m0.hp[1],
-    JSON.stringify({ armed: m1.armed, target: m2.targetIdx, hp: m2.hp }));
+  check('тап выбирает цель, а повторный тап по «Атаке» бьёт по ней',
+    m1.targetIdx === 0 && m1.hp[0] === m0.hp[0] && !m2.armed && m2.targetIdx === 0 && m2.hp[0] < m0.hp[0],
+    JSON.stringify({ target: m2.targetIdx, hp: m2.hp, armed: m2.armed }));
 
   check('консоль без ошибок', consoleErrors.length === 0, JSON.stringify(consoleErrors));
   check('нет 4xx/5xx', badResponses.length === 0, JSON.stringify(badResponses));
