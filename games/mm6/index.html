@@ -2255,6 +2255,8 @@ function updateParty(){
       '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
       '<i title="Итоговая защита: броня, эффекты">🛡 Защита '+heroDef(h)+'</i>'+
       '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
+      '<div class="mini" title="Опыт общий на отряд; уровень повышает только тренер в гостинице">'+
+      '<i>★ Уровень '+(h.level||1)+'</i><i>до следующего: '+xpToNext(h)+'</i></div>'+
       (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   $('shopGold').textContent=game.gold;
@@ -2398,6 +2400,7 @@ function startBattle(list,mapRef){
   if(!enemies.length) return null;
   const b={enemies,fromMap:!mapRef,map:mapRef,units:[],order:[],clock:0,turnIndex:-1,
     turn:'hero',heroIdx:0,targetIdx:enemies.length===1?0:-1,
+    pendingXp:0,pendingLoot:[],kills:0,spectators:[],
     busy:false,end:null,log:[],anim:null,floaters:[],boss:mapRef?mapRef.boss.def:null};
   game.battle=b;
   party().forEach((h,i)=>b.units.push({side:'hero',idx:i,speed:heroSpeedValue(h),next:0}));
@@ -2465,7 +2468,7 @@ function nextTurn(){
       addBattleFloater(battleEnemyPoint(b,u.idx),'-'+pd,C_HERO);
       pushLog('Яд снимает '+pd+' HP с '+m.name+'.',C_HERO,'hero');
       m.poison=Math.max(0,m.poison-1);
-      if(m.hp<=0){ m.alive=false; retargetAfterKill(b); if(checkBattleEnd()) return; }
+      if(m.hp<=0){ onEnemyKilled(b,m); if(checkBattleEnd()) return; }
     }
     if(m.stun>0){ m.stun--; pushLog(m.name+' пропускает ход.',C_NEUTRAL,'neutral'); continue; }
     b.turn='enemy'; b.busy=true; updateParty(); updateControls();
@@ -2565,7 +2568,7 @@ function heroAttack(){
     if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
   }
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
-  if(target.hp<=0){ target.alive=false; retargetAfterKill(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
+  if(target.hp<=0) onEnemyKilled(b,target);
   beep(440,.09); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -2631,7 +2634,7 @@ function castSpell(id,targetIdx){
     victims.forEach(v=>{
       v.hp=Math.max(0,v.hp-dmg);
       addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(v)),'-'+Math.round(dmg),C_HERO);
-      if(v.hp<=0){ v.alive=false; retargetAfterKill(b); }
+      if(v.hp<=0) onEnemyKilled(b,v);
       if(s.id==='ice') v.slow=(v.slow||0)+1;
       if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
     });
@@ -2665,6 +2668,8 @@ function fleeBattle(){
     party().forEach(h=>{ if(h.hp<=0||left<=0) return;
       const part=Math.min(h.hp,Math.max(1,Math.ceil(left/2))); h.hp-=part; left-=part; });
     b.end='flee';
+    /* Сбежал — не поумнел: kill-очки не воплощаются в опыт. */
+    b.pendingXp=0; if(game) game.pendingXp=0;
     pushLog('Побег удался! Потеряно '+loss+' HP.',C_HERO,'hero');
     recordAnnounce('flee_mm6',unlockRecord('flee_mm6'));
     progress.flees++; saveProgress(); updateParty(); beep(680,.16);
@@ -2679,8 +2684,51 @@ function fleeBattle(){
 function closeBattleKeep(){
   if(!game||!game.battle) return;
   clearArmedAction();
+  game.battle.pendingXp=0; game.pendingXp=0;
   game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
   clearStatuses(); updateControls();
+}
+/* Единая точка начисления опыта: убийство фиксируется здесь независимо от
+   источника (удар, заклинание, яд, предмет), но опыт воплощается только после победы. */
+function partyLevel(){
+  const ps=party(); if(!ps.length) return 1;
+  return Math.max(1,Math.round(ps.reduce((s,h)=>s+(h.level||1),0)/ps.length));
+}
+function xpToNext(h){ return Math.max(0,xpTotalToLevel((h&&h.level||1)+1)-Math.floor(h&&h.exp||0)); }
+function grantPartyXp(amount,quest){
+  const xp=Math.max(0,Math.floor(Number(amount)||0));
+  /* Опыт общий: каждый герой получает полную сумму, включая переживших смерти. */
+  party().forEach(h=>{ h.exp=(h.exp||0)+xp; if(!quest) h.magicPower=(h.magicPower||0)+0.05; });
+  return xp;
+}
+function restParty(minutes){
+  if(!game) return false;
+  game.clockMinutes=((game.clockMinutes||8*60)+Math.max(0,Math.floor(Number(minutes)||480)))%(24*60);
+  game.hunger=clamp((game.hunger||0)+20,0,100);
+  party().forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+  boostRegen(30);
+  return true;
+}
+function trainLevel(idx){
+  const h=party()[idx]; if(!h) return false;
+  const next=(h.level||1)+1, cost=trainerCost({kind:'level',level:next}), need=xpTotalToLevel(next)-Math.floor(h.exp||0);
+  if(need>0){ toast('Нужно ещё '+need+' XP для уровня '+next+'.'); return false; }
+  if(game.gold<cost){ toast('Не хватает золота тренеру: нужно '+cost+'.'); return false; }
+  buy(cost,()=>{ h.level=next; restParty(); toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
+  updateParty(); renderShop();
+  return true;
+}
+function onEnemyKilled(b,e,opts){
+  const battle=b||(game&&game.battle);
+  if(!battle||!e||e._xpCounted) return false;
+  e._xpCounted=true; e.alive=false;
+  const gained=(opts&&opts.quest)?Math.max(0,Math.floor(Number(opts.xp)||0)):xpKill(e,partyLevel());
+  battle.pendingXp=(battle.pendingXp||0)+gained;
+  battle.kills=(battle.kills||0)+1;
+  if(game){ game.pendingXp=battle.pendingXp; game.pendingLoot=battle.pendingLoot||[]; }
+  retargetAfterKill(battle);
+  pushLog(e.name+' повержен.',C_NEUTRAL,'neutral');
+  return true;
 }
 function finishBattle(win){
   const b=game&&game.battle; if(!b||b.end) return;
@@ -2690,14 +2738,17 @@ function finishBattle(win){
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
   beep(win?980:120,.3); updateControls();
   if(!win){
+    /* Поражение и бегство не дают опыта: накопленные kill-очки сгорают. */
+    b.pendingXp=0; if(game) game.pendingXp=0;
     const killer=b.killerName||(b.enemies.find(e=>e.alive)||b.enemies[0]||{}).name||'враг';
     recordAnnounce(null,recordDeath('mm6',killer));
     setTimeout(()=>finishRun(false),1500); return;
   }
   const gold=b.enemies.filter(e=>e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0)
     +b.enemies.filter(e=>!e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0);
-  const exp=Math.max(10,10*b.enemies.filter(e=>e.alive||e.hp<=0).length);
-  party().forEach(h=>{ if(h.hp>0){ h.exp+=exp; h.magicPower+=0.05; } });
+  /* Опыт начисляется один раз здесь и только после победы; квестовый идёт через grantPartyXp(xp,true). */
+  const exp=grantPartyXp(b.pendingXp||0);
+  b.pendingXp=0; if(game) game.pendingXp=0;
   game.gold+=gold;
   pushLog('Победа! Вы получили опыт по '+exp+' очков каждому и золото '+gold+' монет',C_NEUTRAL,'neutral');
   b.enemies.forEach(e=>{ if(!e.isBoss) e.alive=false; });
@@ -3081,6 +3132,14 @@ function renderShop(){
     shopRow('🌙','Полный сон','Полностью восстанавливает HP и MP',[shopButton('🪙 12 спать',()=>buy(12,()=>{
       party().forEach(x=>{ x.hp=x.maxHp; x.mp=x.maxMp; x.poison=0; x.poisonTurns=0; }); boostRegen(45); toast('Отряд выспался.');
     }),game.gold<12)],'ОТДЫХ');
+    shopSec('Тренер · повышение уровня');
+    party().forEach((x,i)=>{
+      const need=xpToNext(x), cost=trainerCost({kind:'level',level:(x.level||1)+1});
+      shopRow('★',heroName(x),'Уровень '+(x.level||1)+' · опыта до следующего: '+need+' · оплата и отдых',[
+        shopButton('🪙 '+cost+' повысить',()=>trainLevel(i),need>0||game.gold<cost,
+          need>0?'Нужно ещё '+need+' XP':'Не хватает золота')
+      ],'ТРЕНЕР');
+    });
     shopSec('Сохранение');
     shopRow('📖','Книга постояльцев','Отметить поход и сохранить прогресс',[shopButton('Сохранить',()=>{
       saveProgress(); toast('Прогресс сохранён.'); beep(620,.1);
@@ -3910,7 +3969,7 @@ function useItem(uid){
     if(it.def){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
     if(it.atk){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
-    if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp-=12; if(e.hp<=0) e.alive=false; } }); toast('Мороз бьёт по врагам.'); }
+    if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp=Math.max(0,e.hp-12); if(e.hp<=0) onEnemyKilled(game.battle,e); } }); toast('Мороз бьёт по врагам.'); }
   }else if(it.type==='liquid'){
     if(it.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
     else if(it.stat==='mp') h.mp=Math.min(h.maxMp,h.mp+it.value);
@@ -5397,6 +5456,23 @@ window.__mm6Debug={
     $('shop').classList.remove('hidden'); renderShop(); return shopReport();
   },
   openBossChest:()=>openBossChest(),
+  progressionState:()=>({version:game&&game.version,clockMinutes:game&&game.clockMinutes,hunger:game&&game.hunger,
+    pendingXp:game&&game.pendingXp,partyLevel:partyLevel(),
+    heroes:party().map(h=>({name:heroName(h),level:h.level||1,exp:Math.floor(h.exp||0),toNext:xpToNext(h)}))}),
+  grantQuestXp:(xp)=>{ const gained=grantPartyXp(xp,true); updateParty(); return {gained,state:window.__mm6Debug.progressionState()}; },
+  setHeroExp:(i,xp)=>{ const h=party()[i]; if(!h) return false; h.exp=Math.max(0,Math.floor(Number(xp)||0)); updateParty(); return true; },
+  setPartyGold:(n)=>{ if(!game) return false; game.gold=Math.max(0,Math.floor(Number(n)||0)); updateParty(); return true; },
+  trainLevel:(i)=>({ok:trainLevel(i),state:window.__mm6Debug.progressionState()}),
+  simulateKill:(spec,win)=>{
+    if(!game) return null;
+    const e=spawnMonster(spec||{id:'mouse',name:'Мышь',hp:20,atk:1,def:0,combatSpeed:1,acts:1,moveEvery:1,gold:[1,3]},0,0,0,null,false,false);
+    const b=startBattle([e],null); if(!b) return null;
+    const before=party().map(h=>Math.floor(h.exp||0));
+    onEnemyKilled(b,e);
+    const pending=b.pendingXp;
+    if(win) finishBattle(true); else closeBattleKeep();
+    return {before,pending,after:party().map(h=>Math.floor(h.exp||0)),state:window.__mm6Debug.progressionState()};
+  },
   shopReport:()=>shopReport(),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
