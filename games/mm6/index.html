@@ -434,6 +434,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, MONSTER_PROFILES, resolveProfile, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
@@ -1393,7 +1394,7 @@ function makeHeroState(def,slot){
   if(weapon) game.bag.push(weapon);
   game.bag.push(armor);
   const spells=(DEFAULT_SPELLS[def.set]||['heal']).slice();
-  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,
+  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,...defaultHeroProgression(),
     magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
     bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
@@ -1478,6 +1479,8 @@ function freshGameShell(diffId){
   return {difficulty:diffId,bag:[],containers:ensureContainers(null),gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
     battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,mapOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
+    version:SAVE_VERSION,clockMinutes:8*60,hunger:0,lootCounters:defaultLootCounters(),
+    floorLoot:[],pendingXp:0,pendingLoot:[],battleLimit:ACTIVE_ENEMY_LIMIT,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
 }
 function startGame(diffId,a,b){
@@ -1508,10 +1511,13 @@ function startGame(diffId,a,b){
 const WORLD_SAVE_KEY='mm6_world_save_v1';
 function saveWorldState(){
   if(!game||!game.world) return false;
-  const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
+  const snap={version:SAVE_VERSION,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
     world:game.world,fog:game.world.maps.map(m=>[...(m.seen||[])]),
     player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
-    seasonOverride:game.seasonOverride,log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
+    seasonOverride:game.seasonOverride,clockMinutes:game.clockMinutes,hunger:game.hunger,
+    lootCounters:game.lootCounters,floorLoot:game.floorLoot,pendingXp:game.pendingXp,pendingLoot:game.pendingLoot,
+    battleLimit:game.battleLimit,
+    log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
   try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
   catch(e){ return false; }
   return true;
@@ -1521,8 +1527,10 @@ function loadWorldState(){
   try{ data=JSON.parse(localStorage.getItem(WORLD_SAVE_KEY)||'null',(k,v)=>k==='seen'&&Array.isArray(v)?new Set(v):v); }
   catch(e){ return false; }
   if(!data||!data.world||!Array.isArray(data.world.maps)||!data.world.maps.length) return false;
-  const shell=freshGameShell(data.difficulty||selDiff);
-  Object.assign(shell,data);
+  /* v2: новые поля прогрессии получают дефолты даже в старых сейвах версии 1. */
+  const migrated=migrateSave(data);
+  const shell=freshGameShell(migrated.difficulty||selDiff);
+  Object.assign(shell,migrated);
   game=shell;
   installMessageLogger();
   game._msg=String(data.msg||'');
@@ -5038,6 +5046,29 @@ function loop(now){
 }
 requestAnimationFrame(loop);
 
+/* Чистая проверка архитектуры прогрессии: кривая, затухание и миграция v1 -> v2. */
+function progressionReport(){
+  const errors=[];
+  const cost2=xpLevelCost(2), cost3=xpLevelCost(3), total3=xpTotalToLevel(3);
+  if(cost2!==BASE_XP||cost3!==BASE_XP*2||total3!==BASE_XP*3) errors.push('XP-кривая не совпадает с N*(N-1)/2*base');
+  const low=xpKill({id:'mouse',level:1},10), fair=xpKill({id:'mouse',level:1},1);
+  if(low!==3||fair!==25) errors.push('Затухание XP за убийство сломано');
+  const old={version:1,gold:77,bag:[{uid:'old-1',type:'misc',name:'Старый предмет'}],party:[{def:{name:' Воин '},slot:0,hp:10,mp:0,exp:123,equip:{}}]};
+  const moved=migrateSave(old);
+  const h=moved.party[0];
+  if(moved.version!==2) errors.push('Сейв не мигрировал в версию 2');
+  if(moved.gold!==old.gold||moved.bag.length!==1||moved.bag[0].uid!=='old-1') errors.push('Миграция потеряла золото или предмет');
+  if(h.exp!==123||h.level!==1||!h.skillXp||!h.skills||!h.skillCooldown||!h.promotion) errors.push('Миграция не добавила поля прогрессии героя');
+  if(moved.clockMinutes===undefined||moved.hunger===undefined||!moved.lootCounters||!Array.isArray(moved.floorLoot)) errors.push('Миграция не добавила часы/голод/счётчики лута');
+  const live=party().map(x=>({name:x.def&&x.def.name,level:x.level||1,exp:Math.floor(x.exp||0),
+    toNext:Math.max(0,xpTotalToLevel((x.level||1)+1)-Math.floor(x.exp||0)),skills:x.skills||{},
+    promotion:x.promotion&&x.promotion.guild||'novice'}));
+  return {ok:!errors.length,errors,version:game?game.version:null,
+    curve:{base:BASE_XP,cost2,cost3,total3},diminishing:{mouseAtSameLevel:fair,mouse9Below:low},
+    migration:{from:1,to:moved.version,gold:moved.gold,items:moved.bag.length,exp:h.exp,level:h.level},
+    party:live,rules:RULES_SUMMARY};
+}
+
 function armorDuplicates(){
   const seen=new Map(), duplicates=[];
   // group отделяет варианты одного слота (поножи/сапоги/перчатки) с одинаковой защитой.
@@ -5421,6 +5452,7 @@ window.__mm6Debug={
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
   },
   containerReport:()=>containerReport(),
+  progressionReport:()=>progressionReport(),
   mapReport:()=>mapReport(),
   toggleBigMap:(open)=>toggleBigMap(open),
   showMinimapCell:(x,y)=>showCellInfo(x,y,'Миникарта'),
