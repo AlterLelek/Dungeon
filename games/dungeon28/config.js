@@ -1,6 +1,6 @@
 import { HEROES } from './heroes/index.js';
 
-export const VERSION = "5.171";
+export const VERSION = "5.182";
 export const GRID = 15;          // поле 15×15 клеток
 export const CELL = 32;
 export const WORLD = GRID * CELL; // 480px, размер игрового поля
@@ -8,11 +8,11 @@ export const WORLD = GRID * CELL; // 480px, размер игрового пол
 export { HEROES };
 
 export const WARRIOR_WEAPONS = [
-  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"assets/sprites/items/sword_0.png"},
-  {name:"Кинжал", css:"q-rusty", dmg:2, cost:1, sprite:"assets/sprites/items/sword_1.png"},
-  {name:"Меч", css:"q-rusty", dmg:3, cost:2, sprite:"assets/sprites/items/sword_2.png"},
-  {name:"Топор", css:"q-rusty", dmg:4, cost:3, sprite:"assets/sprites/items/axe_0.png"},
-  {name:"Молот", css:"q-rusty", dmg:5, cost:4, sprite:"assets/sprites/items/axe_1.png"},
+  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"../../assets/kenney/items/sword.png"},
+  {name:"Кинжал", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/kenney/items/dagger.png"},
+  {name:"Меч", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/sword.png"},
+  {name:"Топор", css:"q-rusty", dmg:4, cost:3, sprite:"../../assets/kenney/items/axe.png"},
+  {name:"Молот", css:"q-rusty", dmg:5, cost:4, sprite:"../../assets/kenney/items/axe.png"},
   {name:"Кинжал+", css:"q-normal", dmg:6, cost:5}, {name:"Меч+", css:"q-normal", dmg:7, cost:6},
   {name:"Топор+", css:"q-normal", dmg:8, cost:7}, {name:"Молот+", css:"q-normal", dmg:9, cost:8},
   {name:"Кинжал++", css:"q-gold", dmg:10, cost:9}, {name:"Меч++", css:"q-gold", dmg:11, cost:10},
@@ -23,7 +23,7 @@ export const WARRIOR_WEAPONS = [
 
 export const MAGE_WEAPONS = [
   {name:"Кулаки", css:"q-normal", dmg:1, cost:0}, {name:"Кольцо", css:"q-rusty", dmg:2, cost:1},
-  {name:"Палочка", css:"q-rusty", dmg:3, cost:2, sprite:"assets/sprites/items/staff_0.png"},
+  {name:"Палочка", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/staff.png"},
   {name:"Амулет", css:"q-rusty", dmg:4, cost:3}, {name:"Книга", css:"q-rusty", dmg:5, cost:4},
   {name:"Кольцо+", css:"q-normal", dmg:6, cost:5}, {name:"Палочка+", css:"q-normal", dmg:7, cost:6},
   {name:"Амулет+", css:"q-normal", dmg:8, cost:7}, {name:"Книга+", css:"q-normal", dmg:9, cost:8},
@@ -35,8 +35,8 @@ export const MAGE_WEAPONS = [
 
 export const ARCHER_WEAPONS = [
   {name:"Кулаки", css:"q-normal", dmg:1, cost:0},
-  {name:"Лук", css:"q-rusty", dmg:2, cost:1, sprite:"assets/sprites/items/bow0_0.png"},
-  {name:"Арбалет", css:"q-rusty", dmg:3, cost:2, sprite:"assets/sprites/items/bow1_0.png"},
+  {name:"Лук", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/kenney/items/bow.png"},
+  {name:"Арбалет", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/bow.png"},
   {name:"Длинный лук", css:"q-rusty", dmg:4, cost:3}, {name:"Тяж. арбалет", css:"q-rusty", dmg:5, cost:4}, 
   {name:"Лук+", css:"q-normal", dmg:6, cost:5}, {name:"Арбалет+", css:"q-normal", dmg:7, cost:6}, 
   {name:"Длинный лук+", css:"q-normal", dmg:8, cost:7}, {name:"Тяж. арбалет+", css:"q-normal", dmg:9, cost:8}, 
@@ -98,26 +98,26 @@ export const ENEMY_BASE = {
 };
 
 export const MONSTER_SKINS = {
-  "💀": ["skeleton_0","skeleton_1","skeleton_2","skeleton_3","skeleton_4","skeleton_5","skeleton_6","skeleton_7","skeleton_8","skeleton_9"].map(n => `assets/sprites/monsters/${n}.png`),
-  "👻": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🐭": ["rat_0"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🕷": ["spider_0","spider_1","spider_2","spider_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "👺": ["orge_0","orge_1","orge_2","orge_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧟": ["undead_0","undead_1","undead_2","undead_3","undead_4","undead_5","undead_6"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🐢": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "😈": ["demon_0","demon_1","demon_2","demon_3","imp_0","imp_1","imp_2","imp_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧙‍♂️": ["necromancer_0","necromancer_1","necromancer_2","necromancer_3","necromancer_4","necromancer_5","necromancer_6","necromancer_7"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🦹": ["dark_archer_0","dark_archer_1","dark_archer_2","dark_archer_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🐺": ["rat_0"].map(n => `assets/sprites/monsters/${n}.png`),
-  "👹": ["imp_0","imp_1","imp_2","imp_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🪓": ["orc"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧌": ["orge_0","orge_1","orge_2","orge_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🗿": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧛": ["demon_0","demon_1","demon_2","demon_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧟‍♀️": ["undead_0","undead_1","undead_2","undead_3","undead_4","undead_5","undead_6"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧜‍♀️": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🐉": ["skeleton_7","skeleton_8","skeleton_9"].map(n => `assets/sprites/monsters/${n}.png`),
-  "🧙": ["necromancer_5","necromancer_6","necromancer_7"].map(n => `assets/sprites/monsters/${n}.png`)
+  "💀": ["skeleton_0","skeleton_1","skeleton_2","skeleton_3","skeleton_4","skeleton_5","skeleton_6","skeleton_7","skeleton_8","skeleton_9"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "👻": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🐭": ["rat_0"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🕷": ["spider_0","spider_1","spider_2","spider_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "👺": ["orge_0","orge_1","orge_2","orge_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧟": ["undead_0","undead_1","undead_2","undead_3","undead_4","undead_5","undead_6"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🐢": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "😈": ["demon_0","demon_1","demon_2","demon_3","imp_0","imp_1","imp_2","imp_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧙‍♂️": ["necromancer_0","necromancer_1","necromancer_2","necromancer_3","necromancer_4","necromancer_5","necromancer_6","necromancer_7"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🦹": ["dark_archer_0","dark_archer_1","dark_archer_2","dark_archer_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🐺": ["rat_0"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "👹": ["imp_0","imp_1","imp_2","imp_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🪓": ["orc"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧌": ["orge_0","orge_1","orge_2","orge_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🗿": ["turtle_0","turtle_1","turtle_2","turtle_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧛": ["demon_0","demon_1","demon_2","demon_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧟‍♀️": ["undead_0","undead_1","undead_2","undead_3","undead_4","undead_5","undead_6"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧜‍♀️": ["ghost_0","ghost_1","ghost_2","ghost_3"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🐉": ["skeleton_7","skeleton_8","skeleton_9"].map(n => `../../assets/sprites/monsters/${n}.png`),
+  "🧙": ["necromancer_5","necromancer_6","necromancer_7"].map(n => `../../assets/sprites/monsters/${n}.png`)
 };
 
 export const ITEM_TYPES = ['coin', 'star', 'shield', 'heart', 'mana', 'lightning', 'heal', 'stun', 'hurricane'];

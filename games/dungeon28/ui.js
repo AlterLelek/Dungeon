@@ -16,10 +16,10 @@ export function preloadSprites() {
 
     // ПРАВИЛЬНЫЕ ПУТИ: UI отдельно, Предметы (items) отдельно
     paths.push(
-        "assets/sprites/ui/coin.png",
-        "assets/sprites/items/star.png",
-        "assets/sprites/items/shield.png",
-        "assets/sprites/items/lightning.png"
+        "../../assets/sprites/ui/coin.png",
+        "../../assets/sprites/ui/star.png",
+        "../../assets/sprites/ui/shield.png",
+        "../../assets/sprites/ui/lightning.png"
     );
 
     paths.forEach(path => {
@@ -132,10 +132,10 @@ function drawItem(ctx, x, y, type) {
   let spritePath = null;
   
   // ИСПРАВЛЕНО: предметы из папки items
-  if (type === 'coin') spritePath = "assets/sprites/ui/coin.png"; 
-  if (type === 'star') spritePath = "assets/sprites/items/star.png";
-  if (type === 'shield') spritePath = "assets/sprites/items/shield.png";
-  if (type === 'lightning') spritePath = "assets/sprites/items/lightning.png";
+  if (type === 'coin') spritePath = "../../assets/sprites/ui/coin.png"; 
+  if (type === 'star') spritePath = "../../assets/sprites/ui/star.png";
+  if (type === 'shield') spritePath = "../../assets/sprites/ui/shield.png";
+  if (type === 'lightning') spritePath = "../../assets/sprites/ui/lightning.png";
 
   if (spritePath && spriteCache[spritePath] && spriteCache[spritePath].complete && spriteCache[spritePath].naturalWidth > 0) {
       try { ctx.drawImage(spriteCache[spritePath], x + 4, y + 4, 24, 24); return; } catch(e) {}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" shape-rendering="crispEdges">
+  <title>Пень</title>
+  <g id="base" stroke-linejoin="miter" stroke-linecap="square">
+    <path d="M58 86L58 168L74 196L182 196L198 168L198 86Z" fill="#4a2e18" stroke="#241a14" stroke-width="3.6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M66 92H76V174H66Z" fill="#6b4426" stroke="none"/><ellipse cx="128" cy="86" rx="70" ry="30" fill="#6b4426" stroke="#241a14" stroke-width="3.6"/><ellipse cx="128" cy="86" rx="50" ry="21" fill="#4a2e18" stroke="#241a14" stroke-width="3.6"/><ellipse cx="128" cy="86" rx="32" ry="13" fill="#6b4426" stroke="#241a14" stroke-width="3.6"/><ellipse cx="128" cy="86" rx="14" ry="6" fill="#4a2e18" stroke="#241a14" stroke-width="3.6"/><path d="M58 150L38 168L30 190L64 178Z" fill="#4a2e18" stroke="#241a14" stroke-width="3.6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M198 152L220 170L226 190L192 180Z" fill="#4a2e18" stroke="#241a14" stroke-width="3.6" stroke-linejoin="miter" stroke-linecap="square"/><path d="M62 168Q92 186 128 186L120 196H74Z" fill="#3a7537" stroke="none"/><path d="M174 176Q196 182 202 190H166Z" fill="#6aa052" stroke="none"/>
+  </g>
+</svg>

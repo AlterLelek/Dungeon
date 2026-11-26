@@ -1,0 +1,2091 @@
+{
+  "generatedAt": "2026-11-23T08:35:21.458Z",
+  "master": "shared/assets/master",
+  "policy": {
+    "autoTraceGrid": 64,
+    "maxPaletteColors": 16,
+    "maxMeanError": 10
+  },
+  "assets": [
+    {
+      "file": "shared/assets/master/heroes/angel_0.png",
+      "svg": "shared/assets/master/heroes/angel_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 60,
+        "y": 112,
+        "width": 904,
+        "height": 795
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 32.77,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/angel_1.png",
+      "svg": "shared/assets/master/heroes/angel_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 33,
+        "y": 100,
+        "width": 960,
+        "height": 817
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 33.36,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/angel_2.png",
+      "svg": "shared/assets/master/heroes/angel_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 59,
+        "y": 111,
+        "width": 908,
+        "height": 788
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 33.09,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/angel_3.png",
+      "svg": "shared/assets/master/heroes/angel_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 63,
+        "y": 69,
+        "width": 899,
+        "height": 882
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 31.25,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/archer.png",
+      "svg": "shared/assets/master/heroes/archer.svg",
+      "width": 32,
+      "height": 32,
+      "alphaBBox": {
+        "x": 4,
+        "y": 9,
+        "width": 21,
+        "height": 23
+      },
+      "sampledColors": 11,
+      "autoTraceMeanError": 99.31,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/battle_angel_0.png",
+      "svg": "shared/assets/master/heroes/battle_angel_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 53,
+        "y": 51,
+        "width": 919,
+        "height": 904
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 31.84,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/battle_angel_1.png",
+      "svg": "shared/assets/master/heroes/battle_angel_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 39,
+        "y": 63,
+        "width": 946,
+        "height": 872
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 31.88,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/battle_angel_2.png",
+      "svg": "shared/assets/master/heroes/battle_angel_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 39,
+        "y": 31,
+        "width": 947,
+        "height": 930
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 32.99,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/battle_angel_3.png",
+      "svg": "shared/assets/master/heroes/battle_angel_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 39,
+        "y": 75,
+        "width": 946,
+        "height": 859
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 31.41,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/elf_archer_0.png",
+      "svg": "shared/assets/master/heroes/elf_archer_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 201,
+        "y": 93,
+        "width": 635,
+        "height": 838
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 37.17,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/elf_archer_1.png",
+      "svg": "shared/assets/master/heroes/elf_archer_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 188,
+        "y": 39,
+        "width": 650,
+        "height": 968
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 41.22,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/elf_archer_2.png",
+      "svg": "shared/assets/master/heroes/elf_archer_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 175,
+        "y": 47,
+        "width": 674,
+        "height": 935
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 40.4,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/elf_archer_3.png",
+      "svg": "shared/assets/master/heroes/elf_archer_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 188,
+        "y": 77,
+        "width": 649,
+        "height": 922
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 40.46,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/knight_0.png",
+      "svg": "shared/assets/master/heroes/knight_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 150,
+        "y": 35,
+        "width": 724,
+        "height": 960
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 47.95,
+      "vectorization": "manual",
+      "note": "Готовый ручной SVG 256×256; PNG-мастер оставлен без изменений"
+    },
+    {
+      "file": "shared/assets/master/heroes/knight_1.png",
+      "svg": "shared/assets/master/heroes/knight_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 104,
+        "y": 22,
+        "width": 815,
+        "height": 977
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 46.94,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/knight_2.png",
+      "svg": "shared/assets/master/heroes/knight_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 105,
+        "y": 19,
+        "width": 814,
+        "height": 984
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 47.9,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/knight_3.png",
+      "svg": "shared/assets/master/heroes/knight_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 201,
+        "y": 115,
+        "width": 623,
+        "height": 785
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 44.06,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/mage.png",
+      "svg": "shared/assets/master/heroes/mage.svg",
+      "width": 32,
+      "height": 32,
+      "alphaBBox": {
+        "x": 7,
+        "y": 6,
+        "width": 20,
+        "height": 26
+      },
+      "sampledColors": 11,
+      "autoTraceMeanError": 109.5,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/paladin_0.png",
+      "svg": "shared/assets/master/heroes/paladin_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 108,
+        "y": 11,
+        "width": 809,
+        "height": 982
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 100.03,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/paladin_1.png",
+      "svg": "shared/assets/master/heroes/paladin_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 140,
+        "y": 82,
+        "width": 744,
+        "height": 872
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 48.27,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/paladin_2.png",
+      "svg": "shared/assets/master/heroes/paladin_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 65,
+        "y": 85,
+        "width": 894,
+        "height": 902
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 51.31,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/paladin_3.png",
+      "svg": "shared/assets/master/heroes/paladin_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 111,
+        "y": 21,
+        "width": 817,
+        "height": 979
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 49.29,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/wizard_0.png",
+      "svg": "shared/assets/master/heroes/wizard_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 229,
+        "y": 46,
+        "width": 565,
+        "height": 931
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 57.42,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/wizard_1.png",
+      "svg": "shared/assets/master/heroes/wizard_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 238,
+        "y": 67,
+        "width": 548,
+        "height": 899
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 59.87,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/wizard_2.png",
+      "svg": "shared/assets/master/heroes/wizard_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 216,
+        "y": 52,
+        "width": 592,
+        "height": 917
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 63.37,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/heroes/wizard_3.png",
+      "svg": "shared/assets/master/heroes/wizard_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 213,
+        "y": 27,
+        "width": 598,
+        "height": 968
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 84.17,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/axe_0.png",
+      "svg": "shared/assets/master/items/axe_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 265,
+        "y": 30,
+        "width": 502,
+        "height": 955
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 67.2,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/axe_1.png",
+      "svg": "shared/assets/master/items/axe_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 277,
+        "y": 30,
+        "width": 462,
+        "height": 958
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 66.28,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/axe_2.png",
+      "svg": "shared/assets/master/items/axe_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 267,
+        "y": 64,
+        "width": 525,
+        "height": 893
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 29.1,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/axe_3.png",
+      "svg": "shared/assets/master/items/axe_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 289,
+        "y": 57,
+        "width": 417,
+        "height": 897
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 73.87,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow0_0.png",
+      "svg": "shared/assets/master/items/bow0_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 389,
+        "y": 57,
+        "width": 250,
+        "height": 899
+      },
+      "sampledColors": 2773,
+      "autoTraceMeanError": 70.27,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow0_1.png",
+      "svg": "shared/assets/master/items/bow0_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 385,
+        "y": 41,
+        "width": 229,
+        "height": 936
+      },
+      "sampledColors": 2822,
+      "autoTraceMeanError": 79.46,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow0_2.png",
+      "svg": "shared/assets/master/items/bow0_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 322,
+        "y": 35,
+        "width": 265,
+        "height": 953
+      },
+      "sampledColors": 3021,
+      "autoTraceMeanError": 75.91,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow0_3.png",
+      "svg": "shared/assets/master/items/bow0_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 394,
+        "y": 80,
+        "width": 230,
+        "height": 923
+      },
+      "sampledColors": 3062,
+      "autoTraceMeanError": 54.37,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow1_0.png",
+      "svg": "shared/assets/master/items/bow1_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 439,
+        "y": 52,
+        "width": 147,
+        "height": 922
+      },
+      "sampledColors": 2554,
+      "autoTraceMeanError": 86.32,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow1_1.png",
+      "svg": "shared/assets/master/items/bow1_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 426,
+        "y": 38,
+        "width": 202,
+        "height": 945
+      },
+      "sampledColors": 2814,
+      "autoTraceMeanError": 42.43,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow1_2.png",
+      "svg": "shared/assets/master/items/bow1_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 397,
+        "y": 32,
+        "width": 216,
+        "height": 958
+      },
+      "sampledColors": 2558,
+      "autoTraceMeanError": 73.13,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/bow1_3.png",
+      "svg": "shared/assets/master/items/bow1_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 403,
+        "y": 47,
+        "width": 198,
+        "height": 920
+      },
+      "sampledColors": 2445,
+      "autoTraceMeanError": 67.57,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/coin.png",
+      "svg": "shared/assets/master/items/coin.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 8,
+        "y": 8,
+        "width": 48,
+        "height": 48
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 62.71,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/lightning.png",
+      "svg": "shared/assets/master/items/lightning.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 12,
+        "y": 0,
+        "width": 40,
+        "height": 64
+      },
+      "sampledColors": 4,
+      "autoTraceMeanError": 99.95,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/shield.png",
+      "svg": "shared/assets/master/items/shield.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 4,
+        "y": 0,
+        "width": 56,
+        "height": 64
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 52.16,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/staff.png",
+      "svg": "shared/assets/master/items/staff.svg",
+      "width": 8,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 8,
+        "height": 30
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 77.82,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/staff_0.png",
+      "svg": "shared/assets/master/items/staff_0.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 301,
+        "y": 15,
+        "width": 237,
+        "height": 791
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 74.13,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/staff_1.png",
+      "svg": "shared/assets/master/items/staff_1.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 319,
+        "y": 25,
+        "width": 191,
+        "height": 781
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 70.27,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/staff_2.png",
+      "svg": "shared/assets/master/items/staff_2.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 318,
+        "y": 30,
+        "width": 193,
+        "height": 761
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 87.8,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/staff_3.png",
+      "svg": "shared/assets/master/items/staff_3.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 314,
+        "y": 22,
+        "width": 210,
+        "height": 782
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 71.92,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/star.png",
+      "svg": "shared/assets/master/items/star.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 4,
+        "y": 8,
+        "width": 56,
+        "height": 52
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 118.06,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/sword_0.png",
+      "svg": "shared/assets/master/items/sword_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 373,
+        "y": 60,
+        "width": 278,
+        "height": 908
+      },
+      "sampledColors": 3779,
+      "autoTraceMeanError": 56.26,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/sword_1.png",
+      "svg": "shared/assets/master/items/sword_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 394,
+        "y": 99,
+        "width": 236,
+        "height": 819
+      },
+      "sampledColors": 3206,
+      "autoTraceMeanError": 51.81,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/sword_2.png",
+      "svg": "shared/assets/master/items/sword_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 382,
+        "y": 91,
+        "width": 260,
+        "height": 837
+      },
+      "sampledColors": 2363,
+      "autoTraceMeanError": 51.34,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/sword_3.png",
+      "svg": "shared/assets/master/items/sword_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 378,
+        "y": 68,
+        "width": 268,
+        "height": 898
+      },
+      "sampledColors": 3584,
+      "autoTraceMeanError": 56.02,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_anime_sword.png",
+      "svg": "shared/assets/master/items/weapon_anime_sword.svg",
+      "width": 12,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 12,
+        "height": 30
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 133.88,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_axe.png",
+      "svg": "shared/assets/master/items/weapon_axe.svg",
+      "width": 9,
+      "height": 21,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 9,
+        "height": 21
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 87.59,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_baton_with_spikes.png",
+      "svg": "shared/assets/master/items/weapon_baton_with_spikes.svg",
+      "width": 10,
+      "height": 22,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 22
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 75,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_big_hammer.png",
+      "svg": "shared/assets/master/items/weapon_big_hammer.svg",
+      "width": 10,
+      "height": 37,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 37
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 77.47,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_cleaver.png",
+      "svg": "shared/assets/master/items/weapon_cleaver.svg",
+      "width": 8,
+      "height": 19,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 8,
+        "height": 19
+      },
+      "sampledColors": 4,
+      "autoTraceMeanError": 136.46,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_duel_sword.png",
+      "svg": "shared/assets/master/items/weapon_duel_sword.svg",
+      "width": 9,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 9,
+        "height": 30
+      },
+      "sampledColors": 3,
+      "autoTraceMeanError": 108.31,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_golden_sword.png",
+      "svg": "shared/assets/master/items/weapon_golden_sword.svg",
+      "width": 10,
+      "height": 22,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 22
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 95.62,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_hammer.png",
+      "svg": "shared/assets/master/items/weapon_hammer.svg",
+      "width": 10,
+      "height": 24,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 24
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 82.54,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_katana.png",
+      "svg": "shared/assets/master/items/weapon_katana.svg",
+      "width": 6,
+      "height": 29,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 6,
+        "height": 29
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 104.51,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_knife.png",
+      "svg": "shared/assets/master/items/weapon_knife.svg",
+      "width": 6,
+      "height": 13,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 6,
+        "height": 13
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 82.72,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_knight_sword.png",
+      "svg": "shared/assets/master/items/weapon_knight_sword.svg",
+      "width": 10,
+      "height": 29,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 29
+      },
+      "sampledColors": 3,
+      "autoTraceMeanError": 134.36,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_lavish_sword.png",
+      "svg": "shared/assets/master/items/weapon_lavish_sword.svg",
+      "width": 10,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 30
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 93.45,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_mace.png",
+      "svg": "shared/assets/master/items/weapon_mace.svg",
+      "width": 10,
+      "height": 24,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 24
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 109.33,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_machete.png",
+      "svg": "shared/assets/master/items/weapon_machete.svg",
+      "width": 5,
+      "height": 22,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 5,
+        "height": 22
+      },
+      "sampledColors": 4,
+      "autoTraceMeanError": 120.55,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_red_gem_sword.png",
+      "svg": "shared/assets/master/items/weapon_red_gem_sword.svg",
+      "width": 10,
+      "height": 21,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 21
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 114.9,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_red_magic_staff.png",
+      "svg": "shared/assets/master/items/weapon_red_magic_staff.svg",
+      "width": 8,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 8,
+        "height": 30
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 64.71,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_regular_sword.png",
+      "svg": "shared/assets/master/items/weapon_regular_sword.svg",
+      "width": 10,
+      "height": 21,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 21
+      },
+      "sampledColors": 4,
+      "autoTraceMeanError": 118.34,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_rusty_sword.png",
+      "svg": "shared/assets/master/items/weapon_rusty_sword.svg",
+      "width": 10,
+      "height": 21,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 21
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 94.77,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_saw_sword.png",
+      "svg": "shared/assets/master/items/weapon_saw_sword.svg",
+      "width": 10,
+      "height": 25,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 10,
+        "height": 25
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 117.21,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/items/weapon_spear.png",
+      "svg": "shared/assets/master/items/weapon_spear.svg",
+      "width": 6,
+      "height": 30,
+      "alphaBBox": {
+        "x": 0,
+        "y": 0,
+        "width": 6,
+        "height": 30
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 80.73,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/dark_archer_0.png",
+      "svg": "shared/assets/master/monsters/dark_archer_0.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 126,
+        "y": 32,
+        "width": 590,
+        "height": 763
+      },
+      "sampledColors": 3163,
+      "autoTraceMeanError": 32.01,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/dark_archer_1.png",
+      "svg": "shared/assets/master/monsters/dark_archer_1.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 96,
+        "y": 38,
+        "width": 640,
+        "height": 709
+      },
+      "sampledColors": 3042,
+      "autoTraceMeanError": 30.88,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/dark_archer_2.png",
+      "svg": "shared/assets/master/monsters/dark_archer_2.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 106,
+        "y": 22,
+        "width": 631,
+        "height": 780
+      },
+      "sampledColors": 3432,
+      "autoTraceMeanError": 31.8,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/dark_archer_3.png",
+      "svg": "shared/assets/master/monsters/dark_archer_3.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 150,
+        "y": 58,
+        "width": 533,
+        "height": 720
+      },
+      "sampledColors": 3332,
+      "autoTraceMeanError": 27.56,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/demon_0.png",
+      "svg": "shared/assets/master/monsters/demon_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 201,
+        "y": 46,
+        "width": 622,
+        "height": 928
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 58.07,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/demon_1.png",
+      "svg": "shared/assets/master/monsters/demon_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 269,
+        "y": 79,
+        "width": 486,
+        "height": 842
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 59.61,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/demon_2.png",
+      "svg": "shared/assets/master/monsters/demon_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 206,
+        "y": 65,
+        "width": 612,
+        "height": 912
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 53.43,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/demon_3.png",
+      "svg": "shared/assets/master/monsters/demon_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 217,
+        "y": 58,
+        "width": 590,
+        "height": 901
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 40.67,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/ghost_0.png",
+      "svg": "shared/assets/master/monsters/ghost_0.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 64,
+        "y": 19,
+        "width": 705,
+        "height": 796
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 46.08,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/ghost_1.png",
+      "svg": "shared/assets/master/monsters/ghost_1.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 90,
+        "y": 40,
+        "width": 666,
+        "height": 761
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 44.91,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/ghost_2.png",
+      "svg": "shared/assets/master/monsters/ghost_2.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 104,
+        "y": 30,
+        "width": 625,
+        "height": 777
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 55.84,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/ghost_3.png",
+      "svg": "shared/assets/master/monsters/ghost_3.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 74,
+        "y": 25,
+        "width": 683,
+        "height": 782
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 49.54,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/imp_0.png",
+      "svg": "shared/assets/master/monsters/imp_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 204,
+        "y": 65,
+        "width": 619,
+        "height": 896
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 64,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/imp_1.png",
+      "svg": "shared/assets/master/monsters/imp_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 183,
+        "y": 83,
+        "width": 659,
+        "height": 847
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 52.36,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/imp_2.png",
+      "svg": "shared/assets/master/monsters/imp_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 155,
+        "y": 80,
+        "width": 713,
+        "height": 853
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 46.47,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/imp_3.png",
+      "svg": "shared/assets/master/monsters/imp_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 197,
+        "y": 101,
+        "width": 631,
+        "height": 813
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 55.25,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_0.png",
+      "svg": "shared/assets/master/monsters/necromancer_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 177,
+        "y": 55,
+        "width": 671,
+        "height": 928
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 30.82,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_1.png",
+      "svg": "shared/assets/master/monsters/necromancer_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 180,
+        "y": 54,
+        "width": 664,
+        "height": 928
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 28.64,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_2.png",
+      "svg": "shared/assets/master/monsters/necromancer_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 154,
+        "y": 38,
+        "width": 722,
+        "height": 960
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 30.1,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_3.png",
+      "svg": "shared/assets/master/monsters/necromancer_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 189,
+        "y": 71,
+        "width": 649,
+        "height": 891
+      },
+      "sampledColors": 3706,
+      "autoTraceMeanError": 26.08,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_4.png",
+      "svg": "shared/assets/master/monsters/necromancer_4.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 193,
+        "y": 55,
+        "width": 642,
+        "height": 924
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 39.26,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_5.png",
+      "svg": "shared/assets/master/monsters/necromancer_5.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 153,
+        "y": 38,
+        "width": 718,
+        "height": 949
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 33.27,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_6.png",
+      "svg": "shared/assets/master/monsters/necromancer_6.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 203,
+        "y": 39,
+        "width": 618,
+        "height": 972
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 32.98,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/necromancer_7.png",
+      "svg": "shared/assets/master/monsters/necromancer_7.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 75,
+        "y": 15,
+        "width": 874,
+        "height": 1002
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 32,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/orc.png",
+      "svg": "shared/assets/master/monsters/orc.svg",
+      "width": 32,
+      "height": 32,
+      "alphaBBox": {
+        "x": 3,
+        "y": 1,
+        "width": 29,
+        "height": 31
+      },
+      "sampledColors": 11,
+      "autoTraceMeanError": 45.86,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/orge_0.png",
+      "svg": "shared/assets/master/monsters/orge_0.svg",
+      "width": 1032,
+      "height": 1032,
+      "alphaBBox": {
+        "x": 68,
+        "y": 112,
+        "width": 895,
+        "height": 807
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 59.85,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/orge_1.png",
+      "svg": "shared/assets/master/monsters/orge_1.svg",
+      "width": 1032,
+      "height": 1032,
+      "alphaBBox": {
+        "x": 98,
+        "y": 106,
+        "width": 848,
+        "height": 812
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 50.91,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/orge_2.png",
+      "svg": "shared/assets/master/monsters/orge_2.svg",
+      "width": 1032,
+      "height": 1032,
+      "alphaBBox": {
+        "x": 31,
+        "y": 121,
+        "width": 972,
+        "height": 794
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 69.48,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/orge_3.png",
+      "svg": "shared/assets/master/monsters/orge_3.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 14,
+        "y": 22,
+        "width": 804,
+        "height": 789
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 62.39,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/rat_0.png",
+      "svg": "shared/assets/master/monsters/rat_0.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 136,
+        "y": 69,
+        "width": 610,
+        "height": 700
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 47.62,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_0.png",
+      "svg": "shared/assets/master/monsters/skeleton_0.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 155,
+        "y": 19,
+        "width": 523,
+        "height": 789
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 103.92,
+      "vectorization": "manual",
+      "note": "Готовый ручной SVG 256×256; PNG-мастер оставлен без изменений"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_1.png",
+      "svg": "shared/assets/master/monsters/skeleton_1.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 134,
+        "y": 17,
+        "width": 567,
+        "height": 798
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 101.39,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_2.png",
+      "svg": "shared/assets/master/monsters/skeleton_2.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 146,
+        "y": 28,
+        "width": 545,
+        "height": 778
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 108.88,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_3.png",
+      "svg": "shared/assets/master/monsters/skeleton_3.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 137,
+        "y": 12,
+        "width": 558,
+        "height": 807
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 102.07,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_4.png",
+      "svg": "shared/assets/master/monsters/skeleton_4.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 126,
+        "y": 43,
+        "width": 579,
+        "height": 747
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 113.24,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_5.png",
+      "svg": "shared/assets/master/monsters/skeleton_5.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 154,
+        "y": 7,
+        "width": 525,
+        "height": 816
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 111.38,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_6.png",
+      "svg": "shared/assets/master/monsters/skeleton_6.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 136,
+        "y": 6,
+        "width": 563,
+        "height": 817
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 93.22,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_7.png",
+      "svg": "shared/assets/master/monsters/skeleton_7.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 143,
+        "y": 28,
+        "width": 548,
+        "height": 775
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 112.09,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_8.png",
+      "svg": "shared/assets/master/monsters/skeleton_8.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 149,
+        "y": 21,
+        "width": 544,
+        "height": 791
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 97.8,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/skeleton_9.png",
+      "svg": "shared/assets/master/monsters/skeleton_9.svg",
+      "width": 832,
+      "height": 832,
+      "alphaBBox": {
+        "x": 110,
+        "y": 5,
+        "width": 614,
+        "height": 818
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 97.44,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/spider_0.png",
+      "svg": "shared/assets/master/monsters/spider_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 165,
+        "y": 119,
+        "width": 694,
+        "height": 779
+      },
+      "sampledColors": 3571,
+      "autoTraceMeanError": 47.11,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/spider_1.png",
+      "svg": "shared/assets/master/monsters/spider_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 68,
+        "y": 43,
+        "width": 888,
+        "height": 772
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 51.87,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/spider_2.png",
+      "svg": "shared/assets/master/monsters/spider_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 109,
+        "y": 203,
+        "width": 806,
+        "height": 692
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 54.41,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/spider_3.png",
+      "svg": "shared/assets/master/monsters/spider_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 99,
+        "y": 88,
+        "width": 826,
+        "height": 857
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 51.53,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/turtle_0.png",
+      "svg": "shared/assets/master/monsters/turtle_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 138,
+        "y": 102,
+        "width": 748,
+        "height": 849
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 41.56,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/turtle_1.png",
+      "svg": "shared/assets/master/monsters/turtle_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 124,
+        "y": 67,
+        "width": 776,
+        "height": 878
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 37.11,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/turtle_2.png",
+      "svg": "shared/assets/master/monsters/turtle_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 122,
+        "y": 97,
+        "width": 781,
+        "height": 829
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 40.97,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/turtle_3.png",
+      "svg": "shared/assets/master/monsters/turtle_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 112,
+        "y": 85,
+        "width": 799,
+        "height": 857
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 46.34,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_0.png",
+      "svg": "shared/assets/master/monsters/undead_0.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 133,
+        "y": 37,
+        "width": 758,
+        "height": 963
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 71.63,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_1.png",
+      "svg": "shared/assets/master/monsters/undead_1.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 113,
+        "y": 27,
+        "width": 799,
+        "height": 971
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 57.73,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_2.png",
+      "svg": "shared/assets/master/monsters/undead_2.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 169,
+        "y": 26,
+        "width": 691,
+        "height": 974
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 67.53,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_3.png",
+      "svg": "shared/assets/master/monsters/undead_3.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 126,
+        "y": 29,
+        "width": 775,
+        "height": 965
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 69.85,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_4.png",
+      "svg": "shared/assets/master/monsters/undead_4.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 113,
+        "y": 6,
+        "width": 798,
+        "height": 1011
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 69.46,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_5.png",
+      "svg": "shared/assets/master/monsters/undead_5.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 229,
+        "y": 45,
+        "width": 575,
+        "height": 934
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 60.74,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/monsters/undead_6.png",
+      "svg": "shared/assets/master/monsters/undead_6.svg",
+      "width": 1024,
+      "height": 1024,
+      "alphaBBox": {
+        "x": 181,
+        "y": 22,
+        "width": 662,
+        "height": 988
+      },
+      "sampledColors": 4097,
+      "autoTraceMeanError": 82.09,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/ui/coin.png",
+      "svg": "shared/assets/master/ui/coin.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 8,
+        "y": 8,
+        "width": 48,
+        "height": 48
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 62.71,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/ui/lightning.png",
+      "svg": "shared/assets/master/ui/lightning.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 12,
+        "y": 0,
+        "width": 40,
+        "height": 64
+      },
+      "sampledColors": 4,
+      "autoTraceMeanError": 99.95,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/ui/shield.png",
+      "svg": "shared/assets/master/ui/shield.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 4,
+        "y": 0,
+        "width": 56,
+        "height": 64
+      },
+      "sampledColors": 6,
+      "autoTraceMeanError": 52.16,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    },
+    {
+      "file": "shared/assets/master/ui/star.png",
+      "svg": "shared/assets/master/ui/star.svg",
+      "width": 64,
+      "height": 64,
+      "alphaBBox": {
+        "x": 4,
+        "y": 8,
+        "width": 56,
+        "height": 52
+      },
+      "sampledColors": 5,
+      "autoTraceMeanError": 118.06,
+      "vectorization": "requires_manual_vectorization",
+      "note": "Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG"
+    }
+  ]
+}

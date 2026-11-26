@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><defs><clipPath id="c"><path d="M32 3.5 L50 11 V26 C50 42.5 40 52.5 32 60.5 C24 52.5 14 42.5 14 26 V11 Z"/></clipPath><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9c6d2"/><stop offset="1" stop-color="#3d4854"/></linearGradient></defs><g stroke="#241a14" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" >
+  <path d="M32 3.5 L50 11 V26 C50 42.5 40 52.5 32 60.5 C24 52.5 14 42.5 14 26 V11 Z" fill="url(#b)" stroke="#241a14" stroke-width="2"/>
+  <g clip-path="url(#c)">
+      <path d="M28 5 H36 V60 H28 Z" fill="#4f86c6"/>
+      <path d="M15 24 H49 V32 H15 Z" fill="#4f86c6"/>
+      <path d="M28 5 H36 V60 H28 Z M15 24 H49 V32 H15 Z" fill="none" stroke="#ffe6a1" stroke-width="1.2"/>
+      <path d="M32 4 L50 11 V15 L32 8 L14 15 V11 Z" fill="#8a99a8" stroke="#241a14" stroke-width="1.2"/>
+    </g>
+  <path d="M32 3.5 L50 11 V26 C50 42.5 40 52.5 32 60.5 C24 52.5 14 42.5 14 26 V11 Z" fill="none" stroke="#a9772a" stroke-width="1.7" transform="translate(32 32) scale(0.9) translate(-32 -32)"/>
+  <circle cx="32" cy="20" r="2" fill="#e8b84b" stroke="#241a14" stroke-width="0.9"/>
+        <circle cx="32" cy="46" r="2" fill="#e8b84b" stroke="#241a14" stroke-width="0.9"/>
+</g></svg>

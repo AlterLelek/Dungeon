@@ -13,7 +13,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             padding: 16px;
             overflow-y: auto;
@@ -105,9 +105,231 @@
             .game-card { padding: 10px 8px; }
             .game-card .desc { font-size: 10px; }
         }
+
+        /* КАТАЛОГ АССЕТОВ */
+        .hub-wrap {
+            width: 100%;
+            max-width: 1120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .catalog {
+            width: 100%;
+            margin-top: 26px;
+            padding: 18px 18px 16px;
+            background: linear-gradient(150deg, rgba(48,48,68,.96), rgba(20,21,32,.98));
+            border: 2px solid #4a4a68;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,.45);
+            user-select: text;
+        }
+        .catalog-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .catalog h2 {
+            color: #fbbf24;
+            font-size: 20px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 12px rgba(251,191,36,.35);
+        }
+        .catalog-sub {
+            color: #9aa6c4;
+            font-size: 12px;
+            margin-top: 4px;
+            line-height: 1.45;
+        }
+        .catalog-tools {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #assetSearch {
+            background: #0e101b;
+            color: #fff;
+            border: 1px solid #4a4a68;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font: inherit;
+            font-size: 13px;
+            min-width: 220px;
+            outline: none;
+        }
+        #assetSearch:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 2px rgba(251,191,36,.18);
+        }
+        .asset-count {
+            color: #9aa6c4;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .catalog-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            color: #9aa6c4;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .catalog-legend b { font-weight: 800; }
+        .catalog-legend .yes { color: #7ee787; }
+        .catalog-legend .no { color: #6b7280; }
+        .catalog-legend .dyn {
+            color: #fbbf24;
+            font-size: 10px;
+            border: 1px solid rgba(251,191,36,.5);
+            border-radius: 5px;
+            padding: 1px 4px;
+        }
+        .asset-scroll {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border: 1px solid rgba(74,74,104,.7);
+            border-radius: 12px;
+            background: rgba(8,9,16,.55);
+            -webkit-overflow-scrolling: touch;
+        }
+        .asset-scroll:focus-visible {
+            outline: 2px solid #fbbf24;
+            outline-offset: 2px;
+        }
+        .asset-table {
+            width: 100%;
+            min-width: 720px;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .asset-table th,
+        .asset-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(74,74,104,.35);
+            text-align: center;
+            vertical-align: middle;
+        }
+        .asset-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #1b1c2e;
+            color: #fbbf24;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .asset-table th:first-child,
+        .asset-table td:first-child { text-align: left; }
+        .asset-table tbody tr:hover td { background: rgba(251,191,36,.055); }
+        .asset-table tbody tr.asset-group th {
+            background: rgba(251,191,36,.08);
+            color: #fbbf24;
+            text-align: left;
+            font-size: 12px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(251,191,36,.25);
+            border-bottom: 1px solid rgba(251,191,36,.18);
+            padding: 9px 10px;
+        }
+        .asset-table tbody tr.asset-group:first-child th { border-top: 0; }
+        .asset-table .group-count {
+            color: #9aa6c4;
+            font-size: 11px;
+            letter-spacing: 0;
+            text-transform: none;
+            margin-left: 6px;
+        }
+        .asset-name {
+            font-weight: 600;
+            color: #e6e9f2;
+            white-space: nowrap;
+        }
+        .asset-table .use {
+            font-weight: 800;
+            font-size: 15px;
+            width: 74px;
+        }
+        .asset-table .use.yes { color: #7ee787; }
+        .asset-table .use.no { color: #5c6375; }
+        .asset-table .dyn {
+            display: inline-block;
+            margin-left: 4px;
+            padding: 1px 4px;
+            border: 1px solid rgba(251,191,36,.5);
+            border-radius: 5px;
+            color: #fbbf24;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1.3;
+            vertical-align: middle;
+            cursor: help;
+        }
+        .asset-table .pic { width: 64px; }
+        .asset-table .pic img {
+            width: 40px;
+            height: 40px;
+            max-width: 48px;
+            max-height: 48px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+        @keyframes tree-crown-sway {
+            0%, 100% { transform: rotate(calc(-1 * var(--sway-angle, 2.4deg))); }
+            50% { transform: rotate(var(--sway-angle, 2.4deg)); }
+        }
+        .asset-table .pic img.tree-sway {
+            transform-origin: 50% 88%;
+            animation: tree-crown-sway var(--sway-duration, 4.8s) ease-in-out infinite;
+            animation-delay: var(--sway-delay, 0s);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .asset-table .pic img.tree-sway { animation: none; }
+        }
+        .asset-table .pic .noimg { color: #5c6375; font-size: 11px; }
+        .asset-table .asset-loading,
+        .asset-table .asset-empty {
+            color: #9aa6c4;
+            text-align: center;
+            padding: 22px 10px;
+        }
+        .asset-table .asset-error {
+            color: #fca5a5;
+            text-align: center;
+            padding: 22px 10px;
+            line-height: 1.5;
+        }
+        .catalog-note {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        .catalog-note code { color: #9aa6c4; }
+        @media (max-width: 520px) {
+            .catalog { padding: 14px 10px 12px; margin-top: 20px; }
+            .catalog h2 { font-size: 17px; }
+            .catalog-tools { width: 100%; }
+            #assetSearch { flex: 1; min-width: 0; }
+            .asset-table { min-width: 640px; font-size: 12px; }
+            .asset-table th,
+            .asset-table td { padding: 7px 8px; }
+            .asset-table .pic img { width: 36px; height: 36px; }
+        }
+        @media (max-height: 520px) and (orientation: landscape) {
+            .catalog { margin-top: 16px; }
+        }
     </style>
 </head>
 <body>
+    <div class="hub-wrap">
     <h1>🎮 Игровой хаб</h1>
 
     <div class="grid">
@@ -136,5 +358,272 @@
             <span class="cta">Играть ➜</span>
         </a>
     </div>
+
+    <section class="catalog" id="assetCatalog" aria-labelledby="assetCatalogTitle">
+        <div class="catalog-head">
+            <div>
+                <h2 id="assetCatalogTitle">Каталог ассетов</h2>
+                <p class="catalog-sub">Все файлы из assets: где используются и как выглядят.</p>
+            </div>
+            <div class="catalog-tools">
+                <input id="assetSearch" type="search" placeholder="Поиск по имени файла…" autocomplete="off" aria-label="Поиск по имени файла">
+                <span id="assetCount" class="asset-count"></span>
+            </div>
+        </div>
+        <div class="catalog-legend">
+            <span><b class="yes">+</b> используется в коде</span>
+            <span><b class="no">−</b> не используется</span>
+            <span><b class="dyn">дин.</b> путь собирается динамически</span>
+        </div>
+        <div class="asset-scroll" tabindex="0" role="region" aria-label="Таблица ассетов, прокручивается по горизонтали">
+            <table class="asset-table">
+                <thead>
+                    <tr>
+                        <th>Название файла</th>
+                        <th>Подземелье</th>
+                        <th>Лабиринт</th>
+                        <th>Подземелье 28</th>
+                        <th>Авантюрист</th>
+                        <th>Картинка</th>
+                    </tr>
+                </thead>
+                <tbody id="assetRows">
+                    <tr><td colspan="6" class="asset-loading">Загрузка каталога…</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="catalog-note" id="assetNote"></p>
+    </section>
+    </div>
+
+    <script>
+    (() => {
+        const TYPE_GROUPS = [
+            { id: 'character', label: 'Персонажи' },
+            { id: 'enemy', label: 'Враги' },
+            { id: 'weapon', label: 'Оружие' },
+            { id: 'armor', label: 'Броня' },
+            { id: 'item', label: 'Предметы' },
+            { id: 'herb', label: 'Травы' },
+            { id: 'flora', label: 'Флора', group: 'Флора' },
+            { id: 'wildlife', label: 'Животные' },
+            { id: 'mountain', label: 'Горы', group: 'Горы' },
+            { id: 'tile', label: 'Тайлы' },
+            { id: 'ui', label: 'UI' },
+            // Батчи из manifest.json: группа задаётся полем group, а не type.
+            { id: 'tree-summer', label: 'Деревья — Лето', group: 'Деревья — Лето' },
+            { id: 'tree-autumn', label: 'Деревья — Осень', group: 'Деревья — Осень' },
+            { id: 'tree-winter', label: 'Деревья — Зима', group: 'Деревья — Зима' },
+            { id: 'tree-spring', label: 'Деревья — Весна', group: 'Деревья — Весна' }
+        ];
+        const GAME_COLUMNS = [
+            { id: 'dungeon', label: 'Подземелье' },
+            { id: 'labyrinth', label: 'Лабиринт' },
+            { id: 'dungeon28', label: 'Подземелье 28' },
+            { id: 'adventurer', label: 'Авантюрист' }
+        ];
+
+        const rowsEl = document.getElementById('assetRows');
+        const countEl = document.getElementById('assetCount');
+        const searchEl = document.getElementById('assetSearch');
+        const noteEl = document.getElementById('assetNote');
+
+        function applyFilter() {
+            const query = searchEl.value.trim().toLowerCase();
+            const rows = Array.from(rowsEl.querySelectorAll('tr[data-name]'));
+            const groups = Array.from(rowsEl.querySelectorAll('tr.asset-group'));
+            const visibleGroups = new Set();
+
+            for (const row of rows) {
+                const match = !query || row.dataset.name.includes(query);
+                row.hidden = !match;
+                if (match) visibleGroups.add(row.dataset.group);
+            }
+            for (const group of groups) {
+                group.hidden = query ? !visibleGroups.has(group.dataset.group) : false;
+            }
+            for (const empty of rowsEl.querySelectorAll('tr[data-empty]')) {
+                empty.hidden = Boolean(query);
+            }
+
+            const visible = rows.filter((row) => !row.hidden).length;
+            countEl.textContent = query
+                ? visible + ' из ' + rows.length
+                : rows.length + ' файлов';
+        }
+
+        // Стабильный Seed по пути файла: фаза покачивания не зависит от порядка строк.
+        function swaySeed(value) {
+            let hash = 2166136261;
+            for (let i = 0; i < value.length; i++) {
+                hash ^= value.charCodeAt(i);
+                hash = Math.imul(hash, 16777619);
+            }
+            return hash >>> 0;
+        }
+
+        function render(entries) {
+            // Старые записи группируются по type как раньше. У записей из батчей
+            // (деревья, флора, горы) есть поле group — оно имеет приоритет.
+            const descriptors = TYPE_GROUPS.slice();
+            const idByGroup = new Map(
+                descriptors.filter((group) => group.group).map((group) => [group.group, group.id])
+            );
+            for (const entry of entries) {
+                if (!entry.group || idByGroup.has(entry.group)) continue;
+                const id = 'group-' + entry.group.toLowerCase().replace(/[^a-zа-я0-9]+/gi, '-').replace(/^-|-$/g, '');
+                idByGroup.set(entry.group, id);
+                descriptors.push({ id, label: entry.group, group: entry.group });
+            }
+
+            const groups = new Map(descriptors.map((group) => [group.id, []]));
+            for (const entry of entries) {
+                const id = (entry.group && idByGroup.get(entry.group)) ||
+                    (groups.has(entry.type) ? entry.type : 'item');
+                groups.get(id).push(entry);
+            }
+            for (const list of groups.values()) {
+                list.sort((a, b) => a.file.localeCompare(b.file, 'ru', {
+                    numeric: true,
+                    sensitivity: 'base'
+                }));
+            }
+
+            rowsEl.innerHTML = '';
+
+            for (const group of descriptors) {
+                const list = groups.get(group.id);
+
+                const groupRow = document.createElement('tr');
+                groupRow.className = 'asset-group';
+                groupRow.dataset.group = group.id;
+                const groupCell = document.createElement('th');
+                groupCell.colSpan = 6;
+                groupCell.textContent = group.label;
+                const groupCount = document.createElement('span');
+                groupCount.className = 'group-count';
+                groupCount.textContent = list.length;
+                groupCell.appendChild(groupCount);
+                groupRow.appendChild(groupCell);
+                rowsEl.appendChild(groupRow);
+
+                if (!list.length) {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.dataset.empty = '1';
+                    emptyRow.dataset.group = group.id;
+                    const emptyCell = document.createElement('td');
+                    emptyCell.colSpan = 6;
+                    emptyCell.className = 'asset-empty';
+                    emptyCell.textContent = 'Нет файлов этого типа';
+                    emptyRow.appendChild(emptyCell);
+                    rowsEl.appendChild(emptyRow);
+                    continue;
+                }
+
+                for (const entry of list) {
+                    const row = document.createElement('tr');
+                    row.dataset.name = entry.file.toLowerCase();
+                    row.dataset.group = group.id;
+
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'asset-name';
+                    nameCell.textContent = entry.file;
+                    nameCell.title = entry.path + (
+                        entry.sign_text ? '\nВывеска: ' + entry.sign_text : ''
+                    ) + (
+                        entry.refs && entry.refs.length
+                            ? '\nИспользуется: ' + entry.refs.join('\n')
+                            : '\nВ коде игр не найдено'
+                    );
+                    row.appendChild(nameCell);
+
+                    for (const game of GAME_COLUMNS) {
+                        const cell = document.createElement('td');
+                        const used = Array.isArray(entry.used_in) && entry.used_in.includes(game.id);
+                        const dynamic = entry.dynamic_in && entry.dynamic_in[game.id];
+
+                        if (used) {
+                            cell.className = 'use yes';
+                            cell.textContent = '+';
+                            if (dynamic && dynamic.length) {
+                                const badge = document.createElement('span');
+                                badge.className = 'dyn';
+                                badge.textContent = 'дин.';
+                                badge.title = 'Динамическая привязка:\n' + dynamic.join('\n');
+                                cell.appendChild(badge);
+                            }
+                        } else {
+                            cell.className = 'use no';
+                            cell.textContent = '−';
+                        }
+                        row.appendChild(cell);
+                    }
+
+                    const picCell = document.createElement('td');
+                    picCell.className = 'pic';
+                    const img = document.createElement('img');
+                    img.src = entry.path;
+                    img.alt = entry.file;
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
+                    img.width = 40;
+                    img.height = 40;
+
+                    if (entry.type === 'tree' || entry.path.startsWith('assets/trees/')) {
+                        const seed = swaySeed(entry.path);
+                        const duration = 4.2 + (seed % 9) * 0.2;
+                        const uniqueSeed = (seed ^ Math.imul(entry.id || 1, 0x9e3779b9)) >>> 0;
+                        const phase = uniqueSeed / 4294967296;
+                        const angle = 2 + ((seed >>> 16) % 9) / 10;
+
+                        img.classList.add('tree-sway');
+                        img.style.setProperty('--sway-duration', duration.toFixed(2) + 's');
+                        img.style.setProperty('--sway-delay', (-duration * phase) + 's');
+                        img.style.setProperty('--sway-angle', angle.toFixed(2) + 'deg');
+                    }
+
+                    img.addEventListener('error', () => {
+                        img.remove();
+                        const fallback = document.createElement('span');
+                        fallback.className = 'noimg';
+                        fallback.textContent = '—';
+                        picCell.appendChild(fallback);
+                    });
+                    picCell.appendChild(img);
+                    row.appendChild(picCell);
+
+                    rowsEl.appendChild(row);
+                }
+            }
+
+            noteEl.innerHTML = 'Источник: <code>assets/manifest.json</code>. Обновить: <code>npm run build:manifest</code>.';
+            applyFilter();
+        }
+
+        searchEl.addEventListener('input', applyFilter);
+
+        fetch('assets/manifest.json', { cache: 'no-store' })
+            .then((response) => {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            })
+            .then((entries) => {
+                if (!Array.isArray(entries)) throw new Error('manifest.json должен содержать массив');
+                render(entries);
+            })
+            .catch((error) => {
+                rowsEl.innerHTML = '';
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 6;
+                cell.className = 'asset-error';
+                cell.textContent = 'Не удалось загрузить каталог: ' + error.message +
+                    '. Запустите npm run build:manifest и откройте хаб через локальный сервер.';
+                row.appendChild(cell);
+                rowsEl.appendChild(row);
+                countEl.textContent = '';
+            });
+    })();
+    </script>
 </body>
 </html>

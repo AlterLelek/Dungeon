@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><defs><clipPath id="c"><circle cx="32" cy="32" r="23.5"/></clipPath><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c08a55"/><stop offset="1" stop-color="#5a3a1e"/></linearGradient><linearGradient id="h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9c6d2"/><stop offset="1" stop-color="#3d4854"/></linearGradient></defs><g stroke="#241a14" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" >
+      <circle cx="32" cy="32" r="23.5" fill="url(#b)" stroke="#241a14" stroke-width="2"/>
+      <g clip-path="url(#c)">
+        <path d="M18 9 V55 M25 7 V57 M32 5 V59 M39 7 V57 M46 9 V55" stroke="#5a3a1e" stroke-width="1.3" opacity="0.55"/>
+        <path d="M9 22 H55 M9 32 H55 M9 42 H55" stroke="#5a3a1e" stroke-width="1" opacity="0.25"/>
+      </g>
+      <circle cx="32" cy="32" r="23.5" fill="none" stroke="#5b6978" stroke-width="3.2"/>
+      <circle cx="32" cy="32" r="18.5" fill="none" stroke="#5b6978" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="32" cy="32" r="6.4" fill="url(#h)" stroke="#241a14" stroke-width="1.4"/>
+      <circle cx="30.4" cy="30.2" r="1.8" fill="#f7f4ea" opacity="0.55"/>
+      <circle cx="52.4" cy="32.0" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="46.4" cy="46.4" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="32.0" cy="52.4" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="17.6" cy="46.4" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="11.6" cy="32.0" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="17.6" cy="17.6" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="32.0" cy="11.6" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/><circle cx="46.4" cy="17.6" r="1.3" fill="#eef3f7" stroke="#241a14" stroke-width="0.7"/>
+    </g></svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" shape-rendering="crispEdges">
+  <title>knight_0 — фронтальный рыцарь, v2</title>
+  <!-- Палитра (15 цветов): #241a14 #3b2b24 #5a4a3f #87796a #b9ac98 #e6dcc8 #f6eedb #4a2e18 #6b4426 #8a3f24 #a9481c #ce6d20 #e79b2d #f8c853 #140f0b -->
+  <!-- Фронтальный стандарт v2: ось симметрии x=128, прозрачный фон. -->
+  <defs>
+    <!-- Левая половина симметричного тела; правая — отражение через use. -->
+    <g id="half">
+      <path d="M128 76 H114 L106 80 L100 88 V122 L104 140 H128Z" fill="#87796a" stroke="#241a14" stroke-width="2"/>
+      <path d="M126 80 H114 L108 84 L104 90 V118 L108 134 H126Z" fill="#b9ac98" stroke="#241a14" stroke-width="1"/>
+      <path d="M124 84 H114 L110 88 V116 L114 128 H124Z" fill="#e6dcc8"/>
+      <path d="M106 96 H124 M106 112 H124 M106 126 H124" fill="none" stroke="#5a4a3f" stroke-width="1.5"/>
+      <path d="M102 74 H88 L80 78 L76 86 L78 96 L90 100 L102 96Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2"/>
+      <path d="M99 78 H89 L83 82 L81 88 L85 94 L97 96Z" fill="#b9ac98" stroke="#241a14" stroke-width="1"/>
+      <path d="M95 81 H88 L86 87 L92 91 H97Z" fill="#e6dcc8"/>
+      <path d="M80 86 L83 90 M84 82 L87 86 M88 79 L91 83" fill="none" stroke="#f8c853" stroke-width="1.6"/>
+      <path d="M90 96 H100 L97 118 L95 138 H84 L86 116Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2"/>
+      <path d="M91 100 H97 L94 118 L92 134 H88 L89 116Z" fill="#b9ac98"/>
+      <path d="M84 136 H96 L97 148 H83Z" fill="#87796a" stroke="#241a14" stroke-width="1.5"/>
+      <path d="M128 140 H106 L102 150 L108 158 H128Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2"/>
+      <path d="M126 144 H108 L106 150 L110 154 H126Z" fill="#b9ac98"/>
+      <path d="M110 146 L108 152 M118 146 L116 153" fill="none" stroke="#f8c853" stroke-width="1.4"/>
+      <path d="M108 154 H126 L124 182 L126 192 H106 L108 182Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2"/>
+      <path d="M110 158 H123 L121 180 L123 188 H109Z" fill="#b9ac98"/>
+      <path d="M107 183 H125 L127 193 H105Z" fill="#87796a" stroke="#241a14" stroke-width="1.5"/>
+      <path d="M110 186 H123 L124 190 H109Z" fill="#f8c853" stroke="#241a14" stroke-width="1"/>
+      <path d="M108 193 H124 L119 216 H109Z" fill="#87796a" stroke="#241a14" stroke-width="2"/>
+      <path d="M111 197 H121 L116 213 H111Z" fill="#e6dcc8"/>
+      <path d="M106 214 H121 L125 226 V234 H100 V226Z" fill="#4a2e18" stroke="#241a14" stroke-width="2"/>
+      <path d="M108 218 H119 L122 228 H102Z" fill="#6b4426"/>
+      <path d="M103 230 H122" fill="none" stroke="#e6dcc8" stroke-width="1.6"/>
+    </g>
+    <!-- Левая половина головы; правая — отражение. -->
+    <g id="halfHead">
+      <path d="M128 20 H114 L108 24 L104 32 V52 L108 62 L116 68 H128Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2"/>
+      <path d="M126 24 H114 L110 28 L107 34 V50 L111 58 L118 64 H126Z" fill="#b9ac98" stroke="#241a14" stroke-width="1"/>
+      <path d="M124 28 H114 L112 32 V48 L115 54 L120 58 H124Z" fill="#e6dcc8"/>
+      <path d="M110 42 H128 V49 H110 L107 46Z" fill="#140f0b" stroke="#241a14" stroke-width="1.5"/>
+      <path d="M112 44 H124" fill="none" stroke="#f6eedb" stroke-width="1.6"/>
+      <path d="M108 50 L112 52 V62 L108 58Z" fill="#87796a" stroke="#241a14" stroke-width="1"/>
+      <path d="M112 54 H128 V57 H112Z M112 59 H128 V62 H112Z" fill="#3b2b24" stroke="#241a14" stroke-width="1"/>
+    </g>
+  </defs>
+  <g id="body">
+    <use href="#half"/>
+    <use href="#half" transform="translate(256,0) scale(-1,1)"/>
+    <!-- Центральные детали: ребро кирасы, эмблема дуба, пряжка. -->
+    <path d="M126 76 H130 V140 H126Z" fill="#e6dcc8" stroke="#241a14" stroke-width="1"/>
+    <path d="M128 92 L120 98 L124 100 L118 108 L126 106 L128 114 L130 106 L138 108 L132 100 L136 98Z" fill="#f8c853" stroke="#241a14" stroke-width="1.2"/>
+    <path d="M128 96 V110 M128 100 L123 104 M128 100 L133 104" fill="none" stroke="#a9481c" stroke-width="1.2"/>
+    <path d="M120 140 H136 V150 H120Z" fill="#f8c853" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M124 143 H132 V147 H124Z" fill="#a9481c" stroke="#241a14" stroke-width="1"/>
+  </g>
+  <g id="head">
+    <use href="#halfHead"/>
+    <use href="#halfHead" transform="translate(256,0) scale(-1,1)"/>
+    <path d="M126 40 H130 V64 H126Z" fill="#e6dcc8" stroke="#241a14" stroke-width="1"/>
+    <path d="M124 20 H132 L130 28 H126Z" fill="#f8c853" stroke="#241a14" stroke-width="1.2"/>
+    <path d="M128 20 L125 26 H131Z" fill="#ce6d20"/>
+  </g>
+  <g id="shield">
+    <path d="M84 136 H96 L97 148 H83Z" fill="#87796a" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M64 106 H100 L102 134 L98 156 L82 172 L66 156 L62 134Z" fill="#5a4a3f" stroke="#241a14" stroke-width="2.5"/>
+    <path d="M68 110 H96 L98 134 L94 152 L82 166 L70 152 L66 134Z" fill="#8a3f24" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M72 114 H92 L94 134 L90 148 L82 159 L74 148 L70 134Z" fill="#a9481c"/>
+    <path d="M82 116 V158 M70 132 H94" fill="none" stroke="#f8c853" stroke-width="2.4"/>
+    <path d="M82 126 L74 124 L77 132 L72 138 L80 136 L82 144 L84 136 L92 138 L87 132 L90 124Z" fill="#f8c853" stroke="#241a14" stroke-width="1"/>
+    <path d="M66 110 L69 114 M98 110 L95 114 M66 156 L70 152 M98 156 L94 152" fill="none" stroke="#e79b2d" stroke-width="1.6"/>
+  </g>
+  <g id="arm" style="transform-origin: 166px 78px;">
+    <path d="M156 96 H166 L172 118 L172 138 H160 L158 116Z" fill="#87796a" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M160 136 H174 L175 150 H159Z" fill="#b9ac98" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M162 140 L164 151 M167 140 L168 151 M172 140 L173 150" fill="none" stroke="#241a14" stroke-width="1"/>
+    <g id="weapon">
+      <path d="M162 144 H180 L179 150 H163Z" fill="#f8c853" stroke="#241a14" stroke-width="1.5"/>
+      <path d="M165 150 H177 V168 H165Z" fill="#4a2e18" stroke="#241a14" stroke-width="1.5"/>
+      <path d="M167 152 H175 M167 157 H175 M167 162 H175" fill="none" stroke="#e79b2d" stroke-width="1.2"/>
+      <path d="M164 168 H178 L176 206 L171 214 L166 206Z" fill="#b9ac98" stroke="#241a14" stroke-width="2"/>
+      <path d="M169 170 H173 V204 L171 209 L169 204Z" fill="#f6eedb"/>
+      <path d="M176 172 L177 204" fill="none" stroke="#5a4a3f" stroke-width="1.5"/>
+      <path d="M168 212 H174 V218 H168Z" fill="#f8c853" stroke="#241a14" stroke-width="1.2"/>
+    </g>
+  </g>
+</svg>

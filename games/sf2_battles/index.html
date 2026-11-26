@@ -371,11 +371,11 @@ let settingsOpen = false;
 
 /* Ниже — база Подземелья 28: те же пять героев, параметры и спрайты. */
 const HEROES = [
-{name:"Воин", emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3, melMod:0, lightRange:64, sprite:"../dungeon28/assets/sprites/heroes/knight_0.png"},
-{name:"Маг", emoji:"🔮", set:"mage", maxHp:80, maxMp:5, melMod:-1, lightRange:96, sprite:"../dungeon28/assets/sprites/heroes/wizard_0.png"},
-{name:"Паладин", emoji:"✝️", set:"warrior", maxHp:95, maxMp:4, melMod:0, lightRange:80, sprite:"../dungeon28/assets/sprites/heroes/paladin_0.png"},
-{name:"Ангел", emoji:"👼", set:"mage", maxHp:85, maxMp:6, melMod:0, lightRange:96, sprite:"../dungeon28/assets/sprites/heroes/battle_angel_0.png"},
-{name:"Лучник", emoji:"🏹", set:"archer", maxHp:90, maxMp:3, melMod:0, lightRange:80, sprite:"../dungeon28/assets/sprites/heroes/elf_archer_0.png"}
+{name:"Воин", emoji:"⚔️", set:"warrior", maxHp:100, maxMp:3, melMod:0, lightRange:64, sprite:"../../assets/sprites/heroes/knight_0.png"},
+{name:"Маг", emoji:"🔮", set:"mage", maxHp:80, maxMp:5, melMod:-1, lightRange:96, sprite:"../../assets/sprites/heroes/wizard_0.png"},
+{name:"Паладин", emoji:"✝️", set:"warrior", maxHp:95, maxMp:4, melMod:0, lightRange:80, sprite:"../../assets/sprites/heroes/paladin_0.png"},
+{name:"Ангел", emoji:"👼", set:"mage", maxHp:85, maxMp:6, melMod:0, lightRange:96, sprite:"../../assets/sprites/heroes/battle_angel_0.png"},
+{name:"Лучник", emoji:"🏹", set:"archer", maxHp:90, maxMp:3, melMod:0, lightRange:80, sprite:"../../assets/sprites/heroes/elf_archer_0.png"}
 ];
 let heroIdx = 0;
 
@@ -1576,7 +1576,7 @@ if (abilityTurns === 0) { abilityAtk = 0; abilityShield = 0; spellDiscount = 0; 
 if (abilityCooldown > 0) abilityCooldown--;
 }
 
-const SPRITE_BASE = "../dungeon28/assets/sprites/";
+const SPRITE_BASE = "../../assets/sprites/";
 const boardImgs = {};
 function boardImg(src) {
 if (!src) return null;
@@ -2016,7 +2016,7 @@ window.__sfLastCutsceneSide = side === 'right' ? 'right' : 'left';
 var h = (typeof HEROES !== 'undefined' && HEROES[heroIdx]) || {name:'Герой', sprite:'', maxHp:100};
 var mType = '🐢';
 var eName = (typeof ENEMY_NAMES !== 'undefined' && ENEMY_NAMES[mType]) || 'Черепаха';
-var eSprite = '../dungeon28/assets/sprites/monsters/turtle_0.png';
+var eSprite = '../../assets/sprites/monsters/turtle_0.png';
 start({
 heroes: [{name:h.name, sprite:h.sprite, hp:h.maxHp, max:h.maxHp, mp:0, mpMax:10}],
 enemies: [{name:eName, sprite:eSprite, hp:200, max:200}],
@@ -2156,7 +2156,7 @@ startBattleCutscene({
 heroes: [
 {name: h.name, sprite: h.sprite, hp: playerHp, max: heroMaxHp(), mp: energy, mpMax: Math.max(10, energy)}
 ],
-enemies: [{name: eName, sprite: '../dungeon28/assets/sprites/monsters/' + (ENEMY_SPRITE[m.type] || 'skeleton_0') + '.png', hp: m.hp, max: m.maxHp}],
+enemies: [{name: eName, sprite: '../../assets/sprites/monsters/' + (ENEMY_SPRITE[m.type] || 'skeleton_0') + '.png', hp: m.hp, max: m.maxHp}],
 damage1: dmg, counterDamage: counter, defenderX: 150,
 side: attackerSide, theme: (typeof heroTheme === 'function' ? heroTheme().id : 'fortress'),
 poison: poison, killed: killed, endAt: endAt, messages: messages
@@ -2349,7 +2349,8 @@ c.fillStyle = v; c.fillRect(0, 0, MAP_WORLD, MAP_WORLD);
 }
 /* ===== Статичные наложения на героя в режиме карты 15×15 (оружие слева, щит справа) =====
    Бой 1 на 1 и его расстановку не трогаем: работает только drawMap(). */
-var SF_OVERLAY_ITEMS = '../dungeon28/assets/sprites/items/';
+var SF_OVERLAY_ITEMS = '../../assets/sprites/items/';
+var SF_OVERLAY_UI = '../../assets/sprites/ui/';
 function sfOverlayShieldFill(armor) {
 if (!(armor > 0)) return 0;
 return Math.min(0.75, 0.25 + ((Math.min(30, armor) - 1) * 0.5) / 29);
@@ -2397,7 +2398,7 @@ else sfDrawProceduralWeapon(c, wx, wy, size, wp.sprite);
 var armor = sfOverlayArmor(), fill = sfOverlayShieldFill(armor);
 if (fill > 0) {
 var w = 14, h = 18, sx = px + 27, sy = py + 9; // справа от героя
-var shield = boardImg(SF_OVERLAY_ITEMS + 'shield.png');
+var shield = boardImg(SF_OVERLAY_UI + 'shield.png');
 c.save();
 c.beginPath(); c.rect(sx, sy + h * (1 - fill), w, h * fill + 0.5); c.clip();
 if (shield && shield.complete && shield.naturalWidth) {

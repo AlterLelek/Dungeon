@@ -389,49 +389,49 @@ Object.assign(MON_SPRITES,{
  vampire:['demon_0'], mummy:['undead_0'], siren:['ghost_0'], wyvern:['skeleton_9'], lich:['necromancer_7']
 });
 const SPRITE_IMGS={};
-for(const k in MON_SPRITES)SPRITE_IMGS[k]=MON_SPRITES[k].map(n=>{const im=new Image();im.src='../dungeon28/assets/sprites/monsters/'+n+'.png';return im;});
+for(const k in MON_SPRITES)SPRITE_IMGS[k]=MON_SPRITES[k].map(n=>{const im=new Image();im.src='../../assets/sprites/monsters/'+n+'.png';return im;});
 /* Те же пять героев, что и в Подземелье 28: параметры и спрайты из общей базы. */
 const HEROES={
- warrior:{name:'Воин',emoji:'🛡️',color:'#f09040',hp:100,atk:8,def:3,speed:150,mana:3,sprite:'../dungeon28/assets/sprites/heroes/knight_0.png',desc:'Крепкий боец из Подземелья 28. Ярость усиливает удары, Стража защищает спину.',
+ warrior:{name:'Воин',emoji:'🛡️',color:'#f09040',hp:100,atk:8,def:3,speed:150,mana:3,sprite:'../../assets/sprites/heroes/knight_0.png',desc:'Крепкий боец из Подземелья 28. Ярость усиливает удары, Стража защищает спину.',
   spells:[{k:'Z',icon:'⚔️',name:'Удар клинка',cost:3,desc:'Мощный удар по всем врагам на клетках впереди'},
    {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- mage:{name:'Маг',emoji:'🧙',color:'#5090ff',hp:80,atk:6,def:1,speed:165,mana:5,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Хрупкий, но дальнобойный. Огненный шар бьёт на расстоянии, Чертёнок прикрывает.',
+ mage:{name:'Маг',emoji:'🧙',color:'#5090ff',hp:80,atk:6,def:1,speed:165,mana:5,sprite:'../../assets/sprites/heroes/wizard_0.png',desc:'Хрупкий, но дальнобойный. Огненный шар бьёт на расстоянии, Чертёнок прикрывает.',
   spells:[{k:'Z',icon:'☄️',name:'Огненный шар',cost:3,desc:'Снаряд летит вперёд и взрывается при попадании'},
    {k:'X',icon:'🔵',name:'Магический щит',cost:3,desc:'Щит поглощает урон'},
    {k:'C',icon:'😈',name:'Чертёнок',cost:3,desc:'Призывает чертёнка — стреляет в монстров'}]},
- paladin:{name:'Паладин',emoji:'✝️',color:'#ffd860',hp:95,atk:7,def:4,speed:170,mana:4,sprite:'../dungeon28/assets/sprites/heroes/paladin_0.png',desc:'Танк. Волна света бьёт вокруг, Исцеление лечит, Стража защищает.',
+ paladin:{name:'Паладин',emoji:'✝️',color:'#ffd860',hp:95,atk:7,def:4,speed:170,mana:4,sprite:'../../assets/sprites/heroes/paladin_0.png',desc:'Танк. Волна света бьёт вокруг, Исцеление лечит, Стража защищает.',
   spells:[{k:'Z',icon:'🌟',name:'Волна света',cost:3,desc:'Золотая волна расходится вокруг, задевая всех врагов в радиусе 3'},
    {k:'X',icon:'💚',name:'Исцеление',cost:3,desc:'Лечит героя искрами света'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- angel:{name:'Ангел',emoji:'👼',color:'#bfe8ff',hp:85,atk:19,def:4,speed:175,mana:6,sprite:'../dungeon28/assets/sprites/heroes/battle_angel_0.png',desc:'Небесный союзник. Свет бьёт вокруг, Исцеление лечит, Стража прикрывает.',
+ angel:{name:'Ангел',emoji:'👼',color:'#bfe8ff',hp:85,atk:19,def:4,speed:175,mana:6,sprite:'../../assets/sprites/heroes/battle_angel_0.png',desc:'Небесный союзник. Свет бьёт вокруг, Исцеление лечит, Стража прикрывает.',
   spells:[{k:'Z',icon:'🌟',name:'Свет Ангела',cost:3,desc:'Световая волна задевает врагов в радиусе 3'},
    {k:'X',icon:'💚',name:'Исцеление',cost:3,desc:'Лечит героя'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- archer:{name:'Лучник',emoji:'🏹',color:'#a8e06a',hp:90,atk:20,def:3,speed:160,mana:3,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Точный выстрел из тени. Бьёт через клетку, Ярость усиливает стрелы.',
+ archer:{name:'Лучник',emoji:'🏹',color:'#a8e06a',hp:90,atk:20,def:3,speed:160,mana:3,sprite:'../../assets/sprites/heroes/elf_archer_0.png',desc:'Точный выстрел из тени. Бьёт через клетку, Ярость усиливает стрелы.',
   spells:[{k:'Z',icon:'🏹',name:'Точный выстрел',cost:3,desc:'Стрела летит вперёд и бьёт первое попавшееся существо'},
    {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
 };
 /* Пять героев расширения — те же имена и параметры, что в общей базе. */
 Object.assign(HEROES,{
- druid:{...HEROES.mage,name:'Друид',emoji:'🌲',hp:88,atk:6,def:1,speed:165,mana:7,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Лесной маг. Лечит травой и вызывает бурю, экономя ману на заклинаниях.',
+ druid:{...HEROES.mage,name:'Друид',emoji:'🌲',hp:88,atk:6,def:1,speed:165,mana:7,sprite:'../../assets/sprites/heroes/wizard_0.png',desc:'Лесной маг. Лечит травой и вызывает бурю, экономя ману на заклинаниях.',
   spells:[{k:'Z',icon:'🌪️',name:'Буря',cost:3,desc:'Вызывает бурю вокруг героя'},
    {k:'X',icon:'💚',name:'Лечение травой',cost:3,desc:'Восстанавливает HP'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- rogue:{...HEROES.archer,name:'Разбойник',emoji:'🏹',hp:84,atk:18,def:2,speed:180,mana:3,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Быстрый удар и находка монет. Отлично начинает каждое приключение.',
+ rogue:{...HEROES.archer,name:'Разбойник',emoji:'🏹',hp:84,atk:18,def:2,speed:180,mana:3,sprite:'../../assets/sprites/heroes/elf_archer_0.png',desc:'Быстрый удар и находка монет. Отлично начинает каждое приключение.',
   spells:[{k:'Z',icon:'🏹',name:'Точный выстрел',cost:3,desc:'Стрела летит вперёд и бьёт первое существо'},
    {k:'X',icon:'🪙',name:'Находка',cost:3,desc:'Даёт монеты и ускоряет героя'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- amazon:{...HEROES.archer,name:'Амазонка',emoji:'🎯',hp:86,atk:21,def:3,speed:170,mana:4,sprite:'../dungeon28/assets/sprites/heroes/elf_archer_0.png',desc:'Меткий выстрел пробивает броню даже тяжёлых монстров.',
+ amazon:{...HEROES.archer,name:'Амазонка',emoji:'🎯',hp:86,atk:21,def:3,speed:170,mana:4,sprite:'../../assets/sprites/heroes/elf_archer_0.png',desc:'Меткий выстрел пробивает броню даже тяжёлых монстров.',
   spells:[{k:'Z',icon:'🎯',name:'Пробитие',cost:3,desc:'Выстрел пробивает броню цели'},
    {k:'X',icon:'🔥',name:'Ярость',cost:3,desc:'+50% к атаке на 8 ходов'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- dwarf:{...HEROES.warrior,name:'Гном-кулига',emoji:'⛏️',hp:110,atk:9,def:5,speed:130,mana:2,sprite:'../dungeon28/assets/sprites/heroes/knight_0.png',desc:'Живуч, но медлителен. Держит удар лучше всех, но не умеет колдовать.',
+ dwarf:{...HEROES.warrior,name:'Гном-кулига',emoji:'⛏️',hp:110,atk:9,def:5,speed:130,mana:2,sprite:'../../assets/sprites/heroes/knight_0.png',desc:'Живуч, но медлителен. Держит удар лучше всех, но не умеет колдовать.',
   spells:[{k:'Z',icon:'⛏️',name:'Сильный удар',cost:2,desc:'Мощный удар по врагу впереди'},
    {k:'X',icon:'🛡️',name:'Стойкость',cost:2,desc:'Временная защита и восстановление'},
    {k:'C',icon:'🗿',name:'Стража',cost:3,desc:'Призывает каменного стража-союзника рядом'}]},
- dwarfmage:{...HEROES.mage,name:'Гном-колдун',emoji:'💎',hp:96,atk:6,def:2,speed:155,mana:8,sprite:'../dungeon28/assets/sprites/heroes/wizard_0.png',desc:'Единственный гном, владеющий магией. Кристаллы усиливают его чары.',
+ dwarfmage:{...HEROES.mage,name:'Гном-колдун',emoji:'💎',hp:96,atk:6,def:2,speed:155,mana:8,sprite:'../../assets/sprites/heroes/wizard_0.png',desc:'Единственный гном, владеющий магией. Кристаллы усиливают его чары.',
   spells:[{k:'Z',icon:'💎',name:'Кристалл',cost:3,desc:'Кристалл пробивает врага на расстоянии'},
    {k:'X',icon:'🔵',name:'Магический щит',cost:3,desc:'Щит поглощает урон'},
    {k:'C',icon:'😈',name:'Чертёнок',cost:3,desc:'Призывает чертёнка — стреляет в монстров'}]}
