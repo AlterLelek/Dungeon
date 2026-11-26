@@ -177,6 +177,15 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
 .invSlotChip b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .invSlotChip small{display:block;color:#8b94b2;font-size:8px}
+.containerTabs{display:flex;gap:4px;flex-wrap:wrap;margin:2px 0 4px}
+.containerTab{display:flex;align-items:center;gap:4px;min-height:24px;padding:3px 7px;border:1px solid rgba(255,255,255,.14);
+  border-radius:7px;background:rgba(255,255,255,.035);color:#b9c4e0;cursor:pointer;font-size:9px;line-height:1.1}
+.containerTab .ctCount{color:#ffe09a;font-weight:800}
+.containerTab.full{border-color:rgba(248,113,113,.45);color:#fca5a5}
+.containerTab.sel{border-color:#fbbf24;color:#ffe9b0;background:rgba(251,191,36,.14)}
+.containerTab:hover,.containerTab:focus-visible{border-color:#fbbf24;outline:none}
+.invCell .moveBtn{position:absolute;right:1px;top:1px;width:15px;height:15px;padding:0;border:1px solid rgba(251,191,36,.4);
+  border-radius:4px;background:rgba(10,14,26,.85);color:#ffe9b0;font-size:10px;line-height:13px;cursor:pointer;z-index:2}
 .invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);grid-auto-rows:48px;gap:6px;justify-content:start;align-content:start;
   max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
   background:rgba(0,0,0,.2);min-height:160px}
@@ -1160,14 +1169,17 @@ function isMetalArmor(it){
 function loadInfo(h,extra){
   const capacity=Math.max(1,capacityFor(h&&h.def));
   const worn=wornItems(h).filter(it=>it!==extra);
-  const weight=worn.reduce((sum,it)=>sum+itemWeight(it),0)+(extra?itemWeight(extra):0);
+  const cw=containerWeight();
+  const gearWeight=worn.reduce((sum,it)=>sum+itemWeight(it),0)+(extra?itemWeight(extra):0);
+  const weight=round1(gearWeight+cw);
   const ratio=weight/capacity;
   const level=ratio>LOAD_RULES.encumberedMax?'overload':ratio>LOAD_RULES.normalMax?'encumbered':'normal';
   const speedMult=level==='overload'?LOAD_RULES.overloadedSpeed:level==='encumbered'?LOAD_RULES.encumberedSpeed:LOAD_RULES.normalSpeed;
   const magicBlocked=level==='overload';
   const metalWeight=worn.filter(isMetalArmor).reduce((sum,it)=>sum+itemWeight(it),0)+(isMetalArmor(extra)?itemWeight(extra):0);
   const failChance=magicBlocked?0:Math.min(LOAD_RULES.metalFailMax,metalWeight*LOAD_RULES.metalFailPerWeight);
-  return {weight,capacity,ratio,percent:Math.round(ratio*100),level,speedMult,magicBlocked,metalWeight,failChance};
+  return {weight,gearWeight:round1(gearWeight),containerWeight:cw,capacity,ratio,percent:Math.round(ratio*100),
+    level,speedMult,magicBlocked,metalWeight,failChance};
 }
 function loadText(i){
   return i.weight+'/'+i.capacity+' ('+i.percent+'%) · скорость ×'+i.speedMult+(i.magicBlocked?' · магия недоступна':'');
@@ -1352,7 +1364,7 @@ function gearRecipeBlock(){ return ''; }
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
 let selHero=[0,1,2], selDiff=settings.difficulty, heroNameText='Герой', pickHeroTab=0;
-let invTab='Общий', invSlot=null, invArmedSlot=null;
+let invTab='Общий', invSlot=null, invArmedSlot=null, invContainer=null;
 
 function makeItem(o){
   const item=Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
@@ -1452,7 +1464,7 @@ function normalizeHeroList(a,b){
   return out.slice(0,clamp(Number(settings.partySize)||3,1,3));
 }
 function freshGameShell(diffId){
-  return {difficulty:diffId,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
+  return {difficulty:diffId,bag:[],containers:ensureContainers(null),gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
     battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
@@ -1485,7 +1497,7 @@ function startGame(diffId,a,b){
 const WORLD_SAVE_KEY='mm6_world_save_v1';
 function saveWorldState(){
   if(!game||!game.world) return false;
-  const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,party:game.party,
+  const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
     world:game.world,player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
     seasonOverride:game.seasonOverride,log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
   try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
@@ -1503,6 +1515,14 @@ function loadWorldState(){
   installMessageLogger();
   game._msg=String(data.msg||'');
   game.log=Array.isArray(game.log)?game.log:[]; game.history=Array.isArray(game.history)?game.history:game.log;
+  /* Миграция старых сейвов: контейнеры и их категории создаются заново,
+     а предметы без container расходятся по подходящим слотам. Переполнение
+     оставляет предмет в сумке, ничего не удаляя. */
+  game.containers=ensureContainers(game.containers);
+  game.bag.forEach(it=>{
+    if(!it.container) it.container=pickContainerFor(it);
+    if(it.container&&!containerAccepts(containerDef(it.container),it)) it.container=null;
+  });
   /* Старые сейвы не знали слота второй руки — восстанавливаем блокировку по двуручнику. */
   game.party.forEach(h=>{
     if(!h.equip) h.equip={};
@@ -2107,7 +2127,14 @@ function afterStep(cost){
 function addItem(o){
   const found=game.bag.find(i=>i.id&&i.id===o.id&&i.type===o.type);
   if(found&&o.count!==undefined){ found.count+=o.count||1; return found; }
-  const it=makeItem(o); game.bag.push(it); return it;
+  const it=makeItem(o);
+  /* Авто-подбор кладёт находку в подходящий контейнер. Если все подходящие
+     контейнеры полны, предмет остаётся в общем инвентаре — он не теряется. */
+  const target=pickContainerFor(it);
+  it.container=target||null;
+  if(!target) toast('Контейнер переполнен: предмет остался в инвентаре.');
+  game.bag.push(it);
+  return it;
 }
 function collectTreasure(c){
   const t=c.item, d=game.world.difficulty;
@@ -3205,7 +3232,94 @@ function drawShopInterior(kind,now,name){
   g.fillStyle='#a8b4d8'; g.font='11px sans-serif'; g.fillText('Продавец за прилавком',12,28);
 }
 /* ============================ 9. ИНВЕНТАРЬ И РЕМЕСЛО ============================ */
+/* Контейнеры хранят категории предметов и имеют ограничение по числу слотов.
+   Вес самих контейнеров добавляется к общей нагрузке героя; содержимое остаётся
+   в game.bag, поэтому экипировка, лавка и ремесло работают с тем же списком. */
+const CONTAINER_DEFS=[
+  {id:'pockets',name:'Карманы',capacity:8,step:2,cost:4,weight:0,
+    accept:['potion','liquid','herb','food','scroll','material','crystal']},
+  {id:'belt',name:'Пояс',capacity:6,step:2,cost:5,weight:0,
+    accept:['potion','liquid','herb','food']},
+  {id:'purse',name:'Мошна',capacity:1,step:1,cost:3,weight:0,accept:[]},
+  {id:'bag',name:'Сумка',capacity:16,step:4,cost:8,weight:0,
+    accept:['weapon','armor','potion','liquid','herb','food','scroll','material','crystal','container','misc','chest']},
+  {id:'chest',name:'Сундук',capacity:12,step:3,cost:10,weight:0,
+    accept:['weapon','armor','scroll','material','crystal','container','chest']}
+];
 const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Еда','Свитки','Ремесло','Сундуки'];
+function ensureContainers(snap){
+  const out={};
+  CONTAINER_DEFS.forEach(def=>{
+    const old=snap&&snap[def.id]||{};
+    const upgrade=Number.isFinite(old.upgrade)?Math.max(0,Math.floor(old.upgrade)):0;
+    out[def.id]={id:def.id,capacity:Math.max(def.capacity,Number(old.capacity)||def.capacity),
+      upgrade,weight:Number(old.weight)||0,accept:def.accept.slice()};
+  });
+  return out;
+}
+function containerDef(id){ return CONTAINER_DEFS.find(d=>d.id===id)||null; }
+function containerState(id){ return game&&game.containers?game.containers[id]:null; }
+function containerItems(id){
+  if(!game||!id) return [];
+  const worn=equippedUidSet();
+  return game.bag.filter(it=>it&&it.container===id&&!worn.has(it.uid));
+}
+function containerRoom(id){
+  const def=containerDef(id), st=containerState(id);
+  if(!def||!st) return 0;
+  return Math.max(0,st.capacity-containerItems(id).length);
+}
+function containerAccepts(def,it){
+  return !!def&&!!it&&def.accept.length>0&&def.accept.indexOf(it.type)>=0;
+}
+function nextContainerFor(it,from){
+  if(!it) return null;
+  const order=CONTAINER_DEFS.map(d=>d.id), start=Math.max(0,order.indexOf(from));
+  for(let i=1;i<=order.length;i++){
+    const def=containerDef(order[(start+i)%order.length]);
+    if(containerAccepts(def,it)&&containerRoom(def.id)>0) return def.id;
+  }
+  return null;
+}
+function pickContainerFor(it){
+  if(!it) return null;
+  const type=it.type;
+  const order=type==='weapon'||type==='armor'?['bag','chest','pockets']
+    :type==='scroll'||type==='material'||type==='crystal'?['pockets','chest','bag']
+    :type==='potion'||type==='liquid'||type==='herb'||type==='food'?['belt','pockets','bag']
+    :['bag','chest','pockets'];
+  for(const id of order){
+    const def=containerDef(id);
+    if(containerAccepts(def,it)&&containerRoom(id)>0) return id;
+  }
+  return null;
+}
+function containerWeight(){
+  if(!game||!game.containers) return 0;
+  return round1(CONTAINER_DEFS.reduce((sum,def)=>sum+(Number((game.containers[def.id]||{}).weight)||0),0));
+}
+function containerTabLabel(def){
+  const st=containerState(def.id);
+  return def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity);
+}
+function containerReport(){
+  const errors=[];
+  if(!game||!game.containers) return {ok:false,errors:['Контейнеры не инициализированы'],containers:[],tabs:[]};
+  const worn=equippedUidSet();
+  const rows=CONTAINER_DEFS.map(def=>{
+    const st=game.containers[def.id];
+    if(!st) errors.push('Нет контейнера '+def.name);
+    const items=containerItems(def.id);
+    if(st&&items.length>st.capacity) errors.push(def.name+' переполнена');
+    return {id:def.id,name:def.name,used:items.length,capacity:st?st.capacity:def.capacity,
+      upgrade:st?st.upgrade:0,weight:st?st.weight:0,accept:def.accept.slice(),tab:containerTabLabel(def)};
+  });
+  const loose=game.bag.filter(it=>!worn.has(it.uid)&&!it.container).map(it=>it.name);
+  const li=loadInfo(party()[0]);
+  return {ok:!errors.length,errors,containers:rows,tabs:rows.map(r=>r.tab),loose,
+    totalUsed:rows.reduce((s,r)=>s+r.used,0),totalCapacity:rows.reduce((s,r)=>s+r.capacity,0),
+    weight:li.containerWeight,gearWeight:li.gearWeight,totalWeight:li.weight};
+}
 function toggleInventory(open){
   if(!game||phase!=='play') return;
   game.invOpen=!!open;
@@ -3349,7 +3463,8 @@ function itemStatsText(it,h){
 }
 function invTabItems(tab){
   const equipped=equippedUidSet();
-  const bag=game.bag.filter(i=>!equipped.has(i.uid));
+  let bag=game.bag.filter(i=>!equipped.has(i.uid));
+  if(invContainer) bag=bag.filter(i=>i.container===invContainer);
   if(tab==='Общий') return bag;
   if(tab==='Оружие') return bag.filter(i=>i.type==='weapon');
   if(tab==='Броня') return bag.filter(i=>i.type==='armor');
@@ -3359,6 +3474,47 @@ function invTabItems(tab){
   if(tab==='Свитки') return bag.filter(i=>i.type==='scroll');
   if(tab==='Сундуки') return bag.filter(i=>i.type==='chest');
   return bag;
+}
+function moveContainerItem(uid,target){
+  const it=game&&game.bag.find(i=>i.uid===uid), def=containerDef(target);
+  if(!it||!def) return false;
+  if(!containerAccepts(def,it)){
+    toast('В '+def.name+' такой предмет не помещается.');
+    renderInventory(); return false;
+  }
+  if(it.container!==target&&containerRoom(target)<=0){
+    toast('Контейнер полон: предмет остался на месте.');
+    renderInventory(); return false;
+  }
+  it.container=target;
+  toast('Переложено: '+it.name+' → '+def.name+'.');
+  renderInventory(); return true;
+}
+function upgradeContainer(id){
+  const def=containerDef(id), st=containerState(id);
+  if(!def||!st) return false;
+  if(st.upgrade>=3){ toast('Достигнут лимит улучшений контейнера.'); return false; }
+  const cost=def.cost*(st.upgrade+1);
+  if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
+  game.gold-=cost; st.upgrade++; st.capacity+=def.step;
+  /* Освободившиеся слоты сразу забирают предметы, оставшиеся без контейнера. */
+  game.bag.filter(i=>!i.container&&containerAccepts(def,i)).forEach(i=>{
+    if(containerRoom(id)>0) i.container=id;
+  });
+  toast(def.name+' улучшена: '+st.capacity+' слотов.');
+  renderInventory(); updateParty(); return true;
+}
+function replaceBelt(uid){
+  const it=game&&game.bag.find(i=>i.uid===uid);
+  if(!it||it.type!=='container'||it.containerKind!=='belt') return false;
+  const st=containerState('belt'); if(!st) return false;
+  st.capacity=Math.max(st.capacity,Number(it.capacity)||st.capacity);
+  st.weight=Number(it.weight)||0;
+  st.level=Number(it.level)||1;
+  const ix=game.bag.indexOf(it); if(ix>=0) game.bag.splice(ix,1);
+  containerItems('belt').slice(st.capacity).forEach(x=>{ x.container=null; });
+  toast('Пояс заменён: '+st.capacity+' слотов.');
+  renderInventory(); updateParty(); return true;
 }
 function itemCell(it,h){
   const target=mannequinSlotForItem(it);
@@ -3378,7 +3534,9 @@ function itemCell(it,h){
   }else if(it.type==='herb'||it.type==='potion'||it.type==='liquid'||it.type==='scroll'||it.type==='food'||it.type==='chest'){
     action=()=>{ useItem(it.uid); renderInventory(); };
   }
-  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),count:it.count||1,action,blocked:!!block&&(it.type==='weapon'||it.type==='armor')};
+  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),count:it.count||1,action,
+    blocked:!!block&&(it.type==='weapon'||it.type==='armor'),
+    moveFrom:invContainer?it.uid:null,moveTo:invContainer?nextContainerFor(it,invContainer):null};
 }
 function spellCell(s,h){
   const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'';
@@ -3435,6 +3593,14 @@ function makeInvCell(cell){
     c.className='cnt';
     c.textContent='×'+cell.count;
     b.appendChild(c);
+  }
+  if(cell.moveFrom&&cell.moveTo){
+    const mv=document.createElement('button');
+    mv.type='button'; mv.className='moveBtn'; mv.dataset.move=cell.moveTo;
+    mv.title='Переложить в '+((containerDef(cell.moveTo)||{}).name||'контейнер');
+    mv.textContent='→';
+    mv.onclick=e=>{ e.stopPropagation(); moveContainerItem(cell.moveFrom,cell.moveTo); };
+    b.appendChild(mv);
   }
   const show=()=>showInvDetail(cell);
   b.addEventListener('mouseenter',show);
@@ -3579,6 +3745,21 @@ function renderInventory(){
   });
   list.appendChild(strip);
 
+  if(game.containers){
+    const ctabs=document.createElement('div'); ctabs.className='containerTabs';
+    CONTAINER_DEFS.forEach(def=>{
+      const b=document.createElement('button');
+      b.type='button'; b.dataset.container=def.id;
+      b.className='containerTab'+(invContainer===def.id?' sel':'')+(containerRoom(def.id)<=0?' full':'');
+      b.title=def.name+': '+containerItems(def.id).length+'/'+((game.containers[def.id]||{}).capacity||def.capacity)+
+        ' · вмещает: '+(def.accept.length?def.accept.join(', '):'золото');
+      b.textContent=containerTabLabel(def);
+      b.onclick=()=>{ invContainer=invContainer===def.id?null:def.id; invArmedSlot=null; renderInventory(); };
+      ctabs.appendChild(b);
+    });
+    list.appendChild(ctabs);
+  }
+
   const grid=document.createElement('div'); grid.className='invGrid';
   const cells=[];
   if(invTab==='Магия'){
@@ -3617,6 +3798,26 @@ function renderInventory(){
     });
   }else{
     invTabItems(invTab).forEach(it=>cells.push(itemCell(it,h)));
+    if(invContainer){
+      const def=containerDef(invContainer), st=containerState(invContainer);
+      if(def&&st){
+        const cost=def.cost*(st.upgrade+1), over=st.upgrade>=3, poor=game.gold<cost;
+        cells.push({
+          name:'Улучшить '+def.name,
+          desc:'Слотов: '+containerItems(def.id).length+'/'+st.capacity+' → '+(st.capacity+def.step)+
+            ' · 🪙 '+cost+(over?' · лимит улучшений':poor?' · не хватает золота':''),
+          blocked:over||poor,
+          action:()=>upgradeContainer(def.id)
+        });
+        const beltItem=invContainer==='belt'?game.bag.find(i=>i.type==='container'&&i.containerKind==='belt'):null;
+        if(beltItem) cells.push({
+          name:'Заменить пояс',
+          desc:'Новый пояс: '+(beltItem.capacity||6)+' слотов · вес '+(beltItem.weight||0)+
+            ' · содержимое сохранится',
+          action:()=>replaceBelt(beltItem.uid)
+        });
+      }
+    }
   }
   if(cells.length){
     cells.forEach(c=>grid.appendChild(makeInvCell(c)));
@@ -5088,6 +5289,15 @@ window.__mm6Debug={
       offhandUid:hero&&hero.equip?hero.equip.offhand||null:null,marker,
       shieldUid:hero&&hero.equip?hero.equip.shield||null:null,
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
+  },
+  containerReport:()=>containerReport(),
+  addItemBySpec:(o)=>{ const it=addItem(o); renderInventory(); updateParty(); return it?it.uid:null; },
+  moveToContainer:(uid,id)=>moveContainerItem(uid,id),
+  upgradeContainer:(id)=>upgradeContainer(id),
+  replaceBelt:(uid)=>replaceBelt(uid),
+  setContainerCapacity:(id,n)=>{
+    const st=containerState(id); if(!st) return false;
+    st.capacity=Math.max(0,Math.floor(Number(n)||0)); renderInventory(); return true;
   },
   terrainReport:()=>terrainReport(),
   spriteCoverageReport:()=>spriteCoverageReport(),
