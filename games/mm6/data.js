@@ -345,7 +345,8 @@ export const SHOP_STOCK = {
   jeweler: { weapons: [10, 11, 14, 15], armor: [4, 18, 27, 28], price: 1.6, sell: 0.75, magic: true, crystals: 5, noHeavy: true },
   market: { weapons: [0, 1, 5], armor: [1, 8, 24, 26], price: 0.95, sell: 0.5, berries: true, food: true },
   tavern: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, food: true },
-  inn: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, rest: true }
+  inn: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, rest: true },
+  church: { weapons: [], armor: [], price: 1, sell: 0.5, church: true }
 };
 
 export const SHOP_TYPES = [
@@ -357,7 +358,8 @@ export const SHOP_TYPES = [
   { id: 'jeweler', title: 'Ювелир', icon: '💎', accent: '#34d399', desc: 'Кристаллы и украшения.', names: ['Ювелир «Изумруд»', 'Лавка драгоценностей', 'Ювелирная мастерская'] },
   { id: 'market', title: 'Рынок', icon: '🛒', accent: '#fbbf24', desc: 'Травы, еда, разные товары.', names: ['Рынок у фонтана', 'Торговая площадь', 'Рынок «Ягода»'] },
   { id: 'tavern', title: 'Таверна', icon: '🍺', accent: '#fbbf24', desc: 'Еда за монеты.', names: ['Таверна «Золотой бокал»', 'Таверна «У доброго трактирщика»', 'Харчевня «Круглый стол»'] },
-  { id: 'inn', title: 'Гостиница', icon: '🛏', accent: '#a78bfa', desc: 'Сон и восстановление.', names: ['Гостиница «Отдых»', 'Постоялый двор', 'Гостиница «Тихий двор»'] }
+  { id: 'inn', title: 'Гостиница', icon: '🛏', accent: '#a78bfa', desc: 'Сон и восстановление.', names: ['Гостиница «Отдых»', 'Постоялый двор', 'Гостиница «Тихий двор»'] },
+  { id: 'church', title: 'Церковь', icon: '⛪', accent: '#fde68a', desc: 'Воскрешение за десятину.', names: ['Церковь Света', 'Храм Тихого Покаяния', 'Часовня у городских ворот'] }
 ];
 
 // Каталог зданий. Поле shop_kind повторяет assets/manifest.json
@@ -384,7 +386,9 @@ export const BUILDING_TYPES = [
   { id: 'armory_0', title: 'Оружейня', kind: 'weapons', shop_kind: ['weapons', 'armory', 'armor'] },
   { id: 'jewelry_0', title: 'Ювелирная лавка', kind: 'jeweler', shop_kind: ['jeweler'] },
   { id: 'magic_0', title: 'Магазин магии', kind: 'magic', shop_kind: ['magic'] },
-  { id: 'inn_0', title: 'Гостиница', kind: 'inn', shop_kind: ['inn'] }
+  { id: 'inn_0', title: 'Гостиница', kind: 'inn', shop_kind: ['inn'] },
+  { id: 'church_0', title: 'Церковь', kind: 'church', shop_kind: ['church'],
+    deco: 'В храме пахнет ладаном. Служитель принимает десятину за воскрешение.' }
 ];
 
 export const BIOMES = {

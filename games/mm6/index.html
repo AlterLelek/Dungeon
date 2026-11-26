@@ -434,6 +434,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
@@ -1393,7 +1394,7 @@ function makeHeroState(def,slot){
   if(weapon) game.bag.push(weapon);
   game.bag.push(armor);
   const spells=(DEFAULT_SPELLS[def.set]||['heal']).slice();
-  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,
+  return {def,slot,hp:def.hp,maxHp:def.hp,mp:def.mp,maxMp:def.mp,exp:0,...defaultHeroProgression(),
     magicPower:def.set==='mage'?4:(def.set==='archer'?1:2),
     bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
@@ -1478,6 +1479,8 @@ function freshGameShell(diffId){
   return {difficulty:diffId,bag:[],containers:ensureContainers(null),gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
     battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,mapOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
+    version:SAVE_VERSION,clockMinutes:8*60,hunger:0,lootCounters:defaultLootCounters(),
+    floorLoot:[],pendingXp:0,pendingLoot:[],battleLimit:ACTIVE_ENEMY_LIMIT,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
 }
 function startGame(diffId,a,b){
@@ -1508,10 +1511,13 @@ function startGame(diffId,a,b){
 const WORLD_SAVE_KEY='mm6_world_save_v1';
 function saveWorldState(){
   if(!game||!game.world) return false;
-  const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
+  const snap={version:SAVE_VERSION,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
     world:game.world,fog:game.world.maps.map(m=>[...(m.seen||[])]),
     player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
-    seasonOverride:game.seasonOverride,log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
+    seasonOverride:game.seasonOverride,clockMinutes:game.clockMinutes,hunger:game.hunger,
+    lootCounters:game.lootCounters,floorLoot:game.floorLoot,pendingXp:game.pendingXp,pendingLoot:game.pendingLoot,
+    battleLimit:game.battleLimit,
+    log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
   try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
   catch(e){ return false; }
   return true;
@@ -1521,8 +1527,10 @@ function loadWorldState(){
   try{ data=JSON.parse(localStorage.getItem(WORLD_SAVE_KEY)||'null',(k,v)=>k==='seen'&&Array.isArray(v)?new Set(v):v); }
   catch(e){ return false; }
   if(!data||!data.world||!Array.isArray(data.world.maps)||!data.world.maps.length) return false;
-  const shell=freshGameShell(data.difficulty||selDiff);
-  Object.assign(shell,data);
+  /* v2: новые поля прогрессии получают дефолты даже в старых сейвах версии 1. */
+  const migrated=migrateSave(data);
+  const shell=freshGameShell(migrated.difficulty||selDiff);
+  Object.assign(shell,migrated);
   game=shell;
   installMessageLogger();
   game._msg=String(data.msg||'');
@@ -1926,28 +1934,84 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   const firstPool=MONSTERS.filter(m=>m.id==='mouse'||m.id==='turtle');
   const pool=i===0?firstPool:MONSTERS.filter(m=>m.tier<=tier);
   const mons=[];
-  for(let k=0;k<d.monsters+(i>2?1:0)+(Number(settings.monstersAdd)||0);k++){
-    const s=freeSpot(4); if(!s) break;
-    mons.push(spawnMonster(rngPick(rng,pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
+  /* Стаи 4-8; на нулевой карте мышиные стаи начинаются с шести особей. */
+  const baseCount=clamp(d.monsters+(i>2?1:0)+(Number(settings.monstersAdd)||0)+2,4,8);
+  const lairId=i%3===1?'mouse_nest':(i%3===2?'spider_lair':'bone_yard');
+  const lair=instantiateLair(lairId);
+  if(lair){
+    /* Шаблон логовища задаёт состав, а не случайный пул. */
+    lair.enemies.forEach(e=>{
+      const s=freeSpot(4); if(!s) return;
+      e.x=s.x; e.y=s.y; mons.push(e);
+    });
+    let chestIdx=0;
+    for(let y=0;y<size&&chestIdx<lair.template.chests.length;y++){
+      for(let x=0;x<size&&chestIdx<lair.template.chests.length;x++){
+        const c=cells[y][x];
+        if(c&&c.t==='chest'&&!c.boss){ c.lairChest=lair.template.chests[chestIdx++]; }
+      }
+    }
+  }else{
+    const count=i===0?Math.max(6,baseCount):baseCount;
+    for(let k=0;k<count;k++){
+      const s=freeSpot(4); if(!s) break;
+      const def=rngPick(rng,pool.length?pool:MONSTERS);
+      mons.push(spawnMonster(def,tier,s.x,s.y,null,false,i!==0));
+    }
   }
   normalizeLakes(cells,size);
   normalizeRoads(cells,size);
   return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},trees,
     boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
+    lair:lair&&lair.template||null,
     wildlife:createWildlife(biome,size)};
 }
+function instantiateLair(id){
+  const t=LAIR_TEMPLATES[id]; if(!t) return null;
+  const list=[];
+  t.enemies.forEach(group=>{
+    const n=Array.isArray(group.count)?rnd(group.count[0],group.count[1]):Math.max(1,Number(group.count)||1);
+    const base=MONSTERS.find(m=>m.id===group.id)||MONSTERS[0];
+    for(let i=0;i<n;i++){
+      const variantId=group.variant||(group.id==='mouse'?'soldier':null);
+      const e=spawnMonster(base,0,0,0,variantId,false,false);
+      if(group.elite){ e.elite=true; e.hp=Math.round(e.hp*1.4); e.maxHp=e.hp; e.atk+=2; e.name='Элитный '+e.name; }
+      if(group.leader){ e.leader=true; e.hp=Math.round(e.hp*1.6); e.maxHp=e.hp; e.atk+=3; e.name='Предводитель '+e.name; }
+      list.push(e);
+    }
+  });
+  return {template:t,enemies:list};
+}
+function pickMonsterVariant(def,variantId,allowVariant){
+  if(variantId) return MONSTER_VARIANTS[variantId]||MONSTER_COLORS.find(c=>c.id===variantId)||null;
+  if(allowVariant===false) return null;
+  const id=def&&(def.id||def.key), profile=resolveProfile(def);
+  if(id==='mouse'){
+    const r=Math.random();
+    return r<.15?MONSTER_VARIANTS.wizard:(r<.22?MONSTER_VARIANTS.king:MONSTER_VARIANTS.soldier);
+  }
+  /* Арбалетчики-гуманоиды: все одного цвета; мыши и черепахи не получают стрел. */
+  if(profile.humanoid&&id!=='mouse'&&id!=='turtle'&&Math.random()<.25) return ARCHER_VARIANT;
+  return Math.random()<.4?pick(MONSTER_COLORS):null;
+}
 function spawnMonster(def,tier,x,y,variantId,isBoss,allowVariant){
-  const color=MONSTER_COLORS.find(c=>c.id===variantId)||
-    (allowVariant!==false&&Math.random()<.4?pick(MONSTER_COLORS):null);
-  const mul=color||{hp:1,atk:1,def:1,speed:1,gold:1,tint:def.tint||'#cbd5e1'};
+  const variant=pickMonsterVariant(def,variantId,allowVariant);
+  const mul=variant||{hp:1,atk:1,def:1,speed:1,gold:1,tint:def.tint||'#cbd5e1'};
   let power=clamp(Number(settings.monsterPower)||1,.5,2);
   if(settings.simple) power*=.85;
   if(settings.extreme) power*=1.25;
   const hp=Math.round(def.hp*mul.hp*power*(1+tier*.18));
-  return {def,name:(color?color.name+' ':'')+def.name,tint:color?color.tint:(def.tint||'#cbd5e1'),
+  const profile=resolveProfile(def);
+  const level=Math.max(1,Math.floor(Number(def.level!==undefined?def.level:profile.level)||1));
+  return {def,id:def&&(def.id||def.key)||'',name:(variant?variant.name+' ':'')+def.name,
+    tint:variant?variant.tint:(def.tint||'#cbd5e1'),variantId:variant&&variant.id||null,
+    level,threat:threatOf(level,profile.threatBase),baseXp:variant&&variant.baseXp!==undefined?variant.baseXp:profile.baseXp,
+    spells:variant&&variant.spells?variant.spells.slice():[],ranged:!!(variant&&variant.ranged),
+    missChance:variant&&variant.missChance!==undefined?variant.missChance:(ARCHER_VARIANT.missChance),
+    heavyBlow:!!(variant&&variant.heavyBlow),
     hp,maxHp:hp,atk:Math.round((def.atk*mul.atk+tier*(isBoss?2:1))*power),defVal:Math.round(((def.def||0)*mul.def+tier*.5)*power),
     speed:Math.round(def.combatSpeed*mul.speed),acts:def.acts,moveEvery:def.moveEvery,moveT:0,
-    magic:!!(def.magic||(color&&color.magic)),poison:!!(def.poison||(color&&color.poison)),
+    magic:!!(def.magic||(variant&&variant.magic)),poison:!!(def.poison||(variant&&variant.poison)),
     gold:[Math.round(def.gold[0]*mul.gold),Math.round(def.gold[1]*mul.gold)],
     x,y,alive:true,stun:0,isBoss:!!isBoss,magicBonus:0};
 }
@@ -2122,6 +2186,7 @@ function afterStep(cost){
   const m=currentMap(), steps=clamp(Math.round(Number(cost)||1),1,2);
   markSeen(m,game.player.x,game.player.y);
   game.world.turn+=steps; game.totalTurns+=steps;
+  tickSkillCooldowns();
   maybeSpawnBonus(m);
   pushHistory('Ход '+game.world.turn+': '+DIR_NAMES[game.player.dir]+', клетка '+game.player.x+','+game.player.y+
     (steps>1?' · болото '+steps+' хода':'')+'.','neutral');
@@ -2189,6 +2254,15 @@ function collectTreasure(c){
 }
 function openSmallChest(c){
   if(c.opened) return; c.opened=true;
+  if(c.lairChest){
+    const entries=[];
+    (c.lairChest.items||[]).forEach(id=>{ if(id!=='gold') entries.push({kind:'item',id,floor:false}); });
+    if(Array.isArray(c.lairChest.gold)) entries.push({kind:'gold',amount:rnd(c.lairChest.gold[0],c.lairChest.gold[1])});
+    const loot=materializeLoot(entries);
+    game.msg='Сундук логовища: 🪙 '+loot.gold+', вещей '+loot.items+'.';
+    toast(game.msg); pushHistory(game.msg,'neutral'); beep(820,.12); updateParty();
+    return;
+  }
   const gold=rnd(3,8); game.gold+=gold;
   if(Math.random()<.5){ const h=pick(HERBS); addItem({id:h.id,type:'herb',name:h.name,icon:h.icon,desc:h.desc,effect:h.effect,value:h.value,cost:2,sell:1}); }
   game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); beep(820,.12);
@@ -2214,6 +2288,7 @@ function tryInteract(){
   if(game.battle) return; // атака в бою — только пробел/кнопка атаки
   if(game.shopOpen){ toggleShop(false); return; }
   if(game.invOpen){ toggleInventory(false); return; }
+  if(collectFloorLoot()) return;
   const m=currentMap(), p=game.player;
   const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
   const here=m.cells[p.y][p.x];
@@ -2228,6 +2303,7 @@ function tryInteract(){
 function canInteractHere(){
   if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return false;
   const m=currentMap(), p=game.player, here=m.cells[p.y][p.x];
+  if((game.floorLoot||[]).some(f=>!f.taken&&f.map===game.world.current&&f.x===p.x&&f.y===p.y)) return true;
   if(here.t==='shop'||here.t==='house'||(here.t==='chest'&&!here.opened)) return true;
   if(Math.abs(p.x-m.boss.x)+Math.abs(p.y-m.boss.y)<=2&&m.boss.dead&&!m.cells[m.boss.y][m.boss.x].bossOpened) return true;
   const d=DIRS[p.dir], nx=p.x+d[0], ny=p.y+d[1];
@@ -2247,6 +2323,8 @@ function updateParty(){
       '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
       '<i title="Итоговая защита: броня, эффекты">🛡 Защита '+heroDef(h)+'</i>'+
       '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
+      '<div class="mini" title="Опыт общий на отряд; уровень повышает только тренер в гостинице">'+
+      '<i>★ Уровень '+(h.level||1)+'</i><i>до следующего: '+xpToNext(h)+'</i></div>'+
       (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   $('shopGold').textContent=game.gold;
@@ -2383,13 +2461,18 @@ function addBattleFloater(p,text,color){
   const lift=p.y>250?24:52;
   b.floaters.push({x:p.x+(Math.random()-.5)*16,y:p.y-lift,text:String(text),color:color||C_NEUTRAL,t:1});
 }
-function startBattle(list,mapRef){
+function startBattle(list,mapRef,opts){
   if(!game||phase!=='play'||game.battle) return null;
   clearArmedAction();
-  const enemies=list.filter(e=>e&&e.alive);
-  if(!enemies.length) return null;
+  const all=list.filter(e=>e&&e.alive);
+  if(!all.length) return null;
+  /* Активных не больше 12: остальные — зрители, они же очередь подкрепления. */
+  const enemies=all.slice(0,ACTIVE_ENEMY_LIMIT);
+  const spectators=(opts&&Array.isArray(opts.spectators)?opts.spectators:all.slice(ACTIVE_ENEMY_LIMIT)).filter(e=>e&&e.alive);
   const b={enemies,fromMap:!mapRef,map:mapRef,units:[],order:[],clock:0,turnIndex:-1,
     turn:'hero',heroIdx:0,targetIdx:enemies.length===1?0:-1,
+    pendingXp:0,pendingLoot:[],kills:0,spectators,
+    budget:battleBudget({levels:enemies.map(e=>e.level||1),heroes:party().length,elites:enemies.filter(e=>e.elite).length}),
     busy:false,end:null,log:[],anim:null,floaters:[],boss:mapRef?mapRef.boss.def:null};
   game.battle=b;
   party().forEach((h,i)=>b.units.push({side:'hero',idx:i,speed:heroSpeedValue(h),next:0}));
@@ -2445,7 +2528,7 @@ function nextTurn(){
         const pd=Math.min(h.poison,h.hp); h.hp-=pd;
         pushLog('Яд снимает '+pd+' HP с '+heroName(h)+'.',C_ENEMY,'enemy');
       }
-      tickStatuses(h);
+      tickFloorBurn(b); tickStatuses(h); tickSkillCooldowns();
       b.turn='hero'; b.heroIdx=u.idx; b.busy=false;
       updateParty(); updateControls(); return;
     }
@@ -2457,7 +2540,7 @@ function nextTurn(){
       addBattleFloater(battleEnemyPoint(b,u.idx),'-'+pd,C_HERO);
       pushLog('Яд снимает '+pd+' HP с '+m.name+'.',C_HERO,'hero');
       m.poison=Math.max(0,m.poison-1);
-      if(m.hp<=0){ m.alive=false; retargetAfterKill(b); if(checkBattleEnd()) return; }
+      if(m.hp<=0){ onEnemyKilled(b,m); if(checkBattleEnd()) return; }
     }
     if(m.stun>0){ m.stun--; pushLog(m.name+' пропускает ход.',C_NEUTRAL,'neutral'); continue; }
     b.turn='enemy'; b.busy=true; updateParty(); updateControls();
@@ -2557,7 +2640,9 @@ function heroAttack(){
     if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
   }
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
-  if(target.hp<=0){ target.alive=false; retargetAfterKill(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
+  /* Навык качает только реальный эффект: пустая атака (нет цели/нулевой урон) — ничего. */
+  if(dmg>0){ awardSkill(h,skillForWeapon(w)); awardSkill(h,'accuracy'); }
+  if(target.hp<=0) onEnemyKilled(b,target);
   beep(440,.09); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -2569,15 +2654,28 @@ function enemyAct(b,idx){
   const targets=aliveHeroes(); if(!targets.length){ finishBattle(false); return; }
   const h=settings.criticalAI?targets.slice().sort((a,c)=>a.hp-c.hp)[0]:pick(targets);
   const hIdx=party().indexOf(h);
+  /* Промах стрелы ~15-20% проверяется до формулы урона: урона нет, защита не качается. */
+  if(m.ranged&&Math.random()<clamp(Number(m.missChance)||ARCHER_VARIANT.missChance,ARCHER_MISS_RANGE[0],ARCHER_MISS_RANGE[1])){
+    pushLog(m.name+' выпустил стрелу, но промахнулся по '+h.def.name+'.',C_NEUTRAL,'neutral');
+    addBattleFloater(battleHeroPoint(b,hIdx),'мимо',C_NEUTRAL);
+    awardSkill(h,'dodge'); b.anim={who:'enemy',t:1,jump:6}; beep(200,.08);
+    setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
+    return;
+  }
   const magicHit=!!m.magic;
+  const variantSpell=m.spells&&m.spells.length?spell(pick(m.spells)):null;
   // Та же замороженная формула: урон = max(0, атака - защита), без процентов и случайных множителей.
-  const attack=Math.max(1,Math.round((Number(m.atk)||1)+(magicHit?(Number(m.magicBonus)||0):0)));
+  const attack=Math.max(1,Math.round((variantSpell?(variantSpell.power||8):(Number(m.atk)||1))+
+    (magicHit?(Number(m.magicBonus)||0):0)+(m.heavyBlow?4:0)));
   const defense=heroDef(h);
   const dmg=Math.max(0,attack-defense);
   const verb=magicHit?genderVerb(m.name,'колдовал','колдовала')+' чарами':attackVerb(m);
   b.lastHit={attacker:m.name,weapon:magicHit?'чары':attackVerb(m),raw:attack,defense,final:dmg,crit:false};
   pushLog(combatLog(m.name,verb,'',attack,defense,dmg,h.def.name),C_ENEMY,'enemy');
   h.hp=Math.max(0,h.hp-dmg);
+  /* Выдержанный удар качает защиту; полностью заблокированный — уклонение. */
+  if(dmg>0&&h.hp>0) awardSkill(h,'defense');
+  else if(dmg===0) awardSkill(h,'dodge');
   addBattleFloater(battleHeroPoint(b,hIdx),'-'+dmg,C_ENEMY);
   if(m.poison&&h.hp>0){
     h.poison=3; h.poisonTurns=2;
@@ -2623,7 +2721,7 @@ function castSpell(id,targetIdx){
     victims.forEach(v=>{
       v.hp=Math.max(0,v.hp-dmg);
       addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(v)),'-'+Math.round(dmg),C_HERO);
-      if(v.hp<=0){ v.alive=false; retargetAfterKill(b); }
+      if(v.hp<=0) onEnemyKilled(b,v);
       if(s.id==='ice') v.slow=(v.slow||0)+1;
       if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
     });
@@ -2639,11 +2737,92 @@ function castSpell(id,targetIdx){
   else if(s.gain){ h.mp=Math.min(h.maxMp,h.mp+s.gain); txt=h.def.name+' восстанавливает ману +'+s.gain+'.'; }
   else if(s.id==='teleport'){ closeBattleKeep(); closeSpellMenu(); toast('Прыжок: бой оставлен без штрафа.'); return true; }
   else txt=h.def.name+' применяет «'+s.name+'» ('+tier+').';
+  /* Заклинание качает магию/заклинания только когда эффект действительно случился. */
+  awardSkill(h,s.power?'magic':'spells');
   pushLog(txt,C_HERO,'hero');
   b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
   closeSpellMenu(); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
+  return true;
+}
+/* --- Гранаты: стихийный урон идёт мимо формулы attack-defense из COMBAT_SPEC. --- */
+function grenadeTargetProfile(e){ const p=resolveProfile(e); return {undead:!!p.undead,devil:!!p.devil}; }
+function grenadeDamage(b,e,amount,granule){
+  if(!e||!e.alive) return 0;
+  let dmg=Math.max(0,Math.round(amount));
+  if(granule&&granule.effect==='holy'){
+    const p=grenadeTargetProfile(e);
+    if(p.undead||p.devil) dmg=Math.round(dmg*(GRENADES.holy.undeadMultiplier||2.5));
+  }
+  e.hp=Math.max(0,e.hp-dmg);
+  addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(e)),'-'+dmg,C_HERO);
+  pushLog('Граната наносит '+e.name+' '+dmg+' урона'+(granule&&granule.effect==='holy'?' по нежити':''),C_HERO,'hero');
+  if(e.hp<=0) onEnemyKilled(b,e);
+  return dmg;
+}
+function tickFloorBurn(b){
+  if(!b||!b.floorBurn||b.floorBurn<=0) return 0;
+  let total=0;
+  b.enemies.forEach(e=>{
+    if(!e.alive) return;
+    const dmg=Math.min(e.hp,b.floorBurnDamage||5);
+    e.hp-=dmg; total+=dmg;
+    addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(e)),'-'+dmg,C_ENEMY);
+    if(e.hp<=0) onEnemyKilled(b,e);
+  });
+  b.floorBurn=Math.max(0,b.floorBurn-1);
+  pushLog('Горящий пол обжигает врагов на '+total+'.',C_ENEMY,'enemy');
+  return total;
+}
+function throwGrenade(element,targetIdx,uid){
+  const b=game&&game.battle, g=GRENADES[element];
+  if(!b||b.end||!g){ toast('Гранату можно бросить только в бою.'); return false; }
+  if(b.turn!=='hero'||b.busy){ toast('Сейчас не ваш ход.'); return false; }
+  const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive);
+  if(!live.length) return false;
+  const h=party()[b.heroIdx||0];
+  const wanted=Number.isInteger(targetIdx)?b.enemies[targetIdx]:selectedTarget(b);
+  const target=(wanted&&wanted.alive?wanted:live[0].e);
+  pushLog(heroName(h)+' бросает «'+g.name+' гранату» ('+g.damage+' урона, '+g.effect+').',C_HERO,'hero');
+  if(g.effect==='aoe_floor_burn'){
+    live.forEach(o=>grenadeDamage(b,o.e,g.damage,g));
+    b.floorBurn=g.burnTurns||3; b.floorBurnDamage=5;
+    pushLog('Пол охвачен пламенем на '+b.floorBurn+' хода.',C_ENEMY,'enemy');
+  }else{
+    grenadeDamage(b,target,g.damage,g);
+  }
+  if(g.effect==='agro_break'){
+    b.aggro=0; b.enemies.forEach(e=>{ e.aggro=0; });
+    pushLog('Дым рассеивает агрессию: враги теряют цель.',C_NEUTRAL,'neutral');
+  }
+  if(g.effect==='skip_turn'&&target&&target.alive) target.stun=Math.max(1,target.stun||0);
+  if(g.effect==='ignore_armor_dot'){
+    /* Кислота игнорирует броню (урон уже стихийный) и портит только лут на полу. */
+    if(target&&target.alive){
+      target.acidTurns=g.dotTurns||3;
+      target.poison=(target.poison||0)+(g.dotDamage||5);
+    }
+    (game.floorLoot||[]).forEach(f=>{ if(!f.taken&&f.map===game.world.current) f.spoiled=true; });
+    pushLog('Кислота разъедает броню и лежащий на полу лут.',C_NEUTRAL,'neutral');
+  }
+  if(g.effect==='friendly_fire'){
+    const ff=Math.round(g.damage*GRENADE_FF_RATIO);
+    party().forEach(ally=>{
+      if(ally.hp<=0) return;
+      const taken=Math.min(ally.hp,ff);
+      ally.hp-=taken;
+      addBattleFloater(battleHeroPoint(b,party().indexOf(ally)),'-'+taken,C_ENEMY);
+    });
+    pushLog('Тёмная граната: союзники рядом получают '+ff+' урона каждый (50%).',C_ENEMY,'enemy');
+  }
+  if(h&&live.length) awardSkill(h,'throwing');
+  const used=uid?game.bag.find(i=>i.uid===uid):null;
+  if(used){ used.count=(used.count||1)-1; if(used.count<=0) game.bag.splice(game.bag.indexOf(used),1); }
+  b.anim={who:'hero',t:1,jump:14}; beep(560,.16);
+  updateParty(); updateControls();
+  if(checkBattleEnd()) return true;
+  setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
   return true;
 }
 function fleeBattle(){
@@ -2657,6 +2836,8 @@ function fleeBattle(){
     party().forEach(h=>{ if(h.hp<=0||left<=0) return;
       const part=Math.min(h.hp,Math.max(1,Math.ceil(left/2))); h.hp-=part; left-=part; });
     b.end='flee';
+    /* Сбежал — не поумнел: kill-очки не воплощаются в опыт. */
+    b.pendingXp=0; if(game) game.pendingXp=0;
     pushLog('Побег удался! Потеряно '+loss+' HP.',C_HERO,'hero');
     recordAnnounce('flee_mm6',unlockRecord('flee_mm6'));
     progress.flees++; saveProgress(); updateParty(); beep(680,.16);
@@ -2671,8 +2852,213 @@ function fleeBattle(){
 function closeBattleKeep(){
   if(!game||!game.battle) return;
   clearArmedAction();
+  game.battle.pendingXp=0; game.pendingXp=0;
   game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
   clearStatuses(); updateControls();
+}
+/* Единая точка начисления опыта: убийство фиксируется здесь независимо от
+   источника (удар, заклинание, яд, предмет), но опыт воплощается только после победы. */
+function partyLevel(){
+  const ps=party(); if(!ps.length) return 1;
+  return Math.max(1,Math.round(ps.reduce((s,h)=>s+(h.level||1),0)/ps.length));
+}
+function xpToNext(h){ return Math.max(0,xpTotalToLevel((h&&h.level||1)+1)-Math.floor(h&&h.exp||0)); }
+function grantPartyXp(amount,quest){
+  const xp=Math.max(0,Math.floor(Number(amount)||0));
+  /* Опыт общий: каждый герой получает полную сумму, включая переживших смерти. */
+  party().forEach(h=>{ h.exp=(h.exp||0)+xp; if(!quest) h.magicPower=(h.magicPower||0)+0.05; });
+  return xp;
+}
+/* --- Навыки: очки приходят только от реального эффекта, ранги — у тренера. --- */
+function skillRank(h,id){ return Math.max(0,Math.floor((h&&h.skills&&h.skills[id])||0)); }
+function skillPoints(h,id){ return Math.max(0,Math.floor((h&&h.skillXp&&h.skillXp[id])||0)); }
+function skillCap(h){ return Math.max(1,Math.floor((h&&h.level)||1))*SKILL_CAP_PER_LEVEL; }
+function tickSkillCooldowns(){
+  party().forEach(h=>{
+    if(!h.skillCooldown) return;
+    Object.keys(h.skillCooldown).forEach(id=>{ h.skillCooldown[id]=Math.max(0,(h.skillCooldown[id]||0)-1); });
+  });
+}
+function awardSkill(h,id,amount){
+  if(!h||!skillDef(id)) return false;
+  const n=Math.max(1,Math.floor(Number(amount)||1));
+  /* Пустые действия и повторы в кулдауне не качают навык. */
+  if((h.skillCooldown&&h.skillCooldown[id]||0)>0) return false;
+  h.skillXp=h.skillXp||{}; h.skillCooldown=h.skillCooldown||{};
+  h.skillXp[id]=skillPoints(h,id)+n;
+  h.skillCooldown[id]=SKILL_COOLDOWN_TURNS;
+  return true;
+}
+function trainSkill(idx,id){
+  const h=party()[idx], def=skillDef(id);
+  if(!h||!def||!game||!game.shopOpen) return false;
+  if(game.shopType!==def.building){ toast('Этот навык тренируют в другом здании.'); return false; }
+  if(!guildAtLeast((h.promotion&&h.promotion.guild)||'novice',def.guild)){
+    toast('Нужен ранг гильдии: '+def.guild+'.'); return false;
+  }
+  const rank=skillRank(h,id), cap=skillCap(h);
+  if(rank>=cap){ toast('Достигнут предел ранга: '+cap+'.'); return false; }
+  const need=SKILL_POINTS_PER_RANK*(rank+1);
+  if(skillPoints(h,id)<need){ toast('Нужно ещё '+(need-skillPoints(h,id))+' очков навыка.'); return false; }
+  const cost=skillCost(id,rank+1);
+  if(game.gold<cost){ toast('Не хватает золота наставнику: нужно '+cost+'.'); return false; }
+  return buy(cost,()=>{
+    h.skills=h.skills||{}; h.skills[id]=rank+1;
+    h.skillXp[id]=skillPoints(h,id)-need;
+    if(def.building==='magic'){ h.promotion=h.promotion||{}; h.promotion.spells=h.promotion.guild; }
+    restParty(); toast(def.name+': ранг '+h.skills[id]+' выучен за 🪙 '+cost+' и отдых.');
+  });
+}
+function promoteGuild(idx){
+  const h=party()[idx]; if(!h||!game||!game.shopOpen||game.shopType!=='magic') return false;
+  h.promotion=h.promotion||{};
+  const cur=GUILD_RANKS.indexOf(h.promotion.guild||'novice');
+  if(cur<0||cur>=GUILD_RANKS.length-1){ toast('Высший ранг гильдии уже достигнут.'); return false; }
+  const next=GUILD_RANKS[cur+1], cost=trainerCost({kind:'guild',rank:cur+2});
+  if(game.gold<cost){ toast('Не хватает золота гильдии: нужно '+cost+'.'); return false; }
+  return buy(cost,()=>{ h.promotion.guild=next; h.promotion.spells=next; restParty();
+    toast('Гильдия магии: ранг «'+next+'» открыт за 🪙 '+cost+' и отдых.'); });
+}
+function restParty(minutes){
+  if(!game) return false;
+  game.clockMinutes=((game.clockMinutes||8*60)+Math.max(0,Math.floor(Number(minutes)||480)))%(24*60);
+  game.hunger=clamp((game.hunger||0)+20,0,100);
+  party().forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+  boostRegen(30);
+  return true;
+}
+/* Церковь воскрешает павших за десятину от всего золота отряда (минимум 10). */
+function churchTithe(){ return churchCost(game?game.gold:0); }
+function resurrectAtChurch(){
+  if(!game) return false;
+  const dead=party().filter(h=>h.hp<=0);
+  if(!dead.length){ toast('Воскрешать некого.'); return false; }
+  const cost=churchTithe();
+  if(game.gold<cost){ toast('Не хватает десятины: нужно 🪙 '+cost+'.'); return false; }
+  buy(cost,()=>{
+    dead.forEach(h=>{
+      h.hp=Math.max(1,Math.ceil(h.maxHp/2));
+      h.mp=Math.max(0,Math.ceil(h.maxMp/2));
+      h.statuses=[]; h.poison=0; h.poisonTurns=0;
+    });
+    toast('Церковь воскресила: '+dead.map(heroName).join(', ')+' за 🪙 '+cost+'.');
+  });
+  updateParty(); renderShop();
+  return true;
+}
+function trainLevel(idx){
+  const h=party()[idx]; if(!h) return false;
+  const next=(h.level||1)+1, cost=trainerCost({kind:'level',level:next}), need=xpTotalToLevel(next)-Math.floor(h.exp||0);
+  if(need>0){ toast('Нужно ещё '+need+' XP для уровня '+next+'.'); return false; }
+  if(game.gold<cost){ toast('Не хватает золота тренеру: нужно '+cost+'.'); return false; }
+  buy(cost,()=>{ h.level=next; restParty(); toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
+  updateParty(); renderShop();
+  return true;
+}
+/* Лут: редкие предметы с пола поднимаются отдельно, остальное — в сумку/золото. */
+const LOOT_ITEM_DEFS={
+  crystalgrass:{type:'herb',name:'Кристалл-трава',icon:'🌿',desc:'Восстанавливает ману',effect:'mp',value:8,cost:2,sell:1},
+  scroll_1:{type:'scroll',name:'Свиток огненного шара (1 круг)',icon:'📜',spell:'fire',cost:4,sell:2},
+  ring_1:{type:'weapon',name:'Кольцо (1 ур.)',icon:'◯',dmg:1,baseDmg:1,cost:12,sell:6,level:1,wkind:'ring',set:'any',quality:1,reforges:0,enchant:null},
+  ring_3:{type:'weapon',name:'Кольцо (3 ур.)',icon:'◯',dmg:3,baseDmg:3,cost:36,sell:18,level:3,wkind:'ring',set:'any',quality:2,reforges:0,enchant:null},
+  crown:{type:'weapon',name:'Корона мышиного короля',icon:'♛',dmg:4,baseDmg:4,cost:60,sell:30,level:3,wkind:'ring',set:'any',quality:3,reforges:0,enchant:null},
+  potion_mp:{type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3},
+  potion_hp:{type:'potion',name:'Зелье жизни',icon:'🧪',heal:40,cost:8,sell:4},
+  food:{type:'food',name:'Еда',icon:'🍞',heal:12,cost:3,sell:1},
+  poison_gland:{type:'herb',name:'Яд-железа',icon:'☠',desc:'Ядовитая железа',effect:'poison',value:4,cost:3,sell:1},
+  silk:{type:'material',name:'Шёлк',icon:'🕸',desc:'Паучий шёлк',cost:5,sell:2},
+  scroll_poison:{type:'scroll',name:'Свиток отравления',icon:'📜',spell:'poison',cost:5,sell:2},
+  scroll_dark:{type:'scroll',name:'Свиток тёмной магии',icon:'📜',spell:'curse',cost:7,sell:3},
+  bone:{type:'material',name:'Кость',icon:'🦴',desc:'Кость скелета',cost:2,sell:1},
+  bone_dust:{type:'material',name:'Костяная пыль',icon:'⚱',desc:'Пыль костей',cost:1,sell:1},
+  shield:{type:'armor',name:'Щит',icon:'🛡',def:3,cost:10,sell:5,slot:'shield',group:'base',category:'leather'},
+  helmet:{type:'armor',name:'Шлем',icon:'⛑',def:4,cost:14,sell:7,slot:'helmet',group:'base',category:'light_metal'},
+  club_axe:{type:'weapon',name:'Дубина-топор',icon:'🪓',dmg:4,baseDmg:4,cost:8,sell:4,wkind:'axe',set:'any',quality:1,reforges:0,enchant:null},
+  ore:{type:'material',name:'Руда',icon:'⛏',desc:'Руда для кузницы',cost:4,sell:2},
+  amulet:{type:'weapon',name:'Амулет',icon:'◈',dmg:2,baseDmg:2,cost:24,sell:12,level:3,wkind:'amulet',set:'any',quality:2,reforges:0,enchant:null}
+};
+function lootItemSpec(id){ return Object.assign({id},LOOT_ITEM_DEFS[id]||{type:'misc',name:String(id),icon:'•',cost:1,sell:1}); }
+const GRENADE_ICONS={smoke:'💨',frost:'❄',acid:'🧪',lava:'🌋',dark:'🌑',holy:'✝'};
+const GRENADE_ITEMS=Object.values(GRENADES).map(g=>({
+  id:'grenade_'+g.id,type:'grenade',element:g.id,name:g.name+' граната',icon:GRENADE_ICONS[g.id]||'💣',
+  damage:g.damage,desc:g.effect,cost:Math.round(g.damage*.6),sell:Math.round(g.damage*.3),weight:1
+}));
+function grenadeItem(element){ return GRENADE_ITEMS.find(x=>x.element===element)||null; }
+function dropFloorLoot(id){
+  if(!game) return false;
+  game.floorLoot=game.floorLoot||[];
+  game.floorLoot.push({id,name:lootItemSpec(id).name,map:game.world.current,x:game.player.x,y:game.player.y,taken:false});
+  return true;
+}
+function collectFloorLoot(){
+  if(!game||game.battle) return false;
+  const here=(game.floorLoot||[]).filter(f=>!f.taken&&f.map===game.world.current&&f.x===game.player.x&&f.y===game.player.y);
+  if(!here.length) return false;
+  here.forEach(f=>{
+    f.taken=true;
+    if(f.spoiled){ toast(f.name+' испорчена кислотой и бесполезна.'); return; }
+    addItem(lootItemSpec(f.id)); toast('Поднято с пола: '+f.name);
+  });
+  updateParty(); beep(640,.08);
+  return true;
+}
+function materializeLoot(entries){
+  let gold=0, items=0;
+  (entries||[]).forEach(entry=>{
+    if(entry.kind==='gold'){ gold+=Math.max(0,Math.floor(entry.amount||0)); return; }
+    if(entry.kind!=='item') return;
+    if(entry.floor) dropFloorLoot(entry.id); else addItem(lootItemSpec(entry.id));
+    items++;
+  });
+  if(gold&&game) game.gold+=gold;
+  return {gold,items};
+}
+function rollEnemyLoot(e){
+  if(!game||!e) return [];
+  const counters=game.lootCounters=game.lootCounters||defaultLootCounters();
+  const id=e.id||(e.def&&(e.def.id||e.def.key))||'';
+  if(counters[id]!==undefined) counters[id]++;
+  const nestKey='king_nest_first_'+(game.world&&game.world.current||0);
+  const firstKing=(e.id==='mouse'||id==='mouse')&&e.variantId==='king'&&!counters[nestKey];
+  if(firstKing) counters[nestKey]=1;
+  const rng=Number.isFinite(game.debugRng)?(()=>game.debugRng):Math.random;
+  return rollLoot(e,{rng,firstKingKill:firstKing});
+}
+/* Лишние враги остаются зрителями и приходят подкреплением, когда строй редеет.
+   Новый юнит получает корректный индекс в b.enemies и запись в b.units. */
+function addReinforcement(b){
+  if(!b||!b.spectators||!b.spectators.length) return false;
+  const live=b.enemies.filter(e=>e.alive).length;
+  if(live>=4) return false;
+  while(b.spectators.length){
+    const e=b.spectators.shift();
+    if(!e||!e.alive) continue;
+    e.alive=true;
+    b.enemies.push(e);
+    const speed=Math.max(1,monsterSpeedValue(e));
+    b.units.push({side:'enemy',idx:b.enemies.length-1,speed,next:b.clock+100/speed});
+    b.order=b.units.slice().sort((a,c)=>a.next-c.next);
+    pushLog('Подкрепление: '+e.name+' вступает в бой.',C_ENEMY,'enemy');
+    return true;
+  }
+  return false;
+}
+function onEnemyKilled(b,e,opts){
+  const battle=b||(game&&game.battle);
+  if(!battle||!e||e._xpCounted) return false;
+  e._xpCounted=true; e.alive=false;
+  const gained=(opts&&opts.quest)?Math.max(0,Math.floor(Number(opts.xp)||0)):xpKill(e,partyLevel());
+  battle.pendingXp=(battle.pendingXp||0)+gained;
+  battle.kills=(battle.kills||0)+1;
+  if(game){
+    game.pendingXp=battle.pendingXp;
+    if(!e.isBoss) battle.pendingLoot=(battle.pendingLoot||[]).concat(rollEnemyLoot(e));
+    game.pendingLoot=battle.pendingLoot;
+  }
+  addReinforcement(battle);
+  retargetAfterKill(battle);
+  pushLog(e.name+' повержен.',C_NEUTRAL,'neutral');
+  return true;
 }
 function finishBattle(win){
   const b=game&&game.battle; if(!b||b.end) return;
@@ -2682,16 +3068,22 @@ function finishBattle(win){
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
   beep(win?980:120,.3); updateControls();
   if(!win){
+    /* Поражение и бегство не дают опыта: накопленные kill-очки сгорают. */
+    b.pendingXp=0; if(game) game.pendingXp=0;
     const killer=b.killerName||(b.enemies.find(e=>e.alive)||b.enemies[0]||{}).name||'враг';
     recordAnnounce(null,recordDeath('mm6',killer));
     setTimeout(()=>finishRun(false),1500); return;
   }
-  const gold=b.enemies.filter(e=>e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0)
-    +b.enemies.filter(e=>!e.isBoss).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0);
-  const exp=Math.max(10,10*b.enemies.filter(e=>e.alive||e.hp<=0).length);
-  party().forEach(h=>{ if(h.hp>0){ h.exp+=exp; h.magicPower+=0.05; } });
+  /* У типов со своей таблицей лута золото уже приходит через pendingLoot — не удваиваем его. */
+  const gold=b.enemies.filter(e=>e.isBoss||!lootTableFor(e)).reduce((s,e)=>s+rnd(e.gold[0],e.gold[1]),0);
+  /* Опыт начисляется один раз здесь и только после победы; квестовый идёт через grantPartyXp(xp,true). */
+  const exp=grantPartyXp(b.pendingXp||0);
+  b.pendingXp=0; if(game) game.pendingXp=0;
   game.gold+=gold;
-  pushLog('Победа! Вы получили опыт по '+exp+' очков каждому и золото '+gold+' монет',C_NEUTRAL,'neutral');
+  const loot=materializeLoot(b.pendingLoot);
+  const totalGold=gold+loot.gold;
+  pushLog('Победа! Вы получили опыт по '+exp+' очков каждому и золото '+totalGold+' монет (дох '+loot.items+')',C_NEUTRAL,'neutral');
+  b.pendingLoot=[]; game.pendingLoot=[];
   b.enemies.forEach(e=>{ if(!e.isBoss) e.alive=false; });
   if(b.boss&&b.map){
     recordAnnounce('boss_mm6',unlockRecord('boss_mm6'));
@@ -2702,8 +3094,8 @@ function finishBattle(win){
     pushLog('Босс повержен! Выберите награду.',C_NEUTRAL,'neutral');
     setTimeout(()=>showBossReward(m,b.boss),900);
   }else{
-    game.msg='Победа! Получено 🪙 '+gold+'.';
-    setTimeout(()=>{ if(game&&game.battle===b){ game.battle=null; updateParty(); updateControls(); toast('Победа! 🪙 '+gold); } },1100);
+    game.msg='Победа! Получено 🪙 '+totalGold+'.';
+    setTimeout(()=>{ if(game&&game.battle===b){ game.battle=null; updateParty(); updateControls(); toast('Победа! 🪙 '+totalGold); } },1100);
   }
   updateParty();
 }
@@ -2934,6 +3326,24 @@ const TAVERN_RUMORS=[
   'В гостинице можно выспаться и оставить отметку о своём походе.',
   'На рынке травы дешевле, зато в магической лавке — свитки редкость.'
 ];
+function renderSkillTrainers(building){
+  const defs=SKILL_DEFS.filter(s=>s.building===building);
+  if(!defs.length) return;
+  shopSec(building==='tavern'?'Тренер · боевые навыки':building==='magic'?'Гильдия магии · навыки':'Оружейная · ремесло');
+  party().forEach((hero,i)=>{
+    defs.forEach(def=>{
+      const rank=skillRank(hero,def.id), cap=skillCap(hero), need=SKILL_POINTS_PER_RANK*(rank+1);
+      const pts=skillPoints(hero,def.id), cost=skillCost(def.id,rank+1);
+      const gated=!guildAtLeast((hero.promotion&&hero.promotion.guild)||'novice',def.guild);
+      const lock=gated?'Нужен ранг '+def.guild:rank>=cap?'Предел ранга '+cap:
+        pts<need?'Нужно '+(need-pts)+' очков':game.gold<cost?'Не хватает золота':'';
+      shopRow('✦',heroName(hero)+' · '+def.name,
+        'Ранг '+rank+'/'+cap+' · очков '+pts+'/'+need+(gated?' · доступ с ранга '+def.guild:''),[
+        shopButton(lock?lock:'🪙 '+cost+' тренировать',()=>trainSkill(i,def.id),!!lock,lock)
+      ],'НАВЫК');
+    });
+  });
+}
 function renderShop(){
   if(!game) return;
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
@@ -2982,6 +3392,7 @@ function renderShop(){
   // Каждый раздел усиления живёт только в своём здании.
   if(def.id==='forge') reforgeSection(h,'weapon');
   if(def.id==='armor') reforgeSection(h,'armor');
+  if(def.id==='weapons') renderSkillTrainers('weapons');
 
   if(def.id==='magic'){
     shopSec('Свитки и заклинания');
@@ -3004,6 +3415,24 @@ function renderShop(){
     shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 6',()=>buy(6,()=>{
       addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3});
     }),game.gold<6)],'ПОКУПКА');
+    shopSec('Гранаты');
+    GRENADE_ITEMS.forEach(it=>{
+      const price=Math.max(2,Math.round(it.cost*stock.price));
+      shopRow(it.icon,it.name,'Урон '+(GRENADES[it.element]||{}).damage+' · '+(GRENADES[it.element]||{}).effect,[
+        shopButton('🪙 '+price,()=>buy(price,()=>{ addItem(Object.assign({},it,{cost:price,sell:Math.floor(price*.5)})); toast('Куплена: '+it.name); }),game.gold<price)
+      ],'ПОКУПКА');
+    });
+    shopSec('Гильдия магии · ранг');
+    party().forEach((hero,i)=>{
+      const cur=(hero.promotion&&hero.promotion.guild)||'novice';
+      const gi=GUILD_RANKS.indexOf(cur), next=GUILD_RANKS[gi+1];
+      const cost=next?trainerCost({kind:'guild',rank:gi+2}):0;
+      shopRow('🏛',heroName(hero),'Ранг: '+cur+' · открывает навыки старших кругов',[
+        shopButton(next?'🪙 '+cost+' повысить ранг':'Высший ранг',()=>promoteGuild(i),
+          !next||game.gold<cost,!next?'Высший ранг уже достигнут':'Не хватает золота')
+      ],'ГИЛЬДИЯ');
+    });
+    renderSkillTrainers('magic');
   }
 
   if(def.id==='jeweler'){
@@ -3063,6 +3492,7 @@ function renderShop(){
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
       const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); beep(520,.08);
     })],'СЛУХИ');
+    renderSkillTrainers('tavern');
   }
   if(def.id==='inn'){
     shopSec('Отдых и сон');
@@ -3073,13 +3503,33 @@ function renderShop(){
     shopRow('🌙','Полный сон','Полностью восстанавливает HP и MP',[shopButton('🪙 12 спать',()=>buy(12,()=>{
       party().forEach(x=>{ x.hp=x.maxHp; x.mp=x.maxMp; x.poison=0; x.poisonTurns=0; }); boostRegen(45); toast('Отряд выспался.');
     }),game.gold<12)],'ОТДЫХ');
+    shopSec('Тренер · повышение уровня');
+    party().forEach((x,i)=>{
+      const need=xpToNext(x), cost=trainerCost({kind:'level',level:(x.level||1)+1});
+      shopRow('★',heroName(x),'Уровень '+(x.level||1)+' · опыта до следующего: '+need+' · оплата и отдых',[
+        shopButton('🪙 '+cost+' повысить',()=>trainLevel(i),need>0||game.gold<cost,
+          need>0?'Нужно ещё '+need+' XP':'Не хватает золота')
+      ],'ТРЕНЕР');
+    });
     shopSec('Сохранение');
     shopRow('📖','Книга постояльцев','Отметить поход и сохранить прогресс',[shopButton('Сохранить',()=>{
       saveProgress(); toast('Прогресс сохранён.'); beep(620,.1);
     })],'СОХРАНЕНИЕ');
   }
 
-  if(!['tavern','inn'].includes(def.id)){
+  if(def.id==='church'){
+    shopSec('Церковь · воскрешение');
+    const cost=churchTithe(), dead=party().filter(x=>x.hp<=0).length;
+    party().forEach(x=>{
+      shopRow('🕯',heroName(x),x.hp<=0?'Без сознания · десятина 🪙 '+cost:'В строю',[
+        shopButton(x.hp<=0?'🪙 '+cost+' воскресить':'В строю',()=>resurrectAtChurch(),
+          x.hp>0||game.gold<cost,x.hp>0?'Уже в строю':'Не хватает десятины')
+      ],'ЦЕРКОВЬ');
+    });
+    if(!dead) shopRow('⛪','Все герои в строю','Воскрешение понадобится после поражения',[shopButton('—',null,true)],'ЦЕРКОВЬ');
+  }
+
+  if(!['tavern','inn','church'].includes(def.id)){
     shopSec('Продажа товаров');
     const equipped=new Set();
     party().forEach(x=>Object.values(x.equip).forEach(uid=>{ if(uid) equipped.add(uid); }));
@@ -3261,16 +3711,16 @@ function drawShopInterior(kind,now,name){
    в game.bag, поэтому экипировка, лавка и ремесло работают с тем же списком. */
 const CONTAINER_DEFS=[
   {id:'pockets',name:'Карманы',capacity:8,step:2,cost:4,weight:0,
-    accept:['potion','liquid','herb','food','scroll','material','crystal']},
+    accept:['potion','liquid','herb','food','scroll','material','crystal','grenade']},
   {id:'belt',name:'Пояс',capacity:6,step:2,cost:5,weight:0,
-    accept:['potion','liquid','herb','food']},
+    accept:['potion','liquid','herb','food','grenade']},
   {id:'purse',name:'Мошна',capacity:1,step:1,cost:3,weight:0,accept:[]},
   {id:'bag',name:'Сумка',capacity:16,step:4,cost:8,weight:0,
-    accept:['weapon','armor','potion','liquid','herb','food','scroll','material','crystal','container','misc','chest']},
+    accept:['weapon','armor','potion','liquid','herb','food','scroll','material','crystal','grenade','container','misc','chest']},
   {id:'chest',name:'Сундук',capacity:12,step:3,cost:10,weight:0,
-    accept:['weapon','armor','scroll','material','crystal','container','chest']}
+    accept:['weapon','armor','scroll','material','crystal','grenade','container','chest']}
 ];
-const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Еда','Свитки','Ремесло','Сундуки'];
+const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Еда','Гранаты','Свитки','Ремесло','Сундуки'];
 function ensureContainers(snap){
   const out={};
   CONTAINER_DEFS.forEach(def=>{
@@ -3310,6 +3760,7 @@ function pickContainerFor(it){
   const type=it.type;
   const order=type==='weapon'||type==='armor'?['bag','chest','pockets']
     :type==='scroll'||type==='material'||type==='crystal'?['pockets','chest','bag']
+    :type==='grenade'?['belt','pockets','bag']
     :type==='potion'||type==='liquid'||type==='herb'||type==='food'?['belt','pockets','bag']
     :['bag','chest','pockets'];
   for(const id of order){
@@ -3491,6 +3942,11 @@ function itemStatsText(it,h){
     return 'Свиток: '+(sp.name||'?')+' · '+(sp.desc||'')+' · '+((SPELL_TIERS.find(t=>t.id===sp.tier)||{}).name||'');
   }
   if(it.type==='food') return (it.desc||'Еда')+((it.hp||it.mp)?' · +'+(it.hp||0)+' HP / +'+(it.mp||0)+' MP':'')+' · цена 🪙 '+it.sell;
+  if(it.type==='grenade'){
+    const g=GRENADES[it.element]||{};
+    return 'Урон '+g.damage+' · '+(g.effect||'')+(g.undeadMultiplier?' · ×'+g.undeadMultiplier+' нежити/дьяволам':'')+
+      ' · цена 🪙 '+it.sell;
+  }
   if(it.type==='material') return (it.desc||'Материал для ремесла')+' · цена 🪙 '+it.sell;
   if(it.type==='crystal') return 'Кристалл для зачарования.';
   if(it.type==='chest') return 'Сундук с добычей. Нажмите, чтобы открыть.';
@@ -3506,6 +3962,7 @@ function invTabItems(tab){
   if(tab==='Магия') return bag.filter(i=>i.type==='potion'||i.type==='liquid'||i.type==='crystal');
   if(tab==='Травы') return bag.filter(i=>i.type==='herb'||i.type==='material');
   if(tab==='Еда') return bag.filter(i=>i.type==='food');
+  if(tab==='Гранаты') return bag.filter(i=>i.type==='grenade');
   if(tab==='Свитки') return bag.filter(i=>i.type==='scroll');
   if(tab==='Сундуки') return bag.filter(i=>i.type==='chest');
   return bag;
@@ -3902,7 +4359,7 @@ function useItem(uid){
     if(it.def){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
     if(it.atk){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
-    if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp-=12; if(e.hp<=0) e.alive=false; } }); toast('Мороз бьёт по врагам.'); }
+    if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp=Math.max(0,e.hp-12); if(e.hp<=0) onEnemyKilled(game.battle,e); } }); toast('Мороз бьёт по врагам.'); }
   }else if(it.type==='liquid'){
     if(it.stat==='hp') h.hp=Math.min(h.maxHp,h.hp+it.value);
     else if(it.stat==='mp') h.mp=Math.min(h.maxMp,h.mp+it.value);
@@ -3929,6 +4386,8 @@ function useItem(uid){
     if(!gained.length){ toast('У предмета нет эффекта.'); return false; }
     boostRegen(12);
     toast(heroName(h)+': '+it.name+' · '+gained.join(' '));
+  }else if(it.type==='grenade'){
+    if(!throwGrenade(it.element,undefined,it.uid)) return false;
   }else if(it.type==='material'){ toast('Материал используется в ремесле.'); return false;
   }else if(it.type==='scroll'){
     if(!canCast(h)){ toast(restrictionText(h)||'Магия недоступна из-за перегруза.'); return false; }
@@ -5038,6 +5497,120 @@ function loop(now){
 }
 requestAnimationFrame(loop);
 
+/* Чистая проверка архитектуры прогрессии: кривая, затухание и миграция v1 -> v2. */
+function progressionReport(){
+  const errors=[];
+  const cost2=xpLevelCost(2), cost3=xpLevelCost(3), total3=xpTotalToLevel(3);
+  if(cost2!==BASE_XP||cost3!==BASE_XP*2||total3!==BASE_XP*3) errors.push('XP-кривая не совпадает с N*(N-1)/2*base');
+  const low=xpKill({id:'mouse',level:1},10), fair=xpKill({id:'mouse',level:1},1);
+  if(low!==3||fair!==25) errors.push('Затухание XP за убийство сломано');
+  const old={version:1,gold:77,bag:[{uid:'old-1',type:'misc',name:'Старый предмет'}],party:[{def:{name:' Воин '},slot:0,hp:10,mp:0,exp:123,equip:{}}]};
+  const moved=migrateSave(old);
+  const h=moved.party[0];
+  if(moved.version!==2) errors.push('Сейв не мигрировал в версию 2');
+  if(moved.gold!==old.gold||moved.bag.length!==1||moved.bag[0].uid!=='old-1') errors.push('Миграция потеряла золото или предмет');
+  if(h.exp!==123||h.level!==1||!h.skillXp||!h.skills||!h.skillCooldown||!h.promotion) errors.push('Миграция не добавила поля прогрессии героя');
+  if(moved.clockMinutes===undefined||moved.hunger===undefined||!moved.lootCounters||!Array.isArray(moved.floorLoot)) errors.push('Миграция не добавила часы/голод/счётчики лута');
+  const live=party().map(x=>({name:x.def&&x.def.name,level:x.level||1,exp:Math.floor(x.exp||0),
+    toNext:Math.max(0,xpTotalToLevel((x.level||1)+1)-Math.floor(x.exp||0)),skills:x.skills||{},
+    promotion:x.promotion&&x.promotion.guild||'novice'}));
+  return {ok:!errors.length,errors,version:game?game.version:null,
+    curve:{base:BASE_XP,cost2,cost3,total3},diminishing:{mouseAtSameLevel:fair,mouse9Below:low},
+    migration:{from:1,to:moved.version,gold:moved.gold,items:moved.bag.length,exp:h.exp,level:h.level},
+    party:live,rules:RULES_SUMMARY};
+}
+/* Навыки: проверяем живое состояние и то, что очки приходят только из эффектов боя. */
+function skillReport(){
+  const errors=[];
+  const srcs={weapon:String(heroAttack),incoming:String(enemyAct),spell:String(castSpell),train:String(trainSkill)};
+  const hooks={weapon:/awardSkill\(h,skillForWeapon\(w\)\)/.test(srcs.weapon),
+    accuracy:/awardSkill\(h,'accuracy'\)/.test(srcs.weapon),
+    zeroWeapon:/if\(dmg>0\)/.test(srcs.weapon),
+    defense:/awardSkill\(h,'defense'\)/.test(srcs.incoming),
+    dodge:/awardSkill\(h,'dodge'\)/.test(srcs.incoming),
+    spell:/awardSkill\(h,s\.power\?'magic':'spells'\)/.test(srcs.spell),
+    trainer:/restParty\(\)/.test(srcs.train)};
+  Object.entries(hooks).forEach(([k,v])=>{ if(!v) errors.push('Не найдена точка начисления навыка: '+k); });
+  if(SKILL_DEFS.length<10||SKILL_CAP_PER_LEVEL!==2||SKILL_COOLDOWN_TURNS<1) errors.push('Таблицы навыков не полны');
+  if(SKILL_DEFS.filter(s=>s.building==='tavern').length<7) errors.push('В таверне не хватает боевых навыков');
+  if(SKILL_DEFS.filter(s=>s.building==='magic').length<2||SKILL_DEFS.filter(s=>s.building==='weapons').length<1) errors.push('Неверное распределение навыков по зданиям');
+  const heroes=party().map(h=>({name:heroName(h),level:h.level||1,cap:skillCap(h),
+    skills:Object.assign({},h.skills||{}),points:Object.assign({},h.skillXp||{}),
+    cooldown:Object.assign({},h.skillCooldown||{}),guild:(h.promotion&&h.promotion.guild)||'novice'}));
+  if(heroes.some(x=>Object.values(x.skills).some(r=>r>x.cap))) errors.push('Ранг навыка превышает level*2');
+  return {ok:!errors.length,errors,hooks,heroes,defs:SKILL_DEFS,pointsPerRank:SKILL_POINTS_PER_RANK,
+    cooldownTurns:SKILL_COOLDOWN_TURNS};
+}
+/* Часть 4: тиры, варианты, лут, логовища и новый бюджет боя — только данные и живые проверки. */
+function monsterReport(){
+  const errors=[];
+  const roster=D28_DATA.monsters.map(m=>m.key);
+  const missing=roster.filter(id=>!MONSTER_PROFILES[id]);
+  if(missing.length) errors.push('Нет профилей монстров: '+missing.join(','));
+  Object.entries(MONSTER_PROFILES).forEach(([id,p])=>{
+    if(!(p.level>=1&&p.threatBase>=1&&p.baseXp>=1)) errors.push('Плохой профиль: '+id);
+  });
+  if(MONSTER_PROFILES.mouse.level!==1||MONSTER_PROFILES.mouse.baseXp!==25)
+    errors.push('Мышь должна быть солдатом 1 уровня за 25 XP');
+  const mouseTints=MOUSE_VARIANT_IDS.map(id=>MONSTER_VARIANTS[id]&&MONSTER_VARIANTS[id].tint);
+  if(new Set(mouseTints).size!==3) errors.push('Цвета мышиных вариантов должны различаться');
+  const wizardSpells=(MONSTER_VARIANTS.wizard&&MONSTER_VARIANTS.wizard.spells)||[];
+  if(!wizardSpells.length||wizardSpells.some(id=>!FIRST_CIRCLE_SPELLS.includes(id)))
+    errors.push('Волшебница должна колдовать только заклинаниями 1 круга');
+  const variantSrc=String(pickMonsterVariant);
+  const archerGate=/profile\.humanoid&&id!=='mouse'&&id!=='turtle'/.test(variantSrc);
+  if(!archerGate) errors.push('Лучники должны быть только у гуманоидов, не у мышей и черепах');
+  if(ARCHER_MISS_RANGE[0]<.15||ARCHER_MISS_RANGE[1]>.2) errors.push('Промах стрел вне диапазона 15–20%');
+  const budget=battleBudget({levels:[1,2,3],heroes:3,elites:1});
+  if(ACTIVE_ENEMY_LIMIT!==12||budget!==Math.max(16,Math.min(80,6*2+3*6+4)))
+    errors.push('Неверный бюджет боя или лимит активных врагов');
+  const packs=(game?game.world.maps:[]).map(m=>m.monsters.length);
+  const badPacks=packs.filter(n=>n<4||n>8);
+  if(badPacks.length) errors.push('Стаи вне диапазона 4–8: '+badPacks.join(','));
+  const lairs={};
+  Object.values(LAIR_TEMPLATES).forEach(t=>{
+    const min=t.enemies.reduce((s,g)=>s+(Array.isArray(g.count)?Math.min(g.count[0],g.count[1]):Math.max(1,Number(g.count)||1)),0);
+    lairs[t.id]={name:t.name,min,chests:t.chests.length};
+    if(min<4||!t.chests.length) errors.push('Пустой шаблон логовища: '+t.id);
+  });
+  const asset=ASSET_STRUCTURE_PROPOSAL;
+  if(!asset.note.includes('не создаются')) errors.push('Структура ассетов должна исключать новые PNG');
+  return {ok:!errors.length,errors,roster,profiles:MONSTER_PROFILES,variants:MONSTER_VARIANTS,
+    mouseTints,threat:{at1:threatOf(1,1),at4:threatOf(4,1),at7:threatOf(7,2)},
+    archer:{variant:ARCHER_VARIANT,missRange:ARCHER_MISS_RANGE,humanoidOnly:archerGate},
+    battle:{limit:ACTIVE_ENEMY_LIMIT,sampleBudget:budget,formula:RULES_SUMMARY.battleBudget},
+    packs,lairs,asset,loot:LOOT_TABLES};
+}
+/* Часть 5: шесть гранат, стихийные эффекты и церковная десятина. */
+function grenadeReport(){
+  const errors=[], expected={smoke:25,frost:45,acid:55,lava:60,dark:70,holy:120};
+  Object.entries(expected).forEach(([id,damage])=>{
+    if(!GRENADES[id]||GRENADES[id].damage!==damage) errors.push('Неверный урон гранаты '+id);
+  });
+  if(GRENADE_FF_RATIO!==.5) errors.push('Friendly fire должен быть ровно 50%');
+  const src=String(throwGrenade);
+  const hooks={
+    smoke:/aggro=0/.test(src), frost:/stun=Math\.max/.test(src),
+    acid:/acidTurns/.test(src)&&/f\.spoiled=true/.test(src),
+    lava:/floorBurn=/.test(src), holy:/GRENADES\.holy\.undeadMultiplier/.test(String(grenadeDamage)),
+    dark:/Math\.round\(g\.damage\*GRENADE_FF_RATIO\)/.test(src),
+    throwing:/awardSkill\(h,'throwing'\)/.test(src)
+  };
+  Object.entries(hooks).forEach(([k,v])=>{ if(!v) errors.push('Не найден эффект гранаты: '+k); });
+  if(GRENADE_ITEMS.length!==6||!INV_TABS.includes('Гранаты')) errors.push('Гранаты не доступны в инвентаре');
+  return {ok:!errors.length,errors,grenades:GRENADES,ffRatio:GRENADE_FF_RATIO,hooks,
+    items:GRENADE_ITEMS.map(x=>({id:x.id,element:x.element,name:x.name,damage:x.damage}))};
+}
+function churchReport(){
+  const errors=[], src=String(resurrectAtChurch);
+  const costs={at0:churchCost(0),at100:churchCost(100),at500:churchCost(500)};
+  if(costs.at0!==10||costs.at100!==10||costs.at500!==50) errors.push('Десятина должна быть max(10, floor(gold*0.1))');
+  if(!/churchTithe\(\)/.test(src)||!/h\.hp=Math\.max\(1/.test(src)) errors.push('Воскрешение не привязано к десятине');
+  if(!SHOP_TYPES.some(s=>s.id==='church')) errors.push('Нет здания церкви');
+  const hasChurch=!!(game&&game.world.maps.some(m=>(m.shops||[]).some(s=>s.kind==='church')));
+  return {ok:!errors.length,errors,costs,hasChurch,dead:party().filter(h=>h.hp<=0).length};
+}
+
 function armorDuplicates(){
   const seen=new Map(), duplicates=[];
   // group отделяет варианты одного слота (поножи/сапоги/перчатки) с одинаковой защитой.
@@ -5359,6 +5932,7 @@ window.__mm6Debug={
   castSpell:(id,target)=>castSpell(id,target),
   tryMove:(dx,dy)=>tryMove(dx,dy),
   fleeBattle:()=>fleeBattle(),
+  closeBattle:()=>closeBattleKeep(),
   toggleShop:(open,type)=>toggleShop(open,type),
   forceShop:(type)=>{
     if(!game||!SHOP_TYPES.some(s=>s.id===type)) return null;
@@ -5366,6 +5940,82 @@ window.__mm6Debug={
     $('shop').classList.remove('hidden'); renderShop(); return shopReport();
   },
   openBossChest:()=>openBossChest(),
+  progressionState:()=>({version:game&&game.version,clockMinutes:game&&game.clockMinutes,hunger:game&&game.hunger,
+    pendingXp:game&&game.pendingXp,partyLevel:partyLevel(),
+    heroes:party().map(h=>({name:heroName(h),level:h.level||1,exp:Math.floor(h.exp||0),toNext:xpToNext(h)}))}),
+  grantQuestXp:(xp)=>{ const gained=grantPartyXp(xp,true); updateParty(); return {gained,state:window.__mm6Debug.progressionState()}; },
+  setHeroExp:(i,xp)=>{ const h=party()[i]; if(!h) return false; h.exp=Math.max(0,Math.floor(Number(xp)||0)); updateParty(); return true; },
+  setPartyGold:(n)=>{ if(!game) return false; game.gold=Math.max(0,Math.floor(Number(n)||0)); updateParty(); return true; },
+  trainLevel:(i)=>({ok:trainLevel(i),state:window.__mm6Debug.progressionState()}),
+  skillReport:()=>skillReport(),
+  awardSkill:(i,id,n)=>{ const h=party()[i]; const ok=awardSkill(h,id,n);
+    return {ok,state:window.__mm6Debug.skillReport()}; },
+  setSkillXp:(i,id,n)=>{ const h=party()[i]; if(!h) return false;
+    h.skillXp=h.skillXp||{}; h.skillXp[id]=Math.max(0,Math.floor(Number(n)||0)); return true; },
+  setSkillCooldown:(i,id,n)=>{ const h=party()[i]; if(!h) return false;
+    h.skillCooldown=h.skillCooldown||{}; h.skillCooldown[id]=Math.max(0,Math.floor(Number(n)||0)); return true; },
+  tickSkillCooldowns:()=>{ tickSkillCooldowns(); return window.__mm6Debug.skillReport(); },
+  trainSkill:(i,id)=>({ok:trainSkill(i,id),state:window.__mm6Debug.skillReport()}),
+  promoteGuild:(i)=>({ok:promoteGuild(i),state:window.__mm6Debug.skillReport()}),
+  monsterReport:()=>monsterReport(),
+  spawnVariant:(id,variant)=>{
+    const def=MONSTERS.find(m=>m.id===id)||MONSTERS[0];
+    const e=spawnMonster(def,0,0,0,variant||null,false,false);
+    return {id:e.id,name:e.name,tint:e.tint,variantId:e.variantId,level:e.level,threat:e.threat,
+      baseXp:e.baseXp,atk:e.atk,magic:!!e.magic,spells:e.spells.slice(),ranged:!!e.ranged,missChance:e.missChance,
+      heavyBlow:!!e.heavyBlow,gold:e.gold.slice()};
+  },
+  pickVariant:(id,rolls)=>{
+    const def=MONSTERS.find(m=>m.id===id)||MONSTERS[0], old=Math.random;
+    let i=0; Math.random=()=>rolls[i++]!==undefined?rolls[i-1]:old();
+    try{ const v=pickMonsterVariant(def,null,true); return v&&v.id||null; }
+    finally{ Math.random=old; }
+  },
+  setDebugRng:(n)=>{ if(!game) return false; game.debugRng=Number(n); return true; },
+  rollLootFor:(variant)=>{
+    if(!game) return null;
+    const def=MONSTERS.find(m=>m.id==='mouse')||MONSTERS[0];
+    const e=spawnMonster(def,0,0,0,variant||null,false,false);
+    return rollEnemyLoot(e);
+  },
+  lairEnemies:(id)=>{
+    const l=instantiateLair(id); if(!l) return null;
+    return {id:l.template.id,name:l.template.name,chests:l.template.chests.length,
+      enemies:l.enemies.map(e=>({name:e.name,id:e.id,variantId:e.variantId,elite:!!e.elite,leader:!!e.leader}))};
+  },
+  battleLimitReport:()=>{
+    const b=game&&game.battle; if(!b) return null;
+    return {active:b.enemies.length,spectators:b.spectators.length,budget:b.budget,limit:ACTIVE_ENEMY_LIMIT,
+      unitsAligned:b.enemies.every((e,i)=>b.units.some(u=>u.side==='enemy'&&u.idx===i))};
+  },
+  forceReinforcement:()=>{
+    const b=game&&game.battle; if(!b) return null;
+    b.enemies.forEach((e,i)=>{ if(i>=3) e.alive=false; });
+    const ok=addReinforcement(b);
+    return {ok,...window.__mm6Debug.battleLimitReport()};
+  },
+  simulateArcherMiss:()=>{
+    if(!game||game.battle) return null;
+    const def=MONSTERS.find(m=>m.id==='goblin')||MONSTERS[0];
+    const e=spawnMonster(def,0,0,0,'archer',false,false);
+    const b=startBattle([e],null); if(!b) return null;
+    const h=party()[0], before=h.hp, old=Math.random;
+    const logStart=b.log.length;
+    Math.random=()=>0.01;
+    try{ enemyAct(b,0); } finally{ Math.random=old; }
+    const logs=b.log.slice(logStart).map(x=>x.text);
+    return {before,after:h.hp,missed:h.hp===before&&logs.some(t=>/промах/.test(t)),logs};
+  },
+  simulateKill:(spec,win)=>{
+    if(!game) return null;
+    const e=spawnMonster(spec||{id:'mouse',name:'Мышь',hp:20,atk:1,def:0,combatSpeed:1,acts:1,moveEvery:1,gold:[1,3]},0,0,0,null,false,false);
+    const b=startBattle([e],null); if(!b) return null;
+    const before=party().map(h=>Math.floor(h.exp||0));
+    onEnemyKilled(b,e);
+    const pending=b.pendingXp;
+    if(win) finishBattle(true); else closeBattleKeep();
+    return {before,pending,after:party().map(h=>Math.floor(h.exp||0)),state:window.__mm6Debug.progressionState()};
+  },
   shopReport:()=>shopReport(),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
@@ -5421,6 +6071,18 @@ window.__mm6Debug={
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
   },
   containerReport:()=>containerReport(),
+  progressionReport:()=>progressionReport(),
+  grenadeReport:()=>grenadeReport(),
+  churchReport:()=>churchReport(),
+  throwGrenade:(element,targetIdx)=>throwGrenade(element,targetIdx),
+  grenadeTargetProfile:(e)=>grenadeTargetProfile(e),
+  addGrenade:(element)=>{ const def=grenadeItem(element); if(!def) return false;
+    const it=makeItem(Object.assign({},def)); game.bag.push(it); updateParty(); return true; },
+  setHeroHp:(i,hp)=>{ const h=party()[i]; if(!h) return false;
+    h.hp=Math.max(0,Math.min(h.maxHp,Math.round(Number(hp)||0))); updateParty(); return true; },
+  setPartyGold:(gold)=>{ if(!game) return false; game.gold=Math.max(0,Math.round(Number(gold)||0)); updateParty(); return true; },
+  churchTithe:()=>churchTithe(),
+  resurrectAtChurch:()=>resurrectAtChurch(),
   mapReport:()=>mapReport(),
   toggleBigMap:(open)=>toggleBigMap(open),
   showMinimapCell:(x,y)=>showCellInfo(x,y,'Миникарта'),
