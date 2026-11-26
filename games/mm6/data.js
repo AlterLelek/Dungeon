@@ -407,6 +407,59 @@ export const SEASON_WEATHER = {
 // Устаревший шаговый цикл погоды: счётчик шагов отключён (docs/DESIGN.md), поле остаётся только для совместимости настроек.
 export const WEATHER_CYCLE_STEPS = 100;
 
+// Проходимость местности закреплена в docs/DESIGN.md. Значения здесь — единственный
+// источник правил для генерации, отрисовки и журнала проверок.
+export const SEASON_KEYS = ['spring', 'summer', 'autumn', 'winter'];
+
+export const GROUND_TYPES = [
+  { id: 'grass', name: 'Трава', passable: true, cost: 1 },
+  { id: 'flowers', name: 'Цветы', passable: true, cost: 1 },
+  { id: 'dirt', name: 'Земля', passable: true, cost: 1 },
+  { id: 'sand', name: 'Песок', passable: true, cost: 1 },
+  { id: 'stone', name: 'Камень', passable: true, cost: 1 }
+];
+
+//Terrain table: cost is the number of turns spent on entering a cell.
+export const TERRAIN_TYPES = [
+  { id: 'grass', name: 'Трава', passable: true, cost: 1 },
+  { id: 'flowers', name: 'Цветы', passable: true, cost: 1 },
+  { id: 'dirt', name: 'Земля', passable: true, cost: 1 },
+  { id: 'sand', name: 'Песок', passable: true, cost: 1 },
+  { id: 'stone', name: 'Камень', passable: true, cost: 1 },
+  { id: 'road', name: 'Дорога', passable: true, cost: 1 },
+  { id: 'bridge', name: 'Дощатый мост', passable: true, cost: 1 },
+  { id: 'water', name: 'Вода', passable: false, cost: null, toast: 'Глубоко' },
+  { id: 'ice', name: 'Лёд', passable: true, cost: 1 },
+  { id: 'swamp', name: 'Болото', passable: true, cost: 2, winterCost: 1 },
+  { id: 'tree', name: 'Дерево', passable: false, cost: null },
+  { id: 'mountain', name: 'Гора', passable: false, cost: null },
+  { id: 'rock', name: 'Камень-валун', passable: false, cost: null },
+  { id: 'house', name: 'Дом', passable: false, cost: null },
+  { id: 'shop', name: 'Лавка', passable: false, cost: null },
+  { id: 'gate', name: 'Выход', passable: true, cost: 1 },
+  { id: 'chest', name: 'Сундук', passable: true, cost: 1 },
+  { id: 'treasure', name: 'Находка', passable: true, cost: 1 },
+  { id: 'boss', name: 'Босс', passable: false, cost: null }
+];
+
+// Три сохраняемых вида дорог: грунтовая, каменная, кирпичная.
+export const ROAD_KINDS = [
+  { id: 'dirt', name: 'Грунтовая', surface: '#a39064', detail: '#6d5a3c' },
+  { id: 'stone', name: 'Каменная', surface: '#9ca3af', detail: '#5d6470' },
+  { id: 'brick', name: 'Кирпичная', surface: '#b46a4a', detail: '#743d2b' }
+];
+
+// Болото замедляет в теплое время года; зимой промёрзшая поверхность проходима за 1 ход.
+export const SWAMP_COST = { normal: 2, winter: 1 };
+
+// Палитры одной процедурной текстуры на сезон: новых файлов нет, цвет меняется кэшированием.
+export const SEASON_GROUND_COLORS = {
+  spring: { grass: '#9dc86f', flowers: '#a9d47a', dirt: '#a48b62', sand: '#e3d3a6', stone: '#b9b6ad', water: '#4a86b8', ice: '#d8efff', swamp: '#4c6b3c' },
+  summer: { grass: '#4ea64b', flowers: '#63b356', dirt: '#8a704d', sand: '#dfcb93', stone: '#9b9a93', water: '#2f6fa8', ice: '#dceffc', swamp: '#2f5231' },
+  autumn: { grass: '#b87a35', flowers: '#c86639', dirt: '#806143', sand: '#d2b681', stone: '#8f8780', water: '#396a8d', ice: '#e2f0fa', swamp: '#4b4a2c' },
+  winter: { grass: '#e9f2f7', flowers: '#e2edf5', dirt: '#d9e2e9', sand: '#eef3f6', stone: '#d5dce3', water: '#bcd7e8', ice: '#dff2ff', swamp: '#c8d8df' }
+};
+
 export const DIFFICULTY = [
   { id: 'easy', name: 'Лёгкая', maps: [9, 11], size: [30, 30], tier: 0, monsters: 3, boss: 0, gold: 1.25 },
   { id: 'normal', name: 'Средняя', maps: [12, 14], size: [30, 30], tier: 1, monsters: 4, boss: 1, gold: 1 },

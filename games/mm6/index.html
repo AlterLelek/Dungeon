@@ -354,7 +354,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
@@ -586,6 +586,29 @@ const BIOME_KEYS=['field','village','city','port','mountains'];
 const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
 const DIR_NAMES=['север','восток','юг','запад'];
 const C_HERO='#86efac', C_ENEMY='#fca5a5', C_NEUTRAL='#fde68a';
+
+/* --- Каталог ассетов: горы и флора берутся из assets/manifest.json, а не из констант. --- */
+let assetManifest=[], manifestReady=false, manifestError=null;
+const manifestPromise=fetch('../../assets/manifest.json')
+  .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+  .then(list=>{ assetManifest=Array.isArray(list)?list:[]; manifestReady=true; })
+  .catch(err=>{ manifestError=String(err&&err.message||err); manifestReady=true; });
+// Модуль ждёт каталог до создания карт: имена гор и флоры всегда приходят из manifest.json.
+await manifestPromise;
+function manifestAssetPath(entry){
+  const p=String((entry&&entry.path)||(entry&&entry.file)||'');
+  if(!p) return null;
+  if(p.startsWith('assets/')) return '../../'+p;
+  if(p.startsWith('../')) return p;
+  return p;
+}
+function manifestPaths(type){
+  return assetManifest.filter(e=>e.type===type).map(manifestAssetPath).filter(Boolean);
+}
+function manifestSprite(type,index){
+  const list=manifestPaths(type);
+  return list.length?list[Math.abs(Math.trunc(Number(index)||0))%list.length]:null;
+}
 
 /* --- Фауна карты: SVG-спрайты и простое блуждание без участия в бою --- */
 // Позиции животных задаются в мировых координатах карты (в клетках), а не в пикселях экрана.
@@ -1230,15 +1253,19 @@ function normalizeHeroList(a,b){
   }
   return out.slice(0,clamp(Number(settings.partySize)||3,1,3));
 }
+function freshGameShell(diffId){
+  return {difficulty:diffId,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
+    battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
+    logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
+    msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
+}
 function startGame(diffId,a,b){
   const d=DIFFICULTY.find(x=>x.id===(diffId||selDiff))||DIFFICULTY[1];
   selHero=normalizeHeroList(a,b); selDiff=d.id;
   heroNameText=($('heroName').value||'').trim().slice(0,14)||'Герой';
   const savedLog=loadSavedLog();
-  game={difficulty:d.id,bag:[],gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
-    battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,reward:null,spellOpen:false,settingsOpen:false,
-    logOpen:false,log:savedLog,history:savedLog,bonusStep:0,
-    msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
+  game=freshGameShell(d.id);
+  game.log=savedLog; game.history=savedLog;
   installMessageLogger();
   flushAssetErrors();
   game.party=selHero.map((idx,slot)=>makeHeroState(HEROES[idx],slot));
@@ -1256,6 +1283,42 @@ function startGame(diffId,a,b){
   beep(540,.12);
   return game;
 }
+/* Полное сохранение мира: рельеф, дороги, мосты, флора и сезон хранятся в cells. */
+const WORLD_SAVE_KEY='mm6_world_save_v1';
+function saveWorldState(){
+  if(!game||!game.world) return false;
+  const snap={version:1,difficulty:game.difficulty,gold:game.gold,bag:game.bag,party:game.party,
+    world:game.world,player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
+    seasonOverride:game.seasonOverride,log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
+  try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
+  catch(e){ return false; }
+  return true;
+}
+function loadWorldState(){
+  let data=null;
+  try{ data=JSON.parse(localStorage.getItem(WORLD_SAVE_KEY)||'null',(k,v)=>k==='seen'&&Array.isArray(v)?new Set(v):v); }
+  catch(e){ return false; }
+  if(!data||!data.world||!Array.isArray(data.world.maps)||!data.world.maps.length) return false;
+  const shell=freshGameShell(data.difficulty||selDiff);
+  Object.assign(shell,data);
+  game=shell;
+  installMessageLogger();
+  game._msg=String(data.msg||'');
+  game.log=Array.isArray(game.log)?game.log:[]; game.history=Array.isArray(game.history)?game.history:game.log;
+  game.world.maps.forEach(m=>{
+    if(!(m.seen instanceof Set)) m.seen=new Set(Array.isArray(m.seen)?m.seen:[]);
+    (m.cells||[]).forEach(row=>row.forEach(c=>{
+      if(!c.ground) c.ground=GROUND_IDS.includes(c.t)?c.t:'grass';
+      if(c.water&&!c.t) c.t='water';
+    }));
+  });
+  syncSeasonCells();
+  phase='play';
+  $('start').classList.add('hidden'); $('records').classList.add('hidden');
+  $('controls').classList.remove('hidden'); $('party').classList.remove('hidden');
+  updateWeatherByTurn(); updateParty(); updateControls();
+  return true;
+}
 function boostRegen(sec){
   if(game) game.regenBoost=Math.max(game.regenBoost||0,performance.now()+sec*1000);
 }
@@ -1270,35 +1333,230 @@ function generateWorld(diffId){
   const slots=[];
   for(let y=0;y<rows;y++) for(let x=0;x<cols;x++) if(slots.length<count) slots.push({gx:x,gy:y});
   const pos={}; slots.forEach((s,i)=>pos[s.gx+','+s.gy]=i);
-  const maps=slots.map((s,i)=>generateMap(i,count,s,d,pos,cols,rows));
-  return {difficulty:d.id,cols,rows,count,layout,maps,current:0,turn:0,bossKills:0};
+  const worldSeed=(Math.random()*0xffffffff)>>>0;
+  const maps=slots.map((s,i)=>generateMap(i,count,s,d,pos,cols,rows,worldSeed));
+  return {difficulty:d.id,cols,rows,count,layout,maps,current:0,turn:0,bossKills:0,worldSeed};
 }
-function emptyCells(size){
-  const g=[]; for(let y=0;y<size;y++){ g[y]=[]; for(let x=0;x<size;x++) g[y][x]={t:'grass'}; } return g;
+const GROUND_IDS=GROUND_TYPES.map(g=>g.id);
+const TERRAIN_IDS=TERRAIN_TYPES.map(t=>t.id);
+function makeSeed(base,salt){ return ((base>>>0)^Math.imul(salt+1,0x9e3779b1))>>>0; }
+function makeRng(seed){
+  let a=seed>>>0;
+  return ()=>{ a=(a+0x6d2b79f5)|0; let t=Math.imul(a^(a>>>15),1|a);
+    t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; };
 }
-function generateMap(i,total,slot,d,pos,cols,rows){
+function rngInt(rng,a,b){ return a+Math.floor(rng()*(b-a+1)); }
+function rngPick(rng,arr){ return arr.length?arr[Math.floor(rng()*arr.length)]:null; }
+function cellHash(x,y,seed){ return Math.abs(Math.imul(x+1,73856093)^Math.imul(y+1,19349663)^seed); }
+function setGround(c,ground){ c.t=ground; c.ground=ground; return c; }
+function emptyCells(size,rng){
+  const g=[];
+  for(let y=0;y<size;y++){ g[y]=[];
+    for(let x=0;x<size;x++) g[y][x]=Object.assign(setGround({},'grass'),{decoSeed:rngInt(rng,0,999)});
+  }
+  return g;
+}
+function scatterPatch(cells,size,rng,ground,count,minR,maxR,exclude){
+  for(let k=0;k<count;k++){
+    const cx=rngInt(rng,2,size-3), cy=rngInt(rng,2,size-3), r=rngInt(rng,minR,maxR);
+    for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+      if(dx*dx+dy*dy>r*r+.4||rng()>.86) continue;
+      const x=cx+dx,y=cy+dy; if(x<0||y<0||x>=size||y>=size) continue;
+      const c=cells[y][x];
+      if(exclude&&exclude.has(ckey(x,y))) continue;
+      if(c.t!=='grass'&&c.t!=='flowers') continue;
+      setGround(c,ground);
+    }
+  }
+}
+function createLake(cells,size,rng,cx,cy,rx,ry){
+  const phase=rng()*Math.PI*2;
+  for(let y=1;y<size-1;y++) for(let x=1;x<size-1;x++){
+    const nx=(x-cx)/rx, ny=(y-cy)/ry;
+    const wobble=.13*Math.sin(phase+nx*3.6+ny*2.7)+.09*Math.cos(phase*1.7+nx*2.2-ny*4.1);
+    if(nx*nx+ny*ny>1+wobble) continue;
+    const c=cells[y][x]; c.t='water'; c.water=true; c.ground='sand';
+  }
+}
+function addShore(cells,size){
+  const water=[];
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(cells[y][x].water&&cells[y][x].t==='water') water.push({x,y});
+  water.forEach(({x,y})=>DIRS.forEach(v=>{
+    const nx=x+v[0],ny=y+v[1]; if(nx<0||ny<0||nx>=size||ny>=size) return;
+    const c=cells[ny][nx]; if(c.water) return;
+    if(['gate','boss','chest','shop','house','treasure','road','bridge'].includes(c.t)) return;
+    c.t='sand'; c.ground='sand'; c.shore=true;
+  }));
+}
+// Мосты могут разрезать озеро: убираем одиночные остатки воды и обновляем берег.
+function normalizeLakes(cells,size){
+  const seen=new Set();
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const start=cells[y][x];
+    if(!start.water||start.t!=='water'||seen.has(ckey(x,y))) continue;
+    const group=[], queue=[{x,y}]; seen.add(ckey(x,y));
+    while(queue.length){
+      const p=queue.shift(); group.push(p);
+      DIRS.forEach(v=>{
+        const nx=p.x+v[0],ny=p.y+v[1],key=ckey(nx,ny);
+        if(nx<0||ny<0||nx>=size||ny>=size||seen.has(key)) return;
+        const c=cells[ny][nx];
+        if(c.water&&c.t==='water'){ seen.add(key); queue.push({x:nx,y:ny}); }
+      });
+    }
+    if(group.length>1) continue;
+    group.forEach(p=>{ const c=cells[p.y][p.x];
+      c.water=false; c.shore=true; c.t='sand'; c.ground='sand'; });
+  }
+  addShore(cells,size);
+}
+// Убирает одиночные дорожные клетки, которые могли появиться у зданий и валунов.
+function normalizeRoads(cells,size){
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const c=cells[y][x]; if(c.t!=='road') continue;
+    const linked=DIRS.some(v=>{
+      const nx=x+v[0],ny=y+v[1];
+      return nx>=0&&ny>=0&&nx<size&&ny<size&&
+        ['road','bridge','gate','boss','chest'].includes(cells[ny][nx].t);
+    });
+    if(linked) continue;
+    const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
+    cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
+  }
+}
+function scatterSwamp(cells,size,rng,count,exclude){
+  for(let k=0;k<count;k++){
+    const cx=rngInt(rng,4,size-5), cy=rngInt(rng,4,size-5), r=rngInt(rng,2,3);
+    for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+      if(dx*dx+dy*dy>r*r+.3) continue;
+      const x=cx+dx,y=cy+dy; if(x<1||y<1||x>=size-1||y>=size-1) continue;
+      if(exclude.has(ckey(x,y))) continue;
+      const c=cells[y][x]; if(!GROUND_IDS.includes(c.t)) continue;
+      c.t='swamp'; c.ground='grass'; c.swamp=true;
+    }
+  }
+}
+function applyRoadCell(cells,x,y,kind,rng){
+  const c=cells[y][x];
+  if(['gate','boss','chest','shop','house','treasure','mountain','rock'].includes(c.t)) return;
+  if(c.water){ c.t='bridge'; c.bridgeKind='plank'; c.water=true; c.roadKind=kind; return; }
+  c.t='road'; c.roadKind=kind; c.roadOffset=Math.round((rng()-.5)*60)/100;
+  if(!c.ground) c.ground='grass';
+}
+function carveRoad(cells,size,rng,from,to,kind){
+  const dx=to.x-from.x, dy=to.y-from.y, len=Math.hypot(dx,dy);
+  if(len<1) return;
+  const ox=-dy/len, oy=dx/len;
+  const bend=(rng()-.5)*Math.min(7,len*.24);
+  const steps=Math.max(3,Math.ceil(len*1.7));
+  let prev=null;
+  for(let i=0;i<=steps;i++){
+    const t=i/steps, off=Math.sin(Math.PI*t)*bend+(rng()-.5)*.4;
+    const x=clamp(Math.round(from.x+dx*t+ox*off),1,size-2);
+    const y=clamp(Math.round(from.y+dy*t+oy*off),1,size-2);
+    if(prev){
+      let cx=prev.x,cy=prev.y,guard=0;
+      while((cx!==x||cy!==y)&&guard++<80){
+        const sx=Math.sign(x-cx), sy=Math.sign(y-cy);
+        // Диагональные шаги чередуются: дорога изгибается без прямых углов.
+        if(sx&&sy){ if(guard%2) cx+=sx; else cy+=sy; }
+        else if(sx) cx+=sx; else cy+=sy;
+        applyRoadCell(cells,cx,cy,kind,rng);
+      }
+    }
+    applyRoadCell(cells,x,y,kind,rng);
+    prev={x,y};
+  }
+}
+function placeMountains(cells,size,rng,seed,keep){
+  const sprites=manifestPaths('mountain');
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const edge=x<2||x>size-3||y<2||y>size-3;
+    if(!edge||rng()>.62||keep.has(ckey(x,y))) continue;
+    const c=cells[y][x];
+    if(c.roadKind||['gate','boss','chest','shop','house','treasure','water','bridge'].includes(c.t)) continue;
+    c.t='mountain'; c.ground='stone';
+    if(sprites.length) c.mountainSprite=sprites[cellHash(x,y,seed)%sprites.length];
+  }
+  const interior=rngInt(rng,2,4);
+  for(let k=0;k<interior;k++){
+    const x=rngInt(rng,4,size-5), y=rngInt(rng,4,size-5);
+    if(keep.has(ckey(x,y))) continue;
+    const c=cells[y][x]; if(!GROUND_IDS.includes(c.t)) continue;
+    c.t='rock'; c.ground='stone';
+    if(sprites.length) c.mountainSprite=sprites[cellHash(y,x,seed)%sprites.length];
+  }
+}
+function placeFlora(cells,size,rng,seed,keep){
+  const sprites=manifestPaths('flora'); if(!sprites.length) return;
+  for(let k=0;k<7;k++){
+    const cx=rngInt(rng,2,size-3), cy=rngInt(rng,2,size-3), r=rngInt(rng,1,2);
+    for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+      if(dx*dx+dy*dy>r*r+.3||rng()>.78) continue;
+      const x=cx+dx,y=cy+dy; if(x<1||y<1||x>=size-1||y>=size-1) continue;
+      if(keep.has(ckey(x,y))) continue;
+      const c=cells[y][x]; if(c.t!=='grass'&&c.t!=='dirt') continue;
+      c.flora=sprites[cellHash(x,y,seed+17)%sprites.length];
+      c.t='flowers'; c.ground='flowers';
+    }
+  }
+}
+function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   // Размер карт закреплён: 30×30 (docs/DESIGN.md). Настройка сделана только для чтения.
-  const baseSize=30;
-  const size=clamp(baseSize,30,30);
+  const size=clamp(30,30,30);
+  const seed=makeSeed(worldSeed||1,i+1), rng=makeRng(seed);
   const biome=BIOME_KEYS[i%BIOME_KEYS.length];
-  const cells=emptyCells(size);
+  const cells=emptyCells(size,rng);
   const cx=Math.floor(size/2),cy=Math.floor(size/2);
-  for(let x=0;x<size;x++) cells[cy][x]={t:'road'};
-  for(let y=0;y<size;y++) cells[y][cx]={t:'road'};
-  DIRS.forEach((v,dir)=>{
-    const ni=pos[(slot.gx+v[0])+','+(slot.gy+v[1])];
-    if(ni===undefined) return;
-    let x=cx,y=cy;
-    if(dir===0) y=0; if(dir===2) y=size-1; if(dir===1) x=size-1; if(dir===3) x=0;
-    cells[y][x]={t:'gate',dir,to:ni,biome:BIOME_KEYS[ni%BIOME_KEYS.length],
-      bname:BIOMES[BIOME_KEYS[ni%BIOME_KEYS.length]].name};
-  });
   let farX=slot.gx<cols/2?size-2:1, farY=slot.gy<rows/2?size-2:1;
   if(Math.abs(farX-cx)<2) farX=cx===size-2?1:size-2;
   if(Math.abs(farY-cy)<2) farY=cy===size-2?1:size-2;
-  cells[farY][farX]={t:'boss',opened:false};
   const chestX=clamp(farX+(farX>cx?-1:1),0,size-1);
-  if(cells[farY][chestX].t==='grass') cells[farY][chestX]={t:'chest',boss:true,opened:false};
+  const keep=new Set([ckey(cx,cy),ckey(farX,farY),ckey(chestX,farY)]);
+  DIRS.forEach(v=>{
+    const x=clamp(cx+v[0]*(size-1),0,size-1), y=clamp(cy+v[1]*(size-1),0,size-1);
+    for(let d2=0;d2<=2;d2++) keep.add(ckey(clamp(x-v[0]*d2,0,size-1),clamp(y-v[1]*d2,0,size-1)));
+  });
+
+  // Основа — трава; песок, камень, земля и цветы идут пятнами, а не шумом на каждом кадре.
+  scatterPatch(cells,size,rng,'sand',3,2,4,keep);
+  scatterPatch(cells,size,rng,'stone',3,2,3,keep);
+  scatterPatch(cells,size,rng,'dirt',4,2,3,keep);
+
+  if(biome==='port'){
+    createLake(cells,size,rng,cx+rngInt(rng,-3,3),size-4,5,3);
+    createLake(cells,size,rng,rngInt(rng,4,8),rngInt(rng,4,8),3,3);
+  }else{
+    const lx=clamp(cx+rngInt(rng,-7,7),5,size-6);
+    const ly=clamp(cy+rngInt(rng,-7,7),5,size-6);
+    createLake(cells,size,rng,lx,ly,rngInt(rng,4,6),rngInt(rng,3,5));
+  }
+  addShore(cells,size);
+  scatterSwamp(cells,size,rng,biome==='mountains'?1:2,keep);
+
+  // Изогнутые дороги связывают центр, выходы и сундук; на воде дорога становится мостом.
+  const kinds=ROAD_KINDS.map(k=>k.id);
+  DIRS.forEach((v,dir)=>{
+    const ni=pos[(slot.gx+v[0])+','+(slot.gy+v[1])];
+    if(ni===undefined) return;
+    const x=clamp(cx+v[0]*(size-1),0,size-1), y=clamp(cy+v[1]*(size-1),0,size-1);
+    carveRoad(cells,size,rng,{x:cx,y:cy},{x,y},kinds[(i+dir)%kinds.length]);
+  });
+  carveRoad(cells,size,rng,{x:cx,y:cy},{x:farX,y:farY},kinds[(i+1)%kinds.length]);
+  carveRoad(cells,size,rng,{x:farX,y:farY},{x:chestX,y:farY},kinds[(i+2)%kinds.length]);
+
+  placeMountains(cells,size,rng,seed,keep);
+  DIRS.forEach((v,dir)=>{
+    const ni=pos[(slot.gx+v[0])+','+(slot.gy+v[1])];
+    if(ni===undefined) return;
+    const x=clamp(cx+v[0]*(size-1),0,size-1), y=clamp(cy+v[1]*(size-1),0,size-1);
+    const nextBiome=BIOME_KEYS[ni%BIOME_KEYS.length];
+    cells[y][x]={t:'gate',dir,to:ni,biome:nextBiome,bname:BIOMES[nextBiome].name,ground:cells[y][x].ground||'grass'};
+  });
+  cells[farY][farX]={t:'boss',opened:false,ground:cells[farY][farX].ground||'grass'};
+  if(GROUND_IDS.includes(cells[farY][chestX].t)||cells[farY][chestX].t==='road')
+    cells[farY][chestX]={t:'chest',boss:true,opened:false,ground:'grass'};
+
   const tradeBuildings=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&b.shop_kind.length);
   const decoBuildings=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
   const shopPlan=[];
@@ -1307,14 +1565,13 @@ function generateMap(i,total,slot,d,pos,cols,rows){
     const b=tradeBuildings[(i*2+k*3)%tradeBuildings.length];
     if(b&&!shopPlan.includes(b)) shopPlan.push(b);
   }
-  const occupied=new Set([ckey(cx,cy),ckey(farX,farY),ckey(chestX,farY)]);
   function freeSpot(minDist){
-    for(let k=0;k<160;k++){
-      const x=rnd(0,size-1),y=rnd(0,size-1);
-      if(occupied.has(ckey(x,y))) continue;
-      if(cells[y][x].t!=='grass'&&cells[y][x].t!=='road') continue;
+    for(let k=0;k<200;k++){
+      const x=rngInt(rng,0,size-1),y=rngInt(rng,0,size-1);
+      if(keep.has(ckey(x,y))) continue;
+      if(!GROUND_IDS.includes(cells[y][x].t)) continue;
       if(minDist&&Math.abs(x-cx)+Math.abs(y-cy)<minDist) continue;
-      occupied.add(ckey(x,y)); return {x,y};
+      keep.add(ckey(x,y)); return {x,y};
     }
     return null;
   }
@@ -1322,35 +1579,37 @@ function generateMap(i,total,slot,d,pos,cols,rows){
   shopPlan.forEach(b=>{
     const s=freeSpot(2); if(!s) return;
     const kind=b.shop_kind[0];
-    const name=b.title;
-    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:b.shop_kind.slice(),shopName:name,buildingTitle:b.title};
-    shops.push({buildingId:b.id,kind,kinds:b.shop_kind.slice(),name,x:s.x,y:s.y});
+    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:b.shop_kind.slice(),shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
+    shops.push({buildingId:b.id,kind,kinds:b.shop_kind.slice(),name:b.title,x:s.x,y:s.y});
   });
-  const decoCount=Math.floor(size*size*.18);
+  const decoCount=Math.floor(size*size*.12);
   for(let k=0;k<decoCount;k++){
     const s=freeSpot(2); if(!s) break;
     let t='tree', deco=null;
-    if(biome==='port'&&Math.random()<.55) t='water';
-    else if(biome==='mountains'&&Math.random()<.7) t='rock';
-    else if((biome==='village'||biome==='city')&&Math.random()<.7){ t='house'; deco=pick(decoBuildings); }
+    if(biome==='mountains'&&rng()<.55){ t='rock'; if(manifestPaths('mountain').length) cells[s.y][s.x].mountainSprite=manifestSprite('mountain',cellHash(s.x,s.y,seed)); }
+    else if((biome==='village'||biome==='city')&&rng()<.6){ t='house'; deco=rngPick(rng,decoBuildings); }
+    const ground=cells[s.y][s.x].ground||'grass';
     cells[s.y][s.x]=t==='house'
-      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco}
-      :{t};
+      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco,ground}
+      :{t,ground,decoSeed:cellHash(s.x,s.y,seed),...(cells[s.y][s.x].mountainSprite?{mountainSprite:cells[s.y][s.x].mountainSprite}:{})};
   }
   const rate=clamp(Number(settings.itemRate)||2,1,5);
-  const treasureCount=rnd(2,4)+Math.floor(rate/2);
+  const treasureCount=rngInt(rng,2,4)+Math.floor(rate/2);
   for(let k=0;k<treasureCount;k++){
     const s=freeSpot(2); if(!s) break;
-    const tp=pick(TREASURES);
-    cells[s.y][s.x]={t:'treasure',item:tp};
+    cells[s.y][s.x]={t:'treasure',item:rngPick(rng,TREASURES),ground:cells[s.y][s.x].ground};
   }
-  for(let k=0;k<rnd(1,2);k++){
+  for(let k=0;k<rngInt(rng,1,2);k++){
     const s=freeSpot(3); if(!s) break;
-    cells[s.y][s.x]={t:'chest',boss:false,opened:false};
+    cells[s.y][s.x]={t:'chest',boss:false,opened:false,ground:cells[s.y][s.x].ground};
+    carveRoad(cells,size,rng,{x:cx,y:cy},{x:s.x,y:s.y},kinds[(i+k)%kinds.length]);
+    cells[s.y][s.x]={t:'chest',boss:false,opened:false,ground:cells[s.y][s.x].ground||'grass'};
   }
+  placeFlora(cells,size,rng,seed,keep);
+
   const tier=i===0?0:Math.min(3,Math.floor(i/Math.max(1,total-1)*3)+(d.tier>0?1:0));
   const bossPool=i===total-1?MONSTERS.filter(m=>m.tier>=2):MONSTERS.filter(m=>m.tier>=Math.min(2,tier));
-  const bossDef=pick(bossPool.length?bossPool:MONSTERS);
+  const bossDef=rngPick(rng,bossPool.length?bossPool:MONSTERS);
   const boss=spawnMonster(bossDef,tier,farX,farY,'gold',true);
   boss.name='Босс · '+bossDef.name;
   boss.hp=Math.round(boss.hp*1.7); boss.maxHp=boss.hp;
@@ -1360,9 +1619,11 @@ function generateMap(i,total,slot,d,pos,cols,rows){
   const mons=[];
   for(let k=0;k<d.monsters+(i>2?1:0)+(Number(settings.monstersAdd)||0);k++){
     const s=freeSpot(4); if(!s) break;
-    mons.push(spawnMonster(pick(pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
+    mons.push(spawnMonster(rngPick(rng,pool.length?pool:MONSTERS),tier,s.x,s.y,null,false,i!==0));
   }
-  return {index:i,size,biome,cells,seen:new Set(),entry:{x:cx,y:cy},
+  normalizeLakes(cells,size);
+  normalizeRoads(cells,size);
+  return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},
     boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
     wildlife:createWildlife(biome,size)};
 }
@@ -1390,6 +1651,7 @@ function markSeen(map,x,y){
 }
 function setMap(index,fromDir){
   const w=game.world; w.current=index;
+  syncSeasonCells();
   const m=w.maps[index];
   let px=m.entry.x,py=m.entry.y,dir=0;
   if(fromDir!==null){
@@ -1405,7 +1667,33 @@ function setMap(index,fromDir){
   game.msg='Локация '+(index+1)+'/'+w.count+' · '+BIOMES[m.biome].name+'.';
 }
 function enemyAt(x,y){ const m=currentMap(); return m.monsters.find(e=>e.alive&&e.x===x&&e.y===y)||null; }
-function isBlocking(c){ return ['tree','water','rock','house','shop','boss'].includes(c.t); }
+function currentSeason(){
+  if(game&&SEASON_KEYS.includes(game.seasonOverride)) return game.seasonOverride;
+  const m=currentMap(); return (BIOMES[(m&&m.biome)||'field']||BIOMES.field).season||'summer';
+}
+// Сезон меняет тип воды и проходимость мгновенно: графика и правила читают одно и то же поле.
+function syncSeasonCells(){
+  if(!game||!game.world) return;
+  const ice=currentSeason()==='winter';
+  game.world.maps.forEach(m=>(m.cells||[]).forEach(row=>row.forEach(c=>{
+    if(c.water&&c.t!=='bridge') c.t=ice?'ice':'water';
+  })));
+}
+function isBlocking(c){
+  if(!c) return true;
+  if(c.water&&c.t!=='bridge') return currentSeason()!=='winter';
+  return ['tree','mountain','rock','house','shop','boss'].includes(c.t);
+}
+function enterTurnCost(c){
+  if(!c) return 1;
+  if(c.t==='swamp') return currentSeason()==='winter'?SWAMP_COST.winter:SWAMP_COST.normal;
+  return 1;
+}
+function setGameSeason(season){
+  if(!game) return false;
+  game.seasonOverride=SEASON_KEYS.includes(season)?season:null;
+  syncSeasonCells(); updateWeatherByTurn(); return currentSeason();
+}
 function shopKindsOf(cell){
   const raw=cell&&cell.shop_kind;
   const list=Array.isArray(raw)?raw:(raw?[raw]:[]);
@@ -1465,6 +1753,10 @@ function tryMove(dx,dy){
   const e=enemyAt(nx,ny);
   if(e){ startBattle(battleGroup(e),null); game.msg='Враги преградили путь: '+battleGroup(e).map(x=>x.name).join(', ')+'.'; return; }
   const c=m.cells[ny][nx];
+  if(c.water&&c.t!=='bridge'&&currentSeason()!=='winter'){
+    game.msg='Глубоко: вода непроходима.'; toast('Глубоко'); beep(120,.05); return;
+  }
+  const stepCost=enterTurnCost(c);
   if(isBlocking(c)){
     if(c.t==='boss'){ startBattle([m.boss.def,...battleGroup(null)],m); return; }
     if(c.t==='shop'){ openBuilding(c); return; }
@@ -1475,6 +1767,7 @@ function tryMove(dx,dy){
   if(c.t==='gate'){
     const to=c.to, nd=c.dir, back=(nd+2)%4;
     game.world.current=to;
+    syncSeasonCells();
     const nm=game.world.maps[to];
     let gx=p.x,gy=p.y;
     for(let y=0;y<nm.size;y++) for(let x=0;x<nm.size;x++){
@@ -1490,10 +1783,10 @@ function tryMove(dx,dy){
   if(c.t==='treasure'){
     const foundName=(c.item&&c.item.name)||'находка';
     collectTreasure(c);
-    m.cells[ny][nx]={t:'grass',taken:true,foundName};
+    m.cells[ny][nx]={t:c.ground||'grass',ground:c.ground||'grass',taken:true,foundName};
   }
   if(c.t==='chest'){ openSmallChest(c); }
-  afterStep();
+  afterStep(stepCost);
 }
 function maybeSpawnBonus(m){
   game.bonusStep=(game.bonusStep||0)+1;
@@ -1516,12 +1809,14 @@ function maybeSpawnBonus(m){
   m.cells[spot.y][spot.x]={t:'treasure',item:t};
   pushHistory('На карте появилась находка: '+t.name+'.','neutral');
 }
-function afterStep(){
-  const m=currentMap(); markSeen(m,game.player.x,game.player.y);
-  game.world.turn++; game.totalTurns++;
+function afterStep(cost){
+  const m=currentMap(), steps=clamp(Math.round(Number(cost)||1),1,2);
+  markSeen(m,game.player.x,game.player.y);
+  game.world.turn+=steps; game.totalTurns+=steps;
   maybeSpawnBonus(m);
-  pushHistory('Ход '+game.world.turn+': '+DIR_NAMES[game.player.dir]+', клетка '+game.player.x+','+game.player.y+'.','neutral');
-  m.monsters.forEach(e=>{
+  pushHistory('Ход '+game.world.turn+': '+DIR_NAMES[game.player.dir]+', клетка '+game.player.x+','+game.player.y+
+    (steps>1?' · болото '+steps+' хода':'')+'.','neutral');
+  for(let s=0;s<steps;s++) m.monsters.forEach(e=>{
     if(!e.alive) return;
     e.moveT++;
     if(e.moveT<e.moveEvery) return;
@@ -2866,35 +3161,115 @@ function drawSceneBackdrop(biome,now){
   }
   ctx.restore();
 }
-const MAP_TILES={
-  grass:[KENNEY_TILES+'tile_grass.png',KENNEY_TILES+'tile_grass_flowers.png',KENNEY_TILES+'tile_grass_flowers_bright.png'],
-  road:KENNEY_TILES+'tile_sand.png',
-  stone:KENNEY_TILES+'tile_stone.png',
-  dirt:KENNEY_TILES+'tile_dirt.png'
-};
-function groundTileFor(cell,sx,sy){
-  if(cell.t==='rock'||cell.t==='water') return MAP_TILES.stone;
-  if(cell.t==='road'||cell.t==='gate'||cell.t==='boss') return MAP_TILES.road;
-  const set=MAP_TILES.grass;
-  return set[Math.abs(Math.round(sx/17)+Math.round(sy/11))%set.length];
+/* Процедурная текстура: один тайл на тип грунта, перекрашивается по сезону и кэшируется.
+   Никаких tile_grass/tile_dirt/tile_sand/tile_stone и случайных выборов при отрисовке. */
+const TERRAIN_TILE_SIZE=32;
+const terrainTileCache=new Map();
+function shade(hex,amount){
+  const s=String(hex||'#888888').replace('#','');
+  const n=parseInt(s.length===3?s.split('').map(c=>c+c).join(''):s,16)||0x888888;
+  const r=clamp(((n>>16)&255)+amount,0,255), g=clamp(((n>>8)&255)+amount,0,255), b=clamp((n&255)+amount,0,255);
+  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
 }
-function drawCellPatch(sx,sy,sc,cell,biome,alpha){
-  ctx.save(); ctx.globalAlpha=alpha;
-  const b=BIOMES[biome]||BIOMES.field;
-  const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss';
-  const cellScale=sc*(clamp(Number(settings.cellSize)||16,8,28)/16);
-  const farLeft=sx-66*cellScale, farRight=sx+66*cellScale, top=sy+12*sc, bottom=sy+30*sc;
-  ctx.beginPath(); ctx.moveTo(sx-52*cellScale,top); ctx.lineTo(sx+52*cellScale,top);
-  ctx.lineTo(farRight,bottom); ctx.lineTo(farLeft,bottom); ctx.closePath();
-  ctx.save(); ctx.clip();
-  ctx.fillStyle=road?b.road:b.ground[0]; ctx.fillRect(farLeft,top,farRight-farLeft,bottom-top);
-  const tile=groundTileFor(cell,sx,sy), ts=Math.max(12,18*sc);
-  for(let tx=farLeft;tx<farRight;tx+=ts){
-    for(let ty=top;ty<bottom;ty+=ts) drawSprite(tile,tx,ty,ts,ts);
+function paintTerrainTile(c,ground,season){
+  const pal=SEASON_GROUND_COLORS[season]||SEASON_GROUND_COLORS.summer;
+  const base=pal[ground]||pal.grass||'#4ea64b';
+  c.fillStyle=base; c.fillRect(0,0,TERRAIN_TILE_SIZE,TERRAIN_TILE_SIZE);
+  const dark=shade(base,-26), light=shade(base,28);
+  const seed=GROUND_IDS.indexOf(ground)*37+SEASON_KEYS.indexOf(season)*11+3;
+  if(ground==='stone'||ground==='water'||ground==='ice'){
+    c.strokeStyle=dark; c.lineWidth=1;
+    for(let i=0;i<5;i++){
+      const x=(i*11+seed)%TERRAIN_TILE_SIZE, y=(i*7+seed*2)%TERRAIN_TILE_SIZE;
+      c.beginPath(); c.moveTo(x,y); c.lineTo((x+9)%TERRAIN_TILE_SIZE,(y+5)%TERRAIN_TILE_SIZE); c.stroke();
+    }
+  }
+  for(let i=0;i<26;i++){
+    const x=(i*13+seed*5)%TERRAIN_TILE_SIZE, y=(i*19+seed*3)%TERRAIN_TILE_SIZE;
+    c.fillStyle=i%2?dark:light;
+    if(ground==='grass'||ground==='flowers'){
+      c.fillRect(x,y,1,4+(i%3));
+    }else{
+      c.fillRect(x,y,i%3===0?2:1,1);
+    }
+  }
+  if(ground==='flowers'){
+    const petals=season==='winter'?['#eef4f8','#dbe7ef']:['#fde68a','#f9a8d4','#fca5a5'];
+    for(let i=0;i<5;i++){
+      const x=3+(i*13+seed)%26, y=4+(i*17+seed*2)%24;
+      c.fillStyle=petals[i%petals.length];
+      c.beginPath(); c.arc(x,y,1.6,0,6.29); c.fill();
+    }
+  }
+  if(season==='winter'&&ground!=='ice'&&ground!=='water'){
+    c.fillStyle='rgba(255,255,255,.7)';
+    for(let i=0;i<12;i++){ const x=(i*17+seed)%TERRAIN_TILE_SIZE, y=(i*23+seed*2)%TERRAIN_TILE_SIZE;
+      c.beginPath(); c.arc(x,y,.8,0,6.29); c.fill(); }
+  }
+}
+function groundTile(ground,season){
+  const key=ground+'|'+season;
+  if(terrainTileCache.has(key)) return terrainTileCache.get(key);
+  const c=document.createElement('canvas'); c.width=c.height=TERRAIN_TILE_SIZE;
+  paintTerrainTile(c.getContext('2d'),ground,season);
+  terrainTileCache.set(key,c); return c;
+}
+function surfaceFor(cell,season){
+  if(cell.water&&cell.t!=='bridge') return season==='winter'?'ice':'water';
+  if(cell.t==='swamp') return 'swamp';
+  if(['mountain','rock'].includes(cell.t)) return 'stone';
+  return GROUND_IDS.includes(cell.ground)?cell.ground:'grass';
+}
+function drawTiledGround(x,y,w,h,ground,season,seed){
+  const tile=groundTile(ground,season), ts=Math.max(12,24*Math.min(1,Math.max(.5,w/140)));
+  const off=Math.abs(Math.trunc(Number(seed)||0))%ts;
+  ctx.save(); ctx.imageSmoothingEnabled=false;
+  for(let tx=x-off;tx<x+w;tx+=ts) for(let ty=y;ty<y+h;ty+=ts) ctx.drawImage(tile,tx,ty,ts,ts);
+  ctx.restore();
+}
+function drawRoadPattern(x,y,w,h,kind,seed){
+  const rk=ROAD_KINDS.find(k=>k.id===kind)||ROAD_KINDS[0];
+  const detail=rk.detail, n=Math.abs(Math.trunc(Number(seed)||0));
+  ctx.save(); ctx.globalAlpha=.55; ctx.strokeStyle=detail; ctx.fillStyle=detail; ctx.lineWidth=1;
+  if(kind==='brick'){
+    for(let yy=y;yy<y+h;yy+=6){ ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke();
+      for(let xx=x+(Math.floor(yy/6)%2)*8;xx<x+w;xx+=16){ ctx.beginPath(); ctx.moveTo(xx,yy); ctx.lineTo(xx,yy+6); ctx.stroke(); } }
+  }else if(kind==='stone'){
+    for(let i=0;i<18;i++){ const px=x+((i*29+n)%Math.max(1,Math.floor(w))), py=y+((i*11+n)%Math.max(1,Math.floor(h)));
+      ctx.strokeRect(px,py,5,3); }
+  }else{
+    for(let i=0;i<24;i++){ const px=x+((i*17+n)%Math.max(1,Math.floor(w))), py=y+((i*7+n)%Math.max(1,Math.floor(h)));
+      ctx.fillRect(px,py,2,1); }
   }
   ctx.restore();
-  ctx.strokeStyle='rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
-  if(road){ ctx.fillStyle=b.roadDark; ctx.fillRect(sx-2*sc,sy+13*sc,4*sc,16*sc); }
+}
+function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
+  ctx.save(); ctx.globalAlpha=alpha;
+  const cellScale=sc*(clamp(Number(settings.cellSize)||16,8,28)/16);
+  const farLeft=sx-66*cellScale, farRight=sx+66*cellScale, top=sy+12*sc, bottom=sy+30*sc;
+  const trace=()=>{ ctx.beginPath(); ctx.moveTo(sx-52*cellScale,top); ctx.lineTo(sx+52*cellScale,top);
+    ctx.lineTo(farRight,bottom); ctx.lineTo(farLeft,bottom); ctx.closePath(); };
+  trace(); ctx.save(); ctx.clip();
+  const surface=surfaceFor(cell,season);
+  drawTiledGround(farLeft,top,farRight-farLeft,bottom-top,surface,season,cell.decoSeed||0);
+  const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss'||cell.t==='bridge';
+  if(road){
+    const kind=cell.roadKind||'dirt', rk=ROAD_KINDS.find(k=>k.id===kind)||ROAD_KINDS[0];
+    const shift=(cell.roadOffset||0)*(farRight-farLeft)*.22;
+    ctx.fillStyle=rk.surface; ctx.globalAlpha=alpha*.9;
+    ctx.fillRect(farLeft+shift,top,farRight-farLeft,bottom-top); ctx.globalAlpha=alpha;
+    drawRoadPattern(farLeft+shift,top,farRight-farLeft,bottom-top,kind,cell.decoSeed||0);
+  }else if(cell.water&&cell.t!=='bridge'){
+    ctx.strokeStyle=season==='winter'?'rgba(255,255,255,.55)':'rgba(255,255,255,.3)'; ctx.lineWidth=1.2;
+    for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(sx,sy+((i-1)*5*sc),52*sc-i*12*sc,4*sc,0,0,Math.PI); ctx.stroke(); }
+  }else if(cell.t==='swamp'){
+    const n=cell.decoSeed||0;
+    ctx.fillStyle=season==='winter'?'rgba(240,248,252,.75)':'rgba(18,48,26,.8)';
+    for(let i=0;i<4;i++){ const hx=sx+(((i*29+n)%90)-45)*sc, hy=top+(((i*7+n)%14)+2)*sc;
+      ctx.beginPath(); ctx.ellipse(hx,hy,7*sc,3*sc,0,0,6.29); ctx.fill(); }
+  }
+  ctx.restore();
+  trace(); ctx.strokeStyle=cell.water?'rgba(180,220,255,.2)':'rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
   ctx.restore();
 }
 function drawTree(x,y,s,b){
@@ -2911,11 +3286,38 @@ function drawRock(x,y,s,b){
   ctx.lineTo(x+24*s,y-18*s); ctx.lineTo(x+28*s,y); ctx.closePath(); ctx.fill();
   ctx.fillStyle='rgba(255,255,255,.18)'; ctx.beginPath(); ctx.moveTo(x-16*s,y-32*s); ctx.lineTo(x+6*s,y-42*s); ctx.lineTo(x+2*s,y-20*s); ctx.closePath(); ctx.fill(); ctx.restore();
 }
-function drawWater(x,y,s,b){
-  ctx.save(); ctx.fillStyle=(b&&b.water)||'#2b5d8a';
-  ctx.beginPath(); ctx.ellipse(x,y,54*s,15*s,0,0,6.29); ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1.2;
-  for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(x,y+((i-1)*6*s),38*s-i*9*s,5*s,0,0,Math.PI); ctx.stroke(); }
+function drawMountain(x,y,s,cell,b){
+  if(cell.mountainSprite&&drawSprite(cell.mountainSprite,x-32*s,y-58*s,64*s,58*s)) return;
+  drawRock(x,y,s,b);
+}
+function drawFlora(x,y,s,cell){
+  const size=overlaySize(overlayCell()*clamp(s,.55,1));
+  if(cell.flora&&drawSprite(cell.flora,x-size/2,y-size*.85,size,size)) return;
+  ctx.save(); ctx.fillStyle=currentSeason()==='winter'?'#dbe9ee':'#4ea64b';
+  for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(x+(i-1)*size*.23,y-size*.3+(i%2)*size*.1,size*.14,size*.26,(i-1)*.35,0,6.29); ctx.fill(); }
+  ctx.restore();
+}
+function drawBridge(x,y,s,season){
+  ctx.save();
+  ctx.fillStyle='#6b4a2b'; roundRect(x-46*s,y-10*s,92*s,20*s,3*s); ctx.fill();
+  ctx.strokeStyle='#3e2916'; ctx.lineWidth=1*s; ctx.stroke();
+  for(let i=0;i<6;i++){ const bx=x-42*s+i*15*s;
+    ctx.fillStyle=i%2?'#a97642':'#8d6136'; ctx.fillRect(bx,y-9*s,12*s,18*s);
+    ctx.strokeStyle='rgba(50,30,12,.55)'; ctx.strokeRect(bx,y-9*s,12*s,18*s); }
+  ctx.strokeStyle='#c6985c'; ctx.lineWidth=2*s;
+  ctx.beginPath(); ctx.moveTo(x-44*s,y-12*s); ctx.lineTo(x+44*s,y-12*s);
+  ctx.moveTo(x-44*s,y+12*s); ctx.lineTo(x+44*s,y+12*s); ctx.stroke(); ctx.restore();
+}
+function drawWater(x,y,s,b,season){
+  ctx.save();
+  if(season==='winter'){
+    ctx.fillStyle='rgba(240,250,255,.35)'; ctx.beginPath(); ctx.ellipse(x,y,50*s,14*s,0,0,6.29); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1;
+    for(let i=0;i<3;i++){ ctx.beginPath(); ctx.moveTo(x-30*s+i*12*s,y-4*s); ctx.lineTo(x-18*s+i*12*s,y+4*s); ctx.stroke(); }
+  }else{
+    ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.lineWidth=1.2;
+    for(let i=0;i<2;i++){ ctx.beginPath(); ctx.ellipse(x,y+((i-.5)*6*s),38*s-i*9*s,5*s,0,0,Math.PI); ctx.stroke(); }
+  }
   ctx.restore();
 }
 function drawHouse(x,y,s,kind,label){
@@ -3057,8 +3459,10 @@ function drawMiniMap(m){
     const c=m.cells[yy][xx];
     const visible=Math.max(Math.abs(xx-p.x),Math.abs(yy-p.y))<=2;
     ctx.globalAlpha=visible?1:.34;
-    ctx.fillStyle=c.t==='water'?'#1d4ed8':c.t==='rock'?'#a1a1aa':
-      c.t==='tree'?'#2f8d4d':(c.t==='road'||c.t==='gate')?'#b09a6b':
+    ctx.fillStyle=c.t==='water'?'#1d4ed8':c.t==='ice'?'#dff2ff':c.t==='bridge'?'#a97642':
+      (c.t==='rock'||c.t==='mountain')?'#a1a1aa':c.t==='swamp'?'#31532f':
+      c.t==='tree'?'#2f8d4d':c.t==='flowers'?'#e5a7d2':c.t==='sand'?'#dfcb93':
+      (c.t==='road'||c.t==='gate')?'#b09a6b':
       c.t==='shop'?'#fbbf24':c.t==='boss'?'#ef4444':(BIOMES[m.biome]||BIOMES.field).ground[0];
     ctx.fillRect(x+xx*s,y+yy*s,Math.max(1,s-1),Math.max(1,s-1));
   }
@@ -3079,7 +3483,7 @@ function drawMiniMap(m){
   ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count,x,y+size+11);
 }
 function drawMap(now){
-  const m=currentMap(), p=game.player, b=BIOMES[m.biome];
+  const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
   drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
   drawWildlife('bird',now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
@@ -3093,10 +3497,12 @@ function drawMap(now){
       const sx=W/2+side*(d===1?96:60);
       const sy=d===1?272:210;
       const cell=m.cells[y][x];
-      drawCellPatch(sx,sy,sc,cell,m.biome,1);
+      drawCellPatch(sx,sy,sc,cell,m,x,y,season,1);
       if(cell.t==='tree') drawTree(sx,sy,sc,b);
-      else if(cell.t==='rock') drawRock(sx,sy,sc,b);
-      else if(cell.t==='water') drawWater(sx,sy,sc,b);
+      else if(cell.t==='mountain'||cell.t==='rock') drawMountain(sx,sy,sc,cell,b);
+      else if(cell.water&&cell.t!=='bridge') drawWater(sx,sy,sc,b,season);
+      else if(cell.t==='bridge') drawBridge(sx,sy,sc,season);
+      else if(cell.flora) drawFlora(sx,sy,sc,cell);
       else if(cell.t==='house') drawHouse(sx,sy,sc,'house',cell.houseName);
       else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind,cell.shopName);
       else if(cell.t==='gate') drawGateSign(sx,sy,sc,cell.dir,p.dir,cell.bname);
@@ -3446,8 +3852,8 @@ function regenOutsideBattle(now){
 // Счётчик шагов отключён: погода следует за сезоном, а не за ходом игрока (docs/DESIGN.md).
 function updateWeatherByTurn(){
   if(!game) return;
-  const m=currentMap(); const biome=BIOMES[(m&&m.biome)||'field']||BIOMES.field;
-  weather.setSeason(biome.season, SEASON_WEATHER[biome.season]||{});
+  const season=currentSeason();
+  weather.setSeason(season, SEASON_WEATHER[season]||{});
 }
 function loop(now){
   requestAnimationFrame(loop);
@@ -3460,8 +3866,8 @@ function loop(now){
     const raw=1-p.moveT, t=raw*raw*(3-2*raw);
     p.px=p.fromX+(p.x-p.fromX)*t; p.py=p.fromY+(p.y-p.fromY)*t;
   }
-  const map=currentMap(), biome=BIOMES[(map&&map.biome)||'field']||BIOMES.field;
-  weather.setSeason(biome.season, SEASON_WEATHER[biome.season]||{});
+  const season=currentSeason();
+  weather.setSeason(season, SEASON_WEATHER[season]||{});
   weather.update(dt);
   if(!game.battle) updateWildlife(dt,now);
   if(game.battle) drawBattle(now,dt); else drawMap(now);
@@ -3537,6 +3943,115 @@ function mapOverlayReport(){
   });
   return {ok:!errors.length,errors,cell,sword:{px:sword,cells:cell?sword/cell:0},
     treasure:{px:treasure,cells:cell?treasure/cell:0},shield:{w:shieldW,h:shieldH},heroes,thirdHero:heroes[2]||null};
+}
+function terrainSignature(world){
+  return JSON.stringify((world.maps||[]).map(m=>(m.cells||[]).map(row=>row.map(c=>[
+    c.t,c.ground,c.roadKind||'',c.bridgeKind||'',c.flora||'',c.mountainSprite||'',!!c.water,!!c.shore
+  ]))));
+}
+function terrainReport(){
+  const errors=[], maps=game&&game.world?game.world.maps:[];
+  const counts={cells:0,ground:{},terrain:{},water:0,shore:0,ice:0,swamp:0,roads:{},bridges:0,mountains:0,rocks:0,flora:0};
+  const manifestMountains=manifestPaths('mountain'), manifestFlora=manifestPaths('flora');
+  if(!maps.length) errors.push('Игра не запущена');
+  if(!manifestMountains.length) errors.push('В манифесте нет гор');
+  if(!manifestFlora.length) errors.push('В манифесте нет флоры');
+  const savedSeason=game?game.seasonOverride:null;
+  // Проверяем рельеф в летнем состоянии: зимой вода уже стала льдом.
+  setGameSeason('summer');
+  maps.forEach(m=>{
+    const size=m.size, seen=new Set(), waterCells=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const c=m.cells[y][x]; counts.cells++;
+      counts.ground[c.ground||'?']=(counts.ground[c.ground||'?']||0)+1;
+      counts.terrain[c.t||'?']=(counts.terrain[c.t||'?']||0)+1;
+      if(!GROUND_IDS.includes(c.ground)) errors.push('Нет allowed ground в '+x+','+y+': '+c.ground);
+      if(!TERRAIN_IDS.includes(c.t)) errors.push('Неизвестный тип клетки '+c.t);
+      if(c.water){ if(c.t==='ice') counts.ice++; else if(c.t!=='bridge') { counts.water++; waterCells.push({x,y}); } }
+      if(c.shore) counts.shore++;
+      if(c.t==='swamp') counts.swamp++;
+      if(c.roadKind){ counts.roads[c.roadKind]=(counts.roads[c.roadKind]||0)+1; }
+      if(c.t==='bridge'){
+        counts.bridges++;
+        if(c.bridgeKind!=='plank') errors.push('Мост не дощатый в '+x+','+y);
+        if(isBlocking(c)) errors.push('Мост непроходим в '+x+','+y);
+      }
+      if(c.t==='mountain'){ counts.mountains++; if(manifestMountains.indexOf(c.mountainSprite)<0) errors.push('Гора без спрайта из манифеста'); }
+      if(c.t==='rock'){ counts.rocks++; if(manifestMountains.indexOf(c.mountainSprite)<0) errors.push('Валун без спрайта из манифеста'); }
+      if(c.flora){ counts.flora++; if(manifestFlora.indexOf(c.flora)<0) errors.push('Флора не из манифеста'); }
+    }
+    // Каждое озеро должно быть связным и иметь песчаный берег в одну клетку.
+    waterCells.forEach(start=>{
+      if(seen.has(ckey(start.x,start.y))) return;
+      let total=0, queue=[start]; seen.add(ckey(start.x,start.y));
+      while(queue.length){
+        const p=queue.shift(); total++;
+        DIRS.forEach(v=>{
+          const nx=p.x+v[0],ny=p.y+v[1],key=ckey(nx,ny);
+          if(nx<0||ny<0||nx>=size||ny>=size||seen.has(key)) return;
+          const n=m.cells[ny][nx];
+          if(n.water&&n.t==='water'){ seen.add(key); queue.push({x:nx,y:ny}); }
+        });
+      }
+      if(total<2) errors.push('Озеро из одной клетки на карте '+(m.index+1));
+    });
+    waterCells.forEach(({x,y})=>DIRS.forEach(v=>{
+      const nx=x+v[0],ny=y+v[1]; if(nx<0||ny<0||nx>=size||ny>=size) return;
+      const n=m.cells[ny][nx];
+      if(n.water||n.shore) return;
+      if(['gate','boss','chest','shop','house','treasure','mountain','rock','road','bridge'].includes(n.t)) return;
+      errors.push('У озера нет песчаного берега в '+nx+','+ny);
+    }));
+    // Дороги не должны распадаться на отдельные клетки с прямым углом.
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      if(m.cells[y][x].t!=='road') continue;
+      const links=DIRS.filter(v=>{
+        const nx=x+v[0],ny=y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size&&['road','bridge','gate','boss','chest'].includes(m.cells[ny][nx].t);
+      }).length;
+      if(!links) errors.push('Одинокая дорожная клетка в '+x+','+y);
+    }
+  });
+  const roadKinds=ROAD_KINDS.map(k=>k.id);
+  const missingKinds=roadKinds.filter(id=>!counts.roads[id]);
+  if(missingKinds.length) errors.push('Нет дорог вида: '+missingKinds.join(', '));
+  if(!counts.bridges) errors.push('На картах нет дощатых мостов');
+  if(!counts.mountains) errors.push('Нет горных хребтов');
+  if(!counts.flora) errors.push('Нет пятен флоры');
+  const tileRefs=(typeof MAP_TILES!=='undefined'&&MAP_TILES)?1:0;
+  if(tileRefs) errors.push('Остались заменённые tile_* текстуры');
+  const tileA=groundTile('grass','summer').toDataURL(), tileB=groundTile('grass','summer').toDataURL();
+  const seasons=SEASON_KEYS.map(id=>groundTile('grass',id).toDataURL());
+  if(tileA!==tileB) errors.push('Трава мерцает при повторной отрисовке');
+  if(new Set(seasons).size!==seasons.length) errors.push('Сезонные цвета травы не различаются');
+  let swampNormal=0,swampWinter=0,waterOpen=true,iceOpen=false;
+  if(game){
+    const swampCell={t:'swamp'};
+    const waterCell={t:'water',water:true};
+    const iceCell={t:'ice',water:true};
+    setGameSeason('summer');
+    swampNormal=enterTurnCost(swampCell); waterOpen=!isBlocking(waterCell);
+    setGameSeason('winter');
+    swampWinter=enterTurnCost(swampCell); iceOpen=!isBlocking(iceCell);
+    const anyWater=(maps[0]&&maps[0].cells||[]).flat().find(c=>c.water&&c.t!=='bridge');
+    if(anyWater&&anyWater.t!=='ice') errors.push('Зимой вода не стала льдом');
+    setGameSeason(savedSeason);
+  }
+  if(swampNormal!==SWAMP_COST.normal||swampWinter!==SWAMP_COST.winter) errors.push('Болото не тратит 2/1 хода');
+  if(waterOpen) errors.push('Вода проходима вне зимы');
+  if(!iceOpen) errors.push('Лёд непроходим зимой');
+  let roundtrip=false;
+  if(game){
+    const before=terrainSignature(game.world);
+    if(saveWorldState()&&loadWorldState()) roundtrip=terrainSignature(game.world)===before;
+    else errors.push('Не удалось сохранить/загрузить мир');
+    if(!roundtrip) errors.push('Рельеф изменился после сохранения');
+  }
+  return {ok:!errors.length,errors,counts,manifest:{mountains:manifestMountains.length,flora:manifestFlora.length},
+    roadKinds:{present:roadKinds.filter(id=>counts.roads[id]),missing:missingKinds},
+    seasons:{colors:seasons.length,distinct:new Set(seasons).size,stable:tileA===tileB},
+    swamp:{normal:swampNormal,winter:swampWinter},water:{blockedInSummer:!waterOpen,passableInWinter:iceOpen},
+    replacedTileRefs:tileRefs,roundtrip};
 }
 function shopReport(){
   const errors=[];
@@ -3672,6 +4187,10 @@ window.__mm6Debug={
     renderInventory(); updateParty(); return ok;
   },
   mapOverlayReport:()=>mapOverlayReport(),
+  terrainReport:()=>terrainReport(),
+  setSeason:(season)=>setGameSeason(season),
+  saveWorld:()=>saveWorldState(),
+  loadWorld:()=>loadWorldState(),
   setSettings:(patch)=>{
     settings=normalizeSettings(Object.assign({},settings,patch||{}));
     saveSettings(); syncSettings();
