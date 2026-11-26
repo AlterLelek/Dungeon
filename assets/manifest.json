@@ -231,60 +231,6 @@
     "dynamic_in": {}
   },
   {
-    "file": "tile_dirt.png",
-    "path": "assets/kenney/tiles/tile_dirt.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_grass_flowers_bright.png",
-    "path": "assets/kenney/tiles/tile_grass_flowers_bright.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_grass_flowers.png",
-    "path": "assets/kenney/tiles/tile_grass_flowers.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_grass.png",
-    "path": "assets/kenney/tiles/tile_grass.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_sand.png",
-    "path": "assets/kenney/tiles/tile_sand.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
-    "file": "tile_stone.png",
-    "path": "assets/kenney/tiles/tile_stone.png",
-    "type": "tile",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
-  },
-  {
     "file": "angel_0.svg",
     "path": "assets/sprites/generated/angel_0.svg",
     "type": "item",
