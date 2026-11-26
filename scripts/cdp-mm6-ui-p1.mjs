@@ -152,7 +152,14 @@ try {
       for(let d=0;d<4;d++){const [dx,dy]=dirs[d],nx=x-dx,ny=y-dy,nc=m.cells[ny]&&m.cells[ny][nx];
         if(!nc||blocked.includes(nc.t)||(nc.water&&nc.t!=='bridge')) continue;
         Object.assign(g.player,{x:nx,y:ny,px:nx,py:ny,fromX:nx,fromY:ny,moveT:0,dir:d});
-        for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)m.seen.add((nx+dx)+','+(ny+dy));
+        // Детерминируем подсказки: в поле зрения должна быть простая трава, а не только здание.
+        const dirs4=[[0,-1],[1,0],[0,1],[-1,0]], f=dirs4[d], r=dirs4[(d+1)%4];
+        for(let fw=0;fw<=2;fw++)for(let sd=-2;sd<=2;sd++){
+          const cx=nx+f[0]*fw+r[0]*sd, cy=ny+f[1]*fw+r[1]*sd;
+          const c=m.cells[cy]&&m.cells[cy][cx]; if(!c) continue;
+          m.seen.add(cx+','+cy);
+          if(c.t!=='shop'&&c.t!=='house'&&c.t!=='boss'){ c.t='grass'; c.ground='grass'; c.roadKind=null; }
+        }
         window.__mm6Debug.toggleShop(false); // обновить состояние кнопок после прямой установки позиции
         return {x:nx,y:ny,dir:d,building:c.t};
       }
