@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a3a5c"/><stop offset="1" stop-color="#15101f"/></linearGradient></defs><g stroke="#241a14" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" >
+  <path d="M14 45 L13 29 Q12 25 15 24 L15 13 Q15 10 18 10 Q21 10 21 13 V24 H23 V12 Q23 9 26 9 Q29 9 29 12 V25 L30 39 Q31 45 27 47 H16 Q13 47 14 45 Z" fill="url(#b)" stroke="#241a14" stroke-width="1.8"/>
+  <path d="M14 34 Q9 34 8 29 Q7 25 10 24 Q13 24 14 28" fill="url(#b)" stroke="#241a14" stroke-width="1.6"/>
+  <path d="M21 29 L25 34 L21 39 L17 34 Z" fill="#8a5bb8" stroke="#241a14" stroke-width="1"/><circle cx="21" cy="34" r="1.6" fill="#7fe3e0"/>
+  <path d="M14 43 H29 V52 Q21 55 14 52 Z" fill="#241a14" stroke="#241a14" stroke-width="1.5"/>
+  <path d="M15 47 H28" fill="none" stroke="#8a5bb8" stroke-width="1.6"/>
+  <path d="M17 24 H26" stroke="#8a5bb8" stroke-width="1.4" fill="none"/>
+  <circle cx="21" cy="25" r="1.2" fill="#7fe3e0" stroke="#241a14" stroke-width="0.7"/>
+  <path d="M15 13 V24 M23 12 V25" fill="none" stroke="#8a5bb8" stroke-width="1.1" opacity="0.8"/>
+  <path d="M14 48 Q21 51 28 48" fill="none" stroke="#8a5bb8" stroke-width="1.2"/>
+  <g transform="translate(64 0) scale(-1 1)">
+    <path d="M14 45 L13 29 Q12 25 15 24 L15 13 Q15 10 18 10 Q21 10 21 13 V24 H23 V12 Q23 9 26 9 Q29 9 29 12 V25 L30 39 Q31 45 27 47 H16 Q13 47 14 45 Z" fill="url(#b)" stroke="#241a14" stroke-width="1.8"/>
+    <path d="M14 34 Q9 34 8 29 Q7 25 10 24 Q13 24 14 28" fill="url(#b)" stroke="#241a14" stroke-width="1.6"/>
+    <path d="M21 29 L25 34 L21 39 L17 34 Z" fill="#8a5bb8" stroke="#241a14" stroke-width="1"/><circle cx="21" cy="34" r="1.6" fill="#7fe3e0"/>
+    <path d="M14 43 H29 V52 Q21 55 14 52 Z" fill="#241a14" stroke="#241a14" stroke-width="1.5"/>
+    <path d="M15 47 H28" fill="none" stroke="#8a5bb8" stroke-width="1.6"/>
+    <path d="M17 24 H26" stroke="#8a5bb8" stroke-width="1.4" fill="none"/>
+    <circle cx="21" cy="25" r="1.2" fill="#7fe3e0" stroke="#241a14" stroke-width="0.7"/>
+    <path d="M15 13 V24 M23 12 V25" fill="none" stroke="#8a5bb8" stroke-width="1.1" opacity="0.8"/>
+    <path d="M14 48 Q21 51 28 48" fill="none" stroke="#8a5bb8" stroke-width="1.2"/>
+  </g>
+</g></svg>

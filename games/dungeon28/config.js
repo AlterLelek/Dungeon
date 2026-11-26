@@ -8,11 +8,11 @@ export const WORLD = GRID * CELL; // 480px, размер игрового пол
 export { HEROES };
 
 export const WARRIOR_WEAPONS = [
-  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"../../assets/sprites/items/sword_0.png"},
-  {name:"Кинжал", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/sprites/items/sword_1.png"},
-  {name:"Меч", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/sprites/items/sword_2.png"},
-  {name:"Топор", css:"q-rusty", dmg:4, cost:3, sprite:"../../assets/sprites/items/axe_0.png"},
-  {name:"Молот", css:"q-rusty", dmg:5, cost:4, sprite:"../../assets/sprites/items/axe_1.png"},
+  {name:"Кулаки", css:"q-normal", dmg:1, cost:0, sprite:"../../assets/kenney/items/sword.png"},
+  {name:"Кинжал", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/kenney/items/dagger.png"},
+  {name:"Меч", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/sword.png"},
+  {name:"Топор", css:"q-rusty", dmg:4, cost:3, sprite:"../../assets/kenney/items/axe.png"},
+  {name:"Молот", css:"q-rusty", dmg:5, cost:4, sprite:"../../assets/kenney/items/axe.png"},
   {name:"Кинжал+", css:"q-normal", dmg:6, cost:5}, {name:"Меч+", css:"q-normal", dmg:7, cost:6},
   {name:"Топор+", css:"q-normal", dmg:8, cost:7}, {name:"Молот+", css:"q-normal", dmg:9, cost:8},
   {name:"Кинжал++", css:"q-gold", dmg:10, cost:9}, {name:"Меч++", css:"q-gold", dmg:11, cost:10},
@@ -23,7 +23,7 @@ export const WARRIOR_WEAPONS = [
 
 export const MAGE_WEAPONS = [
   {name:"Кулаки", css:"q-normal", dmg:1, cost:0}, {name:"Кольцо", css:"q-rusty", dmg:2, cost:1},
-  {name:"Палочка", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/sprites/items/staff_0.png"},
+  {name:"Палочка", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/staff.png"},
   {name:"Амулет", css:"q-rusty", dmg:4, cost:3}, {name:"Книга", css:"q-rusty", dmg:5, cost:4},
   {name:"Кольцо+", css:"q-normal", dmg:6, cost:5}, {name:"Палочка+", css:"q-normal", dmg:7, cost:6},
   {name:"Амулет+", css:"q-normal", dmg:8, cost:7}, {name:"Книга+", css:"q-normal", dmg:9, cost:8},
@@ -35,8 +35,8 @@ export const MAGE_WEAPONS = [
 
 export const ARCHER_WEAPONS = [
   {name:"Кулаки", css:"q-normal", dmg:1, cost:0},
-  {name:"Лук", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/sprites/items/bow0_0.png"},
-  {name:"Арбалет", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/sprites/items/bow1_0.png"},
+  {name:"Лук", css:"q-rusty", dmg:2, cost:1, sprite:"../../assets/kenney/items/bow.png"},
+  {name:"Арбалет", css:"q-rusty", dmg:3, cost:2, sprite:"../../assets/kenney/items/bow.png"},
   {name:"Длинный лук", css:"q-rusty", dmg:4, cost:3}, {name:"Тяж. арбалет", css:"q-rusty", dmg:5, cost:4}, 
   {name:"Лук+", css:"q-normal", dmg:6, cost:5}, {name:"Арбалет+", css:"q-normal", dmg:7, cost:6}, 
   {name:"Длинный лук+", css:"q-normal", dmg:8, cost:7}, {name:"Тяж. арбалет+", css:"q-normal", dmg:9, cost:8}, 
