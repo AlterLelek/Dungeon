@@ -143,10 +143,10 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mq-slot.empty .mq-empty svg{width:24px;height:24px}
 .mq-slot.filled{border-style:solid;border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.05)}
 .mq-slot.sel{border-color:#ffe09a;background:rgba(251,191,36,.13);box-shadow:0 0 0 2px rgba(251,191,36,.45),0 0 18px rgba(251,191,36,.35);z-index:6}
-.mq-slot img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
+.mq-slot img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;min-width:0;min-height:0;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
 .mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
 .mq-slot img.rot-bow{transform:rotate(-4deg)}
-.mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(0,0,0,.55);border:1px solid rgba(251,191,36,.4);color:#ffe9b0;font-size:19px;font-weight:800}
+.mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:19px;font-weight:800}
 .mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px}
 .mq-stat{padding:5px 6px;border-radius:8px;background:rgba(255,255,255,.045);font-size:9px;color:#9fb0d8;text-align:left;line-height:1.25}
 .mq-stat b{display:block;color:#ffe9b0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -161,24 +161,26 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .loadbar .loadText{position:relative;white-space:nowrap}
 .invRight{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .invSlotStrip{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px}
-.invSlotChip{flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
+.invSlotChip{position:relative;flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
   background:rgba(255,255,255,.035);color:#9fb0d8;cursor:pointer;font-size:9px;line-height:1.2;text-align:left}
+.invSlotChip.withIcon{padding-right:24px}
+.invSlotChip img{position:absolute;right:4px;top:5px;width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
 .invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
 .invSlotChip b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .invSlotChip small{display:block;color:#8b94b2;font-size:8px}
-.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);gap:6px;justify-content:start;align-content:start;
+.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);grid-auto-rows:48px;gap:6px;justify-content:start;align-content:start;
   max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
   background:rgba(0,0,0,.2);min-height:160px}
-.invCell{position:relative;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
-  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;
+.invCell{position:relative;flex:0 0 48px;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;overflow:hidden;
   cursor:pointer;color:#c8d2f0}
 .invCell:hover,.invCell:focus-visible{border-color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.3);outline:none}
 .invCell.craftable{border-color:rgba(125,255,178,.45)}
 .invCell.blocked{border-color:rgba(248,113,113,.35)}
-.invCell img{width:100%;height:100%;max-width:40px;max-height:40px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.invCell img{display:block;flex:0 1 auto;width:36px;height:36px;max-width:36px;max-height:36px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
 .invCell .ph{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;
-  background:rgba(0,0,0,.5);border:1px solid rgba(251,191,36,.3);color:#ffe9b0;font-size:18px;font-weight:800}
+  background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:18px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
 .invCell .spellRune{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:#e9d5ff;font-size:22px;font-weight:800}
 .invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px}
@@ -424,9 +426,18 @@ const ckey = (x,y) => x+','+y;
 let uidSeq = 0;
 const uid = () => 'i'+(++uidSeq);
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Подбор размера текста зависит только от строки, ширины и базового размера:
+// повторные measureText в каждом кадре боя не нужны. Кэш ограничен, чтобы не копить строки.
+const fitTextSizes=new Map();
 function fitText(text,maxW,size,color,x,y){
-  let s=size; setFont(s);
-  while(ctx.measureText(text).width>maxW && s>8){ s--; setFont(s); }
+  const key=size+'|'+maxW+'|'+text;
+  let s=fitTextSizes.get(key);
+  if(s===undefined){
+    s=size; setFont(s);
+    while(ctx.measureText(text).width>maxW && s>8){ s--; setFont(s); }
+    if(fitTextSizes.size>400) fitTextSizes.clear();
+    fitTextSizes.set(key,s);
+  }else setFont(s);
   ctx.fillStyle=color; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(text,x,y);
 }
 function roundRect(x,y,w,h,r){
@@ -943,20 +954,28 @@ function spriteImg(path){
   }
   return imgCache[path];
 }
-// Цветная заглушка с эмодзи вместо «тихого» пропуска отсутствующего спрайта.
-function drawSpriteFallback(path,x,y,w,h){
+// Заглушка отсутствующего спрайта: полупрозрачная плашка в тон карты, без эмодзи и «пёстрых» плакатов.
+// Название и описание типа показываются по наведению/тапу (registerMapHint).
+function fallbackSpriteInfo(path){
   const src=String(path||'');
-  const emoji=/heroes\//.test(src)?'⚔️':/monsters\//.test(src)?'👹':/items\/|kenney\//.test(src)?'🎒':'❓';
-  let hash=0; for(let i=0;i<src.length;i++) hash=(hash*31+src.charCodeAt(i))|0;
-  const hue=Math.abs(hash)%360, fw=Math.max(2,w), fh=Math.max(2,h);
+  if(/heroes\//.test(src)) return {name:'Герой',desc:'Персонаж отряда. Спрайт отсутствует в манифесте.'};
+  if(/monsters\//.test(src)) return {name:'Враг',desc:'Монстр. Спрайт отсутствует в манифесте.'};
+  if(/items\/|kenney\/items/.test(src)) return {name:'Предмет',desc:'Предмет. Спрайт отсутствует в манифесте.'};
+  if(/trees\//.test(src)) return {name:'Дерево',desc:'Дерево. Спрайт отсутствует в манифесте.'};
+  return {name:'Объект',desc:'Объект карты. Спрайт отсутствует в манифесте.'};
+}
+function drawSpriteFallback(path,x,y,w,h){
+  const info=fallbackSpriteInfo(path), fw=Math.max(2,w), fh=Math.max(2,h);
   ctx.save();
-  ctx.fillStyle='hsla('+hue+',45%,30%,.88)';
-  roundRect(x,y,fw,fh,Math.min(8,fw/4)); ctx.fill();
-  ctx.strokeStyle='hsla('+hue+',70%,72%,.9)'; ctx.lineWidth=1; ctx.stroke();
-  setFont(Math.max(10,Math.min(fw,fh)*.6));
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillStyle='#fff';
-  ctx.fillText(emoji,x+fw/2,y+fh/2);
+  ctx.fillStyle='rgba(12,18,30,.55)';
+  roundRect(x,y,fw,fh,Math.min(7,fw/5)); ctx.fill();
+  ctx.strokeStyle='rgba(200,220,255,.25)'; ctx.lineWidth=1; ctx.stroke();
+  const cx=x+fw/2, cy=y+fh/2, r=Math.min(fw,fh)*.22;
+  ctx.strokeStyle='rgba(200,220,255,.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(cx,cy-r); ctx.lineTo(cx+r,cy); ctx.lineTo(cx,cy+r); ctx.lineTo(cx-r,cy); ctx.closePath(); ctx.stroke();
+  ctx.fillStyle='rgba(200,220,255,.35)'; ctx.beginPath(); ctx.arc(cx,cy,Math.max(1,r*.22),0,6.29); ctx.fill();
   ctx.restore();
+  registerMapHint(cx,cy,info.name,info.desc);
 }
 function drawSprite(path,x,y,w,h,tint){
   const im=spriteImg(path);
@@ -3396,6 +3415,7 @@ function renderInventory(){
     chip.dataset.slot=s.id;
     chip.title=s.label+': '+(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint);
     if(s.id==='weapon'&&it&&itemSpritePath(it)){
+      chip.classList.add('withIcon');
       const img=document.createElement('img'); img.src=itemSpritePath(it); img.alt='';
       chip.appendChild(img);
     }
@@ -3664,19 +3684,80 @@ function drawTiledGround(x,y,w,h,ground,season,seed){
 }
 function drawRoadPattern(x,y,w,h,kind,seed){
   const rk=ROAD_KINDS.find(k=>k.id===kind)||ROAD_KINDS[0];
-  const detail=rk.detail, n=Math.abs(Math.trunc(Number(seed)||0));
-  ctx.save(); ctx.globalAlpha=.55; ctx.strokeStyle=detail; ctx.fillStyle=detail; ctx.lineWidth=1;
+  ctx.save(); ctx.globalAlpha=.62; ctx.strokeStyle=rk.detail; ctx.fillStyle=rk.detail; ctx.lineWidth=1;
+  // Узор привязан к экранной сетке, а не к decoSeed клетки: соседние ленты стыкуются без шва.
   if(kind==='brick'){
-    for(let yy=y;yy<y+h;yy+=6){ ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke();
-      for(let xx=x+(Math.floor(yy/6)%2)*8;xx<x+w;xx+=16){ ctx.beginPath(); ctx.moveTo(xx,yy); ctx.lineTo(xx,yy+6); ctx.stroke(); } }
+    const top=Math.floor(y/6)*6;
+    for(let yy=top;yy<y+h;yy+=6){
+      ctx.beginPath(); ctx.moveTo(x,yy); ctx.lineTo(x+w,yy); ctx.stroke();
+      const off=(Math.floor(yy/6)&1)?8:0;
+      for(let xx=Math.floor((x+off)/16)*16+off;xx<x+w;xx+=16){
+        ctx.beginPath(); ctx.moveTo(xx,yy); ctx.lineTo(xx,yy+6); ctx.stroke();
+      }
+    }
   }else if(kind==='stone'){
-    for(let i=0;i<18;i++){ const px=x+((i*29+n)%Math.max(1,Math.floor(w))), py=y+((i*11+n)%Math.max(1,Math.floor(h)));
-      ctx.strokeRect(px,py,5,3); }
+    const sx=13, sy=9;
+    for(let ty=Math.floor(y/sy)*sy;ty<y+h;ty+=sy){
+      const jitter=(cellHash(Math.floor(ty/sy),0,5)%3)-1;
+      for(let tx=Math.floor(x/sx)*sx;tx<x+w;tx+=sx) ctx.strokeRect(tx+jitter,ty,sx-2,sy-2);
+    }
   }else{
-    for(let i=0;i<24;i++){ const px=x+((i*17+n)%Math.max(1,Math.floor(w))), py=y+((i*7+n)%Math.max(1,Math.floor(h)));
-      ctx.fillRect(px,py,2,1); }
+    ctx.globalAlpha=.3; ctx.fillRect(x+w*.28,y,2,h); ctx.fillRect(x+w*.72,y,2,h);
+    ctx.globalAlpha=.5;
+    for(let ty=Math.floor(y/9)*9;ty<y+h;ty+=9) for(let tx=Math.floor(x/11)*11;tx<x+w;tx+=11){
+      if(cellHash(tx,ty,9)%3===0) ctx.fillRect(tx,ty,2,1);
+    }
   }
   ctx.restore();
+}
+const ROAD_LINK_TYPES=['road','bridge','gate','boss','chest'];
+function isRoadLink(cell){ return !!cell&&ROAD_LINK_TYPES.includes(cell.t); }
+function roadLinks(m,x,y){
+  const out={left:false,right:false,far:false,near:false};
+  if(!m||!m.cells||x<0||y<0||x>=m.size||y>=m.size) return out;
+  const dir=game&&game.player?game.player.dir:0, f=DIRS[dir], r=DIRS[(dir+1)%4];
+  DIRS.forEach(([dx,dy])=>{
+    const nx=x+dx, ny=y+dy;
+    if(nx<0||ny<0||nx>=m.size||ny>=m.size||!isRoadLink(m.cells[ny][nx])) return;
+    const fw=dx*f[0]+dy*f[1], sd=dx*r[0]+dy*r[1];
+    if(sd<0) out.left=true; else if(sd>0) out.right=true;
+    if(fw>0) out.near=true; else if(fw<0) out.far=true;
+  });
+  return out;
+}
+/* Подсказки по наведению/тапу для типов, у которых нет спрайта в манифесте. */
+const mapHints=[]; let mapHint=null;
+const TERRAIN_SPRITE_TYPES={tree:'tree',mountain:'mountain',rock:'mountain',shop:'building',house:'building'};
+let spriteLessTerrain=null;
+function spriteLessTerrainSet(){
+  if(!spriteLessTerrain){
+    spriteLessTerrain=new Set(TERRAIN_TYPES.filter(t=>{
+      const type=TERRAIN_SPRITE_TYPES[t.id];
+      return !type||!manifestPaths(type).length;
+    }).map(t=>t.id));
+  }
+  return spriteLessTerrain;
+}
+function registerMapHint(x,y,title,desc){ mapHints.push({x,y,title,desc}); }
+function registerSpriteLessHint(cell,x,y){
+  if(!spriteLessTerrainSet().has(cell.t)) return;
+  const def=TERRAIN_TYPES.find(t=>t.id===cell.t);
+  if(!def) return;
+  const kind=ROAD_KINDS.find(k=>k.id===cell.roadKind);
+  const desc=def.toast||(def.passable
+    ?'Проходимо · '+def.cost+' ход'+(kind?' · '+kind.name+' дорога':'')
+    :'Непроходимо');
+  registerMapHint(x,y,def.name,desc);
+}
+function showMapHintAt(px,py){
+  let best=null, dist=90*90;
+  mapHints.forEach(h=>{
+    const d=(h.x-px)*(h.x-px)+(h.y-py)*(h.y-py);
+    if(d<dist){ dist=d; best=h; }
+  });
+  if(!best) return false;
+  mapHint=Object.assign({},best,{t:performance.now()});
+  return true;
 }
 function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
   ctx.save(); ctx.globalAlpha=alpha;
@@ -3689,11 +3770,25 @@ function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
   drawTiledGround(farLeft,top,farRight-farLeft,bottom-top,surface,season,cell.decoSeed||0);
   const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss'||cell.t==='bridge';
   if(road){
+    // Лента тянется через всю клетку и стыкуется с соседними дорожными клетками.
+    // Обочина рисуется только там, где соседа нет; узор общий для всех клеток дороги.
     const kind=cell.roadKind||'dirt', rk=ROAD_KINDS.find(k=>k.id===kind)||ROAD_KINDS[0];
-    const shift=(cell.roadOffset||0)*(farRight-farLeft)*.22;
-    ctx.fillStyle=rk.surface; ctx.globalAlpha=alpha*.9;
-    ctx.fillRect(farLeft+shift,top,farRight-farLeft,bottom-top); ctx.globalAlpha=alpha;
-    drawRoadPattern(farLeft+shift,top,farRight-farLeft,bottom-top,kind,cell.decoSeed||0);
+    const links=roadLinks(m,mapX,mapY), shoulder=7*cellScale;
+    const left=farLeft+(links.left?0:shoulder), right=farRight-(links.right?0:shoulder);
+    const ry0=top+(links.far?0:1.5*sc), ry1=bottom-(links.near?0:1.5*sc);
+    ctx.fillStyle=rk.surface; ctx.globalAlpha=alpha*.94;
+    roundRect(left,ry0,right-left,Math.max(1,ry1-ry0),Math.min(4*sc,(right-left)/6)); ctx.fill();
+    ctx.globalAlpha=alpha;
+    ctx.save(); ctx.beginPath(); ctx.rect(left,ry0,right-left,Math.max(1,ry1-ry0)); ctx.clip();
+    drawRoadPattern(farLeft,top,farRight-farLeft,bottom-top,kind,0);
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha=alpha*.5; ctx.fillStyle=rk.detail;
+    if(!links.left) ctx.fillRect(farLeft,ry0,left-farLeft,ry1-ry0);
+    if(!links.right) ctx.fillRect(right,ry0,farRight-right,ry1-ry0);
+    ctx.strokeStyle=rk.detail; ctx.globalAlpha=alpha*.65; ctx.lineWidth=1;
+    if(!links.left){ ctx.beginPath(); ctx.moveTo(left,ry0); ctx.lineTo(left,ry1); ctx.stroke(); }
+    if(!links.right){ ctx.beginPath(); ctx.moveTo(right,ry0); ctx.lineTo(right,ry1); ctx.stroke(); }
+    ctx.restore();
   }else if(cell.water&&cell.t!=='bridge'){
     ctx.strokeStyle=season==='winter'?'rgba(255,255,255,.55)':'rgba(255,255,255,.3)'; ctx.lineWidth=1.2;
     for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(sx,sy+((i-1)*5*sc),52*sc-i*12*sc,4*sc,0,0,Math.PI); ctx.stroke(); }
@@ -3706,6 +3801,7 @@ function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
   ctx.restore();
   trace(); ctx.strokeStyle=cell.water?'rgba(180,220,255,.2)':'rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
   ctx.restore();
+  registerSpriteLessHint(cell,sx,sy+14*sc);
 }
 const OVERLAY_CELL_WIDTH=96;
 function spriteCellRect(sx,sy,sc,aspect){
@@ -3748,16 +3844,53 @@ function drawFlora(x,y,s,cell){
   for(let i=0;i<3;i++){ ctx.beginPath(); ctx.ellipse(x+(i-1)*size*.23,y-size*.3+(i%2)*size*.1,size*.14,size*.26,(i-1)*.35,0,6.29); ctx.fill(); }
   ctx.restore();
 }
-function drawBridge(x,y,s,season){
+function bridgeAxis(m,x,y){
+  const roadAt=(dx,dy)=>{
+    const nx=x+dx, ny=y+dy;
+    return !!m&&!!m.cells&&nx>=0&&ny>=0&&nx<m.size&&ny<m.size&&isRoadLink(m.cells[ny][nx]);
+  };
+  const depth=roadAt(0,-1)||roadAt(0,1), across=roadAt(-1,0)||roadAt(1,0);
+  return depth&&!across?'depth':'horizontal';
+}
+// Дощатый настил поверх воды: плашки поперёк хода, перила по обоим длинным краям, сваи в воде.
+function drawBridge(x,y,s,season,axis){
   ctx.save();
-  ctx.fillStyle='#6b4a2b'; roundRect(x-46*s,y-10*s,92*s,20*s,3*s); ctx.fill();
-  ctx.strokeStyle='#3e2916'; ctx.lineWidth=1*s; ctx.stroke();
-  for(let i=0;i<6;i++){ const bx=x-42*s+i*15*s;
-    ctx.fillStyle=i%2?'#a97642':'#8d6136'; ctx.fillRect(bx,y-9*s,12*s,18*s);
-    ctx.strokeStyle='rgba(50,30,12,.55)'; ctx.strokeRect(bx,y-9*s,12*s,18*s); }
-  ctx.strokeStyle='#c6985c'; ctx.lineWidth=2*s;
-  ctx.beginPath(); ctx.moveTo(x-44*s,y-12*s); ctx.lineTo(x+44*s,y-12*s);
-  ctx.moveTo(x-44*s,y+12*s); ctx.lineTo(x+44*s,y+12*s); ctx.stroke(); ctx.restore();
+  if(axis==='depth'){
+    const ty=y-20*s, by=y+14*s, tw=44*s, bw=96*s, step=(by-ty)/7;
+    ctx.fillStyle='rgba(28,40,52,.7)';
+    [[x-bw/2+7*s,by+2*s],[x+bw/2-7*s,by+2*s],[x-tw/2+4*s,ty+2*s],[x+tw/2-4*s,ty+2*s]]
+      .forEach(([px,py])=>ctx.fillRect(px-2*s,py,4*s,11*s));
+    ctx.beginPath(); ctx.moveTo(x-tw/2,ty); ctx.lineTo(x+tw/2,ty);
+    ctx.lineTo(x+bw/2,by); ctx.lineTo(x-bw/2,by); ctx.closePath();
+    ctx.fillStyle='#6b4a2b'; ctx.fill(); ctx.strokeStyle='#3e2916'; ctx.lineWidth=1*s; ctx.stroke();
+    for(let i=0;i<7;i++){
+      const t=i/7, yy=ty+step*i, w=tw+(bw-tw)*t;
+      ctx.fillStyle=i%2?'#a97642':'#8d6136'; ctx.fillRect(x-w/2+s,yy,w-2*s,step-1*s);
+      ctx.strokeStyle='rgba(50,30,12,.55)'; ctx.strokeRect(x-w/2+s,yy,w-2*s,step-1*s);
+    }
+    ctx.strokeStyle='#c6985c'; ctx.lineWidth=2*s; ctx.beginPath();
+    ctx.moveTo(x-tw/2-3*s,ty-3*s); ctx.lineTo(x-bw/2-3*s,by-3*s);
+    ctx.moveTo(x+tw/2+3*s,ty-3*s); ctx.lineTo(x+bw/2+3*s,by-3*s); ctx.stroke();
+    ctx.fillStyle='#8d6136';
+    for(let i=0;i<5;i++){ const t=i/4, yy=ty+(by-ty)*t, w=tw+(bw-tw)*t;
+      ctx.fillRect(x-w/2-4*s,yy-7*s,3*s,8*s); ctx.fillRect(x+w/2+1*s,yy-7*s,3*s,8*s); }
+  }else{
+    const left=x-50*s, right=x+50*s, top=y-9*s, bottom=y+13*s;
+    ctx.fillStyle='rgba(28,40,52,.7)';
+    [left+10*s,right-10*s].forEach(px=>ctx.fillRect(px-3*s,bottom,6*s,11*s));
+    ctx.fillStyle='#6b4a2b'; roundRect(left,top,right-left,bottom-top,3*s); ctx.fill();
+    ctx.strokeStyle='#3e2916'; ctx.lineWidth=1*s; ctx.stroke();
+    for(let i=0;i<10;i++){ const bx=left+2*s+i*(right-left-4*s)/10;
+      ctx.fillStyle=i%2?'#a97642':'#8d6136'; ctx.fillRect(bx,top+s,(right-left-4*s)/10-1*s,bottom-top-2*s);
+      ctx.strokeStyle='rgba(50,30,12,.55)'; ctx.strokeRect(bx,top+s,(right-left-4*s)/10-1*s,bottom-top-2*s); }
+    ctx.strokeStyle='#c6985c'; ctx.lineWidth=2*s;
+    ctx.beginPath(); ctx.moveTo(left-2*s,top-3*s); ctx.lineTo(right+2*s,top-3*s);
+    ctx.moveTo(left-2*s,bottom+3*s); ctx.lineTo(right+2*s,bottom+3*s); ctx.stroke();
+    ctx.fillStyle='#8d6136';
+    for(let i=0;i<6;i++){ const px=left+8*s+i*(right-left-16*s)/5;
+      ctx.fillRect(px,top-8*s,3*s,9*s); ctx.fillRect(px,bottom-1*s,3*s,9*s); }
+  }
+  ctx.restore();
 }
 function drawWater(x,y,s,b,season){
   ctx.save();
@@ -3935,6 +4068,7 @@ function drawMiniMap(m){
 }
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
+  mapHints.length=0; // подсказки относятся только к текущему кадру
   drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
   drawWildlife('bird',now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
@@ -3952,7 +4086,7 @@ function drawMap(now){
       if(cell.t==='tree') drawTree(sx,sy,sc,b,cell.species,x,y);
       else if(cell.t==='mountain'||cell.t==='rock') drawMountain(sx,sy,sc,cell,b);
       else if(cell.water&&cell.t!=='bridge') drawWater(sx,sy,sc,b,season);
-      else if(cell.t==='bridge') drawBridge(sx,sy,sc,season);
+      else if(cell.t==='bridge') drawBridge(sx,sy,sc,season,bridgeAxis(m,x,y));
       else if(cell.flora) drawFlora(sx,sy,sc,cell);
       else if(cell.t==='house') drawHouse(sx,sy,sc,'house',cell.houseName);
       else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind,cell.shopName);
@@ -3977,6 +4111,8 @@ function drawMap(now){
     drawMonsterArt(sx,sy,sc,e,now);
   });
   const moveBob=p.moveT>0?Math.sin((1-p.moveT)*Math.PI)*2:0;
+  const own=m.cells[Math.round(p.py)]&&m.cells[Math.round(p.py)][Math.round(p.px)];
+  if(own&&own.t==='bridge') drawBridge(W/2,344,.86,season,bridgeAxis(m,Math.round(p.px),Math.round(p.py)));
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
   // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
@@ -4006,6 +4142,14 @@ function drawMap(now){
   const wLabel=weather.label();
   ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
   ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
+  if(mapHint&&now-mapHint.t<2600){
+    const lines=wrapCanvasText(mapHint.desc,300,9).slice(0,3);
+    const h=28+lines.length*12, ty=H-34-h;
+    panel(12,ty,314,h);
+    fitText(mapHint.title,300,11,'#ffe9b0',20,ty+13);
+    ctx.fillStyle='#c8d2f0'; setFont(9,false); ctx.textAlign='left'; ctx.textBaseline='middle';
+    lines.forEach((line,i)=>ctx.fillText(line,20,ty+27+i*12));
+  }
 }
 
 /* ============================ 12. БОЙ И КАДРЫ ============================ */
@@ -4023,11 +4167,24 @@ function wrapCanvasText(text,maxW,size){
   if(line) lines.push(line);
   return lines;
 }
+// Записи журнала создаются один раз и после этого не меняются: переносы строк
+// кешируются на самой записи, пока она держится в b.log (несколько кадров подряд).
+const wrappedLogCache=new WeakMap();
+function wrapLogEntry(entry,maxW,size){
+  let byKey=wrappedLogCache.get(entry);
+  if(!byKey){ byKey=new Map(); wrappedLogCache.set(entry,byKey); }
+  const key=maxW+'|'+size+'|'+(entry.side==='hero'?'h':'n');
+  let lines=byKey.get(key);
+  if(lines===undefined){
+    lines=wrapCanvasText((entry.side==='hero'?'    ':'')+entry.text,maxW,size);
+    byKey.set(key,lines);
+  }
+  return lines;
+}
 function drawWrappedLog(entries,x,y,maxW,maxLines,size,lineH){
   const rows=[];
   entries.slice(-6).forEach(entry=>{
-    const prefix=entry.side==='hero'?'    ':'';
-    wrapCanvasText(prefix+entry.text,maxW,size).forEach(text=>rows.push({text,color:entry.color}));
+    wrapLogEntry(entry,maxW,size).forEach(text=>rows.push({text,color:entry.color}));
   });
   rows.slice(-maxLines).forEach((row,i)=>{
     setFont(size,false); ctx.fillStyle=row.color||'#c8cfe4'; ctx.textAlign='left'; ctx.textBaseline='middle';
@@ -4199,7 +4356,19 @@ $('btnInv').onclick=()=>toggleInventory(!(game&&game.invOpen));
 $('btnShop').onclick=()=>toggleShop(!(game&&game.shopOpen));
 $('btnInteract').onclick=tryInteract;
 $('heroName').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); startGame(); } });
+function pointerCanvasPos(e){
+  const rect=cv.getBoundingClientRect();
+  return {x:(e.clientX-rect.left)*cv.width/Math.max(1,rect.width),
+    y:(e.clientY-rect.top)*cv.height/Math.max(1,rect.height)};
+}
+cv.addEventListener('pointermove',e=>{
+  if(!game||game.battle||game.invOpen||game.shopOpen) return;
+  const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
+});
 cv.addEventListener('pointerdown',e=>{
+  if(game&&!game.battle&&!game.invOpen&&!game.shopOpen){
+    const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
+  }
   const b=game&&game.battle; if(!b||b.end) return;
   const idx=pickBattleEnemyAt(e);
   if(idx>=0){
@@ -4509,6 +4678,18 @@ function terrainReport(){
     swamp:{normal:swampNormal,winter:swampWinter},water:{blockedInSummer:!waterOpen,passableInWinter:iceOpen},
     replacedTileRefs:tileRefs,roundtrip};
 }
+// Категории объектов, для которых в manifest.json нет отдельного спрайта:
+// они рисуются процедурно и получают единую полупрозрачную плашку с подсказкой.
+function spriteCoverageReport(){
+  const manifestTypes=[...new Set(assetManifest.map(e=>String(e.type||'')).filter(Boolean))].sort();
+  const terrain=TERRAIN_TYPES.map(t=>{
+    const spriteType=TERRAIN_SPRITE_TYPES[t.id]||null;
+    return {id:t.id,name:t.name,spriteType,inManifest:!!spriteType&&manifestPaths(spriteType).length>0};
+  });
+  const without=terrain.filter(t=>!t.inManifest).map(t=>t.id);
+  return {ok:manifestTypes.length>0&&without.length>0,manifestTypes,total:terrain.length,
+    spriteLessTypes:without,spriteLessCount:without.length,terrain};
+}
 function shopReport(){
   const errors=[];
   const def=(game&&SHOP_TYPES.find(s=>s.id===game.shopType))||SHOP_TYPES.find(s=>s.id==='market')||SHOP_TYPES[0];
@@ -4666,6 +4847,10 @@ window.__mm6Debug={
   },
   mapOverlayReport:()=>mapOverlayReport(),
   terrainReport:()=>terrainReport(),
+  spriteCoverageReport:()=>spriteCoverageReport(),
+  mapHintReport:()=>mapHint?{title:mapHint.title,desc:mapHint.desc,age:performance.now()-mapHint.t,count:mapHints.length}
+    :{title:null,count:mapHints.length},
+  drawMapNow:()=>{ if(game&&!game.battle) drawMap(performance.now()); },
   saveWorld:()=>saveWorldState(),
   loadWorld:()=>loadWorldState(),
   setSettings:(patch)=>{
