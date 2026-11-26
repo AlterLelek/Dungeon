@@ -1425,7 +1425,8 @@ function normalizeRoads(cells,size){
     });
     if(linked) continue;
     const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
-    cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
+    // Сохраняем берег и прочие признаки клетки: снимаем только дорожные поля.
+    c.t=ground; c.ground=ground; delete c.roadKind; delete c.roadOffset;
   }
 }
 function scatterSwamp(cells,size,rng,count,exclude){
