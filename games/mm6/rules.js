@@ -22,7 +22,7 @@ export function xpTotalToLevel(level, baseXP = BASE_XP) {
    Враг на 9+ уровней ниже даёт ровно 10%; квестовый опыт мимо этой функции. */
 export function xpKill(enemy, heroLevel = 1) {
   const profile = resolveProfile(enemy);
-  const base = Math.max(1, Math.floor(finite(profile.baseXp, 25)));
+  const base = Math.max(1, Math.floor(finite(enemy && enemy.baseXp !== undefined ? enemy.baseXp : profile.baseXp, 25)));
   const enemyLevel = Math.max(1, Math.floor(finite(enemy && (enemy.level ?? profile.level), profile.level)));
   const k = Math.floor(finite(heroLevel, 1)) - enemyLevel;
   return Math.max(1, Math.round(base * Math.max(0.1, 1 - 0.1 * k)));
@@ -75,10 +75,30 @@ export const MONSTER_PROFILES = {
   wyvern:   { level: 10, threatBase: 6, baseXp: 130, humanoid: false, undead: false, devil: false },
   lich:     { level: 11, threatBase: 7, baseXp: 150, humanoid: true,  undead: true,  devil: false }
 };
-export function resolveProfile(enemy) {
-  const id = enemy && (enemy.def ? enemy.def.id : enemy.id) || (typeof enemy === 'string' ? enemy : '');
-  return MONSTER_PROFILES[id] || { level: 1, threatBase: 1, baseXp: 25, humanoid: false, undead: false, devil: false };
+function enemyId(enemy) {
+  if (typeof enemy === 'string') return enemy;
+  if (!enemy) return '';
+  /* У монстров D28 поле def — число (защита), поэтому id/key важнее вложенного def. */
+  return enemy.id || enemy.key ||
+    (enemy.def && typeof enemy.def === 'object' ? (enemy.def.id || enemy.def.key) : '') || '';
 }
+export function resolveProfile(enemy) {
+  return MONSTER_PROFILES[enemyId(enemy)] || { level: 1, threatBase: 1, baseXp: 25, humanoid: false, undead: false, devil: false };
+}
+
+/* Варианты — только перекраска существующих спрайтов, новых PNG не требуется.
+   Мыши: солдат (обычный бой), волшебница (заклинания 1 круга), король (сильный удар + магия).
+   Лучники доступны гуманоидам, но не мышам и не черепахам; цвет у всех один. */
+export const MONSTER_VARIANTS = {
+  soldier: { id: 'soldier', name: 'Солдат', tint: '#a3e635', hp: 1, atk: 1, def: 1, speed: 1, gold: 1, baseXp: 25 },
+  wizard:  { id: 'wizard', name: 'Волшебница', tint: '#60a5fa', hp: .9, atk: 1, def: .9, speed: 1, gold: 1.5, baseXp: 35, magic: true, spells: ['fire', 'ice', 'lightning_weak'] },
+  king:    { id: 'king', name: 'Король', tint: '#fbbf24', hp: 1.7, atk: 1.5, def: 1.4, speed: 1.05, gold: 3, baseXp: 65, magic: true, spells: ['lightning_all', 'quake'], heavyBlow: true },
+  archer:  { id: 'archer', name: 'Лучник', tint: '#86efac', hp: 1, atk: 1, def: 1, speed: 1.1, gold: 1.2, baseXp: 40, ranged: true, missChance: 0.18 }
+};
+export const FIRST_CIRCLE_SPELLS = ['fire', 'ice', 'lightning_weak', 'poison', 'curse', 'heal_weak', 'shield'];
+export const ARCHER_VARIANT = MONSTER_VARIANTS.archer;
+export const ARCHER_MISS_RANGE = [0.15, 0.2];
+export const MOUSE_VARIANT_IDS = ['soldier', 'wizard', 'king'];
 
 /* Навыки растут только от реального эффекта; очков на распределение нет. */
 export const SKILL_DEFS = [
@@ -112,17 +132,17 @@ export function skillForWeapon(w) {
 /* Лут: частый 40-70%, средний/редкий — по таблице. Редкие вещи приходят
    из гнёзд и кладов, а не из бесконечного гринда. */
 export const LOOT_TABLES = {
-  mouse:        { common: { chance: 0.55, gold: [1, 3] }, medium: { chance: 0.05, items: ['crystalgrass', 'scroll_1'] }, rare: { chance: 0.05, items: ['ring_1'], floor: true } },
-  mouse_wizard: { common: { chance: 0.6,  gold: [2, 5] }, medium: { chance: 0.15, items: ['potion_mp', 'scroll_1'] }, rare: null },
-  mouse_king:   { common: { chance: 0.65, gold: [10, 25] }, medium: { chance: 0.25, items: ['food', 'potion_hp', 'potion_mp'] }, rare: { chance: 0.25, firstKillChance: 1, items: ['ring_1', 'crown'], floor: true } },
-  spider:       { common: { chance: 0.55, items: ['poison_gland', 'silk'] }, medium: { chance: 0.4, gold: [2, 6] }, rare: { chance: 0.1, items: ['scroll_poison'] } },
-  skeleton:     { common: { chance: 0.5,  items: ['bone'], gold: [3, 8] }, medium: { chance: 0.15, items: ['shield'] }, rare: { chance: 0.12, items: ['helmet'], else: 'bone_dust' } },
-  goblin:       { common: { chance: 0.6,  items: ['food'], gold: [3, 10] }, medium: { chance: 0.15, items: ['club_axe'] }, rare: { chance: 0.25, items: ['ore'] } },
-  devil:        { common: { chance: 0.5,  gold: [10, 30] }, medium: { chance: 0.15, items: ['scroll_dark'] }, rare: { chance: 0.25, items: ['ring_3'], extra: { chance: 0.15, items: ['amulet'] } } }
+  mouse:        { common: { chance: 1, gold: [1, 3] }, medium: { chance: 0.05, items: ['crystalgrass', 'scroll_1'] }, rare: { chance: 0.05, items: ['ring_1'], floor: true } },
+  mouse_wizard: { common: { chance: 1, gold: [2, 5] }, medium: { chance: 0.15, items: ['potion_mp', 'scroll_1'] }, rare: null },
+  mouse_king:   { common: { chance: 1, gold: [10, 25] }, medium: { chance: 0.25, items: ['food', 'potion_hp', 'potion_mp'] }, rare: { chance: 0.25, firstKillChance: 1, items: ['ring_1', 'crown'], floor: true } },
+  spider:       { common: { chance: 1, items: ['poison_gland', 'silk'], gold: [2, 6] }, medium: null, rare: { chance: 0.1, items: ['scroll_poison'] } },
+  skeleton:     { common: { chance: 1, items: ['bone'], gold: [3, 8] }, medium: { chance: 0.15, items: ['shield'] }, rare: { chance: 0.12, items: ['helmet'], else: 'bone_dust' } },
+  goblin:       { common: { chance: 1, items: ['food'], gold: [3, 10] }, medium: { chance: 0.15, items: ['club_axe'] }, rare: { chance: 0.25, items: ['ore'] } },
+  devil:        { common: { chance: 1, gold: [10, 30] }, medium: { chance: 0.15, items: ['scroll_dark'] }, rare: { chance: 0.25, items: ['ring_3'], extra: { chance: 0.15, items: ['amulet'] } } }
 };
 export function lootTableFor(enemy) {
-  const id = enemy && (enemy.def ? enemy.def.id : enemy.id) || (typeof enemy === 'string' ? enemy : '');
-  const variant = enemy && enemy.variantId;
+  const id = enemyId(enemy);
+  const variant = enemy && (enemy.variantId || (enemy.variant && enemy.variant.id));
   if (id === 'mouse' && variant === 'wizard') return LOOT_TABLES.mouse_wizard;
   if (id === 'mouse' && variant === 'king') return LOOT_TABLES.mouse_king;
   return LOOT_TABLES[id] || null;
