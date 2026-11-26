@@ -1,56 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-  <title>Серебряный рыцарский меч</title>
-  <desc>Серебряный клинок с золотой гардой и красным камнем.</desc>
-  <g shape-rendering="crispEdges">
-    <rect x="31" y="1" width="2" height="2" fill="#2a3442"/>
-    <rect x="30" y="3" width="4" height="4" fill="#2a3442"/>
-    <rect x="29" y="7" width="6" height="2" fill="#2a3442"/>
-    <rect x="27" y="9" width="10" height="32" fill="#2a3442"/>
-
-    <rect x="31" y="2" width="2" height="2" fill="#ffffff"/>
-    <rect x="30" y="4" width="4" height="4" fill="#eef3f8"/>
-    <rect x="29" y="8" width="6" height="2" fill="#d4dee8"/>
-    <rect x="28" y="10" width="8" height="30" fill="#dfe7ee"/>
-    <rect x="29" y="10" width="2" height="30" fill="#ffffff"/>
-    <rect x="31" y="10" width="2" height="30" fill="#b3c2d2"/>
-    <rect x="34" y="10" width="2" height="30" fill="#9fb0c2"/>
-    <rect x="30" y="12" width="1" height="10" fill="#f7fbff"/>
-    <rect x="33" y="26" width="1" height="8" fill="#c5d2df"/>
-
-    <rect x="31" y="14" width="2" height="8" fill="#d4a33a"/>
-    <rect x="29" y="17" width="6" height="2" fill="#d4a33a"/>
-    <rect x="31" y="14" width="1" height="8" fill="#ffe08a"/>
-    <rect x="29" y="17" width="6" height="1" fill="#ffe08a"/>
-
-    <rect x="19" y="38" width="5" height="8" fill="#2a3442"/>
-    <rect x="40" y="38" width="5" height="8" fill="#2a3442"/>
-    <rect x="21" y="41" width="22" height="4" fill="#2a3442"/>
-    <rect x="20" y="39" width="4" height="6" fill="#e0b23c"/>
-    <rect x="40" y="39" width="4" height="6" fill="#e0b23c"/>
-    <rect x="20" y="39" width="1" height="5" fill="#ffe08a"/>
-    <rect x="43" y="39" width="1" height="5" fill="#ffe08a"/>
-    <rect x="23" y="42" width="18" height="2" fill="#e0b23c"/>
-    <rect x="23" y="42" width="18" height="1" fill="#ffe08a"/>
-    <rect x="18" y="38" width="2" height="2" fill="#dfe7ee"/>
-    <rect x="44" y="38" width="2" height="2" fill="#dfe7ee"/>
-    <rect x="17" y="36" width="2" height="2" fill="#dfe7ee"/>
-    <rect x="45" y="36" width="2" height="2" fill="#dfe7ee"/>
-    <rect x="29" y="40" width="6" height="5" fill="#9c6f1c"/>
-    <rect x="30" y="40" width="4" height="4" fill="#d8382f"/>
-    <rect x="31" y="41" width="2" height="2" fill="#ff8a7a"/>
-
-    <rect x="29" y="45" width="6" height="12" fill="#2a3442"/>
-    <rect x="30" y="45" width="4" height="12" fill="#f0e8dc"/>
-    <rect x="30" y="47" width="4" height="1" fill="#c0392f"/>
-    <rect x="30" y="50" width="4" height="1" fill="#c0392f"/>
-    <rect x="30" y="53" width="4" height="1" fill="#c0392f"/>
-    <rect x="30" y="45" width="1" height="12" fill="#ffffff"/>
-
-    <rect x="27" y="56" width="10" height="6" fill="#2a3442"/>
-    <rect x="28" y="56" width="8" height="5" fill="#e0b23c"/>
-    <rect x="28" y="56" width="2" height="3" fill="#ffe08a"/>
-    <rect x="30" y="57" width="4" height="3" fill="#d8382f"/>
-    <rect x="31" y="58" width="2" height="1" fill="#ff8a7a"/>
-    <rect x="28" y="60" width="8" height="1" fill="#9c6f1c"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <title>Серебряный меч рун</title>
+  <rect x="10" y="5" width="1" height="1" fill="#56d6e8" opacity="0.35"/>
+  <rect x="21" y="9" width="1" height="1" fill="#56d6e8" opacity="0.35"/>
+  <rect x="10" y="15" width="1" height="1" fill="#56d6e8" opacity="0.35"/>
+  <rect x="21" y="18" width="1" height="1" fill="#56d6e8" opacity="0.35"/>
+  <rect x="15" y="1" width="2" height="1" fill="#2e3a4a"/>
+  <rect x="15" y="2" width="2" height="1" fill="#ffffff"/>
+  <rect x="13" y="3" width="1" height="18" fill="#2e3a4a"/>
+  <rect x="18" y="3" width="1" height="18" fill="#2e3a4a"/>
+  <rect x="14" y="3" width="4" height="17" fill="#c8d4e0"/>
+  <rect x="14" y="3" width="1" height="17" fill="#ffffff"/>
+  <rect x="15" y="3" width="1" height="17" fill="#d8e2ea"/>
+  <rect x="17" y="3" width="1" height="17" fill="#9aa8b8"/>
+  <rect x="14" y="20" width="4" height="1" fill="#2e3a4a"/>
+  <rect x="15" y="6" width="2" height="1" fill="#56d6e8"/>
+  <rect x="16" y="8" width="1" height="2" fill="#56d6e8"/>
+  <rect x="15" y="12" width="2" height="1" fill="#56d6e8"/>
+  <rect x="16" y="15" width="1" height="2" fill="#56d6e8"/>
+  <rect x="8" y="20" width="16" height="3" fill="#26303c"/>
+  <rect x="9" y="20" width="14" height="2" fill="#9aa8b8"/>
+  <rect x="10" y="21" width="12" height="1" fill="#6a7a8a"/>
+  <rect x="15" y="20" width="2" height="1" fill="#56d6e8"/>
+  <rect x="13" y="23" width="6" height="5" fill="#1a2430"/>
+  <rect x="14" y="23" width="4" height="5" fill="#243040"/>
+  <rect x="14" y="24" width="4" height="1" fill="#56d6e8"/>
+  <rect x="14" y="26" width="4" height="1" fill="#56d6e8"/>
+  <rect x="12" y="28" width="8" height="2" fill="#26303c"/>
+  <rect x="13" y="28" width="6" height="1" fill="#9aa8b8"/>
 </svg>

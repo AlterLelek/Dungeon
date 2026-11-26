@@ -1,71 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-  <title>Пламенный меч</title>
-  <desc>Тёмный клинок, охваченный огнём, с раскалёнными трещинами.</desc>
-  <g shape-rendering="crispEdges">
-    <rect x="18" y="8" width="28" height="36" fill="#ff6a1a" opacity="0.08"/>
-    <rect x="22" y="4" width="20" height="42" fill="#ffb43a" opacity="0.07"/>
-
-    <rect x="31" y="1" width="2" height="2" fill="#140c0c"/>
-    <rect x="30" y="3" width="4" height="4" fill="#140c0c"/>
-    <rect x="29" y="7" width="6" height="2" fill="#140c0c"/>
-    <rect x="27" y="9" width="10" height="32" fill="#140c0c"/>
-
-    <rect x="31" y="2" width="2" height="2" fill="#f0a34a"/>
-    <rect x="30" y="4" width="4" height="4" fill="#7a4430"/>
-    <rect x="29" y="8" width="6" height="2" fill="#5c3428"/>
-    <rect x="28" y="10" width="8" height="30" fill="#3a2a2a"/>
-    <rect x="29" y="10" width="2" height="30" fill="#6b4a3a"/>
-    <rect x="31" y="10" width="2" height="30" fill="#2a1c1c"/>
-    <rect x="34" y="10" width="2" height="30" fill="#221616"/>
-
-    <path d="M27 10 L24 14 L27 15 L22 20 L26 21 L23 26 L27 27 L24 32 L27 33 L25 38 L28 39 L28 10 Z" fill="#e2431a"/>
-    <path d="M37 10 L40 14 L37 15 L42 20 L38 21 L41 26 L37 27 L40 32 L37 33 L39 38 L36 39 L36 10 Z" fill="#e2431a"/>
-    <path d="M28 13 L26 17 L28 18 L25 23 L28 24 L26 29 L28 30 L27 35 L28 36 Z" fill="#ff8c2a"/>
-    <path d="M36 13 L38 17 L36 18 L39 23 L36 24 L38 29 L36 30 L37 35 L36 36 Z" fill="#ff8c2a"/>
-    <path d="M28 16 L27 20 L28 21 L26 25 L28 26 L27 30 L28 31 Z" fill="#ffd24a"/>
-    <path d="M36 16 L37 20 L36 21 L38 25 L36 26 L37 30 L36 31 Z" fill="#ffd24a"/>
-    <path d="M32 0 L35 4 L33 6 L32 4 L31 6 L29 4 Z" fill="#ff7a1a"/>
-    <path d="M32 1 L33 4 L32 5 L31 4 Z" fill="#ffd24a"/>
-
-    <rect x="31" y="12" width="2" height="3" fill="#ff6a1a"/>
-    <rect x="31" y="17" width="2" height="5" fill="#ff8c2a"/>
-    <rect x="32" y="18" width="1" height="3" fill="#ffe27a"/>
-    <rect x="30" y="26" width="2" height="4" fill="#ff6a1a"/>
-    <rect x="32" y="32" width="2" height="4" fill="#ff8c2a"/>
-    <rect x="31" y="13" width="1" height="1" fill="#ffe27a"/>
-    <rect x="31" y="27" width="1" height="2" fill="#ffe27a"/>
-
-    <rect x="18" y="14" width="2" height="2" fill="#ffb43a"/>
-    <rect x="44" y="21" width="2" height="2" fill="#ff8c2a"/>
-    <rect x="19" y="31" width="2" height="2" fill="#ff6a1a"/>
-    <rect x="43" y="8" width="1" height="3" fill="#ffd24a"/>
-    <rect x="41" y="10" width="5" height="1" fill="#ffd24a"/>
-    <rect x="20" y="23" width="1" height="3" fill="#ffd24a"/>
-    <rect x="18" y="25" width="5" height="1" fill="#ffd24a"/>
-
-    <rect x="19" y="40" width="4" height="6" fill="#140c0c"/>
-    <rect x="41" y="40" width="4" height="6" fill="#140c0c"/>
-    <rect x="21" y="41" width="22" height="4" fill="#140c0c"/>
-    <rect x="20" y="41" width="3" height="4" fill="#a86a2a"/>
-    <rect x="41" y="41" width="3" height="4" fill="#a86a2a"/>
-    <rect x="23" y="42" width="18" height="2" fill="#7a4a1c"/>
-    <rect x="23" y="42" width="18" height="1" fill="#c98b2c"/>
-    <rect x="29" y="40" width="6" height="5" fill="#7a3a14"/>
-    <rect x="30" y="40" width="4" height="4" fill="#ff7a1a"/>
-    <rect x="31" y="41" width="2" height="2" fill="#ffe27a"/>
-
-    <rect x="29" y="45" width="6" height="12" fill="#140c0c"/>
-    <rect x="30" y="45" width="4" height="12" fill="#2a1a16"/>
-    <rect x="30" y="47" width="4" height="1" fill="#8a4a1e"/>
-    <rect x="30" y="50" width="4" height="1" fill="#c96a22"/>
-    <rect x="30" y="53" width="4" height="1" fill="#8a4a1e"/>
-    <rect x="30" y="45" width="1" height="12" fill="#5c3420"/>
-
-    <rect x="27" y="56" width="10" height="6" fill="#140c0c"/>
-    <rect x="28" y="56" width="8" height="5" fill="#a86a2a"/>
-    <rect x="28" y="56" width="2" height="3" fill="#c98b2c"/>
-    <rect x="30" y="57" width="4" height="3" fill="#ff7a1a"/>
-    <rect x="31" y="58" width="2" height="1" fill="#ffe27a"/>
-    <rect x="28" y="60" width="8" height="1" fill="#7a4a1c"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <title>Огненный меч</title>
+  <rect x="11" y="5" width="1" height="2" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="11" y="9" width="1" height="3" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="11" y="14" width="1" height="2" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="20" y="4" width="1" height="2" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="20" y="9" width="1" height="3" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="20" y="15" width="1" height="2" fill="#ff7a1a" opacity="0.55"/>
+  <rect x="8" y="6" width="2" height="2" fill="#ffcf4a" opacity="0.8"/>
+  <rect x="22" y="5" width="1" height="2" fill="#ff7a1a" opacity="0.8"/>
+  <rect x="9" y="11" width="1" height="3" fill="#ffcf4a" opacity="0.7"/>
+  <rect x="22" y="12" width="2" height="2" fill="#ff7a1a" opacity="0.8"/>
+  <rect x="10" y="16" width="1" height="2" fill="#ff4a0a" opacity="0.8"/>
+  <rect x="21" y="17" width="2" height="1" fill="#ffcf4a" opacity="0.8"/>
+  <rect x="15" y="1" width="2" height="1" fill="#3a0a04"/>
+  <rect x="15" y="2" width="2" height="1" fill="#ffcf4a"/>
+  <rect x="13" y="3" width="1" height="18" fill="#3a0a04"/>
+  <rect x="18" y="3" width="1" height="18" fill="#3a0a04"/>
+  <rect x="14" y="3" width="4" height="17" fill="#d94a1f"/>
+  <rect x="14" y="3" width="1" height="17" fill="#ffcf4a"/>
+  <rect x="15" y="3" width="1" height="17" fill="#f06a1a"/>
+  <rect x="17" y="3" width="1" height="17" fill="#8a1a0a"/>
+  <rect x="14" y="20" width="4" height="1" fill="#3a0a04"/>
+  <rect x="15" y="6" width="1" height="2" fill="#ffcf4a"/>
+  <rect x="16" y="11" width="1" height="3" fill="#ffcf4a"/>
+  <rect x="15" y="16" width="1" height="1" fill="#ffcf4a"/>
+  <rect x="8" y="20" width="16" height="3" fill="#3a1a0a"/>
+  <rect x="9" y="20" width="14" height="2" fill="#b85a20"/>
+  <rect x="10" y="21" width="12" height="1" fill="#7a3210"/>
+  <rect x="15" y="20" width="2" height="1" fill="#ffcf4a"/>
+  <rect x="13" y="23" width="6" height="5" fill="#3a0a0a"/>
+  <rect x="14" y="23" width="4" height="5" fill="#7a2410"/>
+  <rect x="14" y="24" width="4" height="1" fill="#d94a1f"/>
+  <rect x="14" y="26" width="4" height="1" fill="#d94a1f"/>
+  <rect x="12" y="28" width="8" height="2" fill="#3a1a0a"/>
+  <rect x="13" y="28" width="6" height="1" fill="#b85a20"/>
 </svg>
