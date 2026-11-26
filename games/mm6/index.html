@@ -277,10 +277,11 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <details class="setAcc" open><summary>🎚️ Сложность и мир</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">Сложность</span><select id="setDiff"><option value="easy">🙂 Простая</option><option value="normal">🔥 Средняя</option><option value="hard">🧠 Сложная</option></select></div>
     <div class="setRow"><span class="setLabel">🏰 Этажей всего</span><input type="number" id="setFloors" min="1" max="20" step="1" value="5"></div>
-    <div class="setRow"><span class="setLabel">📐 Размер карты</span><input type="number" id="setMapSize" min="30" max="30" step="1" value="30" readonly title="30×30 закреплено в docs/DESIGN.md"></div>
+    <div class="setRow"><span class="setLabel">📐 Размер карты (клеток)</span><input type="number" id="setMapSize" min="8" max="30" step="1" value="30" title="По умолчанию 30×30; допустимый диапазон 8–30"></div>
     <div class="setRow"><span class="setLabel">🔲 Размер клетки</span><input type="number" id="setCellSize" min="8" max="28" step="1" value="16"></div>
     <div class="setRow"><span class="setLabel">👹 Монстров +</span><input type="number" id="setMonstersAdd" min="0" max="5" step="1" value="0"></div>
     <div class="setRow"><span class="setLabel">🧰 Спавн (раз в N)</span><input type="number" id="setItemRate" min="1" max="5" step="1" value="2"></div>
+    <div class="setRow"><span class="setLabel">🌳 Плотность леса</span><input type="number" id="setTreeDensity" min="0" max="0.45" step="0.05" value="0.2"></div>
     <div class="setRow"><span class="setLabel">👥 Героев в отряде</span><input type="number" id="setPartySize" min="1" max="3" step="1" value="3"></div>
     <div class="setRow"><span class="setLabel">✨ Находки (раз в N ходов)</span><input type="number" id="setBonusEvery" min="2" max="20" step="1" value="6"></div>
     <div class="setCheck"><input type="checkbox" id="setSimple" checked><span>🙂 Простой режим</span></div>
@@ -354,8 +355,9 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
 import { createWeather } from './weather.js';
+import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
 import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound } from '../dungeon28/audio.js';
@@ -366,7 +368,7 @@ import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 const W = 640, H = 360;
-const weather = createWeather(W, H);
+const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:300,heroScale:.5,msgY:178,msgH:84};
 const setFont=(px,bold=true)=>{ ctx.font=(bold?'700 ':'400 ')+px+'px '+UI_FONT; };
@@ -645,7 +647,7 @@ function animalCount(list){ return (list||[]).filter(a=>isAnimalKind(a.type)).le
 const rndf=(a,b)=>a+Math.random()*(b-a);
 function makeWildlife(type,size){
   const def=WILD_KINDS[type]; if(!def) return null;
-  const span=clamp(Math.round(Number(size)||12),8,28);
+  const span=clamp(Math.round(Number(size)||12),8,30);
   const dir=Math.random()<.5?-1:1, scale=.88+Math.random()*.24;
   const wx=rnd(-1,span+1), wy=rnd(0,span), alt=rnd(def.alt[0],def.alt[1]);
   const phase=Math.random()*Math.PI*2;
@@ -773,10 +775,10 @@ let progress=loadProgress();
 
 /* --- Настройки: полный дубль панели подземелья, сохраняются в localStorage --- */
 const SETTINGS_KEY='mm6_settings_v1';
-const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,30],monstersAdd:[0,5],itemRate:[1,5],
+const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[8,30],monstersAdd:[0,5],itemRate:[1,5],
   shieldVal:[1,10],starVal:[1,10],sound:[0,10],sfx:[0,10],amb:[0,10],music:[0,10],tempo:[300,1200],
   partySize:[1,3],heroSpeed:[.5,2],monsterSpeed:[.5,2],monsterPower:[.5,2],bonusEvery:[2,20],logLimit:[100,1000],
-  weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200]};
+  weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
 const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim'];
@@ -806,7 +808,7 @@ function openSettings(){ $('settings').classList.remove('hidden'); if(game) game
 function closeSettings(){ $('settings').classList.add('hidden'); if(game) game.settingsOpen=false; saveSettings(); if(game) updateControls(); }
 function syncSettings(){
   const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
-    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
+    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setTreeDensity:'treeDensity',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
@@ -819,7 +821,7 @@ function syncSettings(){
 }
 function bindSettings(){
   const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
-    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
+    setMonstersAdd:'monstersAdd',setItemRate:'itemRate',setTreeDensity:'treeDensity',setMaster:'sound',setSfx:'sfx',setAmb:'amb',
     setMelody:'music',setTempo:'tempo',setMelodyTheme:'melody',setShieldVal:'shieldVal',setStarVal:'starVal',
     setPartySize:'partySize',setHeroSpeed:'heroSpeed',setMonsterSpeed:'monsterSpeed',
     setMonsterPower:'monsterPower',setBonusEvery:'bonusEvery',setLogLimit:'logLimit',
@@ -927,6 +929,8 @@ function drawSprite(path,x,y,w,h,tint){
   tg.globalCompositeOperation='source-atop'; tg.globalAlpha=.32; tg.fillStyle=tint; tg.fillRect(0,0,tw,th);
   ctx.drawImage(tc,x,y,w,h); ctx.restore(); return true;
 }
+await loadTreeRegistry();
+preloadTreeSprites(spriteImg);
 const ITEM_SPRITES={
   coin:KENNEY_ITEMS+'coin.png', star:SPRITE_BASE+'ui/star.png', shield:KENNEY_ITEMS+'shield.png',
   lightning:SPRITE_BASE+'ui/lightning.png', sword:KENNEY_ITEMS+'sword.png',
@@ -1501,10 +1505,64 @@ function placeFlora(cells,size,rng,seed,keep){
     }
   }
 }
+function treeSpeciesCount(){ return Math.max(1,TREES_SPECIES.length||1); }
+function forestSpot(cells,size,occupied,cx,cy,rng){
+  for(let k=0;k<240;k++){
+    const x=rngInt(rng,0,size-1), y=rngInt(rng,0,size-1);
+    if(occupied.has(ckey(x,y))) continue;
+    if(cells[y][x].t!=='grass') continue;
+    if(Math.abs(x-cx)+Math.abs(y-cy)<3) continue;
+    return {x,y};
+  }
+  return null;
+}
+function generateForest(cells,size,occupied,cx,cy,farX,farY,rng){
+  const raw=settings.treeDensity!=null?settings.treeDensity:DEFAULT_SETTINGS.treeDensity;
+  const density=clamp(Number(raw)||0,0,.45);
+  const target=Math.round(size*size*density);
+  const trees=[];
+  if(target<=0) return trees;
+  const speciesCount=treeSpeciesCount();
+  const groveCount=clamp(Math.round(target/8),1,7);
+  const groves=[];
+  for(let g=0;g<groveCount;g++){
+    const spot=forestSpot(cells,size,occupied,cx,cy,rng);
+    if(!spot) continue;
+    groves.push({x:spot.x,y:spot.y,species:rngInt(rng,0,speciesCount-1),radius:Math.max(2,Math.round(size/7))});
+  }
+  function place(x,y,species){
+    if(x<0||y<0||x>=size||y>=size) return false;
+    if(x===farX&&y===farY) return false;
+    const key=ckey(x,y);
+    if(occupied.has(key)) return false;
+    const cell=cells[y][x]; if(cell.t!=='grass') return false;
+    cells[y][x]={t:'tree',species,ground:cell.ground||'grass'};
+    occupied.add(key);
+    trees.push({x,y,species});
+    return true;
+  }
+  let attempts=0;
+  while(trees.length<target&&attempts<target*40){
+    attempts++;
+    let x,y,species;
+    if(groves.length&&rng()<.78){
+      const grove=rngPick(rng,groves);
+      const radius=grove.radius;
+      x=grove.x+rngInt(rng,-radius,radius); y=grove.y+rngInt(rng,-radius,radius);
+      species=rng()<.12?rngInt(rng,0,speciesCount-1):grove.species;
+    }else{
+      x=rngInt(rng,0,size-1); y=rngInt(rng,0,size-1);
+      species=groves.length?rngPick(rng,groves).species:rngInt(rng,0,speciesCount-1);
+    }
+    place(x,y,species);
+  }
+  return trees;
+}
 function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
-  // Размер карт закреплён: 30×30 (docs/DESIGN.md). Настройка сделана только для чтения.
-  const size=clamp(30,30,30);
   const seed=makeSeed(worldSeed||1,i+1), rng=makeRng(seed);
+  // По умолчанию 30×30; настройка из main допускает 8–30, рельеф работает для любого размера.
+  const baseSize=clamp(Math.round(Number(settings.mapSize)||d.size[1]||30),8,30);
+  const size=clamp(rngInt(rng,Math.max(8,baseSize-2),Math.min(30,baseSize+2)),8,30);
   const biome=BIOME_KEYS[i%BIOME_KEYS.length];
   const cells=emptyCells(size,rng);
   const cx=Math.floor(size/2),cy=Math.floor(size/2);
@@ -1582,16 +1640,21 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:b.shop_kind.slice(),shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
     shops.push({buildingId:b.id,kind,kinds:b.shop_kind.slice(),name:b.title,x:s.x,y:s.y});
   });
+  const trees=generateForest(cells,size,keep,cx,cy,farX,farY,rng);
   const decoCount=Math.floor(size*size*.12);
   for(let k=0;k<decoCount;k++){
+    let t=null, deco=null;
+    if(biome==='port'&&rng()<.55) t='water';
+    else if(biome==='mountains'&&rng()<.7) t='rock';
+    else if((biome==='village'||biome==='city')&&rng()<.7){ t='house'; deco=rngPick(rng,decoBuildings); }
+    if(t==='house'&&!deco) t=null;
+    if(!t) continue;
     const s=freeSpot(2); if(!s) break;
-    let t='tree', deco=null;
-    if(biome==='mountains'&&rng()<.55){ t='rock'; if(manifestPaths('mountain').length) cells[s.y][s.x].mountainSprite=manifestSprite('mountain',cellHash(s.x,s.y,seed)); }
-    else if((biome==='village'||biome==='city')&&rng()<.6){ t='house'; deco=rngPick(rng,decoBuildings); }
-    const ground=cells[s.y][s.x].ground||'grass';
+    const ground=t==='water'?'sand':t==='rock'?'stone':(cells[s.y][s.x].ground||'grass');
+    const sprite=t==='rock'?manifestSprite('mountain',cellHash(s.x,s.y,seed)):null;
     cells[s.y][s.x]=t==='house'
       ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco,ground}
-      :{t,ground,decoSeed:cellHash(s.x,s.y,seed),...(cells[s.y][s.x].mountainSprite?{mountainSprite:cells[s.y][s.x].mountainSprite}:{})};
+      :{t,ground,decoSeed:cellHash(s.x,s.y,seed),...(t==='water'?{water:true}:{}),...(sprite?{mountainSprite:sprite}:{})};
   }
   const rate=clamp(Number(settings.itemRate)||2,1,5);
   const treasureCount=rngInt(rng,2,4)+Math.floor(rate/2);
@@ -1623,7 +1686,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   }
   normalizeLakes(cells,size);
   normalizeRoads(cells,size);
-  return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},
+  return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},trees,
     boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
     wildlife:createWildlife(biome,size)};
 }
@@ -3272,13 +3335,29 @@ function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
   trace(); ctx.strokeStyle=cell.water?'rgba(180,220,255,.2)':'rgba(255,255,255,.09)'; ctx.lineWidth=1; ctx.stroke();
   ctx.restore();
 }
-function drawTree(x,y,s,b){
-  const sprite=KENNEY_TILES+((b&&b.season==='autumn')?'tile_tree_autumn.png':'tile_tree_green.png');
-  if(drawSprite(sprite,x-32*s,y-84*s,64*s,72*s)) return;
-  ctx.save(); ctx.fillStyle='#5b3b22'; ctx.fillRect(x-4*s,y-44*s,8*s,46*s);
-  ctx.fillStyle=(b&&b.tree)||'#175a34'; ctx.beginPath(); ctx.arc(x,y-60*s,28*s,0,6.29); ctx.fill();
-  ctx.fillStyle='#3f9e58'; ctx.beginPath(); ctx.arc(x-9*s,y-68*s,18*s,0,6.29); ctx.fill();
-  ctx.beginPath(); ctx.arc(x+11*s,y-63*s,15*s,0,6.29); ctx.fill(); ctx.restore();
+const OVERLAY_CELL_WIDTH=96;
+function spriteCellRect(sx,sy,sc,aspect){
+  const ratio=Number(aspect)>0?Number(aspect):1;
+  const width=OVERLAY_CELL_WIDTH*sc;
+  const cellHeight=OVERLAY_CELL_WIDTH*sc;
+  let height=width*ratio;
+  let drawWidth=width;
+  const maxHeight=cellHeight*1.5;
+  if(height>maxHeight){ height=maxHeight; drawWidth=height/ratio; }
+  const groundY=sy+22*sc;
+  return {x:sx-drawWidth/2,y:groundY-height,w:drawWidth,h:height,groundY};
+}
+function drawTree(x,y,s,b,speciesIndex,worldX,worldY){
+  const season=currentSeason();
+  const seed=(Number(worldX)||0)*31+(Number(worldY)||0)*17+(Number(speciesIndex)||0)*7;
+  const file=treeFileFor(speciesIndex,season,seed);
+  const rect=spriteCellRect(x,y,s,1);
+  const basePad=rect.h*0.09375;
+  if(file&&drawSprite(file,rect.x,rect.y+basePad,rect.w,rect.h)) return;
+  ctx.save(); ctx.fillStyle='#5b3b22'; ctx.fillRect(x-4*s,rect.groundY-44*s,8*s,44*s);
+  ctx.fillStyle=(b&&b.tree)||'#175a34'; ctx.beginPath(); ctx.arc(x,rect.groundY-58*s,28*s,0,6.29); ctx.fill();
+  ctx.fillStyle='#3f9e58'; ctx.beginPath(); ctx.arc(x-9*s,rect.groundY-66*s,18*s,0,6.29); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+11*s,rect.groundY-61*s,15*s,0,6.29); ctx.fill(); ctx.restore();
 }
 function drawRock(x,y,s,b){
   ctx.save(); ctx.fillStyle=(b&&b.rock)||'#8b8b93';
@@ -3498,7 +3577,7 @@ function drawMap(now){
       const sy=d===1?272:210;
       const cell=m.cells[y][x];
       drawCellPatch(sx,sy,sc,cell,m,x,y,season,1);
-      if(cell.t==='tree') drawTree(sx,sy,sc,b);
+      if(cell.t==='tree') drawTree(sx,sy,sc,b,cell.species,x,y);
       else if(cell.t==='mountain'||cell.t==='rock') drawMountain(sx,sy,sc,cell,b);
       else if(cell.water&&cell.t!=='bridge') drawWater(sx,sy,sc,b,season);
       else if(cell.t==='bridge') drawBridge(sx,sy,sc,season);
@@ -3849,11 +3928,16 @@ function regenOutsideBattle(now){
     h.mp=Math.min(h.maxMp,h.mp+ticks*per);
   });
 }
-// Счётчик шагов отключён: погода следует за сезоном, а не за ходом игрока (docs/DESIGN.md).
+function weatherCycleSteps(){
+  return clamp(Number(settings&&settings.weatherCycleSteps!=null?settings.weatherCycleSteps:WEATHER_CYCLE_STEPS)||WEATHER_CYCLE_STEPS,10,500);
+}
+// Сезон задаёт погоду, а cycles из main задаёт частоту её смены; счётчик шагов игры отключён (docs/DESIGN.md).
 function updateWeatherByTurn(){
   if(!game) return;
   const season=currentSeason();
-  weather.setSeason(season, SEASON_WEATHER[season]||{});
+  const cfg=Object.assign({}, SEASON_WEATHER[season]||{}, { cycleSteps: weatherCycleSteps() });
+  weather.setSeason(season, cfg);
+  weather.onTurn(game.world.turn||0, cfg);
 }
 function loop(now){
   requestAnimationFrame(loop);
@@ -3867,7 +3951,7 @@ function loop(now){
     p.px=p.fromX+(p.x-p.fromX)*t; p.py=p.fromY+(p.y-p.fromY)*t;
   }
   const season=currentSeason();
-  weather.setSeason(season, SEASON_WEATHER[season]||{});
+  weather.setSeason(season, Object.assign({}, SEASON_WEATHER[season]||{}, { cycleSteps: weatherCycleSteps() }));
   weather.update(dt);
   if(!game.battle) updateWildlife(dt,now);
   if(game.battle) drawBattle(now,dt); else drawMap(now);
@@ -4143,11 +4227,33 @@ function craftReport(){
     })):[]
   };
 }
+function treesReport(){
+  const m=currentMap();
+  const mapTrees=m&&Array.isArray(m.trees)?m.trees:[];
+  const mapSpecies=[...new Set(mapTrees.map(tree=>tree.species))];
+  const registry=treeRegistryReport();
+  const errors=[];
+  if(!registry.ready) errors.push('Манифест деревьев не загружен'+(registry.error?': '+registry.error:''));
+  if(!registry.species) errors.push('В TREES_SPECIES нет видов');
+  if(registry.unresolvedSeasons.length) errors.push('Нет ни одного сезона для видов: '+registry.unresolvedSeasons.map(x=>x.species).join(', '));
+  return {
+    ok:!errors.length, errors,
+    species:registry.species, speciesIds:TREES_SPECIES.map(item=>item.id),
+    sprites:registry.sprites,
+    seasons:registry.seasons, currentSeason:currentSeason(),
+    missingSeasons:registry.missingSeasons, fallbackCount:registry.fallbackCount,
+    mapTrees:mapTrees.length, mapSpecies:mapSpecies.length,
+    cachedSprites:Object.keys(imgCache).filter(path=>path.indexOf('/assets/trees/')>=0).length,
+    state:{ready:TREES_STATE.ready,error:TREES_STATE.error,source:TREES_STATE.source}
+  };
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
   weather:()=>weather.debug(),
   setTurn:(n)=>{ if(game){ game.world.turn=Math.max(0,Math.round(n||0)); updateWeatherByTurn(); } return weather.debug(); },
+  setSeason:(season)=>({season:setGameSeason(season),...treesReport()}),
+  treesReport:()=>treesReport(),
   startBattle:(which)=>{
     if(!game||game.battle) return null;
     if(Array.isArray(which)&&which.length) return startBattle(which.map(e=>(e&&e.maxHp?e:spawnMonster(e,0,0,0,null,false,false))),null);
@@ -4188,7 +4294,6 @@ window.__mm6Debug={
   },
   mapOverlayReport:()=>mapOverlayReport(),
   terrainReport:()=>terrainReport(),
-  setSeason:(season)=>setGameSeason(season),
   saveWorld:()=>saveWorldState(),
   loadWorld:()=>loadWorldState(),
   setSettings:(patch)=>{
