@@ -53,15 +53,16 @@ button,input,select{font-family:inherit}
 .pcard .mini i{font-style:normal}
 .pcard .fx{display:flex;justify-content:flex-end;gap:5px;margin-top:2px;color:#fde68a;font-size:9px;letter-spacing:.3px}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
-#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(660px,62vw);gap:4px}
-#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:220px;padding:2px 5px;font-size:10px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats";column-gap:6px}
+/* Боевые плашки увеличены примерно на 20% и остаются внизу экрана. */
+#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(790px,74vw);gap:5px}
+#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:264px;padding:3px 6px;font-size:12px;background:rgba(6,8,18,.94);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats";column-gap:7px}
 #party.in-battle .pcard .ptop{grid-area:top;min-width:0}
-#party.in-battle .pcard .pemoji{font-size:15px}
-#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:10px;gap:6px}
-#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
+#party.in-battle .pcard .pemoji{font-size:18px}
+#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:12px;gap:7px}
+#party.in-battle .pcard .pbar{grid-area:hp;height:4px;margin-top:2px}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-#party.in-battle .pcard .mini{grid-area:stats;font-size:9px;margin-top:1px;gap:3px}
+#party.in-battle .pcard .mini{grid-area:stats;font-size:11px;margin-top:2px;gap:4px}
 #party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
   #controls{display:none!important}
@@ -147,10 +148,12 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
 .mq-slot img.rot-bow{transform:rotate(-4deg)}
 .mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:19px;font-weight:800}
-.mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px}
+/* Высота блока стат тоже фиксирована: смена экипировки не сдвигает панели описания. */
+.mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px;min-height:128px;max-height:128px;overflow-y:auto}
 .mq-stat{padding:5px 6px;border-radius:8px;background:rgba(255,255,255,.045);font-size:9px;color:#9fb0d8;text-align:left;line-height:1.25}
 .mq-stat b{display:block;color:#ffe9b0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mq-desc{margin-top:7px;padding:7px 8px;border-radius:8px;border:1px solid rgba(251,191,36,.22);background:rgba(251,191,36,.06);font-size:10px;line-height:1.4;color:#c8cfe4;text-align:left;min-height:48px}
+/* Высота панелей описания фиксирована: длинные тексты прокручиваются внутри, внешняя геометрия не меняется. */
+.mq-desc{margin-top:7px;padding:7px 8px;border-radius:8px;border:1px solid rgba(251,191,36,.22);background:rgba(251,191,36,.06);font-size:10px;line-height:1.4;color:#c8cfe4;text-align:left;min-height:48px;max-height:48px;overflow-y:auto;overflow-wrap:anywhere}
 .mq-desc b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .mq-desc small{display:block;color:#9aa4c2;font-size:9px;margin-top:3px}
 .mannequin .bad{color:#fca5a5;font-size:10px;margin-top:6px;line-height:1.35}
@@ -183,7 +186,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:18px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
 .invCell .spellRune{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:#e9d5ff;font-size:22px;font-weight:800}
-.invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px}
+.invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px;max-height:42px;overflow-y:auto;overflow-wrap:anywhere}
 .invDetail b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .invNote{padding:10px;border-radius:9px;border:1px dashed rgba(255,255,255,.12);color:#8b94b2;font-size:11px;line-height:1.45;text-align:center}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
@@ -217,7 +220,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .keysHelp{font-size:10px;color:#9aa4c2;line-height:1.6}
 .keyCap{display:inline-block;border:1px solid rgba(251,191,36,.4);border-radius:5px;padding:1px 5px;margin-right:4px;color:#ffe9b0}
 .legendItem{font-size:10px;color:#b9bfd6;padding:3px 0;line-height:1.35}
-#logList{max-height:52dvh;overflow:auto;margin:8px 0;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(0,0,0,.3)}
+/* Журнал событий компактный: 3–4 строки с прокруткой внутри, а не на пол-экрана. */
+#logList{height:88px;max-height:88px;overflow:auto;margin:8px 0;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(0,0,0,.3)}
 .logLine{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;line-height:1.35;color:#c8cfe4;overflow-wrap:anywhere}
 .logLine.sel{background:rgba(251,191,36,.16);color:#ffe9b0}
 .logLine.npc{color:#fde68a}.logLine.loot{color:#86efac}.logLine.combat{color:#fca5a5}
@@ -227,6 +231,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .logTurn{display:inline-block;min-width:30px;color:#7f8db0;font-size:9px}
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* В бою тост поднимается над плашками героев, чтобы не закрывать данные отряда. */
+#toast.in-battle{bottom:calc(var(--toast-bottom,110px) + env(safe-area-inset-bottom,0px))}
 @media (max-width:620px){.invBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(200px,68vw)}.invGrid{grid-template-columns:repeat(auto-fill,48px);max-height:none}.box{padding:12px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
@@ -417,7 +423,10 @@ const cv = $('cv'), ctx = cv.getContext('2d');
 const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
-const BF={enemyY:168,enemyScale:.95,heroY:300,heroScale:.5,msgY:178,msgH:84};
+const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
+  msgW:500,enemyPanelW:257,enemyPanelH:70,badgeW:100};
+// Информационные панели карты не заходят на фигуру героя (левый край спрайта с оружием).
+const MAP_HINT_W=270, MAP_WARN_W=270, MAP_HERO_LEFT=W/2-30*.86;
 const setFont=(px,bold=true)=>{ ctx.font=(bold?'700 ':'400 ')+px+'px '+UI_FONT; };
 const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
 const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
@@ -519,8 +528,18 @@ function logMessage(text,type,speaker,source){
   saveLog();
   if(game.logOpen) renderEventLog(true);
 }
+// В бою тост поднимается над плашками героев — отступ считается по их реальной высоте.
+function syncToastPlacement(){
+  const t=$('toast'); if(!t) return;
+  const inBattle=!!(game&&game.battle);
+  t.classList.toggle('in-battle',inBattle);
+  if(inBattle){
+    const p=$('party'), r=p&&p.getBoundingClientRect();
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-(r?r.top:window.innerHeight)+10)+'px');
+  } else t.style.removeProperty('--toast-bottom');
+}
 function toast(text,type,speaker){
-  const t=$('toast'); if(t){ t.textContent=text; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+  const t=$('toast'); if(t){ t.textContent=text; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
   logMessage(text,type,speaker,'toast');
 }
 function pushHistory(text,side,speaker){ logMessage(text,side,speaker,'history'); }
@@ -2138,11 +2157,14 @@ function updateParty(){
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
       '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
-      '<div class="mini"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i><i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
+      '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
+      '<i title="Итоговая защита: броня, эффекты">🛡 Защита '+heroDef(h)+'</i>'+
+      '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
       (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
+  syncToastPlacement();
 }
 function setActionButton(id,disabled,title){
   const el=$(id); if(!el) return;
@@ -2160,7 +2182,7 @@ function updateControls(){
   $('btnAttack').classList.toggle('hot',!attackReason);
   $('btnSpell').classList.toggle('hot',!spellReason);
   $('btnFlee').classList.toggle('hot',!fleeReason);
-  setActionButton('btnAttack',!!attackReason,attackReason||'Атака [Пробел] · цель выбирается щёлчком по врагу');
+  setActionButton('btnAttack',!!attackReason,attackReason||'Атака [Пробел] · удар по выбранной цели');
   setActionButton('btnSpell',!!spellReason,spellReason||'Заклинание [F] · мана и эффекты проверены');
   setActionButton('btnFlee',!!fleeReason,fleeReason||FLEE_TITLE);
   setActionButton('btnShop',inBattle,'Лавка закрыта во время боя');
@@ -2173,8 +2195,19 @@ function firstAliveEnemyIdx(b){
   const i=b?b.enemies.findIndex(e=>e.alive):-1;
   return i<0?0:i;
 }
+// Полные имена или честный счётчик одинаковых врагов — вместо «и др.».
+function enemyGroupLabel(b){
+  if(!b||!b.enemies) return '—';
+  const names=b.enemies.filter(e=>e.alive).map(e=>e.name||'Враг');
+  if(!names.length) return '—';
+  if(names.length===1) return names[0];
+  if(names.every(n=>n===names[0])) return names[0]+' +'+(names.length-1);
+  return names.join(', ');
+}
 function selectedTarget(b){
   const battle=b||(game&&game.battle); if(!battle) return null;
+  // -1 — осознанное «цели ещё нет»: запрос цели вместо молчаливого автовыбора.
+  if(battle.targetIdx===-1) return null;
   let m=battle.enemies[battle.targetIdx];
   if(!m||!m.alive){ battle.targetIdx=firstAliveEnemyIdx(battle); m=battle.enemies[battle.targetIdx]; }
   return m||null;
@@ -2184,8 +2217,15 @@ function cycleTarget(d){
   const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive);
   if(!live.length) return;
   const at=live.findIndex(o=>o.i===b.targetIdx);
-  const next=(at+d+live.length)%live.length;
-  b.targetIdx=live[next].i; beep(520,.05); toast('Цель: '+live[next].e.name);
+  const next=at<0?(d>0?0:live.length-1):(at+d+live.length)%live.length;
+  b.targetIdx=live[next].i; clearArmedAction(); beep(520,.05); toast('Цель: '+live[next].e.name);
+}
+// Погибшая цель не заменяется молча: при одном оставшемся враге он берётся сам,
+// при нескольких — выдаётся запрос выбора.
+function retargetAfterKill(b){
+  if(!b||!b.enemies) return;
+  const live=b.enemies.map((e,i)=>({e,i})).filter(o=>o.e.alive);
+  b.targetIdx=live.length===1?live[0].i:-1;
 }
 function battleEnemyPoint(b,i){
   const n=Math.max(1,(b&&b.enemies?b.enemies.length:1));
@@ -2210,17 +2250,26 @@ function battleChipAt(p){
   return battleChipRects().find(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h)||null;
 }
 function spellNeedsTarget(s){ return !!s&&!!(s.power||s.poison||s.stun||s.def); }
-// Действие, выбранное мышью/тапом, ждёт подтверждения цели кликом по врагу.
+// Действие ждёт выбора цели только тогда, когда цели действительно нет.
+// Если цель уже выбрана, атака/заклинание срабатывают сразу — второй клик не нужен.
 let armedAction=null;
 function clearArmedAction(){ armedAction=null; }
 function armBattleAction(action){
   const b=game&&game.battle;
   if(!b||b.end){ clearArmedAction(); return false; }
-  const reason=action.kind==='attack'?attackBlockReason():spellBlockReason();
-  if(reason){ clearArmedAction(); toast(reason); return false; }
-  armedAction=action;
+  const reason=action.kind==='attack'?attackBlockReason(true):spellBlockReason();
+  if(reason){
+    clearArmedAction(); toast(reason); updateControls(); return false;
+  }
+  // selectedTarget() не меняет выбор живой цели — он сохраняется между ходами.
+  if(selectedTarget(b)){
+    clearArmedAction();
+    if(action.kind==='attack') return heroAttack();
+    if(action.kind==='spell') return castSpell(action.id,b.targetIdx);
+  }
+  armedAction=Object.assign({},action,{hadTarget:false});
   const label=action.kind==='attack'?'Атака':('Заклинание «'+(spell(action.id)||{}).name+'»');
-  toast('Цель не выбрана: щёлкните или коснитесь врага — '+label);
+  toast('Выберите цель: щёлкните или коснитесь врага — '+label);
   updateControls();
   return true;
 }
@@ -2253,7 +2302,7 @@ function startBattle(list,mapRef){
   const enemies=list.filter(e=>e&&e.alive);
   if(!enemies.length) return null;
   const b={enemies,fromMap:!mapRef,map:mapRef,units:[],order:[],clock:0,turnIndex:-1,
-    turn:'hero',heroIdx:0,targetIdx:firstAliveEnemyIdx({enemies}),
+    turn:'hero',heroIdx:0,targetIdx:enemies.length===1?0:-1,
     busy:false,end:null,log:[],anim:null,floaters:[],boss:mapRef?mapRef.boss.def:null};
   game.battle=b;
   party().forEach((h,i)=>b.units.push({side:'hero',idx:i,speed:heroSpeedValue(h),next:0}));
@@ -2321,7 +2370,7 @@ function nextTurn(){
       addBattleFloater(battleEnemyPoint(b,u.idx),'-'+pd,C_HERO);
       pushLog('Яд снимает '+pd+' HP с '+m.name+'.',C_HERO,'hero');
       m.poison=Math.max(0,m.poison-1);
-      if(m.hp<=0){ m.alive=false; b.targetIdx=firstAliveEnemyIdx(b); if(checkBattleEnd()) return; }
+      if(m.hp<=0){ m.alive=false; retargetAfterKill(b); if(checkBattleEnd()) return; }
     }
     if(m.stun>0){ m.stun--; pushLog(m.name+' пропускает ход.',C_NEUTRAL,'neutral'); continue; }
     b.turn='enemy'; b.busy=true; updateParty(); updateControls();
@@ -2361,14 +2410,14 @@ function combatLog(attacker,verb,weapon,attack,defense,dmg,target){
   return attacker+' '+verb+(weapon?' '+weapon:'')+' и '+got+' '+attack+' атаки против защиты '+defense+'. '+
     target+' '+targetGot+' '+dmg+' урона.';
 }
-function attackBlockReason(){
+function attackBlockReason(ignoreTarget){
   const b=game&&game.battle;
   if(!b) return 'Атака доступна только в бою.';
   if(b.end) return 'Бой завершён — атака недоступна.';
   if(b.busy) return 'Дождитесь завершения удара.';
   if(b.turn!=='hero') return 'Сейчас ход врага.';
   const h=party()[b.heroIdx]; if(!h||h.hp<=0) return 'Герой без сознания — атака недоступна.';
-  if(!selectedTarget(b)) return 'Выберите цель: щёлкните по врагу или стрелками влево/вправо.';
+  if(!ignoreTarget&&!selectedTarget(b)) return 'Выберите цель: щёлкните по врагу или стрелками влево/вправо.';
   return '';
 }
 function spellBlockReason(){
@@ -2421,7 +2470,7 @@ function heroAttack(){
     if(en.stat==='poison'){ target.poison=(target.poison||0)+en.value; pushLog('Яд: '+target.name+' отравлен.',C_HERO,'hero'); }
   }
   addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(target)),'-'+dmg,C_ENEMY);
-  if(target.hp<=0){ target.alive=false; b.targetIdx=firstAliveEnemyIdx(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
+  if(target.hp<=0){ target.alive=false; retargetAfterKill(b); pushLog(target.name+' повержен.',C_NEUTRAL,'neutral'); }
   beep(440,.09); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -2463,6 +2512,9 @@ function castSpell(id,targetIdx){
   const h=party()[b.heroIdx];
   if(!h||h.spells.indexOf(id)<0){ toast('Заклинание не изучено.'); return false; }
   if(!canCast(h)){ toast(restrictionText(h)||'Магия недоступна из-за перегруза.'); return false; }
+  const target=Number.isInteger(targetIdx)?(b.enemies[targetIdx]||selectedTarget(b)):selectedTarget(b);
+  // Целевое заклинание не расходует ману, когда цели нет.
+  if(spellNeedsTarget(s)&&!target){ toast('Выберите цель: щёлкните по врагу или стрелками влево/вправо.'); return false; }
   const cost=Math.max(1,Math.ceil(s.mp*(h.mpDiscount||1)));
   if(h.mp<cost){ toast('Не хватает маны: нужно '+cost+'.'); return false; }
   h.mp-=cost;
@@ -2474,7 +2526,6 @@ function castSpell(id,targetIdx){
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
     return true;
   }
-  const target=Number.isInteger(targetIdx)?(b.enemies[targetIdx]||selectedTarget(b)):selectedTarget(b);
   const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||SPELL_TIERS[1]).name;
   const magic=magicValue(h);
   let txt='';
@@ -2485,7 +2536,7 @@ function castSpell(id,targetIdx){
     victims.forEach(v=>{
       v.hp=Math.max(0,v.hp-dmg);
       addBattleFloater(battleEnemyPoint(b,b.enemies.indexOf(v)),'-'+Math.round(dmg),C_HERO);
-      if(v.hp<=0){ v.alive=false; b.targetIdx=firstAliveEnemyIdx(b); }
+      if(v.hp<=0){ v.alive=false; retargetAfterKill(b); }
       if(s.id==='ice') v.slow=(v.slow||0)+1;
       if(s.drain) h.hp=Math.min(h.maxHp,h.hp+s.drain);
     });
@@ -3538,7 +3589,7 @@ function renderMannequin(){
     mannequinStage()+
     '<div class="mq-stats">'+
       statCell('HP / MP',Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp)+
-      statCell('Атака / Защита',heroAtk(h)+' / '+heroDef(h))+
+      statCell('Атака / Защита','итог '+heroAtk(h)+' / '+heroDef(h))+
       statCell('Сила магии',magicText(h))+
       statCell('Скорость / Сила',heroSpeedValue(h)+' · '+heroStrength(h.def))+
       statCell('Оружие',w?w.name:FISTS)+
@@ -4106,6 +4157,46 @@ function drawMiniMap(m){
   ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
   ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count,x,y+size+11);
 }
+/* Тёмные панели врагов на карте: имя, живое HP и MP, если поле действительно есть. */
+const MAP_ENEMY_PANEL_W=92, MAP_ENEMY_PANEL_H=30;
+function mapEnemyHasMp(e){ return !!e&&Number.isFinite(Number(e.mp))&&Number.isFinite(Number(e.maxMp===undefined?e.mp:e.maxMp)); }
+function visibleMapEnemies(){
+  const m=currentMap(), p=game&&game.player; if(!m||!p) return [];
+  const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4], out=[];
+  m.monsters.forEach(e=>{
+    if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
+    const dx=e.x-p.x, dy=e.y-p.py, forward=dx*f[0]+dy*f[1], side=dx*r[0]+dy*r[1];
+    if(forward<0||forward>2||Math.abs(side)>2) return;
+    const sc=forward===0?1.05:(forward===1?1:.62);
+    out.push({e,forward,side,sc,sx:W/2+side*(forward===2?60:96),sy:forward===0?320:(forward===1?272:210)});
+  });
+  return out;
+}
+function mapEnemyPanelRect(item){
+  const w=MAP_ENEMY_PANEL_W, h=MAP_ENEMY_PANEL_H+(mapEnemyHasMp(item.e)?12:0);
+  const cx=W/2+item.side*(item.forward===2?60:96);
+  // Ряды по глубине и шахматный сдвиг дальнего ряда не дают панелям перекрываться.
+  const y=item.forward===0?230:item.forward===1?180:(108+(Math.abs(item.side)%2)*32);
+  return {x:clamp(cx-w/2,8,W-w-8),y,w,h};
+}
+function drawMapEnemyPanels(items){
+  items.forEach(item=>{
+    const e=item.e, r=mapEnemyPanelRect(item), hasMp=mapEnemyHasMp(e);
+    roundRect(r.x,r.y,r.w,r.h,6); ctx.fillStyle='rgba(3,7,18,.94)'; ctx.fill();
+    ctx.strokeStyle=e.isBoss?'rgba(251,191,36,.85)':'rgba(56,189,248,.65)'; ctx.lineWidth=1.2; ctx.stroke();
+    fitText(e.name||'Враг',r.w-42,9,'#dbeafe',r.x+7,r.y+9);
+    setFont(9); ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillStyle='#fca5a5';
+    ctx.fillText(Math.max(0,Math.round(e.hp))+'/'+Math.max(0,Math.round(e.maxHp===undefined?e.hp:e.maxHp)),r.x+r.w-7,r.y+9);
+    ctx.fillStyle='rgba(255,255,255,.12)'; roundRect(r.x+7,r.y+16,r.w-14,4,2); ctx.fill();
+    const ratio=(e.maxHp||e.hp)>0?clamp(e.hp/(e.maxHp||e.hp),0,1):0;
+    if(ratio>0){ ctx.fillStyle='#ef4444'; roundRect(r.x+7,r.y+16,Math.max(2,(r.w-14)*ratio),4,2); ctx.fill(); }
+    if(hasMp){
+      setFont(9,false); ctx.fillStyle='#93c5fd'; ctx.textAlign='left';
+      ctx.fillText('MP '+Math.round(e.mp)+'/'+Math.round(e.maxMp===undefined?e.mp:e.maxMp),r.x+7,r.y+27);
+    }
+  });
+  ctx.textAlign='left';
+}
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
   mapHints.length=0; // подсказки относятся только к текущему кадру
@@ -4140,21 +4231,14 @@ function drawMap(now){
     }
   }
   drawWildlife('animal',now);
-  m.monsters.forEach(e=>{
-    if(!e.alive) return;
-    const dx=e.x-px,dy=e.y-py,forward=dx*f[0]+dy*f[1],side=dx*r[0]+dy*r[1];
-    if(forward<0||forward>2||Math.abs(side)>2) return;
-    if(!m.seen.has(ckey(e.x,e.y))) return;
-    const sc=forward===0?1.05:(forward===1?1:.62);
-    const sx=W/2+side*(forward===0?96:(forward===1?96:60));
-    const sy=forward===0?320:(forward===1?272:210);
-    drawMonsterArt(sx,sy,sc,e,now);
-  });
+  const shownEnemies=visibleMapEnemies();
+  shownEnemies.forEach(item=>drawMonsterArt(item.sx,item.sy,item.sc,item.e,now));
   const moveBob=p.moveT>0?Math.sin((1-p.moveT)*Math.PI)*2:0;
   const own=m.cells[Math.round(p.py)]&&m.cells[Math.round(p.py)][Math.round(p.px)];
   if(own&&own.t==='bridge') drawBridge(W/2,344,.86,season,bridgeAxis(m,Math.round(p.px),Math.round(p.py)));
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
+  drawMapEnemyPanels(shownEnemies); // панели выше фигуры героя и верхнего HUD.
   // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
   panel(10,10,214,86);
   fitText(heroNameText+' · '+party()[0].def.name,126,11,'#ffe6a8',18,22);
@@ -4172,9 +4256,9 @@ function drawMap(now){
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
   if(near.length){
-    roundRect(12,296,300,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
+    roundRect(12,296,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
     ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
-    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',284,10,C_ENEMY,20,307);
+    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,307);
   }
   roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
@@ -4183,10 +4267,10 @@ function drawMap(now){
   ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
   ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
   if(mapHint&&now-mapHint.t<2600){
-    const lines=wrapCanvasText(mapHint.desc,300,9).slice(0,3);
+    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,3);
     const h=28+lines.length*12, ty=H-34-h;
-    panel(12,ty,314,h);
-    fitText(mapHint.title,300,11,'#ffe9b0',20,ty+13);
+    panel(12,ty,MAP_HINT_W,h);
+    fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
     ctx.fillStyle='#c8d2f0'; setFont(9,false); ctx.textAlign='left'; ctx.textBaseline='middle';
     lines.forEach((line,i)=>ctx.fillText(line,20,ty+27+i*12));
   }
@@ -4221,15 +4305,24 @@ function wrapLogEntry(entry,maxW,size){
   }
   return lines;
 }
-function drawWrappedLog(entries,x,y,maxW,maxLines,size,lineH){
+// Прокрутка меняет только видимый срез строк: переносы по-прежнему кешируются на записях.
+function scrollBattleLog(d){
+  const b=game&&game.battle; if(!b||b.end) return;
+  b.logScroll=clamp((b.logScroll||0)-d,0,Math.max(0,b.logScrollMax||0));
+}
+function drawWrappedLog(entries,x,y,maxW,maxLines,size,lineH,scroll){
   const rows=[];
-  entries.slice(-6).forEach(entry=>{
+  entries.forEach(entry=>{
     wrapLogEntry(entry,maxW,size).forEach(text=>rows.push({text,color:entry.color}));
   });
-  rows.slice(-maxLines).forEach((row,i)=>{
+  const maxScroll=Math.max(0,rows.length-maxLines);
+  const offset=clamp(Math.round(scroll||0),0,maxScroll);
+  const from=Math.max(0,rows.length-maxLines-offset);
+  rows.slice(from,from+maxLines).forEach((row,i)=>{
     setFont(size,false); ctx.fillStyle=row.color||'#c8cfe4'; ctx.textAlign='left'; ctx.textBaseline='middle';
     ctx.fillText(row.text,x,y+i*lineH);
   });
+  return {rows:rows.length,maxScroll,offset};
 }
 function drawActionChips(b){
   const items=[
@@ -4298,21 +4391,22 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель: только цель хода, подсказка хода и статус.
+  // Верхняя панель увеличена примерно на 20%; подпись группы честно перечисляет врагов.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
-  const epanel=settings.battleMirror?W-224:10;
-  panel(epanel,10,214,58);
-  setFont(11); ctx.fillStyle=C_ENEMY; ctx.textAlign='left'; ctx.textBaseline='middle';
-  fitText(e?(e.name+(b.enemies.length>1?' и др.':'')):'—',154,11,C_ENEMY,epanel+10,24);
-  setFont(10); ctx.fillStyle='#fca5a5'; ctx.textAlign='right';
-  ctx.fillText(e?Math.max(0,Math.round(e.hp))+'/'+e.maxHp:'',epanel+204,24);
+  const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
+  panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
+  setFont(13); ctx.fillStyle=C_ENEMY; ctx.textAlign='left'; ctx.textBaseline='middle';
+  fitText(e?enemyGroupLabel(b):'—',BF.enemyPanelW-86,13,C_ENEMY,epanel+12,26);
+  setFont(12); ctx.fillStyle='#fca5a5'; ctx.textAlign='right';
+  ctx.fillText(e?Math.max(0,Math.round(e.hp))+'/'+e.maxHp:'',epanel+BF.enemyPanelW-12,26);
   ctx.textAlign='left';
   const hpRatio=e?clamp(e.hp/e.maxHp,0,1):0;
-  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+10,35,194,6,3); ctx.fill();
-  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+10,35,Math.max(3,194*hpRatio),6,3); ctx.fill(); }
-  setFont(9,false); ctx.fillStyle='#fca5a5';
-  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+10,52);
-  roundRect(W/2-72,12,144,26,7); ctx.fillStyle='rgba(6,8,18,.9)'; ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,42,BF.enemyPanelW-24,7,3); ctx.fill();
+  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,42,Math.max(3,(BF.enemyPanelW-24)*hpRatio),7,3); ctx.fill(); }
+  setFont(11,false); ctx.fillStyle='#fca5a5';
+  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,62);
+  // Узкий бейдж хода не заходит на увеличенную панель врага.
+  roundRect(W/2-BF.badgeW/2,12,BF.badgeW,26,7); ctx.fillStyle='rgba(6,8,18,.9)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.lineWidth=1.5; ctx.stroke();
   ctx.fillStyle=b.end?C_NEUTRAL:(b.turn==='hero'?C_HERO:C_ENEMY);
   setFont(10); ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -4320,13 +4414,18 @@ function drawBattle(now,dt){
     (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
   setFont(8,false); ctx.fillStyle='#9fb0d8';
   fitText('Очерёдность: '+b.order.map(u=>u.side==='hero'?(party()[u.idx]?party()[u.idx].def.name.slice(0,4):'?'):'⚔').join(' → '),
-    160,8,'#9fb0d8',W/2-80,48);
-  // Текстовое окно: иконки действий и перенесённые слова вместо обрезанной строки.
-  const mw=500, mx=(W-mw)/2, my=BF.msgY, mh=BF.msgH;
+    BF.badgeW-4,8,'#9fb0d8',W/2-BF.badgeW/2+2,48);
+  // Компактное текстовое окно: 3 строки с прокруткой вместо разрастания от длинных сообщений.
+  const mw=BF.msgW, mx=(W-mw)/2, my=BF.msgY, mh=BF.msgH;
   roundRect(mx,my,mw,mh,8); ctx.fillStyle='rgba(5,7,15,.96)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
   drawActionChips(b);
-  drawWrappedLog(b.log,mx+12,my+40,mw-24,4,10,13);
+  const logInfo=drawWrappedLog(b.log,mx+12,my+38,mw-24,3,10,13,b.logScroll);
+  b.logScroll=logInfo.offset; b.logScrollMax=logInfo.maxScroll; b.logRows=logInfo.rows;
+  if(logInfo.maxScroll>0){
+    setFont(8,false); ctx.fillStyle='#9fb0d8'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText((logInfo.offset>0?'▲ ':'')+(logInfo.offset<logInfo.maxScroll?'▼':''),mx+mw-10,my+44);
+  }
 }
 /* ============================ 13. СТАРТОВЫЙ ЭКРАН ============================ */
 function updateProgressUI(){
@@ -4400,6 +4499,10 @@ function pointerCanvasPos(e){
   return {x:(e.clientX-rect.left)*cv.width/Math.max(1,rect.width),
     y:(e.clientY-rect.top)*cv.height/Math.max(1,rect.height)};
 }
+cv.addEventListener('wheel',e=>{
+  if(!game||!game.battle||game.invOpen||game.shopOpen||game.logOpen) return;
+  e.preventDefault(); scrollBattleLog(e.deltaY>0?1:-1);
+},{passive:false});
 cv.addEventListener('pointermove',e=>{
   if(!game||game.battle||game.invOpen||game.shopOpen) return;
   const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
@@ -4420,15 +4523,11 @@ cv.addEventListener('pointerdown',e=>{
   }
   const idx=pickBattleEnemyAt(e);
   if(idx>=0){
-    b.targetIdx=idx; beep(520,.05);
+    // Клик/тап по врагу только выбирает цель: он не бьёт и не тратит ману.
+    // Удар/заклинание выполняются отдельной кнопкой или пробелом по выбранной цели.
+    b.targetIdx=idx; clearArmedAction(); beep(520,.05);
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
-    updateParty();
-    const action=armedAction;
-    clearArmedAction();
-    if(action){
-      if(action.kind==='attack') heroAttack();
-      else if(action.kind==='spell') castSpell(action.id,idx);
-    }
+    updateParty(); updateControls();
     return;
   }
   // Щёлчок по пустому месту никогда не превращается в атаку — только подсказка о цели.
@@ -4496,6 +4595,8 @@ document.addEventListener('keydown',e=>{
     if(e.key===' '){ e.preventDefault(); heroAttack(); }
     else if(e.key==='ArrowLeft'){ e.preventDefault(); cycleTarget(-1); }
     else if(e.key==='ArrowRight'){ e.preventDefault(); cycleTarget(1); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); scrollBattleLog(-1); }
+    else if(e.key==='ArrowDown'){ e.preventDefault(); scrollBattleLog(1); }
     else if(k==='f'||k==='а'){ e.preventDefault(); openSpellMenu(); }
     else if(k==='r'||k==='к'){ e.preventDefault(); fleeBattle(); }
     else if(/^[1-9]$/.test(e.key)){ const h=party()[game.battle.heroIdx], ids=h.spells.filter(id=>spellHasEffect(spell(id))), id=ids[Number(e.key)-1]; if(id) castSpell(id); }
@@ -4504,7 +4605,7 @@ document.addEventListener('keydown',e=>{
   // Пробел вне боя ничего не открывает — только атака в бою.
   if(e.key===' '){ e.preventDefault(); return; }
   if(k==='q'||k==='й'){ e.preventDefault(); turnPlayer(-1); return; }
-  if(k==='e'||k==='у'){ e.preventDefault(); if(canInteractHere()) tryInteract(); else turnPlayer(1); return; }
+  if(k==='e'||k==='у'){ e.preventDefault(); turnPlayer(1); return; }
   if(e.key==='Enter'){ e.preventDefault(); tryInteract(); return; }
   const mv=MOVE_KEYS[k]; if(mv&&keyAllowed(k)){ e.preventDefault(); relativeMove(mv[0],mv[1]); }
 });
@@ -4885,6 +4986,16 @@ window.__mm6Debug={
   shopReport:()=>shopReport(),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
+  battleHudReport:()=>{
+    const b=game&&game.battle; if(!b) return null;
+    const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
+    return {panel:{x:px,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH},
+      badge:{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26},
+      msg:{x:(W-BF.msgW)/2,y:BF.msgY,w:BF.msgW,h:BF.msgH},
+      label:enemyGroupLabel(b),logRows:b.logRows||0,logScroll:b.logScroll||0,logScrollMax:b.logScrollMax||0,
+      party:[...document.querySelectorAll('#party .pcard')].map(e=>{const r=e.getBoundingClientRect();
+        return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1)};})};
+  },
   battleEnemyCanvasPoint:(i)=>{const b=game&&game.battle;if(!b)return null;const p=battleEnemyPoint(b,i);return {x:p.x,y:p.y-34*BF.enemyScale};},
   craftReport:()=>craftReport(),
   equipmentReport:()=>equipmentReport(),
@@ -4903,6 +5014,13 @@ window.__mm6Debug={
     renderInventory(); updateParty(); return ok;
   },
   mapOverlayReport:()=>mapOverlayReport(),
+  mapHintHudReport:()=>({hintW:MAP_HINT_W,warnW:MAP_WARN_W,hintRight:12+MAP_HINT_W,warnRight:12+MAP_WARN_W,
+    heroLeft:MAP_HERO_LEFT,hint:mapHint?{title:mapHint.title,desc:mapHint.desc}:null}),
+  mapEnemyPanelsReport:()=>({panels:visibleMapEnemies().map(item=>({
+    name:item.e.name||'Враг',hp:Math.round(item.e.hp),maxHp:Math.round(item.e.maxHp===undefined?item.e.hp:item.e.maxHp),
+    hasMp:mapEnemyHasMp(item.e),mp:mapEnemyHasMp(item.e)?Math.round(item.e.mp):null,
+    rect:mapEnemyPanelRect(item)})),hero:{x:W/2,y:344},hud:{x:10,y:10,w:214,h:86}}),
+  statsReport:()=>party().map(h=>({hero:h.def.name,attack:heroAtk(h),defense:heroDef(h)})),
   terrainReport:()=>terrainReport(),
   spriteCoverageReport:()=>spriteCoverageReport(),
   mapHintReport:()=>mapHint?{title:mapHint.title,desc:mapHint.desc,age:performance.now()-mapHint.t,count:mapHints.length}
