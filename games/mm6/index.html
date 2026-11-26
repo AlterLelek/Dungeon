@@ -127,18 +127,63 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .act:disabled{background:#3a3d52;color:#838aa4;cursor:default}
 .sec{margin:10px 0 4px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transform:uppercase}
 .foot{margin-top:10px;text-align:right;font-size:11px;color:#fbbf24}
-.invBody{display:flex;gap:12px}
-.mannequin{width:172px;flex:0 0 172px;border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:9px;background:rgba(0,0,0,.25);text-align:center}
-.mannequin .face{font-size:44px;line-height:1.1}
-.mannequin .slot{margin-top:7px;padding:6px;border-radius:8px;background:rgba(255,255,255,.04);font-size:10px}
-.mannequin .slot b{display:block;color:#ffe9b0;font-size:11px}
+.invBody{display:flex;gap:12px;align-items:flex-start}
+#inventory .box{overflow-x:hidden}
+.mannequin{flex:0 0 clamp(200px,34%,250px);min-width:0;border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:10px;background:rgba(0,0,0,.25);text-align:center;overflow:hidden}
+.mq-heroPick{display:flex;gap:4px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
+.mq-heroPick .tab{min-height:30px;padding:3px 7px}
+.mq-portrait{font-size:40px;line-height:1.05}
+.mq-name{display:block;color:#ffe9b0;font-size:12px;margin:1px 0 2px}
+.mq-stage{position:relative;width:100%;max-width:200px;aspect-ratio:200/350;margin:6px auto 8px;border-radius:12px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 38%,rgba(96,116,165,.32),rgba(5,7,16,.9) 72%)}
+.mq-silhouette{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mq-slot{position:absolute;border:1px dashed rgba(186,200,235,.28);border-radius:7px;background:rgba(255,255,255,.012);padding:1px;margin:0;cursor:pointer;color:#c8d2f0;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;transition:border-color .12s,box-shadow .12s,background .12s}
+.mq-slot.empty .mq-empty{display:flex;align-items:center;justify-content:center;width:24px;height:24px;opacity:.5}
+.mq-slot.empty .mq-empty svg{width:24px;height:24px}
+.mq-slot.filled{border-style:solid;border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.05)}
+.mq-slot.sel{border-color:#ffe09a;background:rgba(251,191,36,.13);box-shadow:0 0 0 2px rgba(251,191,36,.45),0 0 18px rgba(251,191,36,.35);z-index:6}
+.mq-slot img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
+.mq-slot img.rot-spear{transform:rotate(16deg) scale(.94)}
+.mq-slot img.rot-bow{transform:rotate(-4deg)}
+.mq-slot .mq-ph{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:7px;background:rgba(0,0,0,.55);border:1px solid rgba(251,191,36,.4);color:#ffe9b0;font-size:19px;font-weight:800}
+.mq-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px}
+.mq-stat{padding:5px 6px;border-radius:8px;background:rgba(255,255,255,.045);font-size:9px;color:#9fb0d8;text-align:left;line-height:1.25}
+.mq-stat b{display:block;color:#ffe9b0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mq-desc{margin-top:7px;padding:7px 8px;border-radius:8px;border:1px solid rgba(251,191,36,.22);background:rgba(251,191,36,.06);font-size:10px;line-height:1.4;color:#c8cfe4;text-align:left;min-height:48px}
+.mq-desc b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
+.mq-desc small{display:block;color:#9aa4c2;font-size:9px;margin-top:3px}
 .mannequin .bad{color:#fca5a5;font-size:10px;margin-top:6px;line-height:1.35}
 .loadbar{position:relative;margin:6px 0;padding:6px 8px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(0,0,0,.35);font-size:10px;color:#d7dcf0;overflow:hidden}
 .loadbar .loadFill{position:absolute;left:0;top:0;bottom:0;opacity:.28}
 .loadbar.normal .loadFill{background:#4ade80}.loadbar.encumbered .loadFill{background:#fbbf24}.loadbar.overload .loadFill{background:#ef4444}
 .loadbar.normal{border-color:rgba(74,222,128,.45)}.loadbar.encumbered{border-color:rgba(251,191,36,.5)}.loadbar.overload{border-color:rgba(239,68,68,.6);color:#fecaca}
 .loadbar .loadText{position:relative;white-space:nowrap}
-.invRight{flex:1;min-width:0}
+.invRight{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.invSlotStrip{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px}
+.invSlotChip{flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
+  background:rgba(255,255,255,.035);color:#9fb0d8;cursor:pointer;font-size:9px;line-height:1.2;text-align:left}
+.invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
+.invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
+.invSlotChip b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.invSlotChip small{display:block;color:#8b94b2;font-size:8px}
+.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);gap:6px;justify-content:start;align-content:start;
+  max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  background:rgba(0,0,0,.2);min-height:160px}
+.invCell{position:relative;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#c8d2f0}
+.invCell:hover,.invCell:focus-visible{border-color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.3);outline:none}
+.invCell.craftable{border-color:rgba(125,255,178,.45)}
+.invCell.blocked{border-color:rgba(248,113,113,.35)}
+.invCell img{width:100%;height:100%;max-width:40px;max-height:40px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.invCell .ph{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;
+  background:rgba(0,0,0,.5);border:1px solid rgba(251,191,36,.3);color:#ffe9b0;font-size:18px;font-weight:800}
+.invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
+.invCell .spellRune{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:#e9d5ff;font-size:22px;font-weight:800}
+.invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px}
+.invDetail b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
+.invNote{padding:10px;border-radius:9px;border:1px dashed rgba(255,255,255,.12);color:#8b94b2;font-size:11px;line-height:1.45;text-align:center}
 .tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
 .tab{min-height:36px;padding:6px 9px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(255,255,255,.04);color:#c8cfe4;cursor:pointer;font-size:10px}
 .tab.sel{border-color:#fbbf24;color:#ffe9b0;background:rgba(251,191,36,.14)}
@@ -180,7 +225,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .logTurn{display:inline-block;min-width:30px;color:#7f8db0;font-size:9px}
 #toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media (max-width:620px){.invBody{flex-direction:column}.mannequin{width:100%;flex:auto}.box{padding:12px}}
+@media (max-width:620px){.invBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(200px,68vw)}.invGrid{grid-template-columns:repeat(auto-fill,48px);max-height:none}.box{padding:12px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
   #start .box{width:min(680px,92vw)}
@@ -539,10 +584,12 @@ function canUnequipItem(it){ return !!it && !it.unequippable && !isStartingRags(
 function weaponKind(name){
   const n=name.toLowerCase();
   if(n.includes('лук')||n.includes('арбалет')) return 'bow';
+  if(n.includes('копь')||n.includes('пик')) return 'spear';
   if(n.includes('топор')) return 'axe';
   if(n.includes('молот')) return 'hammer';
+  if(n.includes('булав')||n.includes('палиц')) return 'mace';
   if(n.includes('посох')||n.includes('палочк')||n.includes('книга')||n.includes('кольцо')||n.includes('амулет')) return 'staff';
-  if(n.includes('кинжал')) return 'dagger';
+  if(n.includes('кинжал')||n.includes('нож')) return 'dagger';
   return 'sword';
 }
 function qualityOf(css,name){
@@ -1122,35 +1169,115 @@ function armorCategory(it){
   if(/кож|следопыт|разбойник|лесн/i.test(n)) return 'leather';
   return def>=7?'light_metal':'cloth';
 }
-/* Экипировку ограничивает только нагрузка; класс предмета — атрибут данных. */
+function isRingItem(it){
+  if(!it) return false;
+  return it.type==='ring'||/кольц/i.test(it.name||'');
+}
+function isAmmoItem(it){
+  if(!it) return false;
+  return it.type==='ammo'||/стрел|колчан|болт/i.test(it.name||'');
+}
+function isTwoHanded(it){
+  if(!it||it.type!=='weapon') return false;
+  if(it.two_handed||it.twoHanded) return true;
+  const kind=it.wkind||weaponKind(it.name||'');
+  if(kind==='bow'||kind==='axe'||kind==='hammer'||kind==='spear') return true;
+  return /двуруч|двухруч|цвайхендер/i.test(it.name||'');
+}
+function mannequinSlotForItem(it){
+  if(!it) return null;
+  if(it.type==='weapon') return isRingItem(it)?null:'weapon';
+  if(it.type==='armor'){
+    const slot=it.slot||'body';
+    // feet — старый слот из PR #9, boots/bracers/cloak — независимые слоты main.
+    if(slot==='cloak') return 'cloak';
+    if(ARMOR_SLOTS.some(s=>s.id===slot)||slot==='feet') return slot;
+    return null;
+  }
+  if(it.type==='amulet') return 'amulet';
+  return null;
+}
+function equipKeysForSlot(slotId){
+  if(slotId==='body') return ['body','cloak','armor'];
+  if(slotId==='weapon') return ['weapon'];
+  if(slotId==='amulet') return ['amulet'];
+  return [slotId];
+}
+function clearEquipSlot(h,slotId){
+  if(!h||!h.equip) return;
+  const keys=equipKeysForSlot(slotId);
+  const uids=keys.map(k=>h.equip[k]).filter(Boolean);
+  keys.forEach(k=>{ h.equip[k]=null; });
+  if(slotId==='body') h.equip.armor=null;
+  /* Привязка «надел — закрепился» живёт только пока предмет надет.
+     Любой выход из слота снимает owner — иначе снятый предмет блокируется
+     у других героев и пропадает из общей сетки инвентаря. */
+  if(game&&uids.length){
+    const released=new Set(uids);
+    game.bag.forEach(it=>{ if(released.has(it.uid)) delete it.owner; });
+  }
+}
+function equippedUidSet(){
+  const set=new Set();
+  if(game) party().forEach(h=>Object.values(h.equip||{}).forEach(uid=>{ if(uid) set.add(uid); }));
+  return set;
+}
+function heroSlotItem(h,slotId){
+  if(!h||!h.equip||!game) return null;
+  for(const k of equipKeysForSlot(slotId)){
+    const it=game.bag.find(i=>i.uid===h.equip[k]);
+    if(it) return it;
+  }
+  return null;
+}
+function unequipMannequinSlot(h,slotId){
+  const it=heroSlotItem(h,slotId);
+  if(!it) return null;
+  clearEquipSlot(h,slotId);
+  return it;
+}
+/* Экипировку ограничивает только нагрузка; класс предмета — атрибут данных.
+   Манекен добавляет только удобный доступ к слотам и двуручное оружие. */
 function equipBlockReason(h,it){
   if(!it) return 'Предмет не найден.';
+  if(isRingItem(it)) return 'Кольца пока не экипируются.';
+  if(isAmmoItem(it)) return 'Боеприпасы не экипируются.';
+  if(!mannequinSlotForItem(it)) return 'Для этого предмета нет слота.';
   if(it.owner!==undefined&&it.owner!==null&&it.owner!==h.slot) return 'Предмет закреплён за другим героем.';
   const worn=wornByOther(h,it); if(worn) return 'Предмет уже надет на другого героя.';
+  if(it.type==='armor'&&it.slot==='shield'&&isTwoHanded(equippedWeapon(h))) return 'Руки заняты';
   return '';
 }
 function equipOnHero(h,slot,it){
   if(!h||!it||equipBlockReason(h,it)) return false;
-  const prevUid=h.equip[slot], prev=prevUid?game.bag.find(x=>x.uid===prevUid):null;
+  const target=mannequinSlotForItem(it);
+  if(!target) return false;
+  if(slot&&slot!==target&&!((target==='body'||target==='cloak')&&(slot==='body'||slot==='cloak'))) return false;
+  const prev=heroSlotItem(h,target);
+  const prevUid=prev?prev.uid:null;
   party().forEach(x=>{
     if(!x||x===h) return;
     Object.keys(x.equip||{}).forEach(k=>{ if(x.equip[k]===it.uid) x.equip[k]=null; });
   });
   /* Неснимаемую стартовую одежду при замене не возвращаем в сумку — она исчезает навсегда. */
   if(prev&&prev!==it&&!canUnequipItem(prev)){
-    game.bag.splice(game.bag.indexOf(prev),1);
+    const idx=game.bag.indexOf(prev);
+    if(idx>=0) game.bag.splice(idx,1);
     party().forEach(x=>Object.keys(x.equip||{}).forEach(k=>{ if(x.equip[k]===prevUid) x.equip[k]=null; }));
   }
-  h.equip[slot]=it.uid;
+  let shieldDropped=false;
+  if(target==='weapon'&&isTwoHanded(it)&&h.equip.shield){ clearEquipSlot(h,'shield'); shieldDropped=true; }
+  clearEquipSlot(h,target);
+  const assignKey=it.type==='armor'?(it.slot||'body'):(it.type==='amulet'?'amulet':'weapon');
+  h.equip[assignKey]=it.uid;
   it.owner=h.slot;
-  // Псевдоним «armor» нужен только для старого слота «тело»; остальные слоты не трогаем.
-  if(it.type==='armor'&&slot==='body') h.equip.armor=it.uid;
+  if(assignKey==='body') h.equip.armor=it.uid;
+  if(shieldDropped) toast('Руки заняты: щит снят.');
   return true;
 }
 function unequipSlot(h,slot){
   if(!h||!h.equip||!h.equip[slot]) return false;
-  h.equip[slot]=null;
-  if(slot==='body') h.equip.armor=null;
+  clearEquipSlot(h,slot);
   updateParty(); return true;
 }
 function gearRecipeBlock(){ return ''; }
@@ -1158,7 +1285,7 @@ function gearRecipeBlock(){ return ''; }
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
 let selHero=[0,1,2], selDiff=settings.difficulty, heroNameText='Герой', pickHeroTab=0;
-let invTab='Общий';
+let invTab='Общий', invSlot=null, invArmedSlot=null;
 
 function makeItem(o){
   const item=Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
@@ -1181,7 +1308,7 @@ function makeHeroState(def,slot){
     bonus:{atk:0,def:0,magic:0},poison:0,poisonTurns:0,statuses:[],
     spells,
     equip:{weapon:weapon?weapon.uid:null,body:armor.uid,armor:armor.uid,shield:null,helmet:null,
-      legs:null,boots:null,bracers:null,hands:null,cloak:null}};
+      legs:null,boots:null,bracers:null,hands:null,cloak:null,feet:null,amulet:null}};
 }
 /* Временные эффекты живут ограниченное число ходов и исчезают сами.
    Постоянные бонусы боссов остаются в h.bonus. */
@@ -1205,7 +1332,7 @@ function clearStatuses(){
   updateParty();
 }
 function equippedWeapon(h){ return game.bag.find(i=>i.uid===h.equip.weapon)||null; }
-function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.body)||game.bag.find(i=>i.uid===h.equip.armor)||null; }
+function equippedArmor(h){ return game.bag.find(i=>i.uid===h.equip.body)||game.bag.find(i=>i.uid===h.equip.armor)||game.bag.find(i=>i.uid===h.equip.cloak)||null; }
 function equippedArmors(h){
   const uids=ARMOR_SLOTS.map(s=>h.equip[s.id]).filter(Boolean);
   if(h.equip.armor&&!uids.includes(h.equip.armor)) uids.push(h.equip.armor);
@@ -2940,186 +3067,430 @@ function toggleInventory(open){
   if(game.invOpen) renderInventory();
   updateControls(); beep(400,.06);
 }
+const ITEM_SPRITE_BASE='../../assets/sprites/items/';
+const UI_SPRITE_BASE='../../assets/sprites/ui/';
+/* PR #9: восемь слотов манекена + независимые слоты main (boots/bracers/cloak).
+   feet сохранён как старый слот PR #9; boots — новый слот main. */
+const MANNEQUIN_SLOTS=[
+  {id:'body',label:'Торс',hint:'мантия или доспех',x:31,y:19,w:38,h:31},
+  {id:'legs',label:'Поножи',hint:'поножи',x:32,y:51,w:36,h:18},
+  {id:'feet',label:'Сапоги',hint:'сапоги',x:28,y:86,w:44,h:10},
+  {id:'shield',label:'Щит',hint:'щит',x:3,y:21,w:27,h:26},
+  {id:'weapon',label:'Руки',hint:'оружие',x:64,y:18,w:34,h:42},
+  {id:'hands',label:'Перчатки',hint:'перчатки',x:4,y:48,w:25,h:14},
+  {id:'helmet',label:'Голова',hint:'шлем',x:22,y:3,w:20,h:15},
+  {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:15,w:16,h:8},
+  {id:'boots',label:'Ботинки',hint:'ботинки main',x:28,y:72,w:44,h:12},
+  {id:'bracers',label:'Поручи',hint:'поручи',x:71,y:62,w:25,h:14},
+  {id:'cloak',label:'Плащ',hint:'плащ или роба',x:3,y:64,w:25,h:12}
+];
+const SLOT_GLYPHS={
+  helmet:'<path d="M5 12a7 7 0 0 1 14 0v4h-4v-3H9v3H5z"/>',
+  body:'<path d="M9 4l3 2 3-2 3 3-2 3v9H8v-9L6 7z"/>',
+  cloak:'<path d="M8 4l4 3 4-3 4 4-3 4 2 8H5l2-8-3-4z"/>',
+  weapon:'<path d="M15 3l6 6-8 8-4 1 1-4z"/><path d="M4 20l4-4"/>',
+  hands:'<path d="M7 12V7a1.5 1.5 0 0 1 3 0v4-5a1.5 1.5 0 0 1 3 0v5-3a1.5 1.5 0 0 1 3 0v8a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4a1.5 1.5 0 0 1 3 0"/>',
+  shield:'<path d="M12 3l7 3v6c0 5-3 7-7 9-4-2-7-4-7-9V6z"/>',
+  legs:'<path d="M7 3h10l-1 8-2 10h-4l1-10H8z"/>',
+  feet:'<path d="M7 4h4v9h6v7H6v-7z"/>',
+  boots:'<path d="M6 3h5v10h5v8H5v-8z"/>',
+  bracers:'<path d="M7 8h10v8H7z"/><path d="M5 11h2v4H5zM17 11h2v4h-2z"/>',
+  amulet:'<circle cx="12" cy="15" r="3"/><path d="M6 4l6 8 6-8"/>'
+};
+function slotGlyph(id){
+  return '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+(SLOT_GLYPHS[id]||SLOT_GLYPHS.body)+'</svg>';
+}
+function spriteHash(text){
+  let h=2166136261;
+  for(const ch of String(text||'')){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619)>>>0; }
+  return h>>>0;
+}
+function spriteVariant(it,total){
+  return (spriteHash((it.uid||'')+'|'+(it.id||'')+'|'+(it.name||''))%Math.max(1,total))+1;
+}
+function weaponSprite(it){
+  if(!it) return null;
+  const n=(it.name||'').toLowerCase();
+  if(isRingItem(it)||n.includes('амулет')||/стрел|колчан|болт/.test(n)) return null;
+  const kind=it.wkind||weaponKind(it.name||'');
+  const q=clamp(Number(it.quality)||0,0,3);
+  const v=spriteVariant(it,10);
+  if(kind==='bow') return ITEM_SPRITE_BASE+'bow_'+v+'.svg';
+  if(kind==='dagger') return ITEM_SPRITE_BASE+'dagger_'+v+'.svg';
+  if(kind==='mace') return ITEM_SPRITE_BASE+'mace_'+v+'.svg';
+  if(kind==='staff') return ITEM_SPRITE_BASE+'staff_'+v+'.svg';
+  if(kind==='axe') return ITEM_SPRITE_BASE+'axe_'+q+'.png';
+  if(kind==='hammer') return ITEM_SPRITE_BASE+(q>=2?'weapon_big_hammer.png':'weapon_hammer.png');
+  if(kind==='spear') return ITEM_SPRITE_BASE+'weapon_spear.png';
+  return ITEM_SPRITE_BASE+'sword_'+q+'.png';
+}
+function armorSprite(it){
+  if(!it) return null;
+  // У предметов из data.js уже есть готовый sprite (Kenney или SVG комплекта) — он точнее заглушки.
+  if(it.sprite) return it.sprite;
+  const slot=it.slot||'body';
+  const n=(it.name||'').toLowerCase();
+  if(slot==='shield') return ITEM_SPRITE_BASE+'shield_'+spriteVariant(it,10)+'.svg';
+  if(slot==='body'||slot==='cloak'||/мант|роб|плащ|доспех|кольчуг|панцир|жилет|куртк|одежд/.test(n))
+    return ITEM_SPRITE_BASE+'robe_'+spriteVariant(it,10)+'.svg';
+  return null;
+}
+function itemSpritePath(it){
+  if(!it) return null;
+  if(it.type==='weapon') return weaponSprite(it);
+  if(it.type==='armor') return armorSprite(it);
+  if(it.type==='herb') return ITEM_SPRITE_BASE+'herb_'+spriteVariant(it,20)+'.svg';
+  if(it.type==='crystal') return UI_SPRITE_BASE+'star.png';
+  if(it.type==='coin'||it.type==='gold') return UI_SPRITE_BASE+'coin.png';
+  const n=((it.name||'')+' '+(it.id||'')).toLowerCase();
+  if(/колчан|quiver/.test(n)) return ITEM_SPRITE_BASE+'quiver_'+spriteVariant(it,10)+'.svg';
+  if(/стрел|arrow|болт/.test(n)) return ITEM_SPRITE_BASE+'arrow_'+spriteVariant(it,10)+'.svg';
+  return null;
+}
+function firstLetter(name){
+  const s=String(name||'?').trim();
+  return (s.charAt(0)||'?').toUpperCase();
+}
+function placeholderEl(name){
+  const span=document.createElement('span');
+  span.className='ph';
+  span.textContent=firstLetter(name);
+  return span;
+}
+function armorSlotName(slot){
+  return ({head:'голова',helmet:'голова',body:'торс',cloak:'плащ',shield:'щит',legs:'поножи',
+    boots:'сапоги',feet:'сапоги (старый слот)',bracers:'поручи',hands:'перчатки',amulet:'амулет'})[slot]||'торс';
+}
+function itemStatsText(it,h){
+  if(!it) return '';
+  if(it.type==='weapon'){
+    if(isRingItem(it)) return 'Кольцо · слот отложен · пока не экипируется.';
+    const kind=it.wkind||weaponKind(it.name||'');
+    const q=(QUALITY[it.quality]||QUALITY[0]||{}).name||'';
+    let s='Урон '+it.dmg+(q?' · '+q:'')+' · слот: руки';
+    if(isTwoHanded(it)) s+=' · двуручное, щит блокируется';
+    if(it.enchant) s+=' · '+it.enchant.stat+' +'+it.enchant.value;
+    if(h) s+=weightForecast(h,it);
+    const block=h?equipBlockReason(h,it):'';
+    if(block) s+=' · '+block;
+    return s;
+  }
+  if(it.type==='armor'){
+    let s='Защита +'+(it.armorDef||0)+' · слот: '+armorSlotName(it.slot||'body');
+    if(it.tier) s+=' · тир '+it.tier;
+    if(it.armorCategory) s+=' · категория: '+(ARMOR_CATEGORY_NAMES[it.armorCategory]||it.armorCategory);
+    if(h) s+=weightForecast(h,it);
+    const block=h?equipBlockReason(h,it):'';
+    if(block) s+=' · '+block;
+    return s;
+  }
+  if(it.type==='herb') return (it.desc||'Трава')+' · цена 🪙 '+it.sell;
+  if(it.type==='potion'||it.type==='liquid'){
+    const extra=it.heal?'+'+it.heal+' HP':it.mp?'+'+it.mp+' MP':(it.desc||'');
+    return (extra||'Зелье')+' · цена 🪙 '+it.sell;
+  }
+  if(it.type==='scroll'){
+    const sp=spell(it.spell)||{};
+    return 'Свиток: '+(sp.name||'?')+' · '+(sp.desc||'')+' · '+((SPELL_TIERS.find(t=>t.id===sp.tier)||{}).name||'');
+  }
+  if(it.type==='food') return (it.desc||'Еда')+((it.hp||it.mp)?' · +'+(it.hp||0)+' HP / +'+(it.mp||0)+' MP':'')+' · цена 🪙 '+it.sell;
+  if(it.type==='material') return (it.desc||'Материал для ремесла')+' · цена 🪙 '+it.sell;
+  if(it.type==='crystal') return 'Кристалл для зачарования.';
+  if(it.type==='chest') return 'Сундук с добычей. Нажмите, чтобы открыть.';
+  return it.desc||it.name||'';
+}
+function invTabItems(tab){
+  const equipped=equippedUidSet();
+  const bag=game.bag.filter(i=>!equipped.has(i.uid));
+  if(tab==='Общий') return bag;
+  if(tab==='Оружие') return bag.filter(i=>i.type==='weapon');
+  if(tab==='Броня') return bag.filter(i=>i.type==='armor');
+  if(tab==='Магия') return bag.filter(i=>i.type==='potion'||i.type==='liquid'||i.type==='crystal');
+  if(tab==='Травы') return bag.filter(i=>i.type==='herb'||i.type==='material');
+  if(tab==='Еда') return bag.filter(i=>i.type==='food');
+  if(tab==='Свитки') return bag.filter(i=>i.type==='scroll');
+  if(tab==='Сундуки') return bag.filter(i=>i.type==='chest');
+  return bag;
+}
+function itemCell(it,h){
+  const block=equipBlockReason(h,it);
+  const target=mannequinSlotForItem(it);
+  let action=null;
+  if(it.type==='weapon'||it.type==='armor'){
+    action=()=>{
+      if(block){ toast(block); return; }
+      if(target&&equipOnHero(h,target,it)){
+        invSlot=target; invArmedSlot=null;
+        toast('Надето: '+it.name);
+        renderInventory(); updateParty();
+      }
+    };
+  }else if(it.type==='herb'||it.type==='potion'||it.type==='liquid'||it.type==='scroll'||it.type==='food'||it.type==='chest'){
+    action=()=>{ useItem(it.uid); renderInventory(); };
+  }
+  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),count:it.count||1,action,blocked:!!block&&(it.type==='weapon'||it.type==='armor')};
+}
+function spellCell(s,h){
+  const tier=(SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'';
+  return {name:s.name,desc:(s.desc||'')+' · '+tier+' · '+s.mp+' MP',symbol:'✦',action:null};
+}
+function recipeOutputItem(r){
+  const id=r.give&&r.give.id;
+  if(id==='craft_sword') return {uid:id,type:'weapon',name:'Кованый меч',wkind:'sword',quality:1};
+  if(id==='craft_axe') return {uid:id,type:'weapon',name:'Кованый топор',wkind:'axe',quality:1};
+  if(id==='craft_armor') return {uid:id,type:'armor',name:'Сшитый доспех',slot:'body',set:'any'};
+  if(id==='craft_shield') return {uid:id,type:'armor',name:'Кованый щит',slot:'shield',set:'any'};
+  if(id==='craft_scroll') return {uid:id,type:'scroll',name:'Свиток'};
+  return {uid:id,type:'potion',name:r.name,icon:r.icon};
+}
+function recipeCell(r,h){
+  const have=r.need.every(hasNeedItem);
+  const block=gearRecipeBlock(r,h);
+  const need=r.need.map(id=>(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name).join(' + ');
+  return {
+    name:r.name,
+    desc:'Нужно: '+need+' · '+(r.desc||'')+(block?' · '+block:''),
+    sprite:itemSpritePath(recipeOutputItem(r)),
+    craftable:have&&!block,
+    blocked:!!block,
+    action:()=>{
+      if(block){ toast(block); return; }
+      if(!have){ toast('Не хватает материалов.'); return; }
+      craftRecipe(r); renderInventory(); updateParty();
+    }
+  };
+}
+function makeInvCell(cell){
+  const b=document.createElement('button');
+  b.type='button';
+  b.className='invCell'+(cell.craftable?' craftable':'')+(cell.blocked?' blocked':'');
+  b.title=cell.name+(cell.desc?' — '+cell.desc:'');
+  if(cell.sprite){
+    const img=document.createElement('img');
+    img.alt='';
+    img.loading='lazy';
+    img.addEventListener('error',()=>{ img.remove(); b.insertBefore(placeholderEl(cell.name),b.firstChild); });
+    img.src=cell.sprite;
+    b.appendChild(img);
+  }else if(cell.symbol){
+    const sp=document.createElement('span');
+    sp.className='spellRune';
+    sp.textContent=cell.symbol;
+    b.appendChild(sp);
+  }else{
+    b.appendChild(placeholderEl(cell.name));
+  }
+  if(cell.count>1){
+    const c=document.createElement('span');
+    c.className='cnt';
+    c.textContent='×'+cell.count;
+    b.appendChild(c);
+  }
+  const show=()=>showInvDetail(cell);
+  b.addEventListener('mouseenter',show);
+  b.addEventListener('focus',show);
+  b.addEventListener('click',()=>{ invArmedSlot=null; show(); if(cell.action) cell.action(); });
+  return b;
+}
+function showInvDetail(cell){
+  const d=$('invDetail'); if(!d) return;
+  d.innerHTML='';
+  const b=document.createElement('b');
+  b.textContent=cell.name;
+  const s=document.createElement('span');
+  s.textContent=cell.desc||'';
+  d.appendChild(b); d.appendChild(s);
+}
+function mannequinStage(){
+  const silhouette='<svg class="mq-silhouette" viewBox="0 0 200 350" aria-hidden="true">'+
+    '<g fill="#26304d" stroke="#3e4b70" stroke-width="2">'+
+      '<rect x="82" y="16" width="36" height="40" rx="9"/>'+
+      '<rect x="92" y="54" width="16" height="14"/>'+
+      '<rect x="61" y="66" width="78" height="108" rx="12"/>'+
+      '<rect x="41" y="72" width="20" height="98" rx="9"/>'+
+      '<rect x="139" y="72" width="20" height="98" rx="9"/>'+
+      '<rect x="37" y="166" width="24" height="26" rx="8"/>'+
+      '<rect x="139" y="166" width="24" height="26" rx="8"/>'+
+      '<rect x="69" y="170" width="26" height="98" rx="9"/>'+
+      '<rect x="105" y="170" width="26" height="98" rx="9"/>'+
+      '<rect x="63" y="266" width="36" height="22" rx="7"/>'+
+      '<rect x="101" y="266" width="36" height="22" rx="7"/>'+
+    '</g>'+
+    '<g fill="#33405f">'+
+      '<rect x="89" y="24" width="22" height="6" rx="3"/>'+
+      '<rect x="72" y="74" width="56" height="8" rx="4"/>'+
+      '<rect x="75" y="180" width="50" height="6" rx="3"/>'+
+    '</g>'+
+    '<g fill="none" stroke="rgba(186,200,235,.22)" stroke-width="1">'+
+      '<rect x="82" y="16" width="36" height="40" rx="9"/>'+
+      '<rect x="61" y="66" width="78" height="108" rx="12"/>'+
+      '<rect x="69" y="170" width="26" height="98" rx="9"/>'+
+      '<rect x="105" y="170" width="26" height="98" rx="9"/>'+
+    '</g>'+
+  '</svg>';
+  return '<div class="mq-stage">'+silhouette+MANNEQUIN_SLOTS.map(slot=>{
+    const it=heroSlotItem(party()[game.invHero||0],slot.id);
+    const sprite=it?itemSpritePath(it):null;
+    const selected=invSlot===slot.id?' sel':'';
+    let inner;
+    if(it&&sprite){
+      const kind=it.type==='weapon'?(it.wkind||weaponKind(it.name||'')):'';
+      const rot=kind==='spear'?' rot-spear':kind==='bow'?' rot-bow':'';
+      inner='<img class="'+rot.trim()+'" src="'+sprite+'" alt="" onerror="this.style.display=\'none\'">';
+    }else if(it){
+      inner='<span class="mq-ph">'+esc(firstLetter(it.name))+'</span>';
+    }else{
+      inner='<span class="mq-empty">'+slotGlyph(slot.id)+'</span>';
+    }
+    return '<button type="button" class="mq-slot '+(it?'filled':'empty')+selected+'" data-slot="'+slot.id+'" style="left:'+slot.x+'%;top:'+slot.y+'%;width:'+slot.w+'%;height:'+slot.h+'%" title="'+esc(slot.label+': '+(it?it.name:slot.hint))+'">'+inner+'</button>';
+  }).join('')+'</div>';
+}
+function mannequinDesc(h){
+  const slot=MANNEQUIN_SLOTS.find(s=>s.id===invSlot);
+  if(!slot) return '<b>Манекен</b><span>Нажмите на слот, чтобы увидеть описание и надеть или снять предмет.</span>';
+  const it=heroSlotItem(h,slot.id);
+  if(!it) return '<b>'+esc(slot.label)+' · пусто</b><span>Сюда подходит: '+esc(slot.hint)+'. Нажмите на предмет в сетке справа, чтобы надеть.</span><small>Выбран пустой слот.</small>';
+  return '<b>'+esc(it.name)+'</b><span>'+esc(itemStatsText(it,h))+'</span><small>Повторное нажатие по слоту снимет предмет в инвентарь.</small>';
+}
+function handleSlotTap(h,slotId){
+  const it=heroSlotItem(h,slotId);
+  if(!it){ invSlot=slotId; invArmedSlot=null; renderInventory(); return; }
+  if(invArmedSlot===slotId){
+    const removed=unequipMannequinSlot(h,slotId);
+    invArmedSlot=null; invSlot=slotId;
+    if(removed) toast('Снято: '+removed.name);
+    renderInventory(); updateParty(); return;
+  }
+  invSlot=slotId; invArmedSlot=slotId;
+  renderInventory();
+}
+function statCell(label,value){
+  return '<div class="mq-stat">'+esc(label)+'<b>'+esc(value)+'</b></div>';
+}
 function renderInventory(){
   if(!game) return;
+  const h=party()[game.invHero||0];
+  if(!h) return;
   renderMannequin();
   $('invTabs').innerHTML=INV_TABS.map(t=>'<button class="tab'+(t===invTab?' sel':'')+'" data-tab="'+t+'">'+t+'</button>').join('');
-  $('invTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ invTab=b.dataset.tab; renderInventory(); });
-  const h=party()[game.invHero||0], list=$('invList'); list.innerHTML='';
+  $('invTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ invTab=b.dataset.tab; invArmedSlot=null; renderInventory(); });
+  const list=$('invList'); list.innerHTML='';
+
+  // Вес и нагрузка main остаются видимыми рядом с сеткой предметов PR #9.
   const li=loadInfo(h);
   const loadEl=document.createElement('div');
   loadEl.className='loadbar '+li.level;
   loadEl.title=loadTitle(h,null);
-  loadEl.innerHTML='<span class="loadFill" style="width:'+Math.min(100,li.percent)+'%"></span><span class="loadText">🎒 Нагрузка · '+loadText(li)+'</span>';
+  loadEl.innerHTML='<span class="loadFill" style="width:'+Math.min(100,li.percent)+'%"></span><span class="loadText">🎒 '+loadText(li)+'</span>';
   list.appendChild(loadEl);
-  const row=(icon,name,sub,buttons)=>{
-    const r=document.createElement('div'); r.className='rowItem';
-    r.innerHTML=iconHtml(icon)+'<div class="info"><b class="ellip" title="'+esc(name)+'">'+esc(name)+'</b><small>'+sub+'</small></div>';
-    buttons.filter(Boolean).forEach(b=>r.appendChild(b)); list.appendChild(r);
-  };
-  const btn=(text,fn,cls,disabled,reason)=>{
-    const b=document.createElement('button'); b.className='act'+(cls?' '+cls:'');
-    b.textContent=text;
-    if(disabled){ b.disabled=true; b.title=reason||'Действие сейчас недоступно'; }
-    else b.onclick=fn;
-    return b;
-  };
-  const sec=t=>{ const d=document.createElement('div'); d.className='sec'; d.textContent=t; list.appendChild(d); };
-  const sellBtn=it=>canSellItem(it)?btn('В лавке '+it.sell,null,'sell',true):null;
-  if(invTab==='Общий'){
-    sec('Отряд · полные данные');
-    party().forEach((x,i)=>row(x.def.emoji,heroName(x),
-      'HP '+Math.round(x.hp)+'/'+x.maxHp+' · MP '+Math.round(x.mp)+'/'+x.maxMp+' · атака '+heroAtk(x)+
-      ' · защита '+heroDef(x)+' · сила магии '+magicText(x)+
-      ' · опыт '+x.exp+' · статус: '+(x.poison>0?'отравлен':x.hp>0?'здоров':'без сознания')+' · нагрузка '+loadText(loadInfo(x)),[]));
-    sec('Ресурсы');
-    row('🪙','Золото','🪙 '+game.gold+' · на покупки и усиление',[]);
-    row('💎','Кристаллы','💎 '+crystalCount()+' · на зачарование',[]);
-    row('⚔','Оружие',equippedWeapon(h)?equippedWeapon(h).name:FISTS,[]);
-    sec('Экипировка по слотам');
-    ARMOR_SLOTS.forEach(s=>{
-      const a=game.bag.find(i=>i.uid===h.equip[s.id]);
-      row(a?itemIconHtml(a):slotIconHtml(s),s.name,a?a.name+' (+'+(a.armorDef||0)+' защиты)'+(a.tier?' · тир '+a.tier:''):'пусто',[]);
-      if($('invList').lastElementChild) $('invList').lastElementChild.dataset.slot=s.id;
-    });
-    sec('Быстрые действия');
-    row('🧪','Использовать зелье','Лечение и мана',[
-      btn('Лечение',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.heal); if(it){ useItem(it.uid); renderInventory(); } },'use',!game.bag.some(i=>i.type==='potion'&&i.heal),'Нет зелья лечения'),
-      btn('Мана',()=>{ const it=game.bag.find(i=>i.type==='potion'&&i.mp); if(it){ useItem(it.uid); renderInventory(); } },'use',!game.bag.some(i=>i.type==='potion'&&i.mp),'Нет зелья маны')
-    ]);
-  }else if(invTab==='Оружие'){
-    sec('Оружие отряда');
-    game.bag.filter(i=>i.type==='weapon').forEach(it=>{
-      const eq=Object.values(h.equip).includes(it.uid), cost=forgeCost(it);
-      const equipBtn=btn(eq?'Снять':'Надеть',()=>{
-        if(eq) unequipSlot(h,'weapon'); else equipOnHero(h,'weapon',it);
-        renderInventory(); updateParty();
-      },'use',false,eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it));
-      equipBtn.title=eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it);
-      row(itemIconHtml(it),it.name,'Урон '+it.dmg+' · '+QUALITY[it.quality].name+' · перековок '+(it.reforges||0)+'/5'+
-        ' · крит '+weaponCrit(h,it)+'%'+(it.enchant?' · '+it.enchant.stat+' +'+it.enchant.value:'')+
-        weightForecast(h,it),[
-        equipBtn,
-        btn('Усилить 🪙'+cost,()=>{
-          if(!game.shopOpen||game.shopType!=='forge'){ toast('Перековка доступна в кузнице.'); return; }
-          if(buy(cost,()=>forgeItemFree(it))){ toast('Оружие усилено: +'+Math.max(1,Math.ceil(it.baseDmg/5))); renderInventory(); }
-        },null,(it.reforges||0)>=5||(QUALITY[it.quality]||QUALITY[0]).id<1||game.gold<cost||game.shopType!=='forge',
-          (it.reforges||0)>=5?'Достигнут лимит перековок':(QUALITY[it.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':game.gold<cost?'Не хватает золота':'Нужна кузница'),
-        sellBtn(it)
-      ]);
-    });
-  }else if(invTab==='Броня'){
-    sec('Доспехи по слотам');
-    game.bag.filter(i=>i.type==='armor').forEach(it=>{
-      const slot=it.slot||'body', eq=h.equip[slot]===it.uid;
-      const starter=isStartingRags(it);
-      const q=it.quality===undefined?1:it.quality, cost=forgeCost({quality:q,reforges:it.upgrades||0});
-      const equipBtn=starter?null:btn(eq?'Снять':'Надеть',()=>{
-        if(eq) unequipSlot(h,slot); else equipOnHero(h,slot,it);
-        renderInventory(); updateParty();
-      },'use',false,eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it));
-      if(equipBtn) equipBtn.title=eq?'Снять: нагрузка пересчитается сразу':loadTitle(h,it);
-      row(itemIconHtml(it),it.name,'Слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+' · защита +'+(it.armorDef||0)+
-        (it.tier?' · тир '+it.tier:'')+' · улучшений '+(it.upgrades||0)+'/5'+(starter?' · стартовая, нельзя снять и продать':'')+
-        weightForecast(h,it),[
-        equipBtn,
-        btn(starter?'Не усиливается':'Усилить 🪙'+cost,()=>{
-          if(!game.shopOpen||game.shopType!=='armor'){ toast('Усиление доступно в броннице.'); return; }
-          if(buy(cost,()=>{ it.upgrades=(it.upgrades||0)+1; it.armorDef+=Math.max(1,Math.ceil((it.baseArmor||it.armorDef)/5)); })){ toast('Броня усилена.'); renderInventory(); }
-        },null,starter||(it.upgrades||0)>=5||game.gold<cost||game.shopType!=='armor',
-          starter?'Стартовая одежда не усиливается':(it.upgrades||0)>=5?'Достигнут лимит улучшений':game.gold<cost?'Не хватает золота':'Нужна бронница'),
-        sellBtn(it)
-      ]);
-    });
-  }else if(invTab==='Магия'){
-    sec('Изучённые заклинания · сила магии '+magicText(h));
-    if(loadInfo(h).magicBlocked||loadInfo(h).failChance>0) sec('⚠ '+restrictionText(h));
-    h.spells.filter(id=>spellHasEffect(spell(id))).forEach(id=>{ const s=spell(id); if(s) row(s.icon,s.name,s.desc+' · '+
-      ((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+(s.aoe?'по всем врагам':'одна цель')+' · '+s.mp+' MP',[]); });
-    sec('Зелья и жидкости');
-    game.bag.filter(i=>i.type==='potion'||i.type==='liquid').forEach(it=>row(it.icon||'🧪',it.name+(it.count>1?' ×'+it.count:''),
-      'Цена: 🪙 '+it.sell+' · '+(it.desc||''),[btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),sellBtn(it)]));
-  }else if(invTab==='Травы'){
-    sec('Травы');
-    game.bag.filter(i=>i.type==='herb').forEach(it=>row(it.icon||'🌿',it.name+(it.count>1?' ×'+it.count:''),it.desc||'',[
-      btn('Использовать',()=>{ useItem(it.uid); renderInventory(); },'use'),sellBtn(it)]));
-    sec('Материалы');
-    game.bag.filter(i=>i.type==='material').forEach(it=>row(it.icon||'•',it.name+(it.count>1?' ×'+it.count:''),it.desc||'',[sellBtn(it)]));
-    sec('Рецепты');
-    RECIPES.filter(r=>(r.kind||'herb')==='herb').forEach(r=>craftRow(r,list,false));
-  }else if(invTab==='Еда'){
-    sec('Еда и напитки · эффект применяется к выбранному герою');
-    const foods=game.bag.filter(i=>i.type==='food');
-    if(!foods.length) row('🍞','Пусто','Хлеб и другие продукты продаются на рынке и в таверне',[]);
-    foods.forEach(it=>row(it.icon||'🍞',it.name+(it.count>1?' ×'+it.count:''),
-      (it.desc||'')+' · цена продажи 🪙 '+it.sell,[btn('Съесть / выпить',()=>{ useItem(it.uid); renderInventory(); },'use'),sellBtn(it)]));
-  }else if(invTab==='Свитки'){
-    sec('Свитки');
-    game.bag.filter(i=>i.type==='scroll').forEach(it=>row(it.icon||'📜',it.name+(it.count>1?' ×'+it.count:''),
-      'Заклинание: '+((spell(it.spell)||{}).name||'?')+' · '+((SPELL_TIERS.find(t=>t.id===(spell(it.spell)||{}).tier)||{}).name||''),[
-      btn(canCast(h)?'Изучить':'⚠ магия недоступна',()=>{
-        if(!canCast(h)){ toast(restrictionText(h)); return; }
-        if(!h.spells.includes(it.spell)){ h.spells.push(it.spell); toast('Изучено: '+(spell(it.spell)||{}).name); }
-        it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1); renderInventory(); },'magic',!canCast(h),restrictionText(h)||'Магия недоступна'),
-      sellBtn(it)]));
+
+  // Все слоты манекена дублируются компактными плашками: сюда входят и старые
+  // слоты PR #9 (body/legs/feet/shield/weapon/hands/helmet/amulet), и новые main
+  // (boots/bracers/cloak). Наличие data-slot проверяется equipmentReport.
+  const strip=document.createElement('div'); strip.className='invSlotStrip';
+  MANNEQUIN_SLOTS.forEach(s=>{
+    const it=heroSlotItem(h,s.id);
+    const chip=document.createElement('button');
+    chip.type='button';
+    chip.className='invSlotChip'+(it?' filled':'')+(invSlot===s.id?' sel':'');
+    chip.dataset.slot=s.id;
+    chip.title=s.label+': '+(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint);
+    if(s.id==='weapon'&&it&&itemSpritePath(it)){
+      const img=document.createElement('img'); img.src=itemSpritePath(it); img.alt='';
+      chip.appendChild(img);
+    }
+    const name=document.createElement('b');
+    name.textContent=s.label+(it?' · '+it.name:'');
+    chip.appendChild(name);
+    const sub=document.createElement('small');
+    if(it){
+      const parts=[];
+      if(it.type==='armor') parts.push('защита +'+(it.armorDef||0));
+      parts.push('вес '+itemWeight(it));
+      if(isStartingRags(it)) parts.push('стартовая');
+      sub.textContent=parts.join(' · ');
+    }else sub.textContent=s.hint;
+    chip.appendChild(sub);
+    chip.onclick=()=>{ invSlot=s.id; invArmedSlot=null; renderInventory(); };
+    strip.appendChild(chip);
+  });
+  list.appendChild(strip);
+
+  const grid=document.createElement('div'); grid.className='invGrid';
+  const cells=[];
+  if(invTab==='Магия'){
+    h.spells.filter(id=>spellHasEffect(spell(id))).forEach(id=>{ const s=spell(id); if(s) cells.push(spellCell(s,h)); });
+    invTabItems('Магия').forEach(it=>cells.push(itemCell(it,h)));
   }else if(invTab==='Ремесло'){
-    sec('Создание предметов · травы, оружие, броня, заклинания');
     const anyHerb=game.bag.some(i=>i.type==='herb'&&(i.count||1)>0);
     RECIPES.forEach(r=>{
       if((r.kind||'herb')==='herb'&&!anyHerb) return;
-      craftRow(r,list,false);
+      cells.push(recipeCell(r,h));
     });
-    sec('Усиление оружия — кузница, усиление брони — бронница');
+    // Усиление из старого инвентаря сохранено в виде тех же ячеек сетки.
     const w=equippedWeapon(h), a=equippedArmor(h);
-    row('🔨','Перековка оружия',w?w.name+' · урон '+w.dmg:'нет оружия',[
-      btn('Усилить',()=>{ if(w&&game.shopType==='forge'&&forgeItem(w.uid)) renderInventory(); },'use',
-        !w||game.shopType!=='forge'||(QUALITY[w.quality]||QUALITY[0]).id<1||(w.reforges||0)>=5,
-        !w?'Нет оружия':game.shopType!=='forge'?'Нужна кузница':(QUALITY[w.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':'Достигнут лимит перековок')]);
-    row('🧵','Усиление брони',a?a.name+' · защита '+a.armorDef:'нет брони',[
-      btn('Усилить',()=>{ if(!a||game.shopType!=='armor') return; const cost=forgeCost({quality:a.quality||1,reforges:a.upgrades||0});
-        if(buy(cost,()=>{ a.upgrades=(a.upgrades||0)+1; a.armorDef+=Math.max(1,Math.ceil((a.baseArmor||a.armorDef)/5)); })) renderInventory(); },'use',
-        !a||game.shopType!=='armor'||(a.upgrades||0)>=5||game.gold<forgeCost({quality:a.quality||1,reforges:a.upgrades||0}),
-        !a?'Нет брони':game.shopType!=='armor'?'Нужна бронница':(a.upgrades||0)>=5?'Достигнут лимит улучшений':'Не хватает золота')]);
+    const wCost=w?forgeCost(w):0, aCost=a?forgeCost({quality:a.quality||1,reforges:a.upgrades||0}):0;
+    const wBlock=!w?'Нет оружия':game.shopType!=='forge'?'Нужна кузница':(QUALITY[w.quality]||QUALITY[0]).id<1?'Ржавое оружие нельзя усилить':(w.reforges||0)>=5?'Достигнут лимит перековок':'';
+    const aBlock=!a?'Нет брони':game.shopType!=='armor'?'Нужна бронница':isStartingRags(a)?'Стартовая одежда не усиливается':(a.upgrades||0)>=5?'Достигнут лимит улучшений':'';
+    cells.push({
+      name:'Перековка оружия',
+      desc:(w?w.name+' · урон '+w.dmg+' · 🪙 '+wCost:'Нет оружия')+weightForecast(h,w)+(wBlock?' · '+wBlock:''),
+      sprite:w?itemSpritePath(w):null, blocked:!!wBlock,
+      action:()=>{
+        if(wBlock){ toast(wBlock); return; }
+        if(forgeItem(w.uid)){ renderInventory(); updateParty(); }
+      }
+    });
+    cells.push({
+      name:'Усиление брони',
+      desc:(a?a.name+' · защита '+a.armorDef+' · 🪙 '+aCost:'Нет брони')+(a?weightForecast(h,a):'')+(aBlock?' · '+aBlock:''),
+      sprite:a?itemSpritePath(a):null, blocked:!!aBlock,
+      action:()=>{
+        if(aBlock){ toast(aBlock); return; }
+        if(buy(aCost,()=>{ a.upgrades=(a.upgrades||0)+1; a.armorDef+=Math.max(1,Math.ceil((a.baseArmor||a.armorDef)/5)); })){
+          toast('Броня усилена.'); renderInventory();
+        }
+      }
+    });
   }else{
-    sec('Сундуки');
-    game.bag.filter(i=>i.type==='chest').forEach(it=>row('🧰',it.name+(it.count>1?' ×'+it.count:''),'Нажмите «Открыть»',[
-      btn('Открыть',()=>{ useItem(it.uid); renderInventory(); },'use')]));
-    if(!game.bag.some(i=>i.type==='chest')) row('🧰','Пусто','Сундуки находятся на карте',[]);
+    invTabItems(invTab).forEach(it=>cells.push(itemCell(it,h)));
   }
-}
-function craftRow(r,list,inShop){
-  const have=r.need.every(hasNeedItem);
-  const block=gearRecipeBlock(r,party()[game.invHero||0]);
-  const rEl=document.createElement('div'); rEl.className='rowItem';
-  rEl.innerHTML='<span class="ic">'+r.icon+'</span><div class="info"><b class="ellip">'+r.name+'</b><small>'+
-    r.need.map(id=>(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name).join(' + ')+' · '+(r.desc||'')+
-    (block?' · ⚠ '+block:'')+'</small></div>';
-  const b=document.createElement('button'); b.className='act'; b.textContent=block?'⚠ нельзя':'Создать'; b.disabled=!have||!!block;
-  if(b.disabled) b.title=block||'Не хватает компонентов';
-  b.onclick=()=>{ craftRecipe(r); if(inShop) renderShop(); else renderInventory(); };
-  rEl.appendChild(b); list.appendChild(rEl);
+  if(cells.length){
+    cells.forEach(c=>grid.appendChild(makeInvCell(c)));
+  }else{
+    const note=document.createElement('div'); note.className='invNote';
+    note.textContent=invTab==='Сундуки'?'Сундуков нет — ищите их на карте.':'Пусто. Находите предметы на карте и в лавках.';
+    grid.appendChild(note);
+  }
+  list.appendChild(grid);
+  const detail=document.createElement('div');
+  detail.className='invDetail'; detail.id='invDetail';
+  detail.innerHTML='<span>Наведите или нажмите на предмет: описание появится здесь.</span>';
+  list.appendChild(detail);
 }
 function renderMannequin(){
   const h=party()[game.invHero||0];
+  if(!h) return;
   const w=equippedWeapon(h), info=loadInfo(h);
-  $('mannequin').innerHTML='<div style="display:flex;gap:4px;justify-content:center">'+
-    party().map((x,i)=>'<button class="tab'+(i===(game.invHero||0)?' sel':'')+'" data-h="'+i+'" style="min-height:30px">'+x.def.emoji+'</button>').join('')+'</div>'+
-    '<div class="face">'+h.def.emoji+'</div><b class="ellip" style="color:#ffe9b0;font-size:12px">'+esc(heroName(h))+'</b>'+
-    '<div class="slot">HP / MP<br><b>'+Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp+'</b></div>'+
-    '<div class="slot">⚔ Атака / 🛡 Защита<br><b>'+heroAtk(h)+' / '+heroDef(h)+'</b></div>'+
-    '<div class="slot">✨ Сила магии<br><b>'+magicText(h)+'</b></div>'+
-    '<div class="slot">⚡ Скорость<br><b>'+heroSpeedValue(h)+' · сила '+heroStrength(h.def)+'</b></div>'+
-    '<div class="loadbar '+info.level+'"><span class="loadFill" style="width:'+Math.min(100,info.percent)+'%"></span><span class="loadText">🎒 '+loadText(info)+'</span></div>'+
-    '<div class="slot">⚔ Оружие<br><b class="ellip">'+esc(w?w.name:FISTS)+'</b></div>'+
-    '<div class="slot">🪙 Золото / 💎 Кристаллы<br><b>'+game.gold+' / '+crystalCount()+'</b></div>'+
-    ARMOR_SLOTS.map(s=>{ const it=game.bag.find(i=>i.uid===h.equip[s.id]);
-      return '<div class="slot" data-slot="'+s.id+'">'+(it?itemIconHtml(it):slotIconHtml(s))+' '+s.name+'<br><b class="ellip">'+esc(it?it.name+' (+'+it.armorDef+')':'—')+'</b>'+
-        (it?'<small>вес '+itemWeight(it)+'</small>':'')+
-        (it&&isStartingRags(it)?'<small>неснимаемая стартовая одежда</small>':'')+'</div>'; }).join('')+
-    '<div class="slot">Статус<br><b>'+(h.poison>0?'отравлен':h.hp>0?'здоров':'без сознания')+'</b></div>'+
-    (restrictionText(h)?'<div class="bad">⚠ '+restrictionText(h)+'</div>':'');
-  $('mannequin').querySelectorAll('button').forEach(b=>b.onclick=()=>{ game.invHero=Number(b.dataset.h); renderInventory(); });
+  $('mannequin').innerHTML='<div class="mq-heroPick">'+
+    party().map((x,i)=>'<button class="tab'+(i===(game.invHero||0)?' sel':'')+'" data-h="'+i+'">'+x.def.emoji+'</button>').join('')+
+    '</div><div class="mq-portrait">'+h.def.emoji+'</div><b class="mq-name ellip">'+esc(heroName(h))+'</b>'+
+    mannequinStage()+
+    '<div class="mq-stats">'+
+      statCell('HP / MP',Math.round(h.hp)+'/'+h.maxHp+' · '+Math.round(h.mp)+'/'+h.maxMp)+
+      statCell('Атака / Защита',heroAtk(h)+' / '+heroDef(h))+
+      statCell('Сила магии',magicText(h))+
+      statCell('Скорость / Сила',heroSpeedValue(h)+' · '+heroStrength(h.def))+
+      statCell('Оружие',w?w.name:FISTS)+
+      statCell('Золото / Кристаллы',game.gold+' / '+crystalCount())+
+    '</div>'+
+    '<div class="loadbar '+info.level+'" title="'+esc(loadTitle(h,null))+'"><span class="loadFill" style="width:'+Math.min(100,info.percent)+'%"></span><span class="loadText">🎒 '+loadText(info)+'</span></div>'+
+    '<div class="mq-desc">'+mannequinDesc(h)+'</div>'+
+    (restrictionText(h)?'<div class="bad">⚠ '+esc(restrictionText(h))+'</div>':'');
+  $('mannequin').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{ game.invHero=Number(b.dataset.h); invSlot=null; invArmedSlot=null; renderInventory(); });
+  $('mannequin').querySelectorAll('[data-slot]').forEach(b=>b.onclick=()=>handleSlotTap(h,b.dataset.slot));
 }
+
 function useItem(uid){
   if(!game||!uid) return false;
   const it=game.bag.find(i=>i.uid===uid); if(!it) return false;
