@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
+  <title>Портрет: Маг, вариант 2</title>
+  <g id="medallion">
+    <ellipse cx="256" cy="256" rx="224" ry="224" fill="#8f7a5f" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="256" cy="256" rx="202" ry="202" fill="#2a1c12" stroke="#241a14" stroke-width="3"/>
+    <circle cx="256" cy="256" r="188" fill="#3b6ea5" stroke="none"/>
+    <ellipse cx="178" cy="124" rx="52" ry="18" fill="#c9b391" stroke="none"/>
+    <path d="M104 404 H408 V430 H104Z" fill="#241a14" stroke="none"/>
+  </g>
+  <g id="face"><ellipse cx="174" cy="254" rx="20" ry="30" fill="#a08a6c" stroke="#241a14" stroke-width="3"/>
+<ellipse cx="338" cy="254" rx="20" ry="30" fill="#a08a6c" stroke="#241a14" stroke-width="3"/>
+<ellipse cx="256" cy="250" rx="88" ry="104" fill="#a08a6c" stroke="#241a14" stroke-width="3"/>
+<path d="M214 216 H236 V222 H214Z" fill="#241a14" stroke="none"/>
+<path d="M276 216 H298 V222 H276Z" fill="#241a14" stroke="none"/>
+<path d="M252 244 L246 288 H262" fill="#a08a6c" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<path d="M228 316 Q256 332 284 316" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<ellipse cx="216" cy="274" rx="16" ry="10" fill="#c9b391" stroke="none"/>
+<path d="M196 298 Q256 372 316 298 Q256 344 196 298Z" fill="#8f7a5f" stroke="none"/>
+<path d="M212 300 Q256 344 300 300" fill="#2a1c12" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/></g>
+  <g id="hair"><path d="M172 224 Q182 128 256 124 Q330 128 340 224 L314 178 H198Z" fill="#8f7a5f" stroke="none"/>
+    <path d="M206 174 H306 L256 242Z" fill="#6d3b8f" stroke="none"/></g>
+  <g id="gear">
+    <path d="M164 176 L256 56 L348 176Z" fill="#6d3b8f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+    <path d="M140 178 H372 V198 H140Z" fill="#2a1c12" stroke="none"/>
+    <path d="M162 182 H350 V190 H162Z" fill="#3b6ea5" stroke="none"/>
+    <path d="M368 206 L384 214 L318 380 L304 372Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+    <ellipse cx="378" cy="198" rx="22" ry="22" fill="#3b6ea5" stroke="#241a14" stroke-width="3"/>
+    <path d="M128 346 Q160 300 210 300 L210 360 H128Z" fill="#2a1c12" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+    <ellipse cx="232" cy="106" rx="16" ry="8" fill="#93c5fd" stroke="none"/>
+  </g>
+  <g id="status">
+    <path d="M256 402 L286 428 L256 454 L226 428Z" fill="#3b6ea5" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="248" cy="422" rx="7" ry="4" fill="#f3efe2" stroke="none"/>
+  </g>
+</svg>

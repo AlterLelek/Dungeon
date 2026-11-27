@@ -69,13 +69,17 @@ button,input,select{font-family:inherit}
 .pcard .mini{display:flex;justify-content:space-between;color:#cbd5e1;font-size:8px;margin-top:1px}
 .pcard .mini i{font-style:normal}
 .pcard .fx{display:flex;justify-content:flex-end;gap:5px;margin-top:2px;color:#fde68a;font-size:9px;letter-spacing:.3px}
+.pcard .pface{width:17px;height:17px;flex:0 0 17px;border:1px solid rgba(251,191,36,.55);background:#2a1c12}
+.pcard .pstatus{color:#fde68a;font-size:8px;line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
 /* Боевые плашки увеличены примерно на 20% и остаются внизу экрана. */
 #party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(790px,74vw);gap:5px}
 #party.in-battle .pcard{flex:1 1 0;width:auto;max-width:264px;padding:3px 6px;font-size:12px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats";column-gap:7px}
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "status status" "stats stats";column-gap:7px}
 #party.in-battle .pcard .ptop{grid-area:top;min-width:0}
 #party.in-battle .pcard .pemoji{font-size:18px}
+#party.in-battle .pcard .pface{width:22px;height:22px;flex-basis:22px}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:11px;margin-top:1px}
 #party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:12px;gap:7px}
 #party.in-battle .pcard .pbar{grid-area:hp;height:4px;margin-top:2px}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
@@ -1552,6 +1556,38 @@ function addStatus(h,id,turns,data){
 }
 function statusSum(h,stat){ return (h.statuses||[]).reduce((s,x)=>s+(x[stat]||0),0); }
 function statusIcons(h){ return (h.statuses||[]).map(s=>(s.icon||'✦')+s.turns).join(' '); }
+
+/* Портреты в медальоне: три класса по четыре варианта, SVG из assets/sprites/portraits. */
+const PORTRAIT_BASE='../../assets/sprites/portraits/';
+function portraitClass(h){
+  const set=String((h&&h.def&&h.def.set)||'');
+  const name=String((h&&h.def&&h.def.name)||'');
+  if(set==='mage'||set==='paladin'||set==='angel') {
+    return set==='mage'||/Маг|Друид|колдун/i.test(name)?'mage':'paladin';
+  }
+  if(/Паладин|Ангел/i.test(name)) return 'paladin';
+  if(/Маг|Друид|колдун/i.test(name)) return 'mage';
+  return 'warrior';
+}
+function portraitVariant(h,i){
+  const own=Number(h&&h.skin);
+  return Number.isFinite(own)?Math.max(0,Math.min(3,own)):Math.max(0,Math.min(3,i||0));
+}
+function portraitSrc(h,i){ return PORTRAIT_BASE+portraitClass(h)+'_'+portraitVariant(h,i)+'.svg'; }
+function heroCondition(h){
+  if(!h||h.hp<=0) return 'Без сознания';
+  const pct=h.hp/Math.max(1,h.maxHp);
+  if(pct>=.7) return 'Хорошее';
+  if(pct>=.3) return 'Ранен';
+  return 'Тяжёло';
+}
+function heroStatusName(h){
+  const idx=party().indexOf(h);
+  return idx>0?(h.def.name+' '+(idx+1)):heroName(h);
+}
+function heroStatusLine(h){
+  return '«'+heroStatusName(h)+', '+((h&&h.def&&h.def.name)||'Герой')+': '+heroCondition(h)+'»';
+}
 function tickStatuses(h){
   if(!h.statuses||!h.statuses.length) return;
   h.statuses=h.statuses.filter(s=>--s.turns>0);
@@ -2637,8 +2673,12 @@ function updateParty(){
   const active=game.battle&&game.battle.turn==='hero'?game.battle.heroIdx:0;
   $('party').innerHTML=game.party.map((h,i)=>{
     const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
-    return '<div class="pcard'+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop"><span class="pemoji">'+h.def.emoji+'</span>'+
+    const statusLine=heroStatusLine(h);
+    return '<div class="pcard'+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop">'+
+      '<img class="pface" src="'+portraitSrc(h,i)+'" alt="" onerror="this.style.display=\'none\'">'+
+      '<span class="pemoji">'+h.def.emoji+'</span>'+
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
+      '<div class="pstatus" title="'+esc(statusLine)+'">'+esc(statusLine)+'</div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
       '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
       '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
@@ -7161,6 +7201,14 @@ window.__mm6Debug={
           y:+r.getBoundingClientRect().y.toFixed(1),h:+r.getBoundingClientRect().height.toFixed(1)};
       }),classes:party().map((h,i)=>heroClassLabel(i))};
   },
+  portraitReport:()=>({cards:[...document.querySelectorAll('#party .pcard')].map((card,i)=>{
+    const img=card.querySelector('.pface'), status=card.querySelector('.pstatus');
+    const h=party()[i];
+    return {hero:i,src:img&&img.getAttribute('src'),loaded:!!img&&img.complete&&img.naturalWidth>0,
+      visible:!!img&&getComputedStyle(img).display!=='none',
+      status:status&&status.textContent,expected:heroStatusLine(h),
+      cls:portraitClass(h),variant:portraitVariant(h,i)};
+  })}),
   loadReport:()=>party().map(h=>{ const i=loadInfo(h); return {hero:h.def.name,strength:heroStrength(h.def),...i}; }),
   equipByUid:(uid,slot)=>{
     if(!game) return false;
