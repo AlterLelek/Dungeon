@@ -350,9 +350,10 @@ export const TIERED_EQUIPMENT = [
 
 // Ассортимент и наценки. У каждой лавки товары свои.
 export const SHOP_STOCK = {
-  // Оружейная палата и кузница — только оружие. Бронница — только броня.
-  weapons: { weapons: [0, 1, 5, 6, 10, 11, 14, 15], armor: [], price: 1, sell: 0.6, magic: false },
-  armory: { weapons: [], armor: [2, 5, 9, 11, 14, 20, 23, 25, 27], price: 1.15, sell: 0.62, magic: false },
+  // Оружейная продаёт оружие и ~10% брони; оружейная палата — броню и ~10% оружия.
+  // Кузница перековывает и оружие, и броню, но торгует только оружием.
+  weapons: { weapons: [0, 1, 5, 6, 10, 11, 14, 15], armor: [1, 8], price: 1, sell: 0.6, magic: false },
+  armory: { weapons: [0], armor: [2, 5, 9, 11, 14, 20, 23, 25, 27], price: 1.15, sell: 0.62, magic: false },
   forge: { weapons: [0, 1, 2, 3, 4, 5, 6, 7], armor: [], price: 0.9, sell: 0.55, magic: false },
   armor: { weapons: [], armor: [1, 2, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], price: 1, sell: 0.6, magic: false },
   magic: { weapons: [0, 5, 6, 10, 11], armor: [5, 16, 17, 18, 28], price: 1.25, sell: 0.58, magic: true, spellDiscount: 0.65, crystals: 2,
@@ -367,9 +368,9 @@ export const SHOP_STOCK = {
 };
 
 export const SHOP_TYPES = [
-  { id: 'weapons', title: 'Оружейная', icon: '⚔', accent: '#f87171', desc: 'Только оружие.', names: ['Оружейная «Клинок»', 'Лавка братьев-кузнецов', 'Оружейная у городских ворот'] },
-  { id: 'armory', title: 'Оружейная палата', icon: '🗡', accent: '#fb923c', desc: 'Только доспехи.', names: ['Оружейная палата', 'Арсенал короля', 'Склад оружейника'] },
-  { id: 'forge', title: 'Кузница', icon: '🔨', accent: '#f97316', desc: 'Оружие и перековка оружия.', names: ['Кузница «Гром»', 'Горн и наковальня', 'Кузня у моста'] },
+  { id: 'weapons', title: 'Оружейная', icon: '⚔', accent: '#f87171', desc: 'Оружие и 10% доспехов.', names: ['Оружейная «Клинок»', 'Лавка братьев-кузнецов', 'Оружейная у городских ворот'] },
+  { id: 'armory', title: 'Оружейная палата', icon: '🗡', accent: '#fb923c', desc: 'Доспехи и 10% оружия.', names: ['Оружейная палата', 'Арсенал короля', 'Склад оружейника'] },
+  { id: 'forge', title: 'Кузница', icon: '🔨', accent: '#f97316', desc: 'Перековывает оружие и броню.', names: ['Кузница «Гром»', 'Горн и наковальня', 'Кузня у моста'] },
   { id: 'armor', title: 'Бронница', icon: '🛡', accent: '#60a5fa', desc: 'Доспехи и усиление брони.', names: ['Бронница «Щит и шлем»', 'Лавка доспехов', 'Бронная лавка'] },
   { id: 'magic', title: 'Магазин магии', icon: '✨', accent: '#c084fc', desc: 'Свитки, заклинания, зелья.', names: ['Магазин магии «Звезда»', 'Лавка чародея', 'Дом заклинаний'] },
   { id: 'jeweler', title: 'Ювелир', icon: '💎', accent: '#34d399', desc: 'Кристаллы и украшения.', names: ['Ювелир «Изумруд»', 'Лавка драгоценностей', 'Ювелирная мастерская'] },
@@ -483,6 +484,51 @@ export const SEASON_GROUND_COLORS = {
   autumn: { grass: '#b87a35', flowers: '#c86639', dirt: '#806143', sand: '#d2b681', stone: '#8f8780', water: '#396a8d', ice: '#e2f0fa', swamp: '#4b4a2c' },
   winter: { grass: '#e9f2f7', flowers: '#e2edf5', dirt: '#d9e2e9', sand: '#eef3f6', stone: '#d5dce3', water: '#bcd7e8', ice: '#dff2ff', swamp: '#c8d8df' }
 };
+
+/* Поселения: имена фиксированы в данных мира и используются в миникарте,
+   большой карте и заданиях. Город держит все официальные здания одним
+   двором; деревня — урезанный набор (трактир и 1–2 лавки). */
+export const SETTLEMENTS = [
+  { id: 'kamenny_brod', name: 'Каменный Брод', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'berezorechye', name: 'Березоречье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'sedaya_gat', name: 'Седая Гать', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
+  { id: 'ovinets', name: 'Овинец', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'krinichny_dol', name: 'Криничный Дол', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'gromograd', name: 'Громоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'mokhovka', name: 'Моховка', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
+  { id: 'zhitnaya_luka', name: 'Житная Лука', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'yasny_grad', name: 'Ясный Град', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'voroniy_yar', name: 'Вороний Яр', type: 'village', shops: ['hall', 'house', 'tavern', 'armor'] },
+  { id: 'rzhanopolye', name: 'Ржанополье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'sedograd', name: 'Седоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'sosnovy_bor', name: 'Сосновый Бор', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
+  { id: 'yagodnaya_luka', name: 'Ягодная Лука', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'vetrogorck', name: 'Ветрогорск', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'lnyanaya_gryada', name: 'Льняная Гряда', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
+  { id: 'gniloy_ruchey', name: 'Гнилой Ручей', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
+  { id: 'zlatoverkh', name: 'Златоверх', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'pelnaya_sopka', name: 'Пепельная Сопка', type: 'village', shops: ['hall', 'house', 'tavern', 'armor'] },
+  { id: 'zarechye', name: 'Заречье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] }
+];
+export const settlementOf = (index) => SETTLEMENTS[Math.abs(Math.round(Number(index) || 0)) % SETTLEMENTS.length];
+export const SETTLEMENT_TYPE_NAME = { city: 'город', village: 'деревня' };
+
+/* Сложность диких монстров привязана к расстоянию от стартовой точки
+   (манхэттен до входа на карту), а не к номеру карты или её размеру. */
+export const DISTANCE_BANDS = [
+  { id: 'near', max: 8, name: 'стартовый радиус', monsters: ['mouse'], elites: false, boss: false, tier: 0 },
+  { id: 'mid', max: 13, name: 'ближние тропы', monsters: ['spider', 'wolf', 'skeleton'], elites: false, boss: false, tier: 1 },
+  { id: 'far', max: 19, name: 'дальние края', monsters: ['spider', 'skeleton', 'goblin', 'orc', 'ghost', 'zombie'], elites: true, boss: false, tier: 2 },
+  { id: 'outer', max: Infinity, name: 'самые дальние пределы', monsters: ['orc', 'troll', 'mummy', 'vampire', 'lich', 'golem', 'wyvern'], elites: true, boss: true, tier: 3 }
+];
+export function distanceBand(distance){
+  const d=Math.max(0,Number(distance)||0);
+  return DISTANCE_BANDS.find(b=>d<=b.max)||DISTANCE_BANDS[DISTANCE_BANDS.length-1];
+}
+
+/* Сток лавок обновляется раз в игровой день (1440 минут игрового времени).
+   Оружейная добавляет 10% брони, бронница — 10% оружия. */
+export const STOCK_RULES = { periodMinutes: 24 * 60, crossSellRatio: 0.1, periodName: 'день' };
 
 export const DIFFICULTY = [
   { id: 'easy', name: 'Лёгкая', maps: [9, 11], size: [30, 30], tier: 0, monsters: 3, boss: 0, gold: 1.25 },

@@ -442,7 +442,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES } from './data.js';
 import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, guildRankNumber, carryingRank, heroCarryingIds, CARRY_ORDER, GUILD_POINT_THRESHOLDS, GUILD_DISCOUNT_STEP, guildPointsNeeded, guildRankCost, SPELL_TIER_RANK, spellTierRank, CONTAINER_TIERS, CONTAINER_TIER_IDS, containerTier, SHOP_QUESTS, questDef, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, defaultQuestState, defaultJournal, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
@@ -1488,7 +1488,7 @@ function freshGameShell(diffId){
   return {difficulty:diffId,bag:[],containers:ensureContainers(null),gold:12,party:[],world:null,player:{x:0,y:0,px:0,py:0,fromX:0,fromY:0,moveT:0,dir:0},
     battle:null,shopType:null,shopKinds:null,shopCell:null,shopOpen:false,invOpen:false,mapOpen:false,reward:null,spellOpen:false,settingsOpen:false,
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
-    version:SAVE_VERSION,clockMinutes:8*60,hunger:0,lootCounters:defaultLootCounters(),
+    version:SAVE_VERSION,clockMinutes:8*60,gameMinutes:8*60,hunger:0,lootCounters:defaultLootCounters(),
     floorLoot:[],pendingXp:0,pendingLoot:[],battleLimit:ACTIVE_ENEMY_LIMIT,
     quests:defaultQuestState(),journal:defaultJournal(),journalOpen:false,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
@@ -1524,7 +1524,7 @@ function saveWorldState(){
   const snap={version:SAVE_VERSION,difficulty:game.difficulty,gold:game.gold,bag:game.bag,containers:game.containers,party:game.party,
     world:game.world,fog:game.world.maps.map(m=>[...(m.seen||[])]),
     player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
-    seasonOverride:game.seasonOverride,clockMinutes:game.clockMinutes,hunger:game.hunger,
+    seasonOverride:game.seasonOverride,clockMinutes:game.clockMinutes,gameMinutes:game.gameMinutes,hunger:game.hunger,
     lootCounters:game.lootCounters,floorLoot:game.floorLoot,pendingXp:game.pendingXp,pendingLoot:game.pendingLoot,
     battleLimit:game.battleLimit,quests:game.quests,journal:game.journal,
     log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
@@ -1543,6 +1543,7 @@ function loadWorldState(){
   Object.assign(shell,migrated);
   game=shell;
   game.journalOpen=false;
+  if(!Number.isFinite(game.gameMinutes)) game.gameMinutes=Number(game.clockMinutes)||8*60;
   game.party.forEach(h=>{ h.carrying=heroCarryingIds(h); });
   installMessageLogger();
   game._msg=String(data.msg||'');
@@ -1814,6 +1815,102 @@ function generateForest(cells,size,occupied,cx,cy,farX,farY,rng){
   }
   return trees;
 }
+/* Поселение — один двор: все официальные здания стоят рядом и соединены дорогами.
+   Деревня получает урезанный состав из данных SETTLEMENTS, город — полный. */
+function settlementSpot(cells,size,rng,keep,center,minR,maxR){
+  for(let radius=minR;radius<=maxR;radius++){
+    for(let k=0;k<80;k++){
+      const x=clamp(center.x+rngInt(rng,-radius,radius),2,size-3);
+      const y=clamp(center.y+rngInt(rng,-radius,radius),2,size-3);
+      const ring=Math.max(Math.abs(x-center.x),Math.abs(y-center.y));
+      if(ring<minR||ring>radius||keep.has(ckey(x,y))) continue;
+      if(!GROUND_IDS.includes(cells[y][x].t)) continue;
+      return {x,y};
+    }
+  }
+  return null;
+}
+function placeSettlement(cells,size,rng,keep,cx,cy,def){
+  const center={x:clamp(cx+2,2,size-3),y:clamp(cy-2,2,size-3)};
+  const deco=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&!b.shop_kind.length);
+  const buildings=[]; let hall=null;
+  def.shops.forEach(kind=>{
+    const house=kind==='house';
+    const b=house?rngPick(rng,deco):BUILDING_TYPES.find(x=>Array.isArray(x.shop_kind)&&x.shop_kind.includes(kind));
+    if(!b) return;
+    const s=settlementSpot(cells,size,rng,keep,center,1,6);
+    if(!s) return;
+    keep.add(ckey(s.x,s.y));
+    if(house){
+      cells[s.y][s.x]={t:'house',buildingId:b.id,kind:b.kind,shop_kind:null,houseName:b.title,deco:b.deco,ground:cells[s.y][s.x].ground};
+    }else{
+      cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:[kind],shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
+    }
+    const item={kind,x:s.x,y:s.y,name:b.title,buildingId:b.id};
+    buildings.push(item);
+    if(kind==='hall') hall=item;
+  });
+  if(!hall){
+    const s=settlementSpot(cells,size,rng,keep,center,0,6)||center;
+    const b=BUILDING_TYPES.find(x=>x.id==='hall_0')||BUILDING_TYPES[0];
+    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind:'hall',shop_kind:['hall'],shopName:b.title,buildingTitle:b.title,ground:'grass'};
+    hall={kind:'hall',x:s.x,y:s.y,name:b.title,buildingId:b.id};
+    buildings.push(hall);
+  }
+  carveRoad(cells,size,rng,{x:cx,y:cy},{x:center.x,y:center.y},'stone');
+  buildings.forEach(b=>carveRoad(cells,size,rng,{x:center.x,y:center.y},{x:b.x,y:b.y},'brick'));
+  return {id:def.id,name:def.name,type:def.type,x:center.x,y:center.y,hall:{x:hall.x,y:hall.y},buildings};
+}
+const LAIR_DISTANCE={mouse_nest:8,spider_lair:12,bone_yard:18};
+function lairAnchor(id,cx,cy,size,rng){
+  const dist=LAIR_DISTANCE[id]||8;
+  // Логовище ставится на заданном манхэттенском расстоянии от входа.
+  const candidates=[];
+  for(let dx=-dist;dx<=dist;dx++){
+    const dy=dist-Math.abs(dx);
+    if(dy<0) continue;
+    candidates.push({dx,dy});
+    if(dy>0) candidates.push({dx,dy:-dy});
+  }
+  if(!candidates.length) candidates.push({dx:dist,dy:0});
+  const pickOne=candidates[Math.floor((rng?rng():Math.random())*candidates.length)%candidates.length];
+  return {x:clamp(cx+pickOne.dx,2,size-3),y:clamp(cy+pickOne.dy,2,size-3)};
+}
+function lairSpot(cells,size,anchor,rng,used,entry,minDist){
+  for(let radius=0;radius<=6;radius++){
+    for(let k=0;k<50;k++){
+      const x=clamp(anchor.x+rngInt(rng,-radius,radius),1,size-2);
+      const y=clamp(anchor.y+rngInt(rng,-radius,radius),1,size-2);
+      const key=ckey(x,y);
+      if(used.has(key)||!GROUND_IDS.includes(cells[y][x].t)) continue;
+      if(entry&&minDist&&Math.abs(x-entry.x)+Math.abs(y-entry.y)<minDist) continue;
+      used.add(key); return {x,y};
+    }
+  }
+  return null;
+}
+const COMPASS_WORDS={east:'к востоку',west:'к западу',north:'к северу',south:'к югу',
+  northeast:'к северо-востоку',northwest:'к северо-западу',southeast:'к юго-востоку',southwest:'к юго-западу',here:'у ратуши'};
+function compassFor(dx,dy){
+  if(Math.abs(dx)<=1&&Math.abs(dy)<=1) return 'here';
+  const sectors=['east','southeast','south','southwest','west','northwest','north','northeast'];
+  const idx=((Math.round(Math.atan2(dy,dx)/(Math.PI/4))%8)+8)%8;
+  return sectors[idx];
+}
+function lairGuide(lairId,anchor,settlement,from,mapIndex,entry){
+  let dx=anchor.x-from.x, dy=anchor.y-from.y;
+  let compass=compassFor(dx,dy);
+  // Если ратуша случайно оказалась рядом с логовищем, берём направление от входа.
+  if(compass==='here'&&entry){
+    dx=anchor.x-entry.x; dy=anchor.y-entry.y; compass=compassFor(dx,dy);
+  }
+  const word=COMPASS_WORDS[compass];
+  const dist=Math.abs(anchor.x-from.x)+Math.abs(anchor.y-from.y);
+  return {lairId,lairName:(LAIR_TEMPLATES[lairId]||{}).name||lairId,mapIndex,dx,dy,compass,word,distance:dist,
+    settlementId:settlement.id,settlementName:settlement.name,settlementType:settlement.type,
+    text:word+' от ратуши '+(settlement.type==='city'?'города':'деревни')+' '+settlement.name+
+      ' · '+(LAIR_TEMPLATES[lairId]||{}).name+' в '+dist+' клетках'};
+}
 /* Размер карты выбирается автоматически по номеру этажа: первые карты 30×30,
    затем 60×60, финальные 100×100. Настройка mapSize задаёт минимальный пресет. */
 const MAP_SIZE_PRESETS=[30,60,100];
@@ -1881,17 +1978,11 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   if(GROUND_IDS.includes(cells[farY][chestX].t)||cells[farY][chestX].t==='road')
     cells[farY][chestX]={t:'chest',boss:true,opened:false,ground:'grass'};
 
-  const tradeBuildings=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&b.shop_kind.length);
   const decoBuildings=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
-  const shopPlan=[];
-  /* Ратуша — отдельное здание, а не декоративный дом: она есть на каждой карте. */
-  const hallBuilding=BUILDING_TYPES.find(b=>b.id==='hall_0'&&Array.isArray(b.shop_kind)&&b.shop_kind.includes('hall'));
-  if(hallBuilding) shopPlan.push(hallBuilding);
-  const shopCount=size>=20?4:size>=16?3:size>=12?2:1;
-  for(let k=0;k<shopCount;k++){
-    const b=tradeBuildings[(i*2+k*3)%tradeBuildings.length];
-    if(b&&!shopPlan.includes(b)) shopPlan.push(b);
-  }
+  const settlement=settlementOf(i);
+  const town=placeSettlement(cells,size,rng,keep,cx,cy,settlement);
+  // Двор не должен зарасти: сохраняем здания и позже прокладываем дороги поверх декора.
+  const courtyard=town.buildings.map(b=>({x:b.x,y:b.y,cell:{...cells[b.y][b.x]}}));
   function freeSpot(minDist){
     for(let k=0;k<200;k++){
       const x=rngInt(rng,0,size-1),y=rngInt(rng,0,size-1);
@@ -1902,13 +1993,9 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     }
     return null;
   }
-  const shops=[];
-  shopPlan.forEach(b=>{
-    const s=freeSpot(2); if(!s) return;
-    const kind=b.shop_kind[0];
-    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:b.shop_kind.slice(),shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
-    shops.push({buildingId:b.id,kind,kinds:b.shop_kind.slice(),name:b.title,x:s.x,y:s.y});
-  });
+  const shops=town.buildings.filter(b=>b.kind!=='house'&&b.kind!=='hall').map(b=>({
+    buildingId:b.buildingId,kind:b.kind,kinds:[b.kind],name:b.name,x:b.x,y:b.y
+  }));
   const trees=generateForest(cells,size,keep,cx,cy,farX,farY,rng);
   const decoCount=Math.floor(size*size*.12);
   for(let k=0;k<decoCount;k++){
@@ -1938,26 +2025,58 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     cells[s.y][s.x]={t:'chest',boss:false,opened:false,ground:cells[s.y][s.x].ground||'grass'};
   }
   placeFlora(cells,size,rng,seed,keep);
+  // Дороги двора прокладываются последними, чтобы лес и трава не перекрыли подходы к лавкам.
+  courtyard.forEach(b=>carveRoad(cells,size,rng,{x:town.x,y:town.y},{x:b.x,y:b.y},'brick'));
+  courtyard.forEach(b=>{ cells[b.y][b.x]=b.cell; });
 
-  const tier=i===0?0:Math.min(3,Math.floor(i/Math.max(1,total-1)*3)+(d.tier>0?1:0));
-  const bossPool=i===total-1?MONSTERS.filter(m=>m.tier>=2):MONSTERS.filter(m=>m.tier>=Math.min(2,tier));
+  /* Дикая сложность зависит от манхэттенского расстояния до входа на карту.
+     Размер карты и номер этажа больше не влияют на таблицы монстров. */
+  const distanceFromEntry=(x,y)=>Math.abs(x-cx)+Math.abs(y-cy);
+  const bandAt=(x,y)=>distanceBand(distanceFromEntry(x,y));
+  const poolFor=band=>{
+    const list=MONSTERS.filter(m=>band.monsters.includes(m.id));
+    return list.length?list:MONSTERS.filter(m=>m.id==='mouse');
+  };
+  const easy=d.id==='easy';
+  const effectiveBand=(x,y)=>easy&&distanceFromEntry(x,y)<=8?DISTANCE_BANDS[0]:bandAt(x,y);
+
+  // Босс стоит на краю карты; его пул и ранг определяются зоной этой точки.
+  const bossBand=bandAt(farX,farY);
+  const bossPool=poolFor(bossBand);
   const bossDef=rngPick(rng,bossPool.length?bossPool:MONSTERS);
-  const boss=spawnMonster(bossDef,tier,farX,farY,'gold',true);
+  const bossTier=bossBand.tier;
+  const boss=spawnMonster(bossDef,bossTier,farX,farY,'gold',true);
   boss.name='Босс · '+bossDef.name;
   boss.hp=Math.round(boss.hp*1.7); boss.maxHp=boss.hp;
-  boss.atk+=4+tier*2; boss.defVal+=3+tier; boss.magic=true; boss.magicBonus=2+tier;
-  const firstPool=MONSTERS.filter(m=>m.id==='mouse'||m.id==='turtle');
-  const pool=i===0?firstPool:MONSTERS.filter(m=>m.tier<=tier);
-  const mons=[];
-  /* Стаи 4-8; на нулевой карте мышиные стаи начинаются с шести особей. */
-  const baseCount=clamp(d.monsters+(i>2?1:0)+(Number(settings.monstersAdd)||0)+2,4,8);
-  const lairId=i%3===1?'mouse_nest':(i%3===2?'spider_lair':'bone_yard');
-  const lair=instantiateLair(lairId);
+  boss.atk+=4+bossTier*2; boss.defVal+=3+bossTier; boss.magic=true; boss.magicBonus=2+bossTier;
+  boss.band=bossBand.id;
+
+  function bandMinDistance(id){
+    const at=DISTANCE_BANDS.findIndex(b=>b.id===id);
+    return at>0?DISTANCE_BANDS[at-1].max+1:0;
+  }
+  /* Все монстры стаи остаются в своей зоне: стая, начавшаяся вдали от входа,
+     не должна дрейфовать к старту при размещении остальных её участников. */
+  function spotForBand(id){
+    const min=bandMinDistance(id);
+    for(let k=0;k<200;k++){
+      const s=freeSpot(min); if(!s) return null;
+      const dist=distanceFromEntry(s.x,s.y);
+      if(dist>=min&&distanceBand(dist).id===id) return s;
+    }
+    return null;
+  }
+  const mons=[], packSizes=[];
+  // Логовище привязано к дистанции: мыши рядом, пауки дальше, костница ещё дальше.
+  const lairId=i%3===0?'mouse_nest':(i%3===1?'spider_lair':'bone_yard');
+  const anchor=lairAnchor(lairId,cx,cy,size,rng);
+  const lairBand=effectiveBand(anchor.x,anchor.y);
+  const lair=instantiateLair(lairId,lairBand.tier,!easy&&lairBand.elites);
   if(lair){
-    /* Шаблон логовища задаёт состав, а не случайный пул. */
+    const minDist=bandMinDistance(lairBand.id);
     lair.enemies.forEach(e=>{
-      const s=freeSpot(4); if(!s) return;
-      e.x=s.x; e.y=s.y; e.lairId=lairId; e.lairIndex=i; mons.push(e);
+      const s=lairSpot(cells,size,anchor,rng,keep,{x:cx,y:cy},minDist)||spotForBand(lairBand.id); if(!s) return;
+      e.x=s.x; e.y=s.y; e.lairId=lairId; e.lairIndex=i; e.band=effectiveBand(s.x,s.y).id; mons.push(e);
     });
     let chestIdx=0;
     for(let y=0;y<size&&chestIdx<lair.template.chests.length;y++){
@@ -1966,33 +2085,61 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
         if(c&&c.t==='chest'&&!c.boss){ c.lairChest=lair.template.chests[chestIdx++]; }
       }
     }
-  }else{
-    const count=i===0?Math.max(6,baseCount):baseCount;
-    for(let k=0;k<count;k++){
-      const s=freeSpot(4); if(!s) break;
-      const def=rngPick(rng,pool.length?pool:MONSTERS);
-      mons.push(spawnMonster(def,tier,s.x,s.y,null,false,i!==0));
+  }
+  // Дополнительные стаи рассеяны по зонам; стартовый радиус заселяют только мыши.
+  const packCount=clamp(d.monsters+(Number(settings.monstersAdd)||0)-(easy?2:0),1,3);
+  const lairCell=lair?anchor:null;
+  for(let k=0;k<packCount;k++){
+    const s=freeSpot(4); if(!s) continue;
+    if(lairCell&&Math.abs(s.x-lairCell.x)+Math.abs(s.y-lairCell.y)<2) continue;
+    const band=effectiveBand(s.x,s.y);
+    const defs=poolFor(band);
+    const count=band.id==='near'?rngInt(rng,6,8):rngInt(rng,4,8);
+    let spawned=0;
+    for(let n=0;n<count;n++){
+      const spot=n===0?s:spotForBand(band.id); if(!spot) break;
+      const def=rngPick(rng,defs);
+      const e=spawnMonster(def,band.tier,spot.x,spot.y,null,false,band.id!=='near');
+      e.band=effectiveBand(spot.x,spot.y).id;
+      mons.push(e); spawned++;
     }
+    if(spawned) packSizes.push(spawned);
+  }
+  // Старт всегда заселён мышами: двор и дороги не должны оставлять радиус пустым.
+  if(!mons.some(e=>distanceFromEntry(e.x,e.y)<=8)){
+    const near=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      if(distanceFromEntry(x,y)>8||distanceFromEntry(x,y)<2) continue;
+      if(!GROUND_IDS.includes(cells[y][x].t)||keep.has(ckey(x,y))) continue;
+      near.push({x,y});
+    }
+    near.slice(0,6).forEach(s=>{
+      keep.add(ckey(s.x,s.y));
+      const e=spawnMonster(MONSTERS.find(m=>m.id==='mouse')||MONSTERS[0],0,s.x,s.y,null,false,false);
+      e.band='near'; mons.push(e);
+    });
   }
   normalizeLakes(cells,size);
   normalizeRoads(cells,size);
-  return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},trees,
-    boss:{x:farX,y:farY,def:boss,dead:false},monsters:mons,shops,tier,
-    lair:lair&&lair.template||null,
+  const guide=lairGuide(lairId,anchor,town,town.hall,i,{x:cx,y:cy});
+  return {index:i,size,biome,seed,cells,seen:new Set(),entry:{x:cx,y:cy},trees,slot:{gx:slot.gx,gy:slot.gy},
+    boss:{x:farX,y:farY,def:boss,dead:false,band:bossBand.id},monsters:mons,packSizes,shops,
+    settlement:{id:settlement.id,name:settlement.name,type:settlement.type,x:town.x,y:town.y,hall:town.hall,buildings:town.buildings},
+    lair:{template:lair&&lair.template||null,anchor,guide,band:lairBand.id},tier:lairBand.tier,
     wildlife:createWildlife(biome,size)};
 }
-function instantiateLair(id){
+function instantiateLair(id,tier,allowElites){
   const t=LAIR_TEMPLATES[id]; if(!t) return null;
-  const list=[];
+  const list=[], scale=Math.max(0,Math.floor(Number(tier)||0)), elites=allowElites!==false;
   t.enemies.forEach(group=>{
     const n=Array.isArray(group.count)?rnd(group.count[0],group.count[1]):Math.max(1,Number(group.count)||1);
     const base=MONSTERS.find(m=>m.id===group.id)||MONSTERS[0];
-    for(let i=0;i<n;i++){
+    for(let k=0;k<n;k++){
       const variantId=group.variant||(group.id==='mouse'?'soldier':null);
-      const e=spawnMonster(base,0,0,0,variantId,false,false);
-      if(group.elite){ e.elite=true; e.hp=Math.round(e.hp*1.4); e.maxHp=e.hp; e.atk+=2; e.name='Элитный '+e.name; }
-      if(group.leader){ e.leader=true; e.hp=Math.round(e.hp*1.6); e.maxHp=e.hp; e.atk+=3; e.name='Предводитель '+e.name; }
-      e.lairId=t.id;
+      const e=spawnMonster(base,scale,0,0,variantId,false,false);
+      if(group.elite&&elites){ e.elite=true; e.hp=Math.round(e.hp*1.4); e.maxHp=e.hp; e.atk+=2; e.name='Элитный '+e.name; }
+      if(group.leader&&elites){ e.leader=true; e.hp=Math.round(e.hp*1.6); e.maxHp=e.hp; e.atk+=3; e.name='Предводитель '+e.name; }
+      e.lairId=t.id; e.lairTier=scale;
       list.push(e);
     }
   });
@@ -2053,7 +2200,7 @@ function setMap(index,fromDir){
   Object.assign(game.player,{x:px,y:py,px,py,fromX:px,fromY:py,moveT:0,dir});
   markSeen(m,px,py);
   game.nearShop=null;
-  game.msg='Локация '+(index+1)+'/'+w.count+' · '+BIOMES[m.biome].name+'.';
+  game.msg=(m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name)+' · локация '+(index+1)+'/'+w.count+'.';
 }
 function enemyAt(x,y){ const m=currentMap(); return m.monsters.find(e=>e.alive&&e.x===x&&e.y===y)||null; }
 function currentSeason(){
@@ -2202,6 +2349,7 @@ function afterStep(cost){
   const m=currentMap(), steps=clamp(Math.round(Number(cost)||1),1,2);
   markSeen(m,game.player.x,game.player.y);
   game.world.turn+=steps; game.totalTurns+=steps;
+  advanceGameTime(steps*5);
   tickSkillCooldowns();
   maybeSpawnBonus(m);
   pushHistory('Ход '+game.world.turn+': '+DIR_NAMES[game.player.dir]+', клетка '+game.player.x+','+game.player.y+
@@ -2951,9 +3099,27 @@ function promoteGuild(idx){
   return buy(cost,()=>{ setGuildRank(h,next); restParty();
     toast('Гильдия магии: ранг «'+next+'» открыт за 🪙 '+cost+' и отдых.'); });
 }
+function stockPeriod(){
+  const minutes=game&&Number.isFinite(Number(game.gameMinutes))?Number(game.gameMinutes):8*60;
+  return Math.max(0,Math.floor(minutes/STOCK_RULES.periodMinutes));
+}
+function advanceGameTime(minutes){
+  if(!game) return 0;
+  const before=stockPeriod(), add=Math.max(0,Math.floor(Number(minutes)||0));
+  const total=(Number.isFinite(Number(game.gameMinutes))?Number(game.gameMinutes):8*60)+add;
+  game.gameMinutes=total;
+  game.clockMinutes=((Number(game.clockMinutes)||8*60)+add)%(24*60);
+  const after=stockPeriod();
+  if(after!==before){
+    game.stockPeriod=after;
+    if(game.shopOpen) renderShop();
+    toast('Лавки получили новый сток: '+STOCK_RULES.periodName+' '+after+'.');
+  }
+  return after;
+}
 function restParty(minutes){
   if(!game) return false;
-  game.clockMinutes=((game.clockMinutes||8*60)+Math.max(0,Math.floor(Number(minutes)||480)))%(24*60);
+  advanceGameTime(minutes===undefined?480:minutes);
   game.hunger=clamp((game.hunger||0)+20,0,100);
   party().forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
   boostRegen(30);
@@ -3333,9 +3499,12 @@ function weaponIcon(kind){
 }
 /* Раздел усиления привязан к зданию: кузница — только оружие, бронница — только броня. */
 function reforgeSection(h,kind){
-  const isArmor=kind==='armor';
-  shopSec(isArmor?'Усиление доспехов · бронница':'Перековка оружия · кузница');
-  game.bag.filter(i=>(isArmor?i.type==='armor':i.type==='weapon')&&!isStartingRags(i)&&!wornByOther(h,i)).forEach(it=>{
+  // Кузница (kind='all') перековывает и оружие, и броню; бронница — только броню.
+  const types=kind==='all'?['weapon','armor']:[kind==='armor'?'armor':'weapon'];
+  const title=kind==='all'?'Перековка · кузница':(kind==='armor'?'Усиление доспехов · бронница':'Перековка оружия · кузница');
+  shopSec(title);
+  game.bag.filter(i=>types.includes(i.type)&&!isStartingRags(i)&&!wornByOther(h,i)).forEach(it=>{
+    const isArmor=it.type==='armor';
     const q=isArmor?(it.quality===undefined?1:it.quality):(QUALITY[it.quality]||QUALITY[0]).id;
     const upgrades=isArmor?(it.upgrades||0):(it.reforges||0);
     const cost=forgeCost({quality:q,reforges:upgrades});
@@ -3343,7 +3512,7 @@ function reforgeSection(h,kind){
     const ok=q>=1&&upgrades<5&&game.gold>=cost;
     shopRow(isArmor?'🧵':'🔨',it.name,(isArmor?'Слот: '+((ARMOR_SLOTS.find(s=>s.id===it.slot)||{}).name||'тело')+' · защита '+(it.armorDef||0):
       'Качество: '+QUALITY[q].name)+' · улучшений '+upgrades+'/5 · цена 1 + качество + уровень'+owner,
-      [shopButton('🪙 '+cost+' усилить',()=>{
+      [shopButton('🪙 '+cost+' '+(isArmor?'усилить':'перековать'),()=>{
         if(buy(cost,()=>{
           upgrades++;
           const inc=Math.max(1,Math.ceil(((isArmor?it.baseArmor:it.baseDmg)||1)/5));
@@ -3468,6 +3637,15 @@ function questStatusText(q){
   return 'В работе · победителей логовища: '+p.kills+
     ' · цель: '+(p.target?'да':'нет')+' · '+(p.ready?'готово к сдаче':'логовище ещё не зачищено');
 }
+function guideForLair(lairId){
+  if(!game||!game.world) return null;
+  const map=game.world.maps.find(m=>m.lair&&m.lair.template&&m.lair.template.id===lairId&&m.lair.guide);
+  return map?map.lair.guide:null;
+}
+function questHint(q){
+  const guide=guideForLair(q.lair);
+  return guide?guide.text:'Направление неизвестно — спросите в ратуше.';
+}
 function renderQuestOffers(){
   shopSec('Ратуша · заказы лавок');
   shopRow('📋','Журнал походов','Активные и завершённые задания сохраняются в сейве.',[
@@ -3484,7 +3662,9 @@ function renderQuestOffers(){
     else if(!accepted) btn=shopButton('Принять',()=>acceptQuest(q.id));
     else btn=shopButton(p.ready?'Сдать задание':'В работе…',()=>completeQuest(q.id),!p.ready,
       '',p.ready?'':'Сначала зачистите '+LAIR_TEMPLATES[q.lair].name);
+    const hint=questHint(q);
     shopRow('🏛',q.title,(SHOP_TYPES.find(s=>s.id===q.giver)||{}).title+' · '+q.goal+
+      ' · 🧭 '+hint+
       ' · '+(accepted&&!done?'убито '+p.kills+', цель '+(p.target?'побеждена':'не побеждена'):'')+
       ' · награда: '+reward,[btn],'ЗАКАЗ');
   });
@@ -3555,9 +3735,15 @@ function questReport(){
   const errors=[];
   const hall=(game.world.maps||[]).find(m=>m.cells.some(row=>row.some(c=>c&&c.t==='shop'&&c.kind==='hall')));
   if(!hall) errors.push('На картах нет ратуши');
-  const quests=SHOP_QUESTS.map(q=>({id:q.id,title:q.title,lair:q.lair,target:q.target,
-    accepted:!!game.quests.accepted[q.id],done:!!game.quests.done[q.id],
-    progress:game.quests.progress[q.id]||defaultQuestProgress(),reward:q.reward}));
+  const quests=SHOP_QUESTS.map(q=>{
+    const guide=guideForLair(q.lair);
+    if(!guide||!/к (востоку|западу|северу|югу|северо|юго)/.test(guide.text))
+      errors.push('Нет направления до логовища '+q.lair);
+    return {id:q.id,title:q.title,lair:q.lair,target:q.target,hint:guide&&guide.text,
+      compass:guide&&guide.compass,distance:guide&&guide.distance,
+      accepted:!!game.quests.accepted[q.id],done:!!game.quests.done[q.id],
+      progress:game.quests.progress[q.id]||defaultQuestProgress(),reward:q.reward};
+  });
   const tagged=(game.world.maps||[]).reduce((s,m)=>s+m.monsters.filter(e=>e.lairId).length,0);
   if(!tagged) errors.push('Монстры логовищ не помечены lairId');
   const journal={active:(game.journal.active||[]).length,done:(game.journal.done||[]).length,
@@ -3580,25 +3766,26 @@ function renderShop(){
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
   if(def.id==='hall'){ renderQuestOffers(); return; }
 
-  // Оружейная/кузница — только оружие, палата/бронница — только броня.
+  // Оружейная и палата продают свой товар плюс 10% чужого; кузница перековывает всё.
   // Рынок остаётся общим лавком, но не продаёт предметы комплекта.
-  const showsWeapons=['weapons','forge','market'].includes(def.id);
-  const showsArmor=['armory','armor','market'].includes(def.id);
+  const showsWeapons=['weapons','forge','armory','market'].includes(def.id);
+  const showsArmor=['armory','armor','weapons','market'].includes(def.id);
+  const rotation=stockPeriod();
 
   if(showsWeapons){
     shopSec('Оружие · '+def.title+' · для '+h.def.name);
-    // Ассортимент оружия зависит от класса выбранного героя: магу — посохи, воину — мечи и топоры.
+    // Ассортимент зависит от дня: список циклически сдвигается на период обновления.
     const weapons=allShopWeapons().filter(w=>w.set===h.def.set||w.set==='any');
-    (stock.weapons||[]).forEach(idx=>{
-      const w=weapons[idx%weapons.length]; if(!w||isFists(w)) return; // кулаки не продаются
+    (stock.weapons||[]).forEach((idx,i)=>{
+      const w=weapons[(idx+rotation+i*2)%weapons.length]; if(!w||isFists(w)) return;
       if(def.id==='jeweler'&&w.kind==='bow') return;
       addShopWeapon(def,w,h);
     });
   }
   if(showsArmor){
     shopSec('Броня · '+ARMOR_SLOTS.length+' слотов');
-    (stock.armor||[]).forEach(idx=>{
-      const a=ARMORS[idx%ARMORS.length]; if(!a||isStartingRags(a)) return; // стартовые лохмотья не продаются
+    (stock.armor||[]).forEach((idx,i)=>{
+      const a=ARMORS[(idx+rotation+i*3)%ARMORS.length]; if(!a||isStartingRags(a)) return;
       if(stock.noHeavy&&a.def>=7) return;
       addShopArmor(def,a,h);
     });
@@ -3611,7 +3798,7 @@ function renderShop(){
     list.forEach(a=>addShopArmor(def,a,h));
   });
   // Каждый раздел усиления живёт только в своём здании.
-  if(def.id==='forge') reforgeSection(h,'weapon');
+  if(def.id==='forge') reforgeSection(h,'all');
   if(def.id==='armor') reforgeSection(h,'armor');
   if(def.id==='weapons') renderSkillTrainers('weapons');
 
@@ -4114,9 +4301,10 @@ function mapReport(){
   if(!sizes.every(s=>MAP_SIZE_PRESETS.includes(s))) errors.push('Размер карты вне пресетов 30/60/100');
   if(MINIMAP_VIEW!==30) errors.push('Миникарта должна быть 30×30');
   return {ok:!errors.length,errors,sizes,current:m.size,view:MINIMAP_VIEW,origin:minimapOrigin(m),
-    rect:minimapRect(),mapOpen:!!game.mapOpen,
+    rect:minimapRect(),mapOpen:!!game.mapOpen,geometry:bigMapGeometry(),
     fog:game.world.maps.map(x=>({size:x.size,seen:x.seen instanceof Set?x.seen.size:0})),
-    hint:mapHint?{x:mapHint.x,y:mapHint.y,title:mapHint.title,desc:mapHint.desc}:null};
+    hint:mapHint?{x:mapHint.x,y:mapHint.y,index:mapHint.index,type:mapHint.type,
+      title:mapHint.title,desc:mapHint.desc}:null};
 }
 function toggleInventory(open){
   if(!game||phase!=='play') return;
@@ -5242,7 +5430,17 @@ function drawMiniMap(m){
   ctx.save(); ctx.translate(x+hvx*s+s/2,y+hvy*s+s/2); ctx.rotate(p.dir*Math.PI/2);
   ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
   ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
-  ctx.fillText(BIOMES[m.biome].name+' · '+(game.world.current+1)+'/'+game.world.count+' · 30×30',x,y+size+11);
+  const place=m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name;
+  ctx.fillText(place+' · '+(game.world.current+1)+'/'+game.world.count+' · '+m.size+'×'+m.size,x,y+size+11);
+  ctx.fillStyle='#fde68a';
+  ctx.fillText('🗺 M — весь мир',x,y+size+24);
+}
+function minimapOpenRect(){
+  const r=minimapRect(); return {x:r.x,y:r.y+r.h+17,w:r.w,h:14};
+}
+function minimapOpenAt(px,py){
+  const r=minimapOpenRect();
+  return px>=r.x&&py>=r.y&&px<=r.x+r.w&&py<=r.y+r.h;
 }
 function minimapCellAt(px,py){
   const r=minimapRect(), m=currentMap(); if(!m) return null;
@@ -5265,31 +5463,95 @@ function showCellInfo(x,y,source){
   }
   return {x,y,seen,title,desc};
 }
-const BIG_MAP_PX=640;
+const BIG_MAP_PX=640, BIG_MAP_PAD=24;
 function bigMapCanvas(){ return document.getElementById('bigMapCanvas'); }
+/* Большая карта показывает весь мир сразу: все локации в сетке,
+   имена поселений, дороги, озёра и болота. Масштаб подстраивается под сетку,
+   поэтому 30×30 и 100×100 карты видны целиком в одном окне. */
+function bigMapGeometry(){
+  const w=game&&game.world;
+  if(!w) return null;
+  const area=BIG_MAP_PX-BIG_MAP_PAD*2;
+  const cell=Math.floor(Math.min(area/Math.max(1,w.cols),area/Math.max(1,w.rows)));
+  const ox=Math.floor((BIG_MAP_PX-cell*w.cols)/2), oy=Math.floor((BIG_MAP_PX-cell*w.rows)/2);
+  return {cell,ox,oy,cols:w.cols,rows:w.rows};
+}
+function mapTerrainCounts(m){
+  const counts={water:0,swamp:0,road:0,bridge:0,forest:0,mountain:0,settlement:0};
+  (m.cells||[]).forEach(row=>row.forEach(c=>{
+    if(c.t==='water'||c.t==='ice') counts.water++;
+    else if(c.t==='swamp') counts.swamp++;
+    else if(ROAD_KINDS.some(k=>k.id===c.t)||c.t==='bridge'||c.t==='gate') counts.road++;
+    else if(c.t==='tree') counts.forest++;
+    else if(c.t==='rock'||c.t==='mountain') counts.mountain++;
+    else if(c.t==='shop') counts.settlement++;
+  }));
+  return counts;
+}
 function drawBigMap(){
-  const cvBig=bigMapCanvas(), m=currentMap(); if(!cvBig||!m) return;
-  const g=cvBig.getContext('2d'), s=BIG_MAP_PX/m.size, p=game.player;
+  const cvBig=bigMapCanvas(); if(!cvBig||!game||!game.world) return;
+  const w=game.world, geo=bigMapGeometry(), g=cvBig.getContext('2d');
   g.fillStyle='#05070f'; g.fillRect(0,0,BIG_MAP_PX,BIG_MAP_PX);
-  for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
-    if(!m.seen.has(ckey(x,y))) continue; // неразведанное скрыто и в большом виде
-    const c=m.cells[y][x], visible=Math.max(Math.abs(x-p.x),Math.abs(y-p.y))<=2;
-    g.globalAlpha=visible?1:.45; g.fillStyle=cellMapColor(c,m);
-    g.fillRect(x*s,y*s,Math.max(1,s-1),Math.max(1,s-1));
-  }
-  g.globalAlpha=1;
-  m.monsters.forEach(e=>{
-    if(!e.alive||!m.seen.has(ckey(e.x,e.y))) return;
-    g.fillStyle='#ef4444'; g.beginPath(); g.arc(e.x*s+s/2,e.y*s+s/2,Math.max(2,s*.25),0,6.29); g.fill(); });
-  for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
-    if(!m.seen.has(ckey(x,y))) continue;
-    const c=m.cells[y][x]; if(!['shop','chest','treasure','boss'].includes(c.t)) continue;
-    g.fillStyle=c.t==='shop'?'#fbbf24':c.t==='chest'?'#fde68a':c.t==='treasure'?'#86efac':'#ef4444';
-    g.beginPath(); g.arc(x*s+s/2,y*s+s/2,Math.max(2,s*.28),0,6.29); g.fill();
-  }
-  g.fillStyle='#ffe9a8'; g.beginPath(); g.arc(p.px*s+s/2,p.py*s+s/2,Math.max(3,s*.3),0,6.29); g.fill();
+  const bySlot={};
+  w.maps.forEach(m=>{
+    const slot=m.slot||slotForIndex(m.index,w);
+    bySlot[slot.gx+','+slot.gy]=m;
+  });
+  // Дороги между соседними картами — единая сеть мира.
+  g.strokeStyle='rgba(251,191,36,.35)'; g.lineWidth=Math.max(2,geo.cell*.04);
+  w.maps.forEach(m=>{
+    const slot=m.slot||slotForIndex(m.index,w);
+    const cx=geo.ox+slot.gx*geo.cell+geo.cell/2, cy=geo.oy+slot.gy*geo.cell+geo.cell/2;
+    DIRS.forEach(v=>{
+      const nx=slot.gx+v[0], ny=slot.gy+v[1];
+      if(nx<0||ny<0||nx>=geo.cols||ny>=geo.rows||!bySlot[nx+','+ny]) return;
+      g.beginPath(); g.moveTo(cx,cy);
+      g.lineTo(geo.ox+nx*geo.cell+geo.cell/2,geo.oy+ny*geo.cell+geo.cell/2); g.stroke();
+    });
+  });
+  w.maps.forEach(m=>{
+    const slot=m.slot||slotForIndex(m.index,w);
+    const x=geo.ox+slot.gx*geo.cell, y=geo.oy+slot.gy*geo.cell, pad=Math.max(2,geo.cell*.06);
+    const size=geo.cell-pad*2;
+    const counts=mapTerrainCounts(m), total=m.size*m.size||1;
+    const biome=BIOMES[m.biome]||BIOMES.field;
+    g.fillStyle=biome.ground[0]; g.fillRect(x+pad,y+pad,size,size);
+    // Озёра и болота — доля клеток; дороги — тонкие полосы.
+    const parts=[
+      {n:counts.water,c:'#1d4ed8'},{n:counts.swamp,c:'#31532f'},
+      {n:counts.forest,c:'#2f8d4d'},{n:counts.mountain,c:'#a1a1aa'},
+      {n:counts.road,c:'#b09a6b'}
+    ];
+    let used=0;
+    parts.forEach(p=>{
+      const h=size*p.n/total; if(h<1) return;
+      g.fillStyle=p.c; g.fillRect(x+pad,y+pad+used,size,h); used+=h;
+    });
+    g.strokeStyle=m.index===w.current?'#fbbf24':'rgba(255,255,255,.22)';
+    g.lineWidth=m.index===w.current?3:1;
+    g.strokeRect(x+pad,y+pad,size,size);
+    const s=m.settlement;
+    if(s){
+      g.fillStyle=s.type==='city'?'#fde68a':'#86efac';
+      g.font='bold '+Math.max(8,Math.floor(geo.cell*.11))+'px sans-serif';
+      g.textAlign='center'; g.textBaseline='middle';
+      g.fillText((s.type==='city'?'🏙 ':'🏡 ')+s.name,x+geo.cell/2,y+geo.cell*.32);
+      g.fillStyle=s.type==='city'?'#fbbf24':'#4ade80';
+      g.beginPath(); g.arc(x+geo.cell/2,y+geo.cell*.58,Math.max(2,geo.cell*.05),0,6.29); g.fill();
+    }
+    g.fillStyle='rgba(255,255,255,.75)'; g.font=Math.max(7,Math.floor(geo.cell*.09))+'px sans-serif';
+    g.textAlign='left'; g.textBaseline='top';
+    g.fillText((m.index+1)+'. '+biome.name,x+pad+3,y+pad+3);
+  });
   const t=document.getElementById('bigMapTitle');
-  if(t) t.textContent='🗺️ Карта · '+m.size+'×'+m.size+' · '+(BIOMES[m.biome]||BIOMES.field).name;
+  if(t) t.textContent='🗺️ Весь мир · '+w.cols+'×'+w.rows+' локаций · '+w.count+' карт';
+  const info=document.getElementById('bigMapInfo');
+  if(info) info.textContent='Все поселения, дороги, озёра и болота видны сразу. Кликните по локации, чтобы узнать её название.';
+}
+function slotForIndex(index,w){
+  const slots=[];
+  for(let y=0;y<w.rows;y++) for(let x=0;x<w.cols;x++) slots.push({gx:x,gy:y});
+  return slots[index]||{gx:0,gy:0};
 }
 function toggleBigMap(open){
   if(!game||phase!=='play'||game.battle) return false;
@@ -5301,13 +5563,20 @@ function toggleBigMap(open){
   return game.mapOpen;
 }
 function bigMapCellAt(clientX,clientY){
-  const cvBig=bigMapCanvas(), m=currentMap(); if(!cvBig||!m) return null;
+  const cvBig=bigMapCanvas(), geo=bigMapGeometry(); if(!cvBig||!geo||!game) return null;
   const r=cvBig.getBoundingClientRect();
   if(clientX<r.left||clientY<r.top||clientX>=r.right||clientY>=r.bottom) return null;
   const cx=(clientX-r.left)*BIG_MAP_PX/Math.max(1,r.width), cy=(clientY-r.top)*BIG_MAP_PX/Math.max(1,r.height);
-  const s=BIG_MAP_PX/m.size;
-  const x=clamp(Math.floor(cx/s),0,m.size-1), y=clamp(Math.floor(cy/s),0,m.size-1);
-  return {x,y,seen:m.seen.has(ckey(x,y))};
+  const gx=Math.floor((cx-geo.ox)/geo.cell), gy=Math.floor((cy-geo.oy)/geo.cell);
+  if(gx<0||gy<0||gx>=geo.cols||gy>=geo.rows) return null;
+  const m=game.world.maps.find(x=>{
+    const s=x.slot||slotForIndex(x.index,game.world);
+    return s.gx===gx&&s.gy===gy;
+  });
+  if(!m) return null;
+  return {gx,gy,index:m.index,name:m.settlement&&m.settlement.name,
+    type:m.settlement&&m.settlement.type,biome:(BIOMES[m.biome]||BIOMES.field).name,
+    hall:m.settlement&&m.settlement.hall,seen:true};
 }
 /* Тёмные панели врагов на карте: имя, живое HP и MP, если поле действительно есть. */
 const MAP_ENEMY_PANEL_W=92, MAP_ENEMY_PANEL_H=30;
@@ -5630,7 +5899,13 @@ $('shopClose').onclick=()=>toggleShop(false);
 $('invClose').onclick=()=>toggleInventory(false);
 $('bigMapClose').onclick=()=>toggleBigMap(false);
 if(bigMapCanvas()) bigMapCanvas().addEventListener('pointerdown',e=>{
-  const c=bigMapCellAt(e.clientX,e.clientY); if(c) showCellInfo(c.x,c.y,'Большая карта');
+  const c=bigMapCellAt(e.clientX,e.clientY);
+  if(!c) return;
+  const title=c.name||('Локация '+(c.index+1)), desc=c.type?(SETTLEMENT_TYPE_NAME[c.type]+' · '+c.biome):c.biome;
+  mapHint={x:c.gx,y:c.gy,index:c.index,type:c.type,title,desc,t:performance.now()};
+  toast('Большая карта: '+title+' ('+desc+')');
+  const el=document.getElementById('bigMapInfo');
+  if(el) el.innerHTML='<b>'+esc(title)+'</b> · '+esc(desc);
 });
 $('spellClose').onclick=closeSpellMenu;
 $('logClose').onclick=()=>toggleEventLog(false);
@@ -5665,9 +5940,16 @@ cv.addEventListener('pointermove',e=>{
   if(!game||game.battle||game.invOpen||game.shopOpen) return;
   const p=pointerCanvasPos(e); showMapHintAt(p.x,p.y);
 });
+cv.addEventListener('dblclick',e=>{
+  if(!game||game.battle||game.invOpen||game.shopOpen||game.mapOpen) return;
+  const p=pointerCanvasPos(e), r=minimapRect();
+  if(p.x>=r.x&&p.y>=r.y&&p.x<=r.x+r.w&&p.y<=r.y+r.h) toggleBigMap(true);
+});
 cv.addEventListener('pointerdown',e=>{
   if(game&&!game.battle&&!game.invOpen&&!game.shopOpen){
-    const p=pointerCanvasPos(e), mini=minimapCellAt(p.x,p.y);
+    const p=pointerCanvasPos(e);
+    if(minimapOpenAt(p.x,p.y)){ toggleBigMap(true); return; } // ссылка под миникартой открывает весь мир
+    const mini=minimapCellAt(p.x,p.y);
     if(mini){ showCellInfo(mini.x,mini.y,'Миникарта'); return; } // клик по миникарте не двигает героя
     showMapHintAt(p.x,p.y);
   }
@@ -5898,7 +6180,7 @@ function monsterReport(){
   const budget=battleBudget({levels:[1,2,3],heroes:3,elites:1});
   if(ACTIVE_ENEMY_LIMIT!==12||budget!==Math.max(16,Math.min(80,6*2+3*6+4)))
     errors.push('Неверный бюджет боя или лимит активных врагов');
-  const packs=(game?game.world.maps:[]).map(m=>m.monsters.length);
+  const packs=(game?game.world.maps:[]).flatMap(m=>m.packSizes||[]);
   const badPacks=packs.filter(n=>n<4||n>8);
   if(badPacks.length) errors.push('Стаи вне диапазона 4–8: '+badPacks.join(','));
   const lairs={};
@@ -6161,31 +6443,30 @@ function shopReport(){
     finally{ game.shopOpen=true; }
   }
   if(!sellBlocked) errors.push('Продажа без открытой лавки не заблокирована');
-  // Ассортименты разделены: оружейные лавки не продают броню, бронницы — оружие.
+  // Перекрёстная продажа: оружейная держит ~10% брони, палата — ~10% оружия.
   const weaponShops=['weapons','forge'], armorShops=['armory','armor'];
-  const wrongWeapon=weaponShops.filter(id=>(SHOP_STOCK[id]||{}).armor.length||TIERED_EQUIPMENT.some(a=>(a.shops||[]).includes(id)));
-  const wrongArmor=armorShops.filter(id=>(SHOP_STOCK[id]||{}).weapons.length);
-  const wrongTiered=TIERED_EQUIPMENT.filter(a=>{
-    const shops=a.shops||[];
-    return shops.some(s=>['market','forge','weapons'].includes(s))||
-      (shops.includes('magic')&&shops.some(s=>armorShops.includes(s))) ||
-      (a.tier<=3?!shops.includes('magic')||shops.some(s=>armorShops.includes(s)):!shops.some(s=>armorShops.includes(s)));
-  });
-  if(wrongWeapon.length) errors.push('Оружейные лавки продают броню: '+wrongWeapon.join(', '));
-  if(wrongArmor.length) errors.push('Бронницы продают оружие: '+wrongArmor.join(', '));
-  if(wrongTiered.length) errors.push('Предметы комплекта в чужих лавках: '+wrongTiered.map(a=>a.id).join(', '));
-  const reforge={weaponShop:def.id==='forge',armorShop:def.id==='armor'};
-  if(opened&&def.id==='forge'&&!/Перековка оружия/.test(shopText)) errors.push('В кузнице нет раздела перековки оружия');
-  if(opened&&def.id==='forge'&&/Усиление доспехов/.test(shopText)) errors.push('В кузнице продаётся усиление брони');
+  const crossSell={weaponsArmor:(SHOP_STOCK.weapons.armor||[]).length,armoryWeapons:(SHOP_STOCK.armory.weapons||[]).length};
+  const wrongWeapon=weaponShops.filter(id=>id!=='weapons'&&(SHOP_STOCK[id]||{}).armor.length);
+  const wrongArmor=armorShops.filter(id=>id!=='armory'&&(SHOP_STOCK[id]||{}).weapons.length);
+  if(!crossSell.weaponsArmor) errors.push('Оружейная не продаёт 10% брони');
+  if(!crossSell.armoryWeapons) errors.push('Оружейная палата не продаёт 10% оружия');
+  if(crossSell.weaponsArmor>(SHOP_STOCK.armor.armor||[]).length*STOCK_RULES.crossSellRatio+1)
+    errors.push('Оружейная продаёт слишком много брони');
+  if(crossSell.armoryWeapons>(SHOP_STOCK.weapons.weapons||[]).length*STOCK_RULES.crossSellRatio+1)
+    errors.push('Палата продаёт слишком много оружия');
+  if(wrongWeapon.length) errors.push('Кузница продаёт броню: '+wrongWeapon.join(', '));
+  if(wrongArmor.length) errors.push('Бронница продаёт оружие: '+wrongArmor.join(', '));
+  const reforge={weaponShop:def.id==='forge',armorShop:def.id==='armor',universalForge:def.id==='forge'};
+  if(opened&&def.id==='forge'&&!/Перековка · кузница/.test(shopText)) errors.push('В кузнице нет раздела перековки');
   if(opened&&def.id==='armor'&&!/Усиление доспехов/.test(shopText)) errors.push('В броннице нет раздела усиления брони');
-  if(opened&&def.id==='armor'&&/Перековка оружия/.test(shopText)) errors.push('В броннице продаётся перековка оружия');
+  if(opened&&def.id==='armor'&&/Перековка/.test(shopText)) errors.push('В броннице продаётся перековка');
   return {
     ok:!errors.length, errors, open:opened, shop:def.id, title:def.title,
     gold:game?game.gold:0, crystals:crystalCount(),
     stockKeys:stock?Object.keys(stock):[], buyButtons:priceButtons.length,
     disabledBuyButtons:priceButtons.filter(b=>b.disabled).length,
     sellables:sellables.length, sellBlocked,
-    separation:{weaponShops,armorShops,wrongWeapon,wrongArmor,wrongTiered:wrongTiered.map(a=>a.id)},
+    separation:{weaponShops,armorShops,wrongWeapon,wrongArmor,crossSell},
     reforge,
     arithmetic:{priceButtons:priceButtons.length,overBudget:over.length,forgeRule:'1 + quality + level'}
   };
@@ -6246,6 +6527,80 @@ function treesReport(){
     state:{ready:TREES_STATE.ready,error:TREES_STATE.error,source:TREES_STATE.source}
   };
 }
+function difficultyReport(){
+  const errors=[],maps=game&&game.world?game.world.maps:[];
+  const all=[];
+  maps.forEach(m=>{
+    const entry=m.entry||{x:0,y:0};
+    (m.monsters||[]).forEach(e=>{
+      const dist=Math.abs(e.x-entry.x)+Math.abs(e.y-entry.y);
+      const band=e.band||distanceBand(dist).id;
+      all.push({map:m.index,id:e.id,name:e.name,x:e.x,y:e.y,dist,band,elite:!!e.elite,boss:!!e.isBoss});
+    });
+    if(m.boss) all.push({map:m.index,id:m.boss.def&&m.boss.def.id,name:m.boss.def&&m.boss.def.name,
+      x:m.boss.x,y:m.boss.y,dist:Math.abs(m.boss.x-entry.x)+Math.abs(m.boss.y-entry.y),
+      band:m.boss.band||'outer',elite:false,boss:true});
+  });
+  const easy=game&&game.world&&game.world.difficulty==='easy';
+  const start=all.filter(e=>e.map===0&&e.dist<=8&&e.id==='mouse');
+  const nearOthers=all.filter(e=>e.dist<=8&&e.id!=='mouse');
+  const wyvernNear=all.filter(e=>e.id==='wyvern'&&e.dist<=19);
+  const easyBad=easy?all.filter(e=>e.dist<=8&&(e.elite||e.boss||e.id!=='mouse')):[];
+  const bandMismatch=all.filter(e=>e.band!==(easy&&e.dist<=8?'near':distanceBand(e.dist).id));
+  if(!all.length) errors.push('Нет монстров для проверки зон');
+  if(nearOthers.length) errors.push('В стартовом радиусе не мыши: '+nearOthers.map(e=>e.id).join(', '));
+  if(wyvernNear.length) errors.push('Виверна ближе дальних пределов: '+wyvernNear.map(e=>e.map+':'+e.dist).join(', '));
+  if(easyBad.length) errors.push('Лёгкая сложность: элиты/боссы в стартовом радиусе');
+  if(bandMismatch.length) errors.push('Монстр вне своей зоны расстояния: '+bandMismatch.map(e=>e.map+':'+e.id+':'+e.dist+'/'+e.band).join(', '));
+  if(!start.length) errors.push('На стартовой карте нет мышей в стартовом радиусе');
+  return {ok:!errors.length,errors,easy,total:all.length,near:start.length,
+    bands:DISTANCE_BANDS.map(b=>({id:b.id,max:b.max,monsters:b.monsters})),
+    samples:all.slice(0,30),violations:{nearOthers:nearOthers.length,wyvernNear:wyvernNear.length,
+      easyBad:easyBad.length,bandMismatch:bandMismatch.length}};
+}
+function settlementReport(){
+  const errors=[],maps=game&&game.world?game.world.maps:[];
+  const settlements=maps.map(m=>({map:m.index,name:m.settlement&&m.settlement.name,
+    type:m.settlement&&m.settlement.type,buildings:(m.settlement&&m.settlement.buildings||[]).map(b=>b.kind),
+    hall:m.settlement&&m.settlement.hall,guide:m.lair&&m.lair.guide?m.lair.guide.text:null}));
+  settlements.forEach(s=>{
+    if(!s.name) errors.push('Нет имени поселения на карте '+s.map);
+    if(!['city','village'].includes(s.type)) errors.push('Некорректный тип поселения на карте '+s.map);
+    if(!s.hall) errors.push('Нет ратуши на карте '+s.map);
+    if(s.type==='city'){
+      const need=['magic','forge','weapons','armor','tavern'];
+      need.forEach(k=>{ if(!s.buildings.includes(k)) errors.push('В городе '+s.name+' нет '+k); });
+    }
+    if(!s.guide) errors.push('Нет подсказки направления на карте '+s.map);
+  });
+  return {ok:!errors.length,errors,count:settlements.length,settlements,
+    names:[...new Set(settlements.map(s=>s.name))]};
+}
+function stockReport(){
+  const errors=[];
+  if(!STOCK_RULES.periodMinutes) errors.push('Нет периода обновления стока');
+  const weapons=SHOP_STOCK.weapons||{},armory=SHOP_STOCK.armory||{};
+  if(!weapons.armor||!weapons.armor.length) errors.push('Оружейная не продаёт броню');
+  if(!armory.weapons||!armory.weapons.length) errors.push('Бронница не продаёт оружие');
+  const period=stockPeriod();
+  return {ok:!errors.length,errors,rules:{...STOCK_RULES},period,
+    gameMinutes:game?Math.floor(Number(game.gameMinutes)||0):0,
+    crossSell:{weaponsArmor:(weapons.armor||[]).length,armoryWeapons:(armory.weapons||[]).length}};
+}
+function worldMapReport(){
+  const errors=[],w=game&&game.world;
+  if(!w) return {ok:false,errors:['Мир не загружен']};
+  const canvas=document.getElementById('bigMapCanvas');
+  const cell=canvas?canvas.width/Math.max(w.cols,w.rows):0;
+  if(cell<1) errors.push('Большая карта не вмещает весь мир');
+  const names=w.maps.map(m=>m.settlement&&m.settlement.name).filter(Boolean);
+  if(new Set(names).size<Math.min(w.count,SETTLEMENTS.length)) errors.push('Имена поселений не уникальны');
+  return {ok:!errors.length,errors,cols:w.cols,rows:w.rows,count:w.count,
+    canvas:canvas?{w:canvas.width,h:canvas.height}:null,cell:+cell.toFixed(3),geometry:bigMapGeometry(),names,
+    water:w.maps.filter(m=>Array.from({length:m.size},(_,y)=>Array.from({length:m.size},(_,x)=>m.cells[y][x].t==='water')).some(row=>row.some(Boolean))).length,
+    swamp:w.maps.filter(m=>m.cells.some(row=>row.some(c=>c.t==='swamp'))).length,
+    roads:w.maps.filter(m=>m.cells.some(row=>row.some(c=>ROAD_KINDS.some(k=>k.id===c.t)))).length};
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
@@ -6300,7 +6655,7 @@ window.__mm6Debug={
   completeQuest:(id)=>completeQuest(id),
   forceQuestKill:(lairId)=>{
     if(!game||!game.world) return false;
-    const map=game.world.maps.find(m=>m.lair&&m.lair.id===lairId);
+    const map=game.world.maps.find(m=>m.lair&&m.lair.template&&m.lair.template.id===lairId);
     if(!map) return false;
     map.monsters.filter(e=>e.lairId===lairId).forEach(e=>{ e.alive=false; trackQuestKills(e); });
     return {ok:true,report:questReport()};
@@ -6366,6 +6721,11 @@ window.__mm6Debug={
     return {before,pending,after:party().map(h=>Math.floor(h.exp||0)),state:window.__mm6Debug.progressionState()};
   },
   shopReport:()=>shopReport(),
+  difficultyReport:()=>difficultyReport(),
+  settlementReport:()=>settlementReport(),
+  stockReport:()=>stockReport(),
+  worldMapReport:()=>worldMapReport(),
+  advanceTime:(minutes)=>({period:advanceGameTime(minutes),stock:stockReport()}),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
   battleHudReport:()=>{
