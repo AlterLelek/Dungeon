@@ -13397,9 +13397,10 @@
     "path": "shared/assets/master/buildings/house_straw_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Соломенная хижина",
+    "sign_text": "Хижина «Под Соломкой»",
     "sign_icon": "house",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Жилой дом"
     ],
@@ -13419,9 +13420,10 @@
     "path": "shared/assets/master/buildings/house_tile_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Черепичный дом",
+    "sign_text": "Дом «Черепица и Кофе»",
     "sign_icon": "house",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Жилой дом"
     ],
@@ -13441,9 +13443,10 @@
     "path": "shared/assets/master/buildings/stone_house_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Каменный дом",
+    "sign_text": "Каменный дом «У Глины»",
     "sign_icon": "house",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Жилой дом"
     ],
@@ -13463,9 +13466,10 @@
     "path": "shared/assets/master/buildings/barn_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Амбар",
-    "sign_icon": "barn",
+    "sign_text": "Амбар «Золотой Сноп»",
+    "sign_icon": "sheaf",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Хозпостройка"
     ],
@@ -13484,15 +13488,19 @@
     "path": "shared/assets/master/buildings/well_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Колодец",
-    "sign_icon": "well",
+    "sign_text": "Колодец «Тихий Вход»",
+    "sign_icon": "bucket",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
-      "Колодец"
+      "Колодец",
+      "Воровской притон"
     ],
     "tags": [
       "building",
-      "well"
+      "well",
+      "thieves",
+      "hidden"
     ],
     "file": "well_0.svg",
     "used_in": [],
@@ -13505,11 +13513,12 @@
     "path": "shared/assets/master/buildings/forge_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Кузница",
-    "sign_icon": "anvil_hammer",
+    "sign_text": "Кузница «Гром и Наковальня»",
+    "sign_icon": "anvil",
     "shop_kind": [
       "forge"
     ],
+    "floors": 1,
     "categories": [
       "Мастерская",
       "Кузница"
@@ -13529,11 +13538,12 @@
     "path": "shared/assets/master/buildings/shop_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Лавка",
+    "sign_text": "Лавка «Мешок и Монета»",
     "sign_icon": "coin_sack",
     "shop_kind": [
       "market"
     ],
+    "floors": 1,
     "categories": [
       "Магазин",
       "Рынок"
@@ -13553,17 +13563,19 @@
     "path": "shared/assets/master/buildings/tavern_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Таверна",
+    "sign_text": "Таверна «Пенная Кружка»",
     "sign_icon": "mug",
     "shop_kind": [
       "tavern"
     ],
+    "floors": 2,
     "categories": [
       "Таверна"
     ],
     "tags": [
       "building",
-      "tavern"
+      "tavern",
+      "two-floor"
     ],
     "file": "tavern_0.svg",
     "used_in": [],
@@ -13576,9 +13588,10 @@
     "path": "shared/assets/master/buildings/shed_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Сарай",
-    "sign_icon": "shed",
+    "sign_text": "Сарай «Старые Грабли»",
+    "sign_icon": "rake",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Хозпостройка"
     ],
@@ -13597,9 +13610,10 @@
     "path": "shared/assets/master/buildings/stable_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Конюшня",
-    "sign_icon": "stable",
+    "sign_text": "Конюшня «Тихий Овёс»",
+    "sign_icon": "horseshoe",
     "shop_kind": null,
+    "floors": 1,
     "categories": [
       "Конюшня"
     ],
@@ -13618,13 +13632,14 @@
     "path": "shared/assets/master/buildings/armory_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Оружейня",
-    "sign_icon": "shield_sword",
+    "sign_text": "Оружейная «Острый Клинок»",
+    "sign_icon": "sword",
     "shop_kind": [
       "weapons",
       "armory",
       "armor"
     ],
+    "floors": 1,
     "categories": [
       "Магазин",
       "Оружейная"
@@ -13645,11 +13660,12 @@
     "path": "shared/assets/master/buildings/jewelry_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Ювелирная лавка",
-    "sign_icon": "ring_gem",
+    "sign_text": "Ювелирная «Изумрудный Глаз»",
+    "sign_icon": "gem",
     "shop_kind": [
       "jeweler"
     ],
+    "floors": 1,
     "categories": [
       "Магазин",
       "Ювелир"
@@ -13669,11 +13685,12 @@
     "path": "shared/assets/master/buildings/magic_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Магазин магии",
-    "sign_icon": "scroll",
+    "sign_text": "Магазин магии «Звёздная Склянка»",
+    "sign_icon": "potion_star",
     "shop_kind": [
       "magic"
     ],
+    "floors": 1,
     "categories": [
       "Магазин магии"
     ],
@@ -13693,18 +13710,20 @@
     "path": "shared/assets/master/buildings/inn_0.svg",
     "type": "building",
     "group": "Здания",
-    "sign_text": "Гостиница",
+    "sign_text": "Гостиница «Спокойная Подушка»",
     "sign_icon": "bed",
     "shop_kind": [
       "inn"
     ],
+    "floors": 2,
     "categories": [
       "Гостиница"
     ],
     "tags": [
       "building",
       "inn",
-      "hotel"
+      "hotel",
+      "two-floor"
     ],
     "file": "inn_0.svg",
     "used_in": [],
