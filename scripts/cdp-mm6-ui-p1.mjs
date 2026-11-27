@@ -116,6 +116,12 @@ try {
   await ev(`document.getElementById('btnInv').click()`);
   await sleep(350);
   check('инвентарь открыт', await ev(`!document.getElementById('inventory').classList.contains('hidden')`));
+  const grid = await ev(`window.__mm6Debug.inventoryGridReport()`);
+  check('сетка инвентаря фиксированная 9×16 без скролла', grid.expected.cols === 9 &&
+    grid.expected.rows === 16 && grid.expected.cells === 144 && grid.cells === 144 &&
+    grid.columns === 9 && grid.rows === 16 && grid.overflow === 'hidden' &&
+    grid.scroll.height === grid.scroll.content,
+    JSON.stringify(grid));
   const geomExpr = `(()=>{const q=(s)=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect(),c=getComputedStyle(e);
     return {x:+r.x.toFixed(2),y:+r.y.toFixed(2),w:+r.width.toFixed(2),h:+r.height.toFixed(2),min:c.minHeight,max:c.maxHeight,ov:c.overflowY};};
     return {detail:q('#invDetail'),desc:q('.mq-desc'),mannequin:q('#mannequin'),cells:document.querySelectorAll('.invCell').length};})()`;
@@ -141,6 +147,32 @@ try {
       same(g0.detail, g2.detail) && same(g0.desc, g2.desc) && same(g0.mannequin, g2.mannequin),
       JSON.stringify({ before: [g0.detail, g0.desc, g0.mannequin], after: [g2.detail, g2.desc, g2.mannequin] }));
   }
+
+  // База + два слоя школы: проверяем и данные, и реальный DOM.
+  const overlayUid = await ev(`window.__mm6Debug.addCatalogItem('sword_dark_ice')`);
+  const overlay = await ev(`(()=>{const paths=window.__mm6Debug.renderedItemLayers('${overlayUid}');
+    const cell=[...document.querySelectorAll('.invCell')].find(b=>b.title.startsWith('Тёмный ледяной меч'));
+    return {paths,title:cell?cell.title:null,
+      imgs:cell?[...cell.querySelectorAll('img')].map(i=>i.getAttribute('src')):[]};})()`);
+  check('оверлеи школ собираются поверх базового SVG', overlayUid && overlay.paths.length === 3 &&
+    overlay.paths[0].includes('/weapons/sword.svg') && overlay.paths[1].includes('/elements/dark.svg') &&
+    overlay.paths[2].includes('/elements/water.svg') &&
+    JSON.stringify(overlay.imgs) === JSON.stringify(overlay.paths),
+    JSON.stringify(overlay));
+  check('русское имя из каталога видно в инвентаре', !!overlay.title &&
+    overlay.title.startsWith('Тёмный ледяной меч'), JSON.stringify(overlay.title));
+
+  // Жёсткий максимум: добавляем 200 предметов, в DOM остаётся ровно 144 клетки.
+  const hardMax = await ev(`(()=>{const g=window.__mm6State(),start=g.bag.length;
+    for(let i=0;i<200;i++) g.bag.push({uid:'grid-fill-'+i,count:1,cost:0,sell:0,type:'misc',
+      name:'Заполнитель '+i,icon:'•',weight:0});
+    window.__mm6Debug.toggleInventory(true);
+    const r=window.__mm6Debug.inventoryGridReport();
+    g.bag.splice(start,200); window.__mm6Debug.toggleInventory(true);
+    return r;})()`);
+  check('сетка не растёт сверх 144 клеток', hardMax.cells === 144 && hardMax.items <= 144 &&
+    hardMax.overflow === 'hidden' && hardMax.scroll.height === hardMax.scroll.content,
+    JSON.stringify(hardMax));
   await ev(`document.getElementById('invClose').click()`);
   await sleep(200);
 

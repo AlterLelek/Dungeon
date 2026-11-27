@@ -116,6 +116,43 @@ try {
     initial.weight === 0 && initial.totalWeight === initial.gearWeight && initial.ok,
     JSON.stringify({ weight: initial.weight, total: initial.totalWeight, gear: initial.gearWeight }));
 
+  // Каталог ёмкостей продолжает тиры PR #24, но задаёт назначение и полный вес.
+  const catalog = await ev('window.__mm6Debug.itemsReport()');
+  check('каталог ёмкостей: назначение, полный вес и объём', catalog.ok &&
+    catalog.containers.chest.purpose === 'броня' && catalog.containers.chest.weight === 10 &&
+    catalog.containers.chest.volume === 12 && catalog.containers.chest.worn === false &&
+    catalog.containers.bag.purpose === 'оружие' && catalog.containers.bag.weight === 5 &&
+    catalog.containers.bag.volume === 16 && catalog.containers.bag.worn === false &&
+    catalog.containers.purse.purpose === 'травы' && catalog.containers.purse.weight === 0.3 &&
+    catalog.containers.purse.volume === 4 && catalog.containers.purse.worn === true &&
+    catalog.containers.belt.purpose === 'свитки' && catalog.containers.belt.weight === 0.4 &&
+    catalog.containers.belt.volume === 6 && catalog.containers.belt.worn === true,
+    JSON.stringify(catalog.containers));
+  check('классы 1/2/3 дают +2/+4/+6 и требуют носку', catalog.containerClasses.length === 3 &&
+    catalog.containerClasses.map(c => c.slots).join(',') === '2,4,6' &&
+    catalog.containerClasses.map(c => c.rank).join(',') === 'novice,leading,expert' &&
+    catalog.containerClasses.map(c => c.tier).join(',') === 'leather,reinforced,enchanted',
+    JSON.stringify(catalog.containerClasses));
+  const bagUid = await ev(`window.__mm6Debug.addCatalogItem('bag_fine')`);
+  const bagCatalog = await ev(`(()=>{const g=window.__mm6State(),it=g.bag.find(x=>x.uid==='${bagUid}');
+    return it?{id:it.id,weight:it.weight,capacity:it.capacity,kind:it.containerKind,tier:it.tier,mastery:it.mastery}:null;})()`);
+  check('предмет ёмкости из каталога несёт вес, слоты и ранг', !!bagUid && bagCatalog &&
+    bagCatalog.id === 'bag_fine' && bagCatalog.weight === 5.4 && bagCatalog.capacity === 20 &&
+    bagCatalog.kind === 'bag' && bagCatalog.tier === 'reinforced' && bagCatalog.mastery === 'leading',
+    JSON.stringify(bagCatalog));
+  const wornTogether = await ev(`(()=>{const d=window.__mm6Debug,chest=d.addCatalogItem('chest_plain');
+    const installed=[d.installContainerItem('${bagUid}'),d.installContainerItem(chest)];
+    const rows=d.containerReport().containers.filter(c=>c.id==='bag'||c.id==='chest');
+    const g=window.__mm6State();
+    ['${bagUid}',chest].forEach(uid=>{const i=g.bag.findIndex(x=>x.uid===uid);if(i>=0)g.bag.splice(i,1);});
+    return {chest:!!chest,installed,rows:rows.map(c=>({id:c.id,available:c.available,capacity:c.capacity}))};})()`);
+  check('инвентарные сундук и мешок надеваются одновременно', wornTogether.chest &&
+    wornTogether.installed.every(Boolean) && wornTogether.rows.length === 2 &&
+    wornTogether.rows.every(c => c.available) &&
+    wornTogether.rows.find(c => c.id === 'bag').capacity === 20 &&
+    wornTogether.rows.find(c => c.id === 'chest').capacity === 14, JSON.stringify(wornTogether));
+  await ev(`(()=>{const g=window.__mm6State(),i=g.bag.findIndex(x=>x.uid==='${bagUid}');if(i>=0)g.bag.splice(i,1);return true;})()`);
+
   // Переполнение: все подходящие контейнеры закрыты, предмет обязан остаться в инвентаре.
   await ev(`(()=>{window.__mm6Debug.setContainerCapacity('belt',0);
     window.__mm6Debug.setContainerCapacity('pockets',0);
