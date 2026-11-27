@@ -59,6 +59,13 @@ button,input,select{font-family:inherit}
 .tq-row[data-side="enemy"]{border-color:rgba(252,165,165,.32);color:#fca5a5}
 .tq-row[data-side="enemy"].active{border-color:#fca5a5;color:#fecaca;box-shadow:0 0 9px rgba(252,165,165,.25)}
 @keyframes tq-rise{from{transform:translateY(18px);opacity:.25}to{transform:translateY(0);opacity:1}}
+/* Стилистические эффекты боя: короткая вспышка по краю и тряска кадра. */
+#fxEdge{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+  box-shadow:inset 0 0 0 3px var(--fx-color,#fff),inset 0 0 38px 8px var(--fx-color,#fff);
+  transition:opacity .12s linear}
+#fxEdge.on{opacity:.62}
+#stage.fx-shake{animation:fx-shake .18s linear}
+@keyframes fx-shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,1px)}45%{transform:translate(3px,-2px)}70%{transform:translate(-2px,2px)}}
 .pcard .ptop{display:flex;align-items:center;gap:4px}
 .pcard .pemoji{font-size:17px}
 .pcard .pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
@@ -359,6 +366,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="app">
   <div id="stage">
     <canvas id="cv" width="640" height="360" aria-label="Авантюрист"></canvas>
+    <div id="fxEdge" aria-hidden="true"></div>
     <div id="party" class="hidden"></div>
     <div id="turnQueue" class="hidden" aria-label="Очередность ходов"></div>
   </div>
@@ -447,6 +455,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <div class="setRow"><span class="setLabel">Мелодия</span><input type="number" id="setMelody" min="0" max="10" step="1" value="5"></div>
     <div class="setRow"><span class="setLabel">Темп (мс)</span><input type="number" id="setTempo" min="300" max="1200" step="100" value="600"></div>
     <div class="setRow"><span class="setLabel">Тема</span><select id="setMelodyTheme"><option value="town">Городская 🎵</option><option value="cave">Подземелье</option><option value="elven">Эльфийская</option><option value="dwarven">Гномия</option><option value="dice">Кости 🎲</option></select></div>
+    <div class="setCheck"><input type="checkbox" id="setSpeech"><span>🗣 Озвучивать события (если доступно)</span></div>
   </div></details>
   <details class="setAcc"><summary>🛡️ Магия и монстры</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">🛡️ Сила щита</span><input type="number" id="setShieldVal" min="1" max="10" step="1" value="3"></div>
@@ -528,7 +537,8 @@ import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
-import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound } from '../dungeon28/audio.js';
+import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound,
+  audioEngineReport, resetAudioStats, SFX_EVENTS, SFX_VOICE_LIMIT } from '../dungeon28/audio.js';
 import { initUnifiedLaunch } from '../shared/launch.js';
 import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 
@@ -706,7 +716,7 @@ function toggleEventLog(open){
   game.logOpen=show;
   $('eventLog').classList.toggle('hidden',!show);
   if(show) renderEventLog(false);
-  updateControls(); beep(430,.05);
+  updateControls(); sfx('ui');
   return show;
 }
 function beep(freq,dur){ try{
@@ -719,6 +729,49 @@ function beep(freq,dur){ try{
   g.gain.setValueAtTime(vol,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);
   o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur);
 }catch(e){} }
+/* Звуковые события часть 8: WebAudio-синтез, 64 голоса с запасом, вспышки и тряска. */
+const AUDIO_EVENT_LOG=[];
+const FX_STATE={flashes:0,shakes:0,lastFlash:null,lastShakeAt:0};
+const SPEECH_STATE={requested:0,spoken:0,fallback:0,last:null};
+const SPELL_SCHOOL={fire:'flame',heal:'light',heal_weak:'light',heal_strong:'light',heal_all:'light',
+  bless:'light',light:'light',mana:'water',ice:'water',quake:'earth',shield:'earth',
+  wind:'wind',lightning:'wind',lightning_weak:'wind',lightning_strong:'wind',lightning_all:'wind',
+  poison:'dark',sleep:'dark',stun:'dark',curse:'dark',vampire:'dark'};
+function sfx(event,element){
+  const name=SFX_EVENTS.includes(event)?event:'ui';
+  AUDIO_EVENT_LOG.push({event:name,t:performance.now()});
+  if(AUDIO_EVENT_LOG.length>200) AUDIO_EVENT_LOG.shift();
+  playSound(name);
+  if(element) edgeFlash(element);
+  return name;
+}
+function edgeFlash(element){
+  const el=$('fxEdge'); if(!el) return false;
+  const school=SCHOOLS.find(s=>s.id===element||s.layer===element||s.name===element);
+  const color=(school&&school.color)||({flame:'#d94a20',water:'#2f78b5',earth:'#6b7a3c',
+    wind:'#d5e0e6',dark:'#42206e',light:'#f2c94c'}[element]||'#ffe9b0');
+  el.style.setProperty('--fx-color',color);
+  el.classList.add('on'); FX_STATE.flashes++; FX_STATE.lastFlash=element||'light';
+  clearTimeout(el._fxTimer); el._fxTimer=setTimeout(()=>el.classList.remove('on'),180);
+  return true;
+}
+function shakeScreen(){
+  const stage=$('stage'); if(!stage) return false;
+  stage.classList.remove('fx-shake'); void stage.offsetWidth; stage.classList.add('fx-shake');
+  FX_STATE.shakes++; FX_STATE.lastShakeAt=performance.now();
+  clearTimeout(stage._shakeTimer); stage._shakeTimer=setTimeout(()=>stage.classList.remove('fx-shake'),200);
+  return true;
+}
+/* Флаг озвучки выключен по умолчанию; при lack голоса/API тихо откатываемся к тексту. */
+function speakEvent(text){
+  SPEECH_STATE.requested++; SPEECH_STATE.last=String(text||'');
+  if(!settings||settings.speech!==true){ SPEECH_STATE.fallback++; return false; }
+  try{
+    if(typeof SpeechSynthesisUtterance!=='function'||!window.speechSynthesis){ SPEECH_STATE.fallback++; return false; }
+    const u=new SpeechSynthesisUtterance(String(text||'')); u.lang='ru-RU'; u.volume=.7;
+    window.speechSynthesis.speak(u); SPEECH_STATE.spoken++; return true;
+  }catch(e){ SPEECH_STATE.fallback++; return false; }
+}
 function record(id){ const r=GAME_RECORDS.find(x=>x.id===id); return r?r.text:''; }
 function recordAnnounce(id,got){
   if(!got) return;
@@ -1001,7 +1054,7 @@ const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
-const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim'];
+const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','speech'];
 function normalizeSettings(raw){
   const s=Object.assign({},DEFAULT_SETTINGS,raw||{});
   Object.entries(SETTING_RANGES).forEach(([key,[min,max]])=>{
@@ -1036,7 +1089,8 @@ function syncSettings(){
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
-    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim'};
+    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
+    setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
 }
 function bindSettings(){
@@ -1069,7 +1123,8 @@ function bindSettings(){
     });
   });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
-    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim'};
+    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
+    setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{ settings[key]=el.checked; saveSettings(); });
   });
@@ -1703,7 +1758,7 @@ function startGame(diffId,a,b){
   $('party').classList.remove('hidden');
   updateParty(); updateControls();
   toast('Сложность: '+d.name+' · карт: '+game.world.count);
-  beep(540,.12);
+  sfx('ui');
   return game;
 }
 /* Полное сохранение мира: рельеф, дороги, мосты, флора и сезон хранятся в cells. */
@@ -2592,7 +2647,7 @@ function buildingReply(cell){
 function interactBuilding(cell){
   const speaker=buildingTitleOf(cell), text=buildingReply(cell);
   toast(text,'npc',speaker);
-  game.msg=text; beep(180,.08);
+  game.msg=text; sfx('ui');
   return false;
 }
 function openBuilding(cell){
@@ -2616,7 +2671,7 @@ function relativeMove(forward,side){
 function turnPlayer(d){
   if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
   game.player.dir=(game.player.dir+d+4)%4;
-  game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; beep(330,.05);
+  game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; sfx('ui');
 }
 function tryMove(dx,dy){
   if(phase!=='play'||!game||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
@@ -2628,14 +2683,14 @@ function tryMove(dx,dy){
   if(e){ startBattle(battleGroup(e),null); game.msg='Враги преградили путь: '+battleGroup(e).map(x=>x.name).join(', ')+'.'; return; }
   const c=m.cells[ny][nx];
   if(c.water&&c.t!=='bridge'&&currentSeason()!=='winter'){
-    game.msg='Глубоко: вода непроходима.'; toast('Глубоко'); beep(120,.05); return;
+    game.msg='Глубоко: вода непроходима.'; toast('Глубоко'); sfx('miss'); return;
   }
   const stepCost=enterTurnCost(c);
   if(isBlocking(c)){
     if(c.t==='boss'){ startBattle([m.boss.def,...battleGroup(null)],m); return; }
     if(c.t==='shop'){ openBuilding(c); return; }
     if(c.t==='house'){ interactBuilding(c); return; }
-    game.msg='Проход закрыт.'; beep(120,.05); return;
+    game.msg='Проход закрыт.'; sfx('miss'); return;
   }
   p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
   if(c.t==='gate'){
@@ -2651,7 +2706,7 @@ function tryMove(dx,dy){
     Object.assign(game.player,{x:gx,y:gy,px:gx,py:gy,fromX:gx,fromY:gy,moveT:0,dir:nd});
     markSeen(nm,gx,gy);
     game.msg='Дорога привела в '+BIOMES[nm.biome].name+'.';
-    toast('Переход: '+BIOMES[nm.biome].name); beep(620,.14);
+    toast('Переход: '+BIOMES[nm.biome].name); sfx('door');
     updateParty(); return;
   }
   if(c.t==='treasure'){
@@ -2772,7 +2827,7 @@ function collectTreasure(c){
     addItem({id,type:'potion',name:t.name,icon:t.icon,cost:5,sell:3,heal:t.id==='potion_hp'?40:0,mp:t.id==='potion_mp'?15:0});
     game.msg='Находка: '+t.icon+' '+t.name+'.';
   }
-  pushHistory(game.msg,'neutral'); toast(game.msg); beep(760,.1);
+  pushHistory(game.msg,'neutral'); toast(game.msg); sfx('coins');
 }
 function openSmallChest(c){
   if(c.opened) return; c.opened=true;
@@ -2782,12 +2837,12 @@ function openSmallChest(c){
     if(Array.isArray(c.lairChest.gold)) entries.push({kind:'gold',amount:rnd(c.lairChest.gold[0],c.lairChest.gold[1])});
     const loot=materializeLoot(entries);
     game.msg='Сундук логовища: 🪙 '+loot.gold+', вещей '+loot.items+'.';
-    toast(game.msg); pushHistory(game.msg,'neutral'); beep(820,.12); updateParty();
+    toast(game.msg); pushHistory(game.msg,'neutral'); sfx('coins'); updateParty();
     return;
   }
   const gold=rnd(3,8); game.gold+=gold;
   if(Math.random()<.5){ const h=pick(HERBS); addItem({id:h.id,type:'herb',name:h.name,icon:h.icon,desc:h.desc,effect:h.effect,value:h.value,cost:2,sell:1}); }
-  game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); beep(820,.12);
+  game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); sfx('chest');
 }
 function openBossChest(){
   const m=currentMap(); if(!m||!m.boss.dead){ toast('Сначала победите босса.'); return false; }
@@ -2802,7 +2857,7 @@ function openBossChest(){
   const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)});
   const liq=pick(LIQUIDS); addItem({id:liq.id,type:'liquid',name:liq.name,icon:liq.icon,color:liq.color,stat:liq.stat,value:liq.value,cost:9,sell:5});
   game.msg='Золотой сундук: 🪙 '+amount+', 💎×2, 📜, 🧴.';
-  toast('Золотой сундук открыт!'); beep(980,.3);
+  toast('Золотой сундук открыт!'); sfx('chest'); sfx('coins'); shakeScreen();
   return true;
 }
 function tryInteract(){
@@ -2955,7 +3010,7 @@ function cycleTarget(d){
   if(!live.length) return;
   const at=live.findIndex(o=>o.i===b.targetIdx);
   const next=at<0?(d>0?0:live.length-1):(at+d+live.length)%live.length;
-  b.targetIdx=live[next].i; clearArmedAction(); beep(520,.05); toast('Цель: '+live[next].e.name);
+  b.targetIdx=live[next].i; clearArmedAction(); sfx('ui'); toast('Цель: '+live[next].e.name);
 }
 // Погибшая цель не заменяется молча: при одном оставшемся враге он берётся сам,
 // при нескольких — выдаётся запрос выбора.
@@ -3063,7 +3118,7 @@ function startBattle(list,mapRef,opts){
   enemies.forEach(e=>pushLog(e.name+' — атака '+e.atk+', защита '+e.defVal+', скорость '+monsterSpeedValue(e)+'.',C_ENEMY,'enemy'));
   pushHistory('Бой начался: '+party().map(heroName).join(', ')+' против '+enemies.map(e=>e.name).join(', ')+'.','neutral');
   game.msg='Бой! Цель — нажмите на монстра · Пробел — атака · F — магия · R — бегство.';
-  nextTurn(); updateParty(); updateControls(); beep(420,.12);
+  nextTurn(); updateParty(); updateControls(); sfx('ui');
   return b;
 }
 function pushLog(text,color,side){
@@ -3215,7 +3270,7 @@ function heroAttack(){
   /* Навык качает только реальный эффект: пустая атака (нет цели/нулевой урон) — ничего. */
   if(dmg>0){ awardSkill(h,skillForWeapon(w)); awardSkill(h,'accuracy'); }
   if(target.hp<=0) onEnemyKilled(b,target);
-  beep(440,.09); updateParty();
+  sfx(dmg>0?'hit':'miss'); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
   return true;
@@ -3230,7 +3285,7 @@ function enemyAct(b,idx){
   if(m.ranged&&Math.random()<clamp(Number(m.missChance)||ARCHER_VARIANT.missChance,ARCHER_MISS_RANGE[0],ARCHER_MISS_RANGE[1])){
     pushLog(m.name+' выпустил стрелу, но промахнулся по '+h.def.name+'.',C_NEUTRAL,'neutral');
     addBattleFloater(battleHeroPoint(b,hIdx),'мимо',C_NEUTRAL);
-    awardSkill(h,'dodge'); b.anim={who:'enemy',t:1,jump:6}; beep(200,.08);
+    awardSkill(h,'dodge'); b.anim={who:'enemy',t:1,jump:6}; sfx('miss');
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
     return;
   }
@@ -3256,7 +3311,7 @@ function enemyAct(b,idx){
   }
   if(h.hp<=0) b.killerName=m.name;
   b.anim={who:'enemy',t:1,jump:10};
-  beep(180,.12); updateParty();
+  sfx(dmg>0?'hit':'miss'); updateParty();
   if(checkBattleEnd()) return;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
 }
@@ -3278,7 +3333,7 @@ function castSpell(id,targetIdx){
   const failInfo=loadInfo(h);
   if(!failInfo.magicBlocked&&failInfo.failChance>0&&Math.random()*100<failInfo.failChance){
     pushLog('«'+heroName(h)+' пытался применить «'+s.name+'», но метал сковал чары: провал ('+failInfo.failChance+'%). Мана потрачена.»',C_NEUTRAL,'neutral');
-    b.anim={who:'hero',t:1,jump:6}; beep(180,.12);
+    b.anim={who:'hero',t:1,jump:6}; sfx('miss');
     closeSpellMenu(); updateParty();
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
     return true;
@@ -3312,7 +3367,9 @@ function castSpell(id,targetIdx){
   /* Заклинание качает магию/заклинания только когда эффект действительно случился. */
   awardSkill(h,s.power?'magic':'spells');
   pushLog(txt,C_HERO,'hero');
-  b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
+  const school=SPELL_SCHOOL[id]||'light';
+  sfx(school,school); if(s.power) shakeScreen();
+  b.anim={who:'hero',t:1,jump:18};
   closeSpellMenu(); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -3391,7 +3448,7 @@ function throwGrenade(element,targetIdx,uid){
   if(h&&live.length) awardSkill(h,'throwing');
   const used=uid?game.bag.find(i=>i.uid===uid):null;
   if(used){ used.count=(used.count||1)-1; if(used.count<=0) game.bag.splice(game.bag.indexOf(used),1); }
-  b.anim={who:'hero',t:1,jump:14}; beep(560,.16);
+  b.anim={who:'hero',t:1,jump:14}; sfx('ui');
   updateParty(); updateControls();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
@@ -3412,7 +3469,7 @@ function fleeBattle(){
     b.pendingXp=0; if(game) game.pendingXp=0;
     pushLog('Побег удался! Потеряно '+loss+' HP.',C_HERO,'hero');
     recordAnnounce('flee_mm6',unlockRecord('flee_mm6'));
-    progress.flees++; saveProgress(); updateParty(); beep(680,.16);
+    progress.flees++; saveProgress(); updateParty(); sfx('ui');
     setTimeout(closeBattleKeep,650);
     return true;
   }
@@ -3556,7 +3613,9 @@ function trainLevel(idx){
   const next=(h.level||1)+1, cost=trainerCost({kind:'level',level:next}), need=xpTotalToLevel(next)-Math.floor(h.exp||0);
   if(need>0){ toast('Нужно ещё '+need+' XP для уровня '+next+'.'); return false; }
   if(game.gold<cost){ toast('Не хватает золота тренеру: нужно '+cost+'.'); return false; }
-  buy(cost,()=>{ h.level=next; restParty(); toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
+  buy(cost,()=>{ h.level=next; restParty(); sfx('level_up');
+    speakEvent(heroName(h)+', уровень '+next);
+    toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
   updateParty(); renderShop();
   return true;
 }
@@ -3610,7 +3669,7 @@ function collectFloorLoot(){
     if(f.spoiled){ toast(f.name+' испорчена кислотой и бесполезна.'); return; }
     addItem(lootItemSpec(f.id)); toast('Поднято с пола: '+f.name);
   });
-  updateParty(); beep(640,.08);
+  updateParty(); sfx('coins');
   return true;
 }
 function materializeLoot(entries){
@@ -3669,6 +3728,7 @@ function onEnemyKilled(b,e,opts){
   addReinforcement(battle);
   retargetAfterKill(battle);
   pushLog(e.name+' повержен.',C_NEUTRAL,'neutral');
+  sfx(e.isBoss?'crit':'death'); shakeScreen();
   trackQuestKills(e);
   return true;
 }
@@ -3678,7 +3738,7 @@ function finishBattle(win){
   b.end=win?'win':'lose';
   clearStatuses();
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
-  beep(win?980:120,.3); updateControls();
+  sfx(win?'level_up':'death'); updateControls();
   if(!win){
     /* Поражение и бегство не дают опыта: накопленные kill-очки сгорают. */
     b.pendingXp=0; if(game) game.pendingXp=0;
@@ -3718,7 +3778,7 @@ function showBossReward(m,boss){
   $('rewardText').textContent='Выберите награду для всего отряда. После выбора откроется золотой сундук.';
   $('rewardList').innerHTML=BOSS_BONUSES.map(b=>'<button class="rewardBtn" data-bonus="'+b.id+'">'+b.icon+' '+b.name+' ('+(b.id==='atk'?'+'+b.value+' атаки':b.id==='def'?'+'+b.value+' защиты':'+'+b.value+' магии')+')</button>').join('');
   $('rewardList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>chooseReward(btn.dataset.bonus));
-  $('reward').classList.remove('hidden'); updateControls(); beep(1040,.25);
+  $('reward').classList.remove('hidden'); updateControls(); sfx('level_up');
 }
 function chooseReward(id){
   if(!game||!game.reward) return;
@@ -3812,7 +3872,7 @@ function openShop(type,name,cell){
   const allowed=shopKindsOf(target);
   if(!allowed.length){
     if(target) return interactBuilding(target);
-    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); sfx('miss');
     return false;
   }
   const def=SHOP_TYPES.find(s=>s.id===type&&allowed.includes(s.id))||
@@ -3823,7 +3883,7 @@ function openShop(type,name,cell){
   game.shopCell=target;
   game.shopName=name||buildingTitleOf(target)||def.title;
   game.shopOpen=true; $('shop').classList.remove('hidden');
-  renderShop(); updateControls(); beep(520,.1);
+  renderShop(); updateControls(); sfx('door');
   return true;
 }
 function toggleShop(open,type){
@@ -3834,7 +3894,7 @@ function toggleShop(open,type){
   const wanted=(allowed.includes(open)?open:null)||(allowed.includes(type)?type:null)||allowed[0];
   if(!wanted){
     if(cell) return interactBuilding(cell);
-    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); sfx('miss');
     return false;
   }
   return openShop(wanted,null,cell);
@@ -3875,7 +3935,7 @@ function buy(price,add){
     toast('Покупка отменена: нет места в инвентаре.');
     renderShop(); updateParty(); return false;
   }
-  beep(720,.09); renderShop(); updateParty();
+  sfx('coins'); renderShop(); updateParty();
   return true;
 }
 function forgeCost(it){ return 1+(QUALITY[it.quality]||QUALITY[0]).id+(it.reforges||0)+(it.level||0); }
@@ -4039,7 +4099,7 @@ function acceptQuest(qid){
   game.quests.accepted[qid]=true;
   game.quests.progress[qid]=defaultQuestProgress();
   journalAdd('active',q,'Принято в ратуше: '+q.goal+'.');
-  toast('Задание принято: '+q.title); beep(640,.12); renderShop(); return true;
+  toast('Задание принято: '+q.title); sfx('ui'); renderShop(); return true;
 }
 function completeQuest(qid){
   const q=questDef(qid), p=game&&game.quests.progress[qid];
@@ -4065,7 +4125,7 @@ function completeQuest(qid){
   game.journal.active=(game.journal.active||[]).filter(x=>x.id!==qid);
   journalAdd('done',q,'Сдано в ратуше: 🪙 '+(r.gold||0)+', очков гильдии '+(r.points||0)+
     (r.containerTier?', ёмкость «'+containerTier(r.containerTier).name+'»':'')+'.');
-  toast('Задание сдано: '+q.title+'!'); beep(880,.2); updateParty(); renderShop(); return true;
+  toast('Задание сдано: '+q.title+'!'); sfx('coins'); updateParty(); renderShop(); return true;
 }
 function questStatusText(q){
   if(game.quests.done[q.id]) return 'Выполнено · сдано в ратуше';
@@ -4451,7 +4511,7 @@ function renderShop(){
   if(def.id==='tavern'){
     shopSec('Слухи');
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
-      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); beep(520,.08);
+      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); sfx('ui');
     })],'СЛУХИ');
     renderSkillTrainers('tavern');
   }
@@ -4474,7 +4534,7 @@ function renderShop(){
     });
     shopSec('Сохранение');
     shopRow('📖','Книга постояльцев','Отметить поход и сохранить прогресс',[shopButton('Сохранить',()=>{
-      saveProgress(); toast('Прогресс сохранён.'); beep(620,.1);
+      saveProgress(); toast('Прогресс сохранён.'); sfx('ui');
     })],'СОХРАНЕНИЕ');
   }
 
@@ -4503,7 +4563,7 @@ function forgeItem(uid){
   game.gold-=cost; it.reforges=(it.reforges||0)+1;
   it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
   toast('Перековка: '+it.name+' +'+Math.max(1,Math.ceil(it.baseDmg/5))+' урона');
-  beep(660,.14); updateParty(); return true;
+  sfx('coins'); updateParty(); return true;
 }
 function enchantItem(uid,liquidId,withCrystal){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
@@ -4521,7 +4581,7 @@ function enchantItem(uid,liquidId,withCrystal){
   it.enchant={id:liq.id,stat:liq.stat,value:liq.value,color:liq.color};
   const base=it.baseName||it.name.replace(/ [^ ]+$/,'');
   it.baseName=base; it.name=base+' '+(LIQUID_NAME[liq.id]||liq.stat);
-  toast('Зачарование: '+it.name); beep(880,.18); updateParty(); return true;
+  toast('Зачарование: '+it.name); sfx('ui'); updateParty(); return true;
 }
 function forgeItemFree(it){
   if((it.reforges||0)>=5) return;
@@ -4536,7 +4596,7 @@ function sellBagItem(uid,silent){
   const gain=Math.round(i.sell)*(i.count||1);
   game.gold+=gain;
   game.bag.splice(game.bag.indexOf(i),1);
-  if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); beep(560,.08); }
+  if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); sfx('coins'); }
   updateParty(); return true;
 }
 function hasNeedItem(id){
@@ -4584,7 +4644,7 @@ function craftRecipe(r){
       desc:r.desc||'',capacity:def.capacity+tier.slots,weight:tier.weight,cost:12,sell:6,magic:{slots:tier.slots}});
   }
   else addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
-  toast('Создано: '+r.name+' ×'+(r.give.count||1)); beep(840,.16); updateParty(); return true;
+  toast('Создано: '+r.name+' ×'+(r.give.count||1)); sfx('ui'); updateParty(); return true;
 }
 
 /* Интерьеры лавок: разные для каждого типа, продавец за прилавком с лёгкой анимацией. */
@@ -4835,7 +4895,7 @@ function toggleInventory(open){
   game.invOpen=!!open;
   $('inventory').classList.toggle('hidden',!game.invOpen);
   if(game.invOpen) renderInventory();
-  updateControls(); beep(400,.06);
+  updateControls(); sfx('ui');
 }
 const ITEM_SPRITE_BASE='../../assets/sprites/items/';
 const UI_SPRITE_BASE='../../assets/sprites/ui/';
@@ -5596,7 +5656,7 @@ function useItem(uid){
     toast('Сундук: золото и кристалл.');
   }else{ toast('Этот предмет нельзя использовать.'); return false; }
   it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1);
-  beep(760,.1); updateParty(); return true;
+  sfx('coins'); updateParty(); return true;
 }
 
 /* ============================ 10. ПРОЦЕДУРНАЯ ГРАФИКА ============================ */
@@ -6243,7 +6303,7 @@ function toggleBigMap(open){
   const el=document.getElementById('bigMap');
   if(el) el.classList.toggle('hidden',!game.mapOpen);
   if(game.mapOpen) drawBigMap();
-  updateControls(); beep(420,.06);
+  updateControls(); sfx('ui');
   return game.mapOpen;
 }
 function bigMapCellAt(clientX,clientY){
@@ -6589,7 +6649,7 @@ function renderHeroPick(slot){
 function renderDiff(){
   $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
     '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · 30/60/100 клеток</small></button>').join('');
-  $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); beep(420,.05); });
+  $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); sfx('ui'); });
 }
 function renderStart(){ updateProgressUI(); renderHeroPick(0); renderHeroPick(1); renderHeroPick(2); renderDiff(); }
 
@@ -6691,7 +6751,7 @@ cv.addEventListener('pointerdown',e=>{
   if(idx>=0){
     // Клик/тап по врагу только выбирает цель: он не бьёт и не тратит ману.
     // Удар/заклинание выполняются отдельной кнопкой или пробелом по выбранной цели.
-    b.targetIdx=idx; clearArmedAction(); beep(520,.05);
+    b.targetIdx=idx; clearArmedAction(); sfx('ui');
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
     updateParty(); updateControls();
     return;
@@ -7410,6 +7470,7 @@ window.__mm6Debug={
   },
   toggleInventory:(open)=>toggleInventory(open),
   castSpell:(id,target)=>castSpell(id,target),
+  heroAttack:()=>heroAttack(),
   tryMove:(dx,dy)=>tryMove(dx,dy),
   fleeBattle:()=>fleeBattle(),
   closeBattle:()=>closeBattleKeep(),
@@ -7727,7 +7788,35 @@ window.__mm6Debug={
     settings=normalizeSettings(Object.assign({},settings,patch||{}));
     saveSettings(); syncSettings();
     if(window.UnifiedLaunch) window.UnifiedLaunch.setHeroCount(settings.partySize);
+    try{ setVolume('master',settings.sound); setVolume('sfx',settings.sfx);
+      setVolume('ambient',settings.amb); setVolume('tempo',settings.tempo); }catch(e){}
     return normalizeSettings(settings);
+  },
+  audioPart8Report:()=>{
+    const edge=$('fxEdge'), stage=$('stage');
+    return {
+      engine:audioEngineReport(), voiceLimit:SFX_VOICE_LIMIT, events:SFX_EVENTS.slice(),
+      recent:AUDIO_EVENT_LOG.slice(-20).map(e=>e.event),
+      fx:{...FX_STATE,edgeOn:!!(edge&&edge.classList.contains('on')),
+        edgeColor:edge?edge.style.getPropertyValue('--fx-color').trim():null,
+        stageShake:!!(stage&&stage.classList.contains('fx-shake'))},
+      speech:{...SPEECH_STATE,flag:settings.speech===true,
+        hasApi:typeof SpeechSynthesisUtterance==='function'&&!!window.speechSynthesis},
+      volumes:{sound:settings.sound,sfx:settings.sfx,amb:settings.amb,music:settings.music},
+      speechControl:!!$('setSpeech')
+    };
+  },
+  fireSfx:(event,element)=>sfx(event,element),
+  resetAudioStats:()=>{ resetAudioStats(); return audioEngineReport(); },
+  fireShake:()=>shakeScreen(),
+  fireSpeech:(text)=>speakEvent(text),
+  resetAudioFx:()=>{
+    AUDIO_EVENT_LOG.length=0;
+    FX_STATE.flashes=0; FX_STATE.shakes=0; FX_STATE.lastFlash=null; FX_STATE.lastShakeAt=0;
+    SPEECH_STATE.requested=0; SPEECH_STATE.spoken=0; SPEECH_STATE.fallback=0; SPEECH_STATE.last=null;
+    const edge=$('fxEdge'); if(edge){ edge.classList.remove('on'); clearTimeout(edge._fxTimer); }
+    const stage=$('stage'); if(stage){ stage.classList.remove('fx-shake'); clearTimeout(stage._shakeTimer); }
+    return true;
   },
   mechanicsReport:()=>({
     party:party().map(h=>{

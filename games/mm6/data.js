@@ -506,7 +506,7 @@ export const DEFAULT_SETTINGS = {
   difficulty: 'normal', floors: 5, cellSize: 16, mapSize: 30, monstersAdd: 0, itemRate: 2,
   shieldVal: 3, starVal: 1, sound: 10, sfx: 10, amb: 10, music: 0, tempo: 600,
   melody: 'town', simple: true, extreme: false, criticalAI: false, vibro: true,
-  keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false,
+  keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false, speech: false,
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
   bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,
