@@ -100,6 +100,8 @@ try {
   const play = await ev(`(()=>{const r=document.getElementById('ul-play').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()`);
   await click(play.x, play.y);
   await waitFor('!!window.__mm6State() && document.getElementById("unified-launch").classList.contains("ul-hidden")', 8000);
+  /* Пояс и сундук открываются третьим рангом гильдии: проверяем полный комплект ёмкостей. */
+  await ev(`(()=>{const g=window.__mm6State();g.party.forEach((h,i)=>window.__mm6Debug.setGuildRank(i,'expert'));return true;})()`);
   await ev(`window.__mm6Debug.toggleInventory(true)`);
   await sleep(150);
 

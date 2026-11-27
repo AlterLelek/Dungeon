@@ -96,7 +96,7 @@ try {
 
   const start = await ev('window.__mm6Debug.progressionState()');
   check('герои начинают с 1 уровня и 50 XP до следующего',
-    start.version === 2 && start.heroes.length === 3 && start.heroes.every(h => h.level === 1 && h.toNext === 50),
+    start.version === 3 && start.heroes.length === 3 && start.heroes.every(h => h.level === 1 && h.toNext === 50),
     JSON.stringify(start));
 
   // Опыт не начисляется при бегстве, но начисляется после победы всем, включая мёртвого.

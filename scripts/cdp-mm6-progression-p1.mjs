@@ -95,7 +95,7 @@ try {
   await waitFor('!!window.__mm6State() && document.getElementById("unified-launch").classList.contains("ul-hidden")', 8000);
 
   const report = await ev('window.__mm6Debug.progressionReport()');
-  check('прогрессия: отчёт без ошибок и сейв версии 2', report.ok && report.version === 2,
+  check('прогрессия: отчёт без ошибок и сейв версии 3', report.ok && report.version === 3,
     JSON.stringify({ ok: report.ok, errors: report.errors, version: report.version }));
   check('XP-кривая 50/(100)/150', report.curve.base === 50 && report.curve.cost2 === 50 &&
     report.curve.cost3 === 100 && report.curve.total3 === 150, JSON.stringify(report.curve));
@@ -120,7 +120,7 @@ try {
       items:g.bag.length,report:r.ok};
   })()`);
   check('старый сейв загружается и мигрирует без потерь',
-    migrated.saved && migrated.loaded && migrated.version === 2 && migrated.gold === 999 &&
+    migrated.saved && migrated.loaded && migrated.version === 3 && migrated.gold === 999 &&
     migrated.exp === 777 && migrated.level === 1 && migrated.fields && migrated.items > 0 && migrated.report,
     JSON.stringify(migrated));
   check('консоль без ошибок', consoleErrors.length === 0, JSON.stringify(consoleErrors));

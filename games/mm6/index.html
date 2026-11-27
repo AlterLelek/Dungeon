@@ -183,7 +183,9 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .containerTab .ctCount{color:#ffe09a;font-weight:800}
 .containerTab.full{border-color:rgba(248,113,113,.45);color:#fca5a5}
 .containerTab.sel{border-color:#fbbf24;color:#ffe9b0;background:rgba(251,191,36,.14)}
+.containerTab.locked{opacity:.5;cursor:not-allowed}
 .containerTab:hover,.containerTab:focus-visible{border-color:#fbbf24;outline:none}
+.containerTab.locked:hover,.containerTab.locked:focus-visible{border-color:rgba(255,255,255,.14)}
 .invCell .moveBtn{position:absolute;right:1px;top:1px;width:15px;height:15px;padding:0;border:1px solid rgba(251,191,36,.4);
   border-radius:4px;background:rgba(10,14,26,.85);color:#ffe9b0;font-size:10px;line-height:13px;cursor:pointer;z-index:2}
 #bigMapCanvas{display:block;width:min(100%,66vh);height:auto;border:1px solid rgba(251,191,36,.35);
@@ -303,6 +305,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
       <button id="btnFlee" aria-label="Бегство" title="Бегство [R]">🏃</button>
       <button id="btnInv" aria-label="Инвентарь" title="Инвентарь [I]">🎒</button>
       <button id="btnShop" aria-label="Магазин" title="Магазин [B]">🛒</button>
+      <button id="btnQuests" aria-label="Задания" title="Журнал заданий [J]">🏛</button>
       <button id="btnInteract" aria-label="Взаимодействие" title="Взаимодействие [Enter]">↵</button>
       <button id="btnSettings" aria-label="Настройки" title="Настройки [P]">⚙</button>
     </div>
@@ -430,11 +433,17 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <div class="row" style="justify-content:space-between"><button class="link" id="logPrev">↑ Выше</button><button class="link" id="logNext">↓ Ниже</button></div>
 </div></div>
 
+<div id="questJournal" class="overlay hidden"><div class="box" style="width:min(720px,96vw)">
+  <div class="head"><h2>🏛 Журнал заданий</h2><button class="link" id="questJournalClose">Закрыть [J/Esc]</button></div>
+  <div class="tabs" id="questJournalTabs"></div>
+  <div id="questJournalList"></div>
+</div></div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS } from './data.js';
-import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, RULES_SUMMARY } from './rules.js';
+import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, guildRankNumber, carryingRank, heroCarryingIds, CARRY_ORDER, GUILD_POINT_THRESHOLDS, GUILD_DISCOUNT_STEP, guildPointsNeeded, guildRankCost, SPELL_TIER_RANK, spellTierRank, CONTAINER_TIERS, CONTAINER_TIER_IDS, containerTier, SHOP_QUESTS, questDef, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, defaultQuestState, defaultJournal, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
@@ -1481,6 +1490,7 @@ function freshGameShell(diffId){
     logOpen:false,log:[],history:[],bonusStep:0,seasonOverride:null,
     version:SAVE_VERSION,clockMinutes:8*60,hunger:0,lootCounters:defaultLootCounters(),
     floorLoot:[],pendingXp:0,pendingLoot:[],battleLimit:ACTIVE_ENEMY_LIMIT,
+    quests:defaultQuestState(),journal:defaultJournal(),journalOpen:false,
     msg:'',audio:null,nearShop:null,totalTurns:0,lastRegen:performance.now(),regenBoost:0,shopKeeperSeed:0};
 }
 function startGame(diffId,a,b){
@@ -1516,7 +1526,7 @@ function saveWorldState(){
     player:game.player,totalTurns:game.totalTurns,bonusStep:game.bonusStep,
     seasonOverride:game.seasonOverride,clockMinutes:game.clockMinutes,hunger:game.hunger,
     lootCounters:game.lootCounters,floorLoot:game.floorLoot,pendingXp:game.pendingXp,pendingLoot:game.pendingLoot,
-    battleLimit:game.battleLimit,
+    battleLimit:game.battleLimit,quests:game.quests,journal:game.journal,
     log:(game.log||[]).slice(-LOG_LIMIT),history:(game.history||[]).slice(-LOG_LIMIT),msg:game.msg};
   try{ localStorage.setItem(WORLD_SAVE_KEY,JSON.stringify(snap,(k,v)=>v instanceof Set?[...v]:v)); }
   catch(e){ return false; }
@@ -1527,11 +1537,13 @@ function loadWorldState(){
   try{ data=JSON.parse(localStorage.getItem(WORLD_SAVE_KEY)||'null',(k,v)=>k==='seen'&&Array.isArray(v)?new Set(v):v); }
   catch(e){ return false; }
   if(!data||!data.world||!Array.isArray(data.world.maps)||!data.world.maps.length) return false;
-  /* v2: новые поля прогрессии получают дефолты даже в старых сейвах версии 1. */
+  /* v3: новые поля прогрессии, заданий и журнала получают дефолты даже в старых сейвах. */
   const migrated=migrateSave(data);
   const shell=freshGameShell(migrated.difficulty||selDiff);
   Object.assign(shell,migrated);
   game=shell;
+  game.journalOpen=false;
+  game.party.forEach(h=>{ h.carrying=heroCarryingIds(h); });
   installMessageLogger();
   game._msg=String(data.msg||'');
   game.log=Array.isArray(game.log)?game.log:[]; game.history=Array.isArray(game.history)?game.history:game.log;
@@ -1872,6 +1884,9 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   const tradeBuildings=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&b.shop_kind.length);
   const decoBuildings=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
   const shopPlan=[];
+  /* Ратуша — отдельное здание, а не декоративный дом: она есть на каждой карте. */
+  const hallBuilding=BUILDING_TYPES.find(b=>b.id==='hall_0'&&Array.isArray(b.shop_kind)&&b.shop_kind.includes('hall'));
+  if(hallBuilding) shopPlan.push(hallBuilding);
   const shopCount=size>=20?4:size>=16?3:size>=12?2:1;
   for(let k=0;k<shopCount;k++){
     const b=tradeBuildings[(i*2+k*3)%tradeBuildings.length];
@@ -1942,7 +1957,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     /* Шаблон логовища задаёт состав, а не случайный пул. */
     lair.enemies.forEach(e=>{
       const s=freeSpot(4); if(!s) return;
-      e.x=s.x; e.y=s.y; mons.push(e);
+      e.x=s.x; e.y=s.y; e.lairId=lairId; e.lairIndex=i; mons.push(e);
     });
     let chestIdx=0;
     for(let y=0;y<size&&chestIdx<lair.template.chests.length;y++){
@@ -1977,6 +1992,7 @@ function instantiateLair(id){
       const e=spawnMonster(base,0,0,0,variantId,false,false);
       if(group.elite){ e.elite=true; e.hp=Math.round(e.hp*1.4); e.maxHp=e.hp; e.atk+=2; e.name='Элитный '+e.name; }
       if(group.leader){ e.leader=true; e.hp=Math.round(e.hp*1.6); e.maxHp=e.hp; e.atk+=3; e.name='Предводитель '+e.name; }
+      e.lairId=t.id;
       list.push(e);
     }
   });
@@ -2337,7 +2353,7 @@ function setActionButton(id,disabled,title){
 }
 function updateControls(){
   if(!game) return;
-  const blocked=game.shopOpen||game.invOpen||game.reward||game.spellOpen||game.settingsOpen||game.logOpen;
+  const blocked=game.shopOpen||game.invOpen||game.reward||game.spellOpen||game.settingsOpen||game.logOpen||game.journalOpen;
   $('controls').classList.toggle('hidden',phase!=='play'||blocked);
   $('party').classList.toggle('hidden',phase!=='play');
   const b=game.battle, inBattle=!!b;
@@ -2351,6 +2367,7 @@ function updateControls(){
   setActionButton('btnSpell',!!spellReason,spellReason||'Заклинание [F] · мана и эффекты проверены');
   setActionButton('btnFlee',!!fleeReason,fleeReason||FLEE_TITLE);
   setActionButton('btnShop',inBattle,'Лавка закрыта во время боя');
+  setActionButton('btnQuests',inBattle,'Журнал заданий закрыт во время боя');
   setActionButton('btnInteract',!canInteractHere(),'Рядом не с чем взаимодействовать');
   $('party').style.display=(settings.showHints===false&&!inBattle)?'none':'';
 }
@@ -2870,7 +2887,7 @@ function grantPartyXp(amount,quest){
   return xp;
 }
 /* --- Навыки: очки приходят только от реального эффекта, ранги — у тренера. --- */
-function skillRank(h,id){ return Math.max(0,Math.floor((h&&h.skills&&h.skills[id])||0)); }
+function skillRank(h,id){ return id==='carrying'?carryingRank(h):Math.max(0,Math.floor((h&&h.skills&&h.skills[id])||0)); }
 function skillPoints(h,id){ return Math.max(0,Math.floor((h&&h.skillXp&&h.skillXp[id])||0)); }
 function skillCap(h){ return Math.max(1,Math.floor((h&&h.level)||1))*SKILL_CAP_PER_LEVEL; }
 function tickSkillCooldowns(){
@@ -2881,6 +2898,8 @@ function tickSkillCooldowns(){
 }
 function awardSkill(h,id,amount){
   if(!h||!skillDef(id)) return false;
+  /* Носка растёт только от ранга гильдии и не качается боем. */
+  if(skillDef(id).auto) return false;
   const n=Math.max(1,Math.floor(Number(amount)||1));
   /* Пустые действия и повторы в кулдауне не качают навык. */
   if((h.skillCooldown&&h.skillCooldown[id]||0)>0) return false;
@@ -2892,6 +2911,7 @@ function awardSkill(h,id,amount){
 function trainSkill(idx,id){
   const h=party()[idx], def=skillDef(id);
   if(!h||!def||!game||!game.shopOpen) return false;
+  if(def.auto){ toast(def.name+' тренировке не поддаётся: она растёт с рангом гильдии.'); return false; }
   if(game.shopType!==def.building){ toast('Этот навык тренируют в другом здании.'); return false; }
   if(!guildAtLeast((h.promotion&&h.promotion.guild)||'novice',def.guild)){
     toast('Нужен ранг гильдии: '+def.guild+'.'); return false;
@@ -2909,14 +2929,26 @@ function trainSkill(idx,id){
     restParty(); toast(def.name+': ранг '+h.skills[id]+' выучен за 🪙 '+cost+' и отдых.');
   });
 }
+function setGuildRank(h,rank){
+  if(!h||!h.promotion||!GUILD_RANKS.includes(rank)) return false;
+  h.promotion.guild=rank; h.promotion.spells=rank;
+  /* Носка выводится из ранга автоматически и доступна всем классам. */
+  h.carrying=heroCarryingIds(h);
+  return true;
+}
+function addGuildPoints(h,n){
+  if(!h) return 0;
+  h.guildPoints=Math.max(0,Math.floor((h.guildPoints||0)+Math.max(0,Math.floor(Number(n)||0))));
+  return h.guildPoints;
+}
 function promoteGuild(idx){
   const h=party()[idx]; if(!h||!game||!game.shopOpen||game.shopType!=='magic') return false;
   h.promotion=h.promotion||{};
   const cur=GUILD_RANKS.indexOf(h.promotion.guild||'novice');
   if(cur<0||cur>=GUILD_RANKS.length-1){ toast('Высший ранг гильдии уже достигнут.'); return false; }
-  const next=GUILD_RANKS[cur+1], cost=trainerCost({kind:'guild',rank:cur+2});
+  const next=GUILD_RANKS[cur+1], cost=guildRankCost(next,h.guildPoints||0);
   if(game.gold<cost){ toast('Не хватает золота гильдии: нужно '+cost+'.'); return false; }
-  return buy(cost,()=>{ h.promotion.guild=next; h.promotion.spells=next; restParty();
+  return buy(cost,()=>{ setGuildRank(h,next); restParty();
     toast('Гильдия магии: ранг «'+next+'» открыт за 🪙 '+cost+' и отдых.'); });
 }
 function restParty(minutes){
@@ -2957,7 +2989,7 @@ function trainLevel(idx){
 }
 /* Лут: редкие предметы с пола поднимаются отдельно, остальное — в сумку/золото. */
 const LOOT_ITEM_DEFS={
-  crystalgrass:{type:'herb',name:'Кристалл-трава',icon:'🌿',desc:'Восстанавливает ману',effect:'mp',value:8,cost:2,sell:1},
+  crystalgrass:{type:'herb',name:'Кристалл-трава',icon:'🌿',desc:'Даёт кристалл',effect:'crystal',value:1,cost:2,sell:1},
   scroll_1:{type:'scroll',name:'Свиток огненного шара (1 круг)',icon:'📜',spell:'fire',cost:4,sell:2},
   ring_1:{type:'weapon',name:'Кольцо (1 ур.)',icon:'◯',dmg:1,baseDmg:1,cost:12,sell:6,level:1,wkind:'ring',set:'any',quality:1,reforges:0,enchant:null},
   ring_3:{type:'weapon',name:'Кольцо (3 ур.)',icon:'◯',dmg:3,baseDmg:3,cost:36,sell:18,level:3,wkind:'ring',set:'any',quality:2,reforges:0,enchant:null},
@@ -2975,7 +3007,9 @@ const LOOT_ITEM_DEFS={
   helmet:{type:'armor',name:'Шлем',icon:'⛑',def:4,cost:14,sell:7,slot:'helmet',group:'base',category:'light_metal'},
   club_axe:{type:'weapon',name:'Дубина-топор',icon:'🪓',dmg:4,baseDmg:4,cost:8,sell:4,wkind:'axe',set:'any',quality:1,reforges:0,enchant:null},
   ore:{type:'material',name:'Руда',icon:'⛏',desc:'Руда для кузницы',cost:4,sell:2},
-  amulet:{type:'weapon',name:'Амулет',icon:'◈',dmg:2,baseDmg:2,cost:24,sell:12,level:3,wkind:'amulet',set:'any',quality:2,reforges:0,enchant:null}
+  amulet:{type:'weapon',name:'Амулет',icon:'◈',dmg:2,baseDmg:2,cost:24,sell:12,level:3,wkind:'amulet',set:'any',quality:2,reforges:0,enchant:null},
+  enchanted_bag:{type:'container',containerKind:'bag',tier:'enchanted',name:'Зачарованная сумка',icon:'🎒',
+    desc:'Сумка тира «Зачарованный»',capacity:22,weight:0.2,cost:90,sell:45,magic:{slots:6}}
 };
 function lootItemSpec(id){ return Object.assign({id},LOOT_ITEM_DEFS[id]||{type:'misc',name:String(id),icon:'•',cost:1,sell:1}); }
 const GRENADE_ICONS={smoke:'💨',frost:'❄',acid:'🧪',lava:'🌋',dark:'🌑',holy:'✝'};
@@ -3058,6 +3092,7 @@ function onEnemyKilled(b,e,opts){
   addReinforcement(battle);
   retargetAfterKill(battle);
   pushLog(e.name+' повержен.',C_NEUTRAL,'neutral');
+  trackQuestKills(e);
   return true;
 }
 function finishBattle(win){
@@ -3344,6 +3379,191 @@ function renderSkillTrainers(building){
     });
   });
 }
+function tierReport(){
+  const errors=[];
+  if(!game||!game.containers) return {ok:false,errors:['Контейнеры не инициализированы'],tiers:[],state:[]};
+  const tiers=CONTAINER_TIERS.map(t=>({id:t.id,name:t.name,slots:t.slots,weight:t.weight,source:t.source}));
+  if(tiers.length!==4) errors.push('Ожидаются четыре тира контейнеров');
+  if(!(tiers[3].slots>tiers[2].slots&&tiers[2].slots>tiers[1].slots&&tiers[1].slots>tiers[0].slots)) errors.push('Тиры не дают больше слотов');
+  if(!(tiers[3].weight<=tiers[2].weight&&tiers[2].weight<=tiers[1].weight)) errors.push('Тиры не облегчают вес на слот');
+  const state=CONTAINER_DEFS.map(def=>{
+    const st=game.containers[def.id]||{};
+    if(!CONTAINER_TIER_IDS.includes(st.tier)) errors.push(def.name+': неверный тир');
+    if(!st.magic||typeof st.magic!=='object') errors.push(def.name+': нет поля магических свойств');
+    return {id:def.id,tier:st.tier||'rusty',capacity:st.capacity,weight:st.weight,
+      magic:Object.keys(st.magic||{}),available:containerAvailable(def.id)};
+  });
+  return {ok:!errors.length,errors,tiers,state,version:game.version,magicReserved:true};
+}
+/* --- Ратуша: заказы лавок и журнал походов ------------------------------ */
+const QUEST_JOURNAL_TABS=['active','done'];
+let questJournalTab='active';
+function defaultQuestProgress(){ return {kills:0,target:false,ready:false}; }
+function journalAdd(kind,quest,text){
+  if(!game||!game.journal) return false;
+  const entry={id:quest.id,title:quest.title,text,map:currentMap()&&currentMap().index,at:game.clockMinutes};
+  game.journal[kind]=game.journal[kind]||[];
+  game.journal[kind].push(entry);
+  saveWorldState();
+  return true;
+}
+function questIsTarget(q,e){
+  if(q.target==='mouse_king') return e.variantId==='king'||/король/i.test(e.name||'');
+  if(q.target==='spider_elite') return !!e.elite;
+  if(q.target==='skeleton_leader') return !!e.leader;
+  return false;
+}
+function trackQuestKills(e){
+  if(!game||!e||!e.lairId||!game.quests) return;
+  SHOP_QUESTS.forEach(q=>{
+    if(q.lair!==e.lairId||!game.quests.accepted[q.id]||game.quests.done[q.id]) return;
+    const p=game.quests.progress[q.id]||defaultQuestProgress();
+    p.kills=(p.kills||0)+1;
+    if(questIsTarget(q,e)) p.target=true;
+    const map=(game.world.maps||[]).find(m=>m.lair&&m.lair.id===q.lair);
+    const left=map?map.monsters.filter(x=>x.lairId===q.lair&&x.alive).length:0;
+    p.ready=!!p.target&&left===0;
+    game.quests.progress[q.id]=p;
+    if(p.ready) toast('Задание «'+q.title+'» готово к сдаче в ратуше.');
+  });
+}
+function acceptQuest(qid){
+  const q=questDef(qid);
+  if(!game||!q||game.quests.done[qid]||game.quests.accepted[qid]) return false;
+  game.quests.accepted[qid]=true;
+  game.quests.progress[qid]=defaultQuestProgress();
+  journalAdd('active',q,'Принято в ратуше: '+q.goal+'.');
+  toast('Задание принято: '+q.title); beep(640,.12); renderShop(); return true;
+}
+function completeQuest(qid){
+  const q=questDef(qid), p=game&&game.quests.progress[qid];
+  if(!game||!q||!game.quests.accepted[qid]||game.quests.done[qid]||!p||!p.ready) return false;
+  game.quests.done[qid]=true;
+  game.quests.accepted[qid]=false;
+  const r=q.reward||{};
+  game.gold+=Math.max(0,Math.floor(r.gold||0));
+  if(r.xp) grantPartyXp(r.xp,true);
+  party().forEach(h=>{
+    if(r.points) addGuildPoints(h,r.points);
+    const steps=Math.max(0,Math.floor(r.rank||0));
+    for(let k=0;k<steps;k++){
+      const i=GUILD_RANKS.indexOf((h.promotion&&h.promotion.guild)||'novice');
+      if(i<GUILD_RANKS.length-1) setGuildRank(h,GUILD_RANKS[i+1]);
+    }
+  });
+  const tierId=r.containerTier;
+  if(tierId){
+    const id=containerAvailable('bag')?'bag':(CARRY_ORDER.filter(x=>containerAvailable(x)).pop()||'pockets');
+    grantContainerTier(id,tierId);
+  }
+  game.journal.active=(game.journal.active||[]).filter(x=>x.id!==qid);
+  journalAdd('done',q,'Сдано в ратуше: 🪙 '+(r.gold||0)+', очков гильдии '+(r.points||0)+
+    (r.containerTier?', ёмкость «'+containerTier(r.containerTier).name+'»':'')+'.');
+  toast('Задание сдано: '+q.title+'!'); beep(880,.2); updateParty(); renderShop(); return true;
+}
+function questStatusText(q){
+  if(game.quests.done[q.id]) return 'Выполнено · сдано в ратуше';
+  if(!game.quests.accepted[q.id]) return 'Не принято · доступно в ратуше';
+  const p=game.quests.progress[q.id]||defaultQuestProgress();
+  return 'В работе · победителей логовища: '+p.kills+
+    ' · цель: '+(p.target?'да':'нет')+' · '+(p.ready?'готово к сдаче':'логовище ещё не зачищено');
+}
+function renderQuestOffers(){
+  shopSec('Ратуша · заказы лавок');
+  shopRow('📋','Журнал походов','Активные и завершённые задания сохраняются в сейве.',[
+    shopButton('Открыть журнал',()=>toggleQuestJournal(true))
+  ],'РАТУША');
+  SHOP_QUESTS.forEach(q=>{
+    const done=!!game.quests.done[q.id], accepted=!!game.quests.accepted[q.id];
+    const p=game.quests.progress[q.id]||defaultQuestProgress();
+    const r=q.reward||{};
+    const reward='🪙 '+(r.gold||0)+' · XP '+(r.xp||0)+' · очки гильдии '+(r.points||0)+
+      (r.rank?' · +'+r.rank+' ранг':'')+(r.containerTier?' · ёмкость «'+containerTier(r.containerTier).name+'»':'');
+    let btn;
+    if(done) btn=shopButton('✓ Выполнено',null,true);
+    else if(!accepted) btn=shopButton('Принять',()=>acceptQuest(q.id));
+    else btn=shopButton(p.ready?'Сдать задание':'В работе…',()=>completeQuest(q.id),!p.ready,
+      '',p.ready?'':'Сначала зачистите '+LAIR_TEMPLATES[q.lair].name);
+    shopRow('🏛',q.title,(SHOP_TYPES.find(s=>s.id===q.giver)||{}).title+' · '+q.goal+
+      ' · '+(accepted&&!done?'убито '+p.kills+', цель '+(p.target?'побеждена':'не побеждена'):'')+
+      ' · награда: '+reward,[btn],'ЗАКАЗ');
+  });
+}
+function renderQuestJournal(){
+  if(!game||!game.journal) return;
+  const tabs=$('questJournalTabs'), list=$('questJournalList');
+  if(!tabs||!list) return;
+  tabs.innerHTML=QUEST_JOURNAL_TABS.map(t=>'<button class="tab'+(t===questJournalTab?' sel':'')+'" data-qtab="'+t+'">'+
+    (t==='active'?'Активные':'Завершённые')+' ('+((game.journal[t]||[]).length)+')</button>').join('');
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{ questJournalTab=b.dataset.qtab; renderQuestJournal(); });
+  const rows=(game.journal[questJournalTab]||[]).slice().reverse();
+  list.innerHTML=rows.length?rows.map(e=>'<div class="rowItem"><div class="info"><b>'+esc(e.title)+'</b><small>'+
+    esc(e.text)+(e.map!==undefined?' · карта '+(e.map+1):'')+'</small></div></div>').join('')
+    :'<div class="legendItem">'+(questJournalTab==='active'?'Нет активных заданий. Заказы выдают в ратуше.':'Завершённых заданий пока нет.')+'</div>';
+}
+function toggleQuestJournal(open){
+  if(!game) return false;
+  const el=$('questJournal'); if(!el) return false;
+  const want=open===undefined?el.classList.contains('hidden'):!!open;
+  game.journalOpen=want;
+  el.classList.toggle('hidden',!want);
+  if(want) renderQuestJournal();
+  updateControls();
+  return want;
+}
+function guildReport(){
+  const errors=[];
+  if(!game) return {ok:false,errors:['Игра не запущена'],heroes:[],costs:{},spellTiers:SPELL_TIER_RANK};
+  const heroes=party().map(h=>({name:heroName(h),guild:(h.promotion&&h.promotion.guild)||'novice',
+    spells:(h.promotion&&h.promotion.spells)||'novice',points:h.guildPoints||0,
+    carrying:heroCarryingIds(h),rank:carryingRank(h)}));
+  heroes.forEach(r=>{
+    if(JSON.stringify(r.carrying)!==JSON.stringify(CARRY_ORDER.slice(0,r.rank))) errors.push(r.name+': носка не из ранга гильдии');
+    if(r.guild!==r.spells) errors.push(r.name+': флаг магии не синхронизирован с гильдией');
+  });
+  const costs={
+    leading:[guildRankCost('leading',0),guildRankCost('leading',GUILD_DISCOUNT_STEP),guildRankCost('leading',GUILD_POINT_THRESHOLDS.leading)],
+    expert:[guildRankCost('expert',0),guildRankCost('expert',GUILD_POINT_THRESHOLDS.leading),
+      guildRankCost('expert',GUILD_POINT_THRESHOLDS.expert-GUILD_DISCOUNT_STEP),guildRankCost('expert',GUILD_POINT_THRESHOLDS.expert)]
+  };
+  if(costs.leading[0]!==200||costs.leading[1]!==150||costs.leading[2]!==0) errors.push('Неверная формула платы за leading');
+  if(costs.expert[0]!==300||costs.expert[1]!==150||costs.expert[3]!==0) errors.push('Неверная формула платы за expert');
+  if(GUILD_POINT_THRESHOLDS.leading!==60||GUILD_POINT_THRESHOLDS.expert!==180) errors.push('Неверные пороги очков');
+  if(SPELL_TIER_RANK.weak!=='novice'||SPELL_TIER_RANK.medium!=='leading'||SPELL_TIER_RANK.strong!=='expert') errors.push('Неверный гейт заклинаний');
+  return {ok:!errors.length,errors,heroes,costs,thresholds:GUILD_POINT_THRESHOLDS,spellTiers:SPELL_TIER_RANK,
+    fruits:['закрытие заклинаний старших кругов','рост носки','скидка 25% за порог, максимум 50%'],
+    scope:'пер-геройный ранг в promotion.guild: гильдия — личное обучение и носка, задания ратуши — общий отряд'};
+}
+function herbReport(){
+  const errors=[];
+  if(!game) return {ok:false,errors:['Игра не запущена'],herbs:[]};
+  const market=SHOP_STOCK.market.herbs||[], magic=SHOP_STOCK.magic.herbs||[];
+  const recipes=RECIPES.filter(r=>(r.kind||'herb')==='herb');
+  const herbs=HERBS.map(x=>({id:x.id,name:x.name,role:x.role,where:x.found,
+    source:(market.includes(x.id)?'рынок ':'')+(magic.includes(x.id)?'магия':'').trim()||'только лут',
+    recipes:recipes.filter(r=>r.need.includes(x.id)).map(r=>r.name)}));
+  if(herbs.length<20) errors.push('Нужно не менее 20 трав');
+  const roles=new Set(herbs.map(x=>x.role));
+  ['alchemy','magic','food','sale'].forEach(role=>{ if(!roles.has(role)) errors.push('Нет трав роли '+role); });
+  if(recipes.length<11) errors.push('Нужно не менее 11 рецептов трав');
+  ['herb_tea','root_soup','silver_draught'].forEach(id=>{ if(!RECIPES.some(r=>r.id===id)) errors.push('Нет рецепта '+id); });
+  return {ok:!errors.length,errors,count:herbs.length,herbs,roles:[...roles],recipes:recipes.map(r=>r.name),
+    scarce:magic.filter(id=>!market.includes(id)),proposal:'новые рецептуры — только по согласованию'};
+}
+function questReport(){
+  if(!game) return {ok:false,errors:['Игра не запущена'],quests:[],journal:{active:[],done:[]}};
+  const errors=[];
+  const hall=(game.world.maps||[]).find(m=>m.cells.some(row=>row.some(c=>c&&c.t==='shop'&&c.kind==='hall')));
+  if(!hall) errors.push('На картах нет ратуши');
+  const quests=SHOP_QUESTS.map(q=>({id:q.id,title:q.title,lair:q.lair,target:q.target,
+    accepted:!!game.quests.accepted[q.id],done:!!game.quests.done[q.id],
+    progress:game.quests.progress[q.id]||defaultQuestProgress(),reward:q.reward}));
+  const tagged=(game.world.maps||[]).reduce((s,m)=>s+m.monsters.filter(e=>e.lairId).length,0);
+  if(!tagged) errors.push('Монстры логовищ не помечены lairId');
+  const journal={active:(game.journal.active||[]).length,done:(game.journal.done||[]).length,
+    entries:(game.journal.active||[]).concat(game.journal.done||[]).map(x=>x.id)};
+  return {ok:!errors.length,errors,quests,journal,hallMap:hall&&hall.index,tagged,saveIncludesJournal:!!game.journal};
+}
 function renderShop(){
   if(!game) return;
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
@@ -3358,6 +3578,7 @@ function renderShop(){
   $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
   $('shopList').innerHTML='';
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
+  if(def.id==='hall'){ renderQuestOffers(); return; }
 
   // Оружейная/кузница — только оружие, палата/бронница — только броня.
   // Рынок остаётся общим лавком, но не продаёт предметы комплекта.
@@ -3407,10 +3628,13 @@ function renderShop(){
     SPELLS.filter(spellHasEffect).forEach(s=>{
       const price=Math.max(2,Math.round((7+SPELLS.indexOf(s)*2)*stock.price*(stock.spellDiscount||1)));
       const known=h.spells.includes(s.id), restricted=!canCast(h);
-      shopRow(s.icon,s.name,s.desc+' · '+((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+s.mp+' MP',
-        [shopButton(known?'Изучено':restricted?'⚠ перегруз':'🪙 '+price+' выучить',()=>buy(price,()=>{
-          h.spells.push(s.id); h.mpDiscount=stock.spellDiscount||1; toast('Изучено: '+s.name+' (мана дешевле)');
-        }),known||restricted||game.gold<price,null,restrictionText(h))],'ОБУЧЕНИЕ');
+      const needRank=spellTierRank(s), haveRank=(h.promotion&&h.promotion.spells)||'novice';
+      const gated=known||!guildAtLeast(haveRank,needRank);
+      const why=gated?'Нужен ранг магии: '+needRank:restrictionText(h);
+      shopRow(s.icon,s.name,s.desc+' · '+((SPELL_TIERS.find(t=>t.id===s.tier)||{}).name||'')+' · '+s.mp+' MP'+(needRank!=='novice'?' · ранг '+needRank:''),
+        [shopButton(known?'Изучено':gated?'⚠ '+needRank:restricted?'⚠ перегруз':'🪙 '+price+' выучить',()=>buy(price,()=>{
+          h.spells.push(s.id); h.mpDiscount=stock.spellDiscount||1; toast('Изучено: '+s.name+' (mana дешевле)');
+        }),known||gated||restricted||game.gold<price,null,why)],'ОБУЧЕНИЕ');
     });
     shopRow('🧪','Зелье маны','Восстанавливает 15 MP',[shopButton('🪙 6',()=>buy(6,()=>{
       addItem({id:'potion_mp',type:'potion',name:'Зелье маны',icon:'🧪',mp:15,cost:6,sell:3});
@@ -3423,12 +3647,17 @@ function renderShop(){
       ],'ПОКУПКА');
     });
     shopSec('Гильдия магии · ранг');
+    shopRow('📜','Очки заданий и плата','30 очков — −25% платы, 60 — ранг бесплатно; 180 очков — эксперт бесплатно. '+
+      'Очки даёт ратуша за задания лавок.',[shopButton('—',null,true)],'ГИЛЬДИЯ');
     party().forEach((hero,i)=>{
       const cur=(hero.promotion&&hero.promotion.guild)||'novice';
       const gi=GUILD_RANKS.indexOf(cur), next=GUILD_RANKS[gi+1];
-      const cost=next?trainerCost({kind:'guild',rank:gi+2}):0;
-      shopRow('🏛',heroName(hero),'Ранг: '+cur+' · открывает навыки старших кругов',[
-        shopButton(next?'🪙 '+cost+' повысить ранг':'Высший ранг',()=>promoteGuild(i),
+      const points=hero.guildPoints||0, cost=next?guildRankCost(next,points):0;
+      const need=next?guildPointsNeeded(next):0;
+      shopRow('🏛',heroName(hero),'Ранг: '+cur+' · очков '+points+(need?'/'+need:'')+
+        ' · носка: '+carryingRank(hero)+' ('+heroCarryingIds(hero).join(', ')+')'+
+        (next?' · следующий: '+next+(cost?' за 🪙 '+cost:' бесплатно'):' · высший ранг'),[
+        shopButton(next?(cost?'🪙 '+cost+' повысить ранг':'Повысить бесплатно'):'Высший ранг',()=>promoteGuild(i),
           !next||game.gold<cost,!next?'Высший ранг уже достигнут':'Не хватает золота')
       ],'ГИЛЬДИЯ');
     });
@@ -3478,13 +3707,33 @@ function renderShop(){
     MATERIALS.forEach(mat=>shopRow(mat.icon,mat.name,mat.desc,[shopButton('🪙 '+mat.cost,()=>buy(mat.cost,()=>{
       addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
     }),game.gold<mat.cost)],'ПОКУПКА'));
+    if(stock.containers){
+      shopSec('Ёмкости · ржавые и кожаные');
+      CONTAINER_DEFS.forEach(c=>{
+        CONTAINER_TIERS.filter(t=>t.id==='rusty'||t.id==='leather').forEach(t=>{
+          const price=(t.id==='rusty'?8:22)+c.cost, capacity=c.capacity+t.slots;
+          shopRow('🎒',t.name+' '+c.name.toLowerCase(),'Слотов: '+capacity+' · вес '+t.weight+
+            ' · заменяется в инвентаре'+(containerAvailable(c.id)?'':' · нужна носка'),[
+            shopButton('🪙 '+price,()=>buy(price,()=>{
+              addItem({type:'container',containerKind:c.id,tier:t.id,name:t.name+' '+c.name.toLowerCase(),icon:'🎒',
+                desc:'Сменная ёмкость',capacity,weight:t.weight,cost:price,sell:Math.floor(price*.5),magic:{}});
+              toast('Куплено: '+t.name+' '+c.name.toLowerCase()+'. Замените ёмкость в инвентаре.');
+            }),game.gold<price)
+          ],'ЁМКОСТЬ');
+        });
+      });
+    }
     shopSec('Ягоды · только покупка');
     shopRow('🫐','Ягода','Покупка за 2 монеты · продажа недоступна',[shopButton('🪙 2 купить',()=>buy(2,()=>{
       addItem({id:'berry',type:'herb',name:'Ягода',icon:'🫐',desc:'+8 HP',effect:'hp',value:8,cost:2,sell:1});
     }),game.gold<2)],'ПОКУПКА');
-    HERBS.forEach(x=>shopRow(x.icon,x.name,x.desc+' · 🪙 2',[shopButton('🪙 2',()=>buy(2,()=>{
-      addItem({id:x.id,type:'herb',name:x.name,icon:x.icon,desc:x.desc,effect:x.effect,value:x.value,cost:2,sell:1});
-    }),game.gold<2)],'ПОКУПКА'));
+    const herbList=(stock.herbs||HERBS.map(x=>x.id)).map(id=>herb(id)).filter(Boolean);
+    const herbPrice=stock.herbPrice||2;
+    shopSec('Травы · базовый ассортимент');
+    herbList.forEach(x=>shopRow(x.icon,x.name,x.desc+' · роль: '+(x.role||'alchemy')+' · 🪙 '+herbPrice,
+      [shopButton('🪙 '+herbPrice,()=>buy(herbPrice,()=>{
+        addItem({id:x.id,type:'herb',name:x.name,icon:x.icon,desc:x.desc,effect:x.effect,value:x.value,cost:herbPrice,sell:1});
+      }),game.gold<herbPrice)],'ПОКУПКА'));
     shopSec('Рецепты трав'); renderRecipeRows(true);
   }
   if(def.id==='tavern'){
@@ -3630,6 +3879,11 @@ function craftRecipe(r){
   else if(r.give.id==='craft_armor') addItem({type:'armor',owner,name:'Сшитый доспех',armorDef:4,baseArmor:4,cost:10,sell:5,slot:'body',dir:'def',quality:1,upgrades:0,icon:'🛡'});
   else if(r.give.id==='craft_shield') addItem({type:'armor',owner,name:'Кованый щит',armorDef:3,baseArmor:3,cost:8,sell:4,slot:'shield',dir:'def',quality:1,upgrades:0,icon:'🛡'});
   else if(r.give.id==='craft_scroll') addItem({id:'scroll_lightning_weak',type:'scroll',name:'Свиток слабой молнии',icon:'📜',spell:'lightning_weak',cost:8,sell:4});
+  else if(r.give.kind==='container'){
+    const id=r.give.containerKind||'bag', def=containerDef(id), tier=containerTier(r.give.tier||'rusty');
+    addItem({type:'container',containerKind:id,tier:tier.id,name:r.name,icon:r.icon||'🎒',
+      desc:r.desc||'',capacity:def.capacity+tier.slots,weight:tier.weight,cost:12,sell:6,magic:{slots:tier.slots}});
+  }
   else addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
   toast('Создано: '+r.name+' ×'+(r.give.count||1)); beep(840,.16); updateParty(); return true;
 }
@@ -3726,13 +3980,28 @@ function ensureContainers(snap){
   CONTAINER_DEFS.forEach(def=>{
     const old=snap&&snap[def.id]||{};
     const upgrade=Number.isFinite(old.upgrade)?Math.max(0,Math.floor(old.upgrade)):0;
-    out[def.id]={id:def.id,capacity:Math.max(def.capacity,Number(old.capacity)||def.capacity),
-      upgrade,weight:Number(old.weight)||0,accept:def.accept.slice()};
+    const tier=CONTAINER_TIER_IDS.includes(old.tier)?old.tier:'rusty';
+    const bonus=containerTier(tier).slots;
+    /* Миграция v3: старые ёмкости получают тир «Ржавый» без потери слотов.
+       Магические свойства зарезервированы, но эффектов пока не дают. */
+    out[def.id]={id:def.id,capacity:Math.max(def.capacity+bonus,Number(old.capacity)||def.capacity),
+      upgrade,tier,weight:Number(old.weight)||containerTier(tier).weight,
+      magic:old.magic&&typeof old.magic==='object'?Object.assign({},old.magic):{},accept:def.accept.slice()};
   });
   return out;
 }
 function containerDef(id){ return CONTAINER_DEFS.find(d=>d.id===id)||null; }
 function containerState(id){ return game&&game.containers?game.containers[id]:null; }
+/* Ёмкости отряда открываются ноской: карманы и мошна всегда, сумка/сундук/пояс —
+   по максимальному рангу гильдии в отряде, чтобы общая сумка не ломалась. */
+function partyCarryingIds(){
+  const ids=new Set(['pockets','purse']);
+  if(game) party().forEach(h=>heroCarryingIds(h).forEach(id=>ids.add(id)));
+  return ids;
+}
+function containerAvailable(id){
+  return id==='pockets'||id==='purse'||partyCarryingIds().has(id);
+}
 function containerItems(id){
   if(!game||!id) return [];
   const worn=equippedUidSet();
@@ -3740,11 +4009,21 @@ function containerItems(id){
 }
 function containerRoom(id){
   const def=containerDef(id), st=containerState(id);
-  if(!def||!st) return 0;
+  if(!def||!st||!containerAvailable(id)) return 0;
   return Math.max(0,st.capacity-containerItems(id).length);
 }
+function setContainerTier(id,tier){
+  const def=containerDef(id), st=containerState(id), t=containerTier(tier);
+  if(!def||!st||!containerAvailable(id)||t.id!==tier) return false;
+  st.tier=t.id; st.weight=round1(t.weight);
+  st.capacity=Math.max(st.capacity,def.capacity+t.slots+st.upgrade*def.step);
+  /* Слоты тира прибавляются к уже купленным улучшениям; лишние вещи остаются в bag. */
+  containerItems(id).slice(st.capacity).forEach(it=>{ it.container=null; });
+  toast(def.name+': тир «'+t.name+'», '+st.capacity+' слотов.');
+  renderInventory(); updateParty(); return true;
+}
 function containerAccepts(def,it){
-  return !!def&&!!it&&def.accept.length>0&&def.accept.indexOf(it.type)>=0;
+  return !!def&&!!it&&containerAvailable(def.id)&&def.accept.length>0&&def.accept.indexOf(it.type)>=0;
 }
 function nextContainerFor(it,from){
   if(!it) return null;
@@ -3775,25 +4054,58 @@ function containerWeight(){
 }
 function containerTabLabel(def){
   const st=containerState(def.id);
-  return def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity);
+  const prefix=st&&st.tier&&st.tier!=='rusty'?containerTier(st.tier).name.slice(0,2)+' ':'';
+  return prefix+def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity)+
+    (containerAvailable(def.id)?'':' 🔒');
 }
 function containerReport(){
   const errors=[];
   if(!game||!game.containers) return {ok:false,errors:['Контейнеры не инициализированы'],containers:[],tabs:[]};
   const worn=equippedUidSet();
+  const ids=partyCarryingIds();
   const rows=CONTAINER_DEFS.map(def=>{
     const st=game.containers[def.id];
     if(!st) errors.push('Нет контейнера '+def.name);
     const items=containerItems(def.id);
     if(st&&items.length>st.capacity) errors.push(def.name+' переполнена');
+    if(st&&!CONTAINER_TIER_IDS.includes(st.tier)) errors.push(def.name+' имеет неизвестный тир');
     return {id:def.id,name:def.name,used:items.length,capacity:st?st.capacity:def.capacity,
-      upgrade:st?st.upgrade:0,weight:st?st.weight:0,accept:def.accept.slice(),tab:containerTabLabel(def)};
+      upgrade:st?st.upgrade:0,tier:st?st.tier:'rusty',magic:st?Object.assign({},st.magic||{}):{},
+      available:containerAvailable(def.id),weight:st?st.weight:0,accept:def.accept.slice(),tab:containerTabLabel(def)};
   });
   const loose=game.bag.filter(it=>!worn.has(it.uid)&&!it.container).map(it=>it.name);
   const li=loadInfo(party()[0]);
-  return {ok:!errors.length,errors,containers:rows,tabs:rows.map(r=>r.tab),loose,
+  return {ok:!errors.length,errors,containers:rows,tabs:rows.map(r=>r.tab),loose,carrying:[...ids],
     totalUsed:rows.reduce((s,r)=>s+r.used,0),totalCapacity:rows.reduce((s,r)=>s+r.capacity,0),
     weight:li.containerWeight,gearWeight:li.gearWeight,totalWeight:li.weight};
+}
+/* Носка — производная гильдии, тренировке не поддаётся. Павший герой сохраняет
+   все вещи: death-логика не трогает game.bag и не снимает экипировку. */
+function carryingReport(){
+  const errors=[];
+  if(!game) return {ok:false,errors:['Игра не запущена'],heroes:[],dead:[],containers:[]};
+  const ranks=party().map(h=>({name:heroName(h),guild:(h.promotion&&h.promotion.guild)||'novice',
+    rank:carryingRank(h),carrying:heroCarryingIds(h),points:h.guildPoints||0,
+    discountLeading:guildRankCost('leading',h.guildPoints||0)}));
+  ranks.forEach(row=>{
+    const expect=CARRY_ORDER.slice(0,row.rank);
+    if(JSON.stringify(row.carrying)!==JSON.stringify(expect)) errors.push(row.name+': носка не совпадает с рангом');
+  });
+  const auto=SKILL_DEFS.find(s=>s.id==='carrying');
+  if(!auto||!auto.auto||auto.building!==null) errors.push('Навык носки должен быть автоматическим и без здания');
+  if(awardSkill(party()[0],'carrying',99)) errors.push('Автоматический навык нельзя начислять тренировкой');
+  const available=[...partyCarryingIds()];
+  if(!available.includes('pockets')||!available.includes('purse')) errors.push('Карманы и мошна должны быть всегда');
+  const dead=party().filter(h=>h.hp<=0).map(h=>{
+    const uids=Object.values(h.equip||{}).filter(Boolean);
+    return {name:heroName(h),uids,kept:uids.every(uid=>game.bag.some(i=>i.uid===uid)),
+      items:game.bag.filter(i=>i.owner===h.slot).length};
+  });
+  dead.forEach(row=>{ if(!row.kept) errors.push(row.name+': вещи павшего героя потеряны'); });
+  const containers=CONTAINER_DEFS.map(def=>({id:def.id,available:containerAvailable(def.id),
+    locked:!containerAvailable(def.id),tier:(game.containers[def.id]||{}).tier||'rusty'}));
+  return {ok:!errors.length,errors,heroes:ranks,dead,containers,available,deadKeepsGear:true,
+    thresholds:GUILD_POINT_THRESHOLDS};
 }
 function mapReport(){
   const errors=[], m=currentMap();
@@ -3985,6 +4297,7 @@ function moveContainerItem(uid,target){
 function upgradeContainer(id){
   const def=containerDef(id), st=containerState(id);
   if(!def||!st) return false;
+  if(!containerAvailable(id)){ toast(def.name+' пока недоступна: нужна носка.'); return false; }
   if(st.upgrade>=3){ toast('Достигнут лимит улучшений контейнера.'); return false; }
   const cost=def.cost*(st.upgrade+1);
   if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
@@ -3996,17 +4309,26 @@ function upgradeContainer(id){
   toast(def.name+' улучшена: '+st.capacity+' слотов.');
   renderInventory(); updateParty(); return true;
 }
-function replaceBelt(uid){
+function installContainerItem(uid){
   const it=game&&game.bag.find(i=>i.uid===uid);
-  if(!it||it.type!=='container'||it.containerKind!=='belt') return false;
-  const st=containerState('belt'); if(!st) return false;
+  if(!it||it.type!=='container'||!containerDef(it.containerKind)) return false;
+  const id=it.containerKind, st=containerState(id);
+  if(!st||!containerAvailable(id)) return false;
   st.capacity=Math.max(st.capacity,Number(it.capacity)||st.capacity);
-  st.weight=Number(it.weight)||0;
+  st.weight=Number(it.weight)||containerTier(it.tier||'rusty').weight;
+  st.tier=CONTAINER_TIER_IDS.includes(it.tier)?it.tier:st.tier||'rusty';
+  st.magic=it.magic&&typeof it.magic==='object'?Object.assign({},it.magic):(st.magic||{});
   st.level=Number(it.level)||1;
   const ix=game.bag.indexOf(it); if(ix>=0) game.bag.splice(ix,1);
-  containerItems('belt').slice(st.capacity).forEach(x=>{ x.container=null; });
-  toast('Пояс заменён: '+st.capacity+' слотов.');
+  containerItems(id).slice(st.capacity).forEach(x=>{ x.container=null; });
+  toast(containerDef(id).name+' заменена: '+st.capacity+' слотов, тир «'+containerTier(st.tier).name+'».');
   renderInventory(); updateParty(); return true;
+}
+function replaceBelt(uid){ return installContainerItem(uid); }
+/* Награда ратуши/ранга меняет тир сразу, без отдельного предмета-пояса. */
+function grantContainerTier(id,tier){
+  if(!containerAvailable(id)) return false;
+  return setContainerTier(id,tier);
 }
 function itemCell(it,h){
   const target=mannequinSlotForItem(it);
@@ -4190,6 +4512,7 @@ function renderInventory(){
   if(!game) return;
   const h=party()[game.invHero||0];
   if(!h) return;
+  if(invContainer&&!containerAvailable(invContainer)) invContainer=null;
   renderMannequin();
   $('invTabs').innerHTML=INV_TABS.map(t=>'<button class="tab'+(t===invTab?' sel':'')+'" data-tab="'+t+'">'+t+'</button>').join('');
   $('invTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ invTab=b.dataset.tab; invArmedSlot=null; renderInventory(); });
@@ -4242,11 +4565,14 @@ function renderInventory(){
     CONTAINER_DEFS.forEach(def=>{
       const b=document.createElement('button');
       b.type='button'; b.dataset.container=def.id;
-      b.className='containerTab'+(invContainer===def.id?' sel':'')+(containerRoom(def.id)<=0?' full':'');
+      const locked=!containerAvailable(def.id);
+      b.className='containerTab'+(invContainer===def.id?' sel':'')+(containerRoom(def.id)<=0?' full':'')+(locked?' locked':'');
       b.title=def.name+': '+containerItems(def.id).length+'/'+((game.containers[def.id]||{}).capacity||def.capacity)+
-        ' · вмещает: '+(def.accept.length?def.accept.join(', '):'золото');
+        ' · вмещает: '+(def.accept.length?def.accept.join(', '):'золото')+
+        ' · тир: '+containerTier((game.containers[def.id]||{}).tier).name+(locked?' · недоступна, нужна носка':'');
       b.textContent=containerTabLabel(def);
-      b.onclick=()=>{ invContainer=invContainer===def.id?null:def.id; invArmedSlot=null; renderInventory(); };
+      b.disabled=locked;
+      if(!locked) b.onclick=()=>{ invContainer=invContainer===def.id?null:def.id; invArmedSlot=null; renderInventory(); };
       ctabs.appendChild(b);
     });
     list.appendChild(ctabs);
@@ -5309,6 +5635,8 @@ if(bigMapCanvas()) bigMapCanvas().addEventListener('pointerdown',e=>{
 $('spellClose').onclick=closeSpellMenu;
 $('logClose').onclick=()=>toggleEventLog(false);
 $('btnLog').onclick=()=>toggleEventLog();
+$('questJournalClose').onclick=()=>toggleQuestJournal(false);
+$('btnQuests').onclick=()=>toggleQuestJournal();
 $('logPrev').onclick=()=>scrollEventLog(-120);
 $('logNext').onclick=()=>scrollEventLog(120);
 $('turnLeft').onclick=()=>turnPlayer(-1); $('turnRight').onclick=()=>turnPlayer(1);
@@ -5388,6 +5716,11 @@ document.addEventListener('keydown',e=>{
     else if(e.key==='ArrowDown'||e.key==='PageDown') scrollEventLog(120);
     return;
   }
+  if(game&&game.journalOpen){
+    e.preventDefault();
+    if(e.key==='Escape'||k==='j'||k==='ж') toggleQuestJournal(false);
+    return;
+  }
   if(k==='p'||k==='з'){ e.preventDefault();
     if($('settings').classList.contains('hidden')) openSettings(); else closeSettings(); return; }
   if(!$('settings').classList.contains('hidden')){
@@ -5405,6 +5738,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if(!game) return;
+  if(k==='j'||k==='ж'){ e.preventDefault(); toggleQuestJournal(); return; }
   if(k==='l'||k==='д'){ e.preventDefault(); toggleEventLog(); return; }
   if(k==='m'||k==='ь'){
     e.preventDefault();
@@ -5507,7 +5841,7 @@ function progressionReport(){
   const old={version:1,gold:77,bag:[{uid:'old-1',type:'misc',name:'Старый предмет'}],party:[{def:{name:' Воин '},slot:0,hp:10,mp:0,exp:123,equip:{}}]};
   const moved=migrateSave(old);
   const h=moved.party[0];
-  if(moved.version!==2) errors.push('Сейв не мигрировал в версию 2');
+  if(moved.version!==SAVE_VERSION) errors.push('Сейв не мигрировал в версию '+SAVE_VERSION);
   if(moved.gold!==old.gold||moved.bag.length!==1||moved.bag[0].uid!=='old-1') errors.push('Миграция потеряла золото или предмет');
   if(h.exp!==123||h.level!==1||!h.skillXp||!h.skills||!h.skillCooldown||!h.promotion) errors.push('Миграция не добавила поля прогрессии героя');
   if(moved.clockMinutes===undefined||moved.hunger===undefined||!moved.lootCounters||!Array.isArray(moved.floorLoot)) errors.push('Миграция не добавила часы/голод/счётчики лута');
@@ -5957,6 +6291,21 @@ window.__mm6Debug={
   tickSkillCooldowns:()=>{ tickSkillCooldowns(); return window.__mm6Debug.skillReport(); },
   trainSkill:(i,id)=>({ok:trainSkill(i,id),state:window.__mm6Debug.skillReport()}),
   promoteGuild:(i)=>({ok:promoteGuild(i),state:window.__mm6Debug.skillReport()}),
+  guildReport:()=>guildReport(),
+  carryingReport:()=>carryingReport(),
+  herbReport:()=>herbReport(),
+  tierReport:()=>tierReport(),
+  questReport:()=>questReport(),
+  acceptQuest:(id)=>acceptQuest(id),
+  completeQuest:(id)=>completeQuest(id),
+  forceQuestKill:(lairId)=>{
+    if(!game||!game.world) return false;
+    const map=game.world.maps.find(m=>m.lair&&m.lair.id===lairId);
+    if(!map) return false;
+    map.monsters.filter(e=>e.lairId===lairId).forEach(e=>{ e.alive=false; trackQuestKills(e); });
+    return {ok:true,report:questReport()};
+  },
+  toggleQuestJournal:(open)=>toggleQuestJournal(open),
   monsterReport:()=>monsterReport(),
   spawnVariant:(id,variant)=>{
     const def=MONSTERS.find(m=>m.id===id)||MONSTERS[0];
@@ -6071,6 +6420,12 @@ window.__mm6Debug={
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
   },
   containerReport:()=>containerReport(),
+  setGuildRank:(i,rank)=>{ const h=party()[i]; return h?setGuildRank(h,rank):false; },
+  setGuildPoints:(i,n)=>{ const h=party()[i]; if(!h) return false;
+    h.guildPoints=Math.max(0,Math.floor(Number(n)||0)); return h.guildPoints; },
+  setContainerTier:(id,tier)=>setContainerTier(id,tier),
+  installContainerItem:(uid)=>installContainerItem(uid),
+  craftRecipe:(id)=>{ const r=RECIPES.find(x=>x.id===id); return r?craftRecipe(r):false; },
   progressionReport:()=>progressionReport(),
   grenadeReport:()=>grenadeReport(),
   churchReport:()=>churchReport(),
