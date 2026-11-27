@@ -47,10 +47,11 @@ button,input,select{font-family:inherit}
 .pcard[data-hero="3"].active{border-color:var(--hero-4);box-shadow:0 0 8px rgba(253,230,138,.35)}
 .pcard[data-hero="4"].active{border-color:var(--hero-5);box-shadow:0 0 8px rgba(196,181,253,.35)}
 /* Вертикальная очередь ходов: верхняя строка — текущий герой, ниже — следующие. */
-#turnQueue{position:absolute;left:8px;top:96px;z-index:5;width:116px;display:flex;flex-direction:column;gap:3px;pointer-events:none}
-.tq-row{display:flex;align-items:center;gap:5px;padding:3px 5px;border-radius:6px;background:rgba(6,8,18,.86);
-  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:10px;line-height:1.1;opacity:.72}
-.tq-row .tq-rank{width:9px;flex:none;font-size:8px;color:#9fb0d8;text-align:center}
+#turnQueue{position:absolute;left:8px;top:88px;z-index:5;width:104px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.tq-row{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:5px;background:rgba(6,8,18,.86);
+  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:9px;line-height:1.1;opacity:.72}
+.tq-more{padding:1px 4px;color:#9fb0d8;font-size:8px;text-align:right;line-height:1.1}
+.tq-row .tq-rank{width:8px;flex:none;font-size:8px;color:#9fb0d8;text-align:center}
 .tq-row .tq-name{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
 .tq-row.active{border-color:var(--tq-color,var(--hero-1));color:var(--tq-color,var(--hero-1));opacity:1;
   background:rgba(6,8,18,.96);box-shadow:0 0 9px rgba(255,255,255,.12);animation:tq-rise .34s ease-out}
@@ -72,19 +73,19 @@ button,input,select{font-family:inherit}
 .pcard .pface{width:17px;height:17px;flex:0 0 17px;border:1px solid rgba(251,191,36,.55);background:#2a1c12}
 .pcard .pstatus{color:#fde68a;font-size:8px;line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
-/* Боевые плашки увеличены примерно на 20% и остаются внизу экрана. */
-#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(790px,74vw);gap:5px}
-#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:264px;padding:3px 6px;font-size:12px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "status status" "stats stats";column-gap:7px}
+/* Боевые плашки компактные, около +10% к обычным, и остаются внизу экрана. */
+#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(720px,70vw);gap:4px}
+#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:238px;padding:2px 5px;font-size:11px;background:rgba(6,8,18,.94);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "status status";column-gap:6px}
 #party.in-battle .pcard .ptop{grid-area:top;min-width:0}
-#party.in-battle .pcard .pemoji{font-size:18px}
-#party.in-battle .pcard .pface{width:22px;height:22px;flex-basis:22px}
-#party.in-battle .pcard .pstatus{grid-area:status;font-size:11px;margin-top:1px}
-#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:12px;gap:7px}
-#party.in-battle .pcard .pbar{grid-area:hp;height:4px;margin-top:2px}
+#party.in-battle .pcard .pemoji{font-size:16px}
+#party.in-battle .pcard .pface{width:20px;height:20px;flex-basis:20px}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:10px;margin-top:1px}
+#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:6px}
+#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-#party.in-battle .pcard .mini{grid-area:stats;font-size:11px;margin-top:2px;gap:4px}
-#party.in-battle .pcard .fx{display:none}
+/* Итог атаки/защиты есть в инвентаре — в бою цифры не дублируются. */
+#party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
   #controls{display:none!important}
   #stage{height:100%}
@@ -516,7 +517,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgW:500,enemyPanelW:257,enemyPanelH:70,badgeW:100};
+  msgW:500,enemyPanelW:236,enemyPanelH:64,badgeW:100};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
 const HERO_COLORS=['#7dffb2','#93c5fd','#fca5a5','#fde68a','#c4b5fd'];
 // Информационные панели карты не заходят на фигуру героя (левый край спрайта с оружием).
@@ -2865,16 +2866,18 @@ function battleQueueRows(b){
   const at=active>=0?active:(b.turn==='hero'?rows.findIndex(r=>r.side==='hero'&&r.idx===b.heroIdx):-1);
   return at>0?rows.slice(at).concat(rows.slice(0,at)):rows;
 }
+const TURN_QUEUE_LIMIT=5;
 function updateTurnQueue(){
   const el=$('turnQueue'), b=game&&game.battle;
   if(!el) return;
   if(!b||b.end){ el.classList.add('hidden'); el.innerHTML=''; return; }
-  el.innerHTML=battleQueueRows(b).map((u,i)=>{
+  const rows=battleQueueRows(b), shown=rows.slice(0,TURN_QUEUE_LIMIT);
+  el.innerHTML=shown.map((u,i)=>{
     const hero=u.side==='hero', color=hero?heroColor(u.idx):'#fca5a5';
     return '<div class="tq-row'+(i===0?' active':'')+'" data-side="'+u.side+'" '+
       (hero?'data-hero="'+u.idx+'"':'data-enemy="'+u.idx+'"')+' style="--tq-color:'+color+'">'+
       '<span class="tq-rank">'+(i+1)+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
-  }).join('');
+  }).join('')+(rows.length>shown.length?'<div class="tq-more">… ещё '+(rows.length-shown.length)+'</div>':'');
   el.classList.remove('hidden');
 }
 function setActionButton(id,disabled,title){
@@ -6373,7 +6376,7 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель увеличена примерно на 20%; подпись группы честно перечисляет врагов.
+  // Верхняя панель компактная, около +10%; подпись группы честно перечисляет врагов.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
   const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
   panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
@@ -6386,10 +6389,10 @@ function drawBattle(now,dt){
   ctx.fillText(hpText,epanel+BF.enemyPanelW-12,26);
   ctx.textAlign='left';
   const hpRatio=e?clamp(e.hp/e.maxHp,0,1):0;
-  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,42,BF.enemyPanelW-24,7,3); ctx.fill();
-  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,42,Math.max(3,(BF.enemyPanelW-24)*hpRatio),7,3); ctx.fill(); }
-  setFont(11,false); ctx.fillStyle='#fca5a5';
-  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,62);
+  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,41,BF.enemyPanelW-24,5,2); ctx.fill();
+  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,41,Math.max(3,(BF.enemyPanelW-24)*hpRatio),5,2); ctx.fill(); }
+  setFont(10,false); ctx.fillStyle='#fca5a5';
+  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,57);
   // Узкий бейдж хода не заходит на увеличенную панель врага.
   roundRect(W/2-BF.badgeW/2,12,BF.badgeW,26,7); ctx.fillStyle='rgba(6,8,18,.9)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.lineWidth=1.5; ctx.stroke();
@@ -7381,6 +7384,8 @@ window.__mm6Debug={
         y:+r.getBoundingClientRect().y.toFixed(1)};
     });
     return {visible:!el.classList.contains('hidden'),rows,pointerEvents:getComputedStyle(el).pointerEvents,
+      total:battleQueueRows(b).length,limit:TURN_QUEUE_LIMIT,
+      more:!!el.querySelector('.tq-more'),
       classNames:partyClassLabels(),fullNames:partyClassLabels().map(n=>n.toUpperCase()),
       enemyNames:enemyQueueLabels(b)};
   },
