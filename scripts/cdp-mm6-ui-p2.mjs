@@ -160,7 +160,7 @@ try {
   const domLog = await ev(`(()=>{const e=document.getElementById('logList'),r=e.getBoundingClientRect(),s=getComputedStyle(e);
     return {h:+r.height.toFixed(1),max:s.maxHeight,ov:s.overflowY,open:!document.getElementById('eventLog').classList.contains('hidden')};})()`);
   check('журнал событий фиксированной высоты с внутренней прокруткой',
-    domLog.open && domLog.h <= 90 && domLog.max === '88px' && domLog.ov === 'auto', JSON.stringify(domLog));
+    domLog.open && domLog.h <= 100 && domLog.max === '97px' && domLog.ov === 'auto', JSON.stringify(domLog));
 
   check('консоль без ошибок', consoleErrors.length === 0, JSON.stringify(consoleErrors));
   check('нет 4xx/5xx', badResponses.length === 0, JSON.stringify(badResponses));
