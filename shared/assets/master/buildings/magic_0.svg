@@ -16,10 +16,10 @@
     <path d="M56 160 L256 56 L456 160Z" fill="none" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M48 152 H464 V160 H48Z" fill="#4a235e" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
-  <g id="sign"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="potion_star"><path d="M30 4 H48 V22 L58 38 V58 H20 V38 L30 22Z" fill="#93c5fd" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Магазин магии «Звёздная Склянка»"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="potion_star"><path d="M30 4 H48 V22 L58 38 V58 H20 V38 L30 22Z" fill="#93c5fd" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M24 36 H54 V56 H24Z" fill="#3b6ea5" stroke="none"/>
     <path d="M62 2 L67 14 L79 19 L67 24 L62 36 L57 24 L45 19 L57 14Z" fill="#e8c14a" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
-    <ellipse cx="34" cy="44" rx="5" ry="9" fill="#f3efe2" stroke="none"/></g><text x="180" y="211" font-family="'Courier New', monospace" font-size="24" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="299" lengthAdjust="spacingAndGlyphs">Магазин магии «Звёздна…</text></g>
+    <ellipse cx="34" cy="44" rx="5" ry="9" fill="#f3efe2" stroke="none"/></g><text x="180" y="195" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="169" lengthAdjust="spacingAndGlyphs">Магазин магии</text><text x="180" y="221" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="234" lengthAdjust="spacingAndGlyphs">«Звёздная Склянка»</text></g>
   <g id="window">
 <path d="M104 258 H182 V326 H104Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M108 262 H178 V322 H108Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>

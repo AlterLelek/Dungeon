@@ -5,31 +5,44 @@
 <path d="M112 306 H400 V430 H112Z" fill="#6b5742" stroke="#241a14" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M118 312 H394 V322 H118Z" fill="#4a3a2e" stroke="none"/>
 <path d="M104 426 H408 V444 H104Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="#2a1c12" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+<path data-part="hidden-entrance" d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="#2a1c12" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
 <path d="M194 430 V360 Q194 326 256 326 Q318 326 318 360 V430Z" fill="#1a120e" stroke="none"/>
 <path d="M212 430 V364 Q212 342 256 342 Q300 342 300 364 V430Z" fill="#241a14" stroke="none"/>
+<g data-part="steps"><path d="M224 388 H288 V396 H224Z" fill="#2a1c12" stroke="none"/><path d="M230 404 H282 V412 H230Z" fill="#2a1c12" stroke="none"/><path d="M236 418 H276 V426 H236Z" fill="#2a1c12" stroke="none"/></g>
+<path data-part="hidden-door" d="M304 336 L334 344 L332 414 L304 410Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+<path d="M309 344 H314 V406 H309Z" fill="#b39b78" stroke="none"/>
+<ellipse cx="322" cy="378" rx="4" ry="5" fill="#e8c14a" stroke="#241a14" stroke-width="2"/>
 <path d="M132 330 H166 V342 H132Z" fill="#8f7a5f" stroke="none"/><path d="M346 350 H384 V362 H346Z" fill="#8f7a5f" stroke="none"/>
-<path d="M184 380 H328 M198 400 H314" fill="none" stroke="#8f7a5f" stroke-width="3" stroke-linecap="square"/>
+<path d="M118 348 H166 M346 368 H386" fill="none" stroke="#8f7a5f" stroke-width="3" stroke-linecap="square"/>
   </g>
-  <g id="wall"><path d="M132 124 H150 V360 H132Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M362 124 H380 V360 H362Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M136 130 H144 V354 H136Z" fill="#8f7a5f" stroke="none"/></g>
+  <g id="wall"><path d="M142 196 H162 V308 H142Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M350 196 H370 V308 H350Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M146 202 H153 V302 H146Z" fill="#8f7a5f" stroke="none"/><path d="M354 202 H361 V302 H354Z" fill="#8f7a5f" stroke="none"/></g>
   <g id="roof">
     <path d="M96 124 L256 44 L416 124Z" fill="#4a3a2e" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M118 118 L256 56 L394 118" fill="none" stroke="#8f7a5f" stroke-width="4" stroke-linecap="square"/>
     <path d="M88 116 H424 V128 H88Z" fill="#2a1c12" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-    <path d="M112 106 H400 V116 H112Z" fill="#4a3a2e" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+    <path d="M136 186 H376 V198 H136Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
-  <g id="door">
-    <path d="M256 124 V212" fill="none" stroke="#241a14" stroke-width="5" stroke-linecap="square"/>
-    <path d="M226 212 L240 270 H272 L286 212Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
-    <path d="M224 210 H288" fill="none" stroke="#8a8f98" stroke-width="5" stroke-linecap="square"/>
-    <ellipse cx="248" cy="240" rx="5" ry="12" fill="#b39b78" stroke="none"/>
+  <g id="door" data-part="winch">
+    <ellipse cx="256" cy="232" rx="42" ry="36" fill="#6b4426" stroke="#241a14" stroke-width="4"/>
+    <ellipse cx="256" cy="232" rx="30" ry="25" fill="#2a1c12" stroke="none"/>
+    <path d="M214 232 H298 M256 196 V268 M226 210 L286 254 M286 210 L226 254" fill="none" stroke="#b39b78" stroke-width="5" stroke-linecap="square"/>
+    <ellipse cx="256" cy="232" rx="11" ry="10" fill="#8a8f98" stroke="#241a14" stroke-width="3"/>
+    <path d="M298 232 H328 V258" fill="none" stroke="#8a8f98" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+    <ellipse cx="328" cy="262" rx="6" ry="9" fill="#6b4426" stroke="#241a14" stroke-width="3"/>
+    <path d="M235 264 L232 294 M277 264 L280 294" fill="none" stroke="#241a14" stroke-width="4" stroke-linecap="square"/>
+    <g data-part="bucket">
+      <path d="M230 294 Q256 264 282 294" fill="none" stroke="#8a8f98" stroke-width="5" stroke-linecap="square"/>
+      <path d="M226 296 H286 L278 344 H234Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+      <path d="M228 304 H284 V311 H228Z" fill="#8a8f98" stroke="none"/><path d="M232 332 H282 V339 H232Z" fill="#8a8f98" stroke="none"/>
+      <ellipse cx="248" cy="320" rx="6" ry="9" fill="#b39b78" stroke="none"/>
+    </g>
   </g>
   <g id="window"></g>
-  <g id="sign"><path d="M64 138 H448 V202 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 143 H442 V197 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 140)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Колодец «Тихий Вход»"><path d="M64 138 H448 V202 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 143 H442 V197 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 140)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M12 18 H68" fill="none" stroke="#241a14" stroke-width="5" stroke-linecap="square"/>
     <path d="M20 30 Q40 6 60 30" fill="none" stroke="#8a8f98" stroke-width="4"/>
     <path d="M16 38 H64 V44 H16Z" fill="#8a8f98" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="31" cy="50" rx="5" ry="4" fill="#b39b78" stroke="none"/></g><text x="180" y="181" font-family="'Courier New', monospace" font-size="24" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="260" lengthAdjust="spacingAndGlyphs">Колодец «Тихий Вход»</text></g>
+    <ellipse cx="31" cy="50" rx="5" ry="4" fill="#b39b78" stroke="none"/></g><text x="180" y="165" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="91" lengthAdjust="spacingAndGlyphs">Колодец</text><text x="180" y="191" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="156" lengthAdjust="spacingAndGlyphs">«Тихий Вход»</text></g>
   <g id="decor">
     <path d="M122 416 H146 V426 H122Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/><path d="M366 416 H390 V426 H366Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
     <path d="M156 448 H356" fill="none" stroke="#2a1c12" stroke-width="3" stroke-linecap="square"/>

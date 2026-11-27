@@ -1979,19 +1979,19 @@ function placeSettlement(cells,size,rng,keep,cx,cy,def){
     if(!s) return;
     keep.add(ckey(s.x,s.y));
     if(house){
-      cells[s.y][s.x]={t:'house',buildingId:b.id,kind:b.kind,shop_kind:null,houseName:b.title,deco:b.deco,ground:cells[s.y][s.x].ground};
+      cells[s.y][s.x]={t:'house',buildingId:b.id,kind:b.kind,shop_kind:null,houseName:b.signName||b.title,deco:b.deco,ground:cells[s.y][s.x].ground};
     }else{
-      cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:[kind],shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
+      cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:[kind],shopName:b.signName||b.title,buildingTitle:b.signName||b.title,ground:cells[s.y][s.x].ground};
     }
-    const item={kind,x:s.x,y:s.y,name:b.title,buildingId:b.id};
+    const item={kind,x:s.x,y:s.y,name:b.signName||b.title,buildingId:b.id};
     buildings.push(item);
     if(kind==='hall') hall=item;
   });
   if(!hall){
     const s=settlementSpot(cells,size,rng,keep,center,0,6)||center;
     const b=BUILDING_TYPES.find(x=>x.id==='hall_0')||BUILDING_TYPES[0];
-    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind:'hall',shop_kind:['hall'],shopName:b.title,buildingTitle:b.title,ground:'grass'};
-    hall={kind:'hall',x:s.x,y:s.y,name:b.title,buildingId:b.id};
+    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind:'hall',shop_kind:['hall'],shopName:b.signName||b.title,buildingTitle:b.signName||b.title,ground:'grass'};
+    hall={kind:'hall',x:s.x,y:s.y,name:b.signName||b.title,buildingId:b.id};
     buildings.push(hall);
   }
   carveRoad(cells,size,rng,{x:cx,y:cy},{x:center.x,y:center.y},'stone');
@@ -2146,7 +2146,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     const ground=t==='water'?'sand':t==='rock'?'stone':(cells[s.y][s.x].ground||'grass');
     const sprite=t==='rock'?manifestSprite('mountain',cellHash(s.x,s.y,seed)):null;
     cells[s.y][s.x]=t==='house'
-      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco,ground}
+      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.signName||deco.title,deco:deco.deco,ground}
       :{t,ground,decoSeed:cellHash(s.x,s.y,seed),...(t==='water'?{water:true}:{}),...(sprite?{mountainSprite:sprite}:{})};
   }
   const rate=clamp(Number(settings.itemRate)||2,1,5);

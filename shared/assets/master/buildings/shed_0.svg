@@ -16,10 +16,10 @@
     <path d="M56 160 L256 56 L456 160Z" fill="none" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M48 152 H464 V160 H48Z" fill="#4a2e18" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
-  <g id="sign"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="rake"><path d="M40 4 V44" fill="none" stroke="#6b4426" stroke-width="6" stroke-linecap="square"/>
+  <g id="sign" data-sign-name="Сарай «Старые Грабли»"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="rake"><path d="M40 4 V44" fill="none" stroke="#6b4426" stroke-width="6" stroke-linecap="square"/>
     <path d="M14 44 H66" fill="none" stroke="#241a14" stroke-width="6" stroke-linecap="square"/>
     <path d="M18 44 V60 M32 44 V60 M46 44 V60 M60 44 V60" fill="none" stroke="#8a8f98" stroke-width="5" stroke-linecap="square"/>
-    <ellipse cx="43" cy="16" rx="4" ry="8" fill="#b39b78" stroke="none"/></g><text x="180" y="211" font-family="'Courier New', monospace" font-size="24" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="273" lengthAdjust="spacingAndGlyphs">Сарай «Старые Грабли»</text></g>
+    <ellipse cx="43" cy="16" rx="4" ry="8" fill="#b39b78" stroke="none"/></g><text x="180" y="195" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="169" lengthAdjust="spacingAndGlyphs">Сарай «Старые</text><text x="180" y="221" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="91" lengthAdjust="spacingAndGlyphs">Грабли»</text></g>
   <g id="window">
 <path d="M104 258 H182 V326 H104Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M108 262 H178 V322 H108Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>

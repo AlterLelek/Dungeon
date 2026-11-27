@@ -16,10 +16,10 @@
     <path d="M56 160 L256 56 L456 160Z" fill="none" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M48 152 H464 V160 H48Z" fill="#4a3a2e" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
-  <g id="sign"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="house"><path d="M8 30 L40 8 L72 30Z" fill="#9a4028" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Каменный дом «У Глины»"><path d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(82 170)" data-sign="house"><path d="M8 30 L40 8 L72 30Z" fill="#9a4028" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M16 30 H64 V60 H16Z" fill="#c9b391" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M34 42 H48 V60 H34Z" fill="#6b4426" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="25" cy="40" rx="5" ry="4" fill="#8fc0c4" stroke="none"/></g><text x="180" y="211" font-family="'Courier New', monospace" font-size="24" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="286" lengthAdjust="spacingAndGlyphs">Каменный дом «У Глины»</text></g>
+    <ellipse cx="25" cy="40" rx="5" ry="4" fill="#8fc0c4" stroke="none"/></g><text x="180" y="195" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="156" lengthAdjust="spacingAndGlyphs">Каменный дом</text><text x="180" y="221" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="1.5" paint-order="stroke" textLength="117" lengthAdjust="spacingAndGlyphs">«У Глины»</text></g>
   <g id="window">
 <path d="M104 258 H182 V326 H104Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M108 262 H178 V322 H108Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>

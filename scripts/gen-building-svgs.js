@@ -53,6 +53,32 @@ const BUILDING_STYLE = {
 MATERIALS.violet = { wall: C.stone, wallShade: C.stoneLight, roof: C.violet, roofDark: '#4a235e', roofGlint: '#a879c7', roofStyle: 'tile' };
 MATERIALS.plaster = { wall: C.plaster, wallShade: C.stone, roof: C.tile, roofDark: '#7a2f1e', roofGlint: C.tileGlint, roofStyle: 'tile' };
 
+// Знак вывески определяется ТОЛЬКО shop_kind из assets/buildings-batch.json.
+// Для декоративных построек (shop_kind === null) знак берётся из id здания.
+const ICON_BY_SHOP_KIND = {
+  forge: 'anvil', weapons: 'sword', armory: 'sword', armor: 'sword',
+  magic: 'potion_star', tavern: 'mug', inn: 'bed',
+  market: 'coin_sack', jeweler: 'gem', church: 'gem', hall: 'house',
+};
+const ICON_BY_ID = {
+  house_straw_0: 'house', house_tile_0: 'house', stone_house_0: 'house',
+  barn_0: 'sheaf', shed_0: 'rake', stable_0: 'horseshoe', well_0: 'bucket',
+};
+function iconFor(entry, stem) {
+  for (const kind of (entry.shop_kind || [])) {
+    if (ICON_BY_SHOP_KIND[kind]) return ICON_BY_SHOP_KIND[kind];
+  }
+  return ICON_BY_ID[stem] || null;
+}
+function checkedIcon(entry) {
+  const icon = iconFor(entry, path.basename(entry.path, '.svg'));
+  if (!icon || icon !== entry.sign_icon) {
+    throw new Error('Знак вывески не соответствует shop_kind/id: ' + entry.path +
+      ' · shop_kind=' + JSON.stringify(entry.shop_kind) + ' · sign_icon=' + entry.sign_icon);
+  }
+  return icon;
+}
+
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -192,14 +218,30 @@ const ICONS = {
     <ellipse cx="26" cy="18" rx="4" ry="3" fill="${C.white}" stroke="none"/>`,
 };
 
+function signLines(name) {
+  if (name.length <= 18) return [name];
+  const words = name.split(/\s+/);
+  let best = [words[0], words.slice(1).join(' ')];
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+    if (!b) break;
+    if (Math.max(a.length, b.length) < Math.max(best[0].length, best[1].length)) best = [a, b];
+  }
+  return best;
+}
+
 function signLayer(y, icon, name) {
   const board = rect(64, y, 384, 64, C.wood, 3);
   const plate = flat(70, y + 5, 372, 54, '#4a2e18');
   const glyph = `<g transform="translate(82 ${y + 2})" data-sign="${icon}">${ICONS[icon] || ICONS.house}</g>`;
-  const maxChars = Math.max(8, Math.min(24, Math.floor((386 - 96) / 12.4)));
-  const shown = name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
-  const text = `<text x="180" y="${y + 43}" font-family="'Courier New', monospace" font-size="24" font-weight="700" fill="${C.white}" stroke="${C.outline}" stroke-width="1.5" paint-order="stroke" textLength="${Math.min(300, Math.max(80, shown.length * 13))}" lengthAdjust="spacingAndGlyphs">${esc(shown)}</text>`;
-  return `  <g id="sign">${board}${plate}${glyph}${text}</g>`;
+  const lines = signLines(name);
+  const text = lines.map((line, i) => {
+    const baseline = lines.length === 1 ? y + 43 : (i === 0 ? y + 27 : y + 53);
+    const size = lines.length === 1 ? 24 : 22;
+    const width = Math.min(260, Math.max(60, line.length * 13));
+    return `<text x="180" y="${baseline}" font-family="'Courier New', monospace" font-size="${size}" font-weight="700" fill="${C.white}" stroke="${C.outline}" stroke-width="1.5" paint-order="stroke" textLength="${width}" lengthAdjust="spacingAndGlyphs">${esc(line)}</text>`;
+  }).join('');
+  return `  <g id="sign" data-sign-name="${esc(name)}">${board}${plate}${glyph}${text}</g>`;
 }
 
 function foundation() {
@@ -241,7 +283,7 @@ function houseSvg(entry, style, name) {
     foundation(),
     wallLayer(wallY, wallH, style.wall),
     roofLayer(wallY, apexY, style.roof),
-    signLayer(signY, style.icon, name),
+    signLayer(signY, checkedIcon(entry), name),
     `  <g id="window">`,
   ];
   if (floors === 2) {
@@ -270,27 +312,40 @@ function wellSvg(entry, style, name) {
 ${rect(112, 306, 288, 124, m.wall, 4)}
 ${flat(118, 312, 276, 10, m.wallShade)}
 ${rect(104, 426, 304, 18, C.stone, 3)}
-<path d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="${C.dark}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
+<path data-part="hidden-entrance" d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="${C.dark}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
 <path d="M194 430 V360 Q194 326 256 326 Q318 326 318 360 V430Z" fill="#1a120e" stroke="none"/>
 <path d="M212 430 V364 Q212 342 256 342 Q300 342 300 364 V430Z" fill="${C.outline}" stroke="none"/>
+<g data-part="steps">${flat(224, 388, 64, 8, C.dark)}${flat(230, 404, 52, 8, C.dark)}${flat(236, 418, 40, 8, C.dark)}</g>
+<path data-part="hidden-door" d="M304 336 L334 344 L332 414 L304 410Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter"/>
+${flat(309, 344, 5, 62, C.warm)}
+<ellipse cx="322" cy="378" rx="4" ry="5" fill="${C.gold}" stroke="${C.outline}" stroke-width="2"/>
 ${flat(132, 330, 34, 12, C.stoneLight)}${flat(346, 350, 38, 12, C.stoneLight)}
-<path d="M184 380 H328 M198 400 H314" fill="none" stroke="${C.stoneLight}" stroke-width="3" stroke-linecap="square"/>
+<path d="M118 348 H166 M346 368 H386" fill="none" stroke="${C.stoneLight}" stroke-width="3" stroke-linecap="square"/>
   </g>
-  <g id="wall">${rect(132, 124, 18, 236, m.wall, 3)}${rect(362, 124, 18, 236, m.wall, 3)}${flat(136, 130, 8, 224, C.stoneLight)}</g>
+  <g id="wall">${rect(142, 196, 20, 112, m.wall, 3)}${rect(350, 196, 20, 112, m.wall, 3)}${flat(146, 202, 7, 100, C.stoneLight)}${flat(354, 202, 7, 100, C.stoneLight)}</g>
   <g id="roof">
     <path d="M96 124 L256 44 L416 124Z" fill="${m.roof}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M118 118 L256 56 L394 118" fill="none" stroke="${m.roofGlint}" stroke-width="4" stroke-linecap="square"/>
     ${rect(88, 116, 336, 12, m.roofDark, 3)}
-    ${rect(112, 106, 288, 10, m.wallShade, 2)}
+    ${rect(136, 186, 240, 12, C.wood, 3)}
   </g>
-  <g id="door">
-    <path d="M256 124 V212" fill="none" stroke="${C.outline}" stroke-width="5" stroke-linecap="square"/>
-    <path d="M226 212 L240 270 H272 L286 212Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
-    <path d="M224 210 H288" fill="none" stroke="${C.metal}" stroke-width="5" stroke-linecap="square"/>
-    <ellipse cx="248" cy="240" rx="5" ry="12" fill="${C.warm}" stroke="none"/>
+  <g id="door" data-part="winch">
+    <ellipse cx="256" cy="232" rx="42" ry="36" fill="${C.wood}" stroke="${C.outline}" stroke-width="4"/>
+    <ellipse cx="256" cy="232" rx="30" ry="25" fill="${C.dark}" stroke="none"/>
+    <path d="M214 232 H298 M256 196 V268 M226 210 L286 254 M286 210 L226 254" fill="none" stroke="${C.warm}" stroke-width="5" stroke-linecap="square"/>
+    <ellipse cx="256" cy="232" rx="11" ry="10" fill="${C.metal}" stroke="${C.outline}" stroke-width="3"/>
+    <path d="M298 232 H328 V258" fill="none" stroke="${C.metal}" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/>
+    <ellipse cx="328" cy="262" rx="6" ry="9" fill="${C.wood}" stroke="${C.outline}" stroke-width="3"/>
+    <path d="M235 264 L232 294 M277 264 L280 294" fill="none" stroke="${C.outline}" stroke-width="4" stroke-linecap="square"/>
+    <g data-part="bucket">
+      <path d="M230 294 Q256 264 282 294" fill="none" stroke="${C.metal}" stroke-width="5" stroke-linecap="square"/>
+      <path d="M226 296 H286 L278 344 H234Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
+      ${flat(228, 304, 56, 7, C.metal)}${flat(232, 332, 50, 7, C.metal)}
+      <ellipse cx="248" cy="320" rx="6" ry="9" fill="${C.warm}" stroke="none"/>
+    </g>
   </g>
   <g id="window"></g>
-${signLayer(138, 'bucket', name)}
+${signLayer(138, checkedIcon(entry), name)}
   <g id="decor">
     ${rect(122, 416, 24, 10, C.stoneLight, 2)}${rect(366, 416, 24, 10, C.stoneLight, 2)}
     <path d="M156 448 H356" fill="none" stroke="${C.dark}" stroke-width="3" stroke-linecap="square"/>
