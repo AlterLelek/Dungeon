@@ -91,6 +91,12 @@ try {
     await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
     await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
   }
+  async function clientOf(point) {
+    const r = await ev(`(()=>{const r=document.getElementById('cv').getBoundingClientRect();return {left:r.left,top:r.top,width:r.width,height:r.height};})()`);
+    const scale = Math.min(r.width / 640, r.height / 360);
+    return { x: r.left + (r.width - 640 * scale) / 2 + point.x * scale,
+      y: r.top + (r.height - 360 * scale) / 2 + point.y * scale };
+  }
 
   await send('Page.navigate', { url: base + '/games/mm6/index.html' });
   await waitFor('!!window.__mm6Debug', 8000);
@@ -120,6 +126,13 @@ try {
     report.panels.filter(p => p.hasMp).length === 1 && report.panels[1].mp === 30,
     JSON.stringify(report.panels.map(p => ({ name: p.name, hasMp: p.hasMp, mp: p.mp }))));
 
+  check('панели не висят постоянно', report.panels.every(p => !p.shown) && !report.focus.has,
+    JSON.stringify({ shown: report.panels.map(p => p.shown), focus: report.focus }));
+  await ev(`window.__mm6Debug.focusMapEnemy(0,true)`);
+  await sleep(120);
+  const focused = await ev(`window.__mm6Debug.mapEnemyPanelsReport()`);
+  check('удержание показывает плашку врага', focused.panels[0].shown && focused.focus.held,
+    JSON.stringify({ shown: focused.panels.map(p => p.shown), focus: focused.focus }));
   const dark = await ev(`(()=>{const r=window.__mm6Debug.mapEnemyPanelsReport().panels[0].rect;
     const d=document.getElementById('cv').getContext('2d').getImageData(Math.round(r.x+4),Math.round(r.y+r.h-4),1,1).data;
     return {r:d[0],g:d[1],b:d[2],a:d[3]};})()`);
@@ -158,8 +171,8 @@ try {
   const grid = await ev(`(()=>{const e=document.querySelector('#mannequin .mq-stats'),s=getComputedStyle(e);
     const cells=[...e.children].map(c=>{const r=c.getBoundingClientRect();return {x:+r.x.toFixed(1),w:+r.width.toFixed(1)};});
     return {display:s.display,min:s.minHeight,max:s.maxHeight,count:cells.length,columns:new Set(cells.map(c=>c.x)).size,widths:cells.map(c=>c.w)};})()`);
-  check('сетка манекена не сломана: 6 ячеек, 2 колонки, фиксированная высота',
-    grid.display === 'grid' && grid.min === '128px' && grid.max === '128px' &&
+  check('сетка манекена не сломана: 6 ячеек, 2 колонки, фиксированная высота +10%',
+    grid.display === 'grid' && grid.min === '141px' && grid.max === '141px' &&
     grid.count === 6 && grid.columns === 2 && grid.widths.every(w => w > 80 && w < 160),
     JSON.stringify(grid));
 
