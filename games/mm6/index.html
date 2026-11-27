@@ -1850,7 +1850,7 @@ function normalizeRoads(cells,size){
     const linked=DIRS.some(v=>{
       const nx=x+v[0],ny=y+v[1];
       return nx>=0&&ny>=0&&nx<size&&ny<size&&
-        ['road','bridge','gate','boss','chest'].includes(cells[ny][nx].t);
+        ['road','bridge','gate','boss','chest','treasure','shop','house'].includes(cells[ny][nx].t);
     });
     if(linked) continue;
     const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
@@ -1870,6 +1870,12 @@ function scatterSwamp(cells,size,rng,count,exclude){
     }
   }
 }
+function clearRoadObstacle(cells,x,y){
+  const c=cells[y][x];
+  if(!['mountain','rock','tree'].includes(c.t)) return;
+  const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
+  cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
+}
 function applyRoadCell(cells,x,y,kind,rng){
   const c=cells[y][x];
   if(['gate','boss','chest','shop','house','treasure','mountain','rock'].includes(c.t)) return;
@@ -1877,27 +1883,89 @@ function applyRoadCell(cells,x,y,kind,rng){
   c.t='road'; c.roadKind=kind; c.roadOffset=Math.round((rng()-.5)*60)/100;
   if(!c.ground) c.ground='grass';
 }
+/* Дорога обходит непроходимые клетки (горы, валуны, деревья, постройки).
+   Вода допустима только как последний способ: тогда дорога становится мостом.
+   Конец пути может лежать на самой границе карты — у ворот или у босса. */
+function roadCrossable(c,mode){
+  const obstacle=['mountain','rock','tree','house','shop'].includes(c.t);
+  if(obstacle&&mode!=='clear') return false;
+  if(c.water&&mode===false) return false;
+  return true;
+}
+function roadPath(cells,size,from,to){
+  const start=ckey(from.x,from.y), goal=ckey(to.x,to.y);
+  if(start===goal) return [{x:from.x,y:from.y}];
+  for(const mode of [false,true,'clear']){
+    const prev=new Map([[start,null]]), queue=[{x:from.x,y:from.y}];
+    let found=false;
+    for(let head=0;head<queue.length&&!found;head++){
+      const cur=queue[head];
+      for(const v of DIRS){
+        const nx=cur.x+v[0], ny=cur.y+v[1];
+        if(nx<0||ny<0||nx>=size||ny>=size) continue;
+        const k=ckey(nx,ny);
+        if(prev.has(k)) continue;
+        // Особые клетки не становятся транзитом: дорога на них не рисуется и рвет путь.
+        const special=['gate','boss','chest','treasure','shop','house'].includes(cells[ny][nx].t);
+        if(k!==start&&k!==goal&&special) continue;
+        if(k!==goal&&!roadCrossable(cells[ny][nx],mode)) continue;
+        prev.set(k,cur);
+        if(k===goal){ found=true; break; }
+        queue.push({x:nx,y:ny});
+      }
+    }
+    if(!found) continue;
+    const path=[];
+    for(let cur={x:to.x,y:to.y};cur;cur=prev.get(ckey(cur.x,cur.y))) path.push(cur);
+    return path.reverse();
+  }
+  return null;
+}
 function carveRoad(cells,size,rng,from,to,kind){
-  const dx=to.x-from.x, dy=to.y-from.y, len=Math.hypot(dx,dy);
-  if(len<1) return;
+  const a={x:clamp(from.x,0,size-1),y:clamp(from.y,0,size-1)};
+  const b={x:clamp(to.x,0,size-1),y:clamp(to.y,0,size-1)};
+  if(Math.abs(a.x-b.x)+Math.abs(a.y-b.y)<1) return;
+  const path=roadPath(cells,size,a,b);
+  if(path&&path.length>1){
+    let prev=null;
+    path.forEach(p=>{
+      if(prev){
+        let cx=prev.x,cy=prev.y,guard=0;
+        while((cx!==p.x||cy!==p.y)&&guard++<80){
+          const sx=Math.sign(p.x-cx), sy=Math.sign(p.y-cy);
+          if(sx&&sy){ if(guard%2) cx+=sx; else cy+=sy; }
+          else if(sx) cx+=sx; else cy+=sy;
+          clearRoadObstacle(cells,cx,cy);
+          applyRoadCell(cells,cx,cy,kind,rng);
+        }
+      }
+      clearRoadObstacle(cells,p.x,p.y);
+      applyRoadCell(cells,p.x,p.y,kind,rng);
+      prev={x:p.x,y:p.y};
+    });
+    return;
+  }
+  // Резервный изгиб для вырожденных случаев, когда обход не найден.
+  const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
   const ox=-dy/len, oy=dx/len;
   const bend=(rng()-.5)*Math.min(7,len*.24);
   const steps=Math.max(3,Math.ceil(len*1.7));
   let prev=null;
   for(let i=0;i<=steps;i++){
     const t=i/steps, off=Math.sin(Math.PI*t)*bend+(rng()-.5)*.4;
-    const x=clamp(Math.round(from.x+dx*t+ox*off),1,size-2);
-    const y=clamp(Math.round(from.y+dy*t+oy*off),1,size-2);
+    const x=clamp(Math.round(a.x+dx*t+ox*off),0,size-1);
+    const y=clamp(Math.round(a.y+dy*t+oy*off),0,size-1);
     if(prev){
       let cx=prev.x,cy=prev.y,guard=0;
       while((cx!==x||cy!==y)&&guard++<80){
         const sx=Math.sign(x-cx), sy=Math.sign(y-cy);
-        // Диагональные шаги чередуются: дорога изгибается без прямых углов.
         if(sx&&sy){ if(guard%2) cx+=sx; else cy+=sy; }
         else if(sx) cx+=sx; else cy+=sy;
+        clearRoadObstacle(cells,cx,cy);
         applyRoadCell(cells,cx,cy,kind,rng);
       }
     }
+    clearRoadObstacle(cells,x,y);
     applyRoadCell(cells,x,y,kind,rng);
     prev={x,y};
   }
@@ -1990,49 +2058,112 @@ function generateForest(cells,size,occupied,cx,cy,farX,farY,rng){
 }
 /* Поселение — один двор: все официальные здания стоят рядом и соединены дорогами.
    Деревня получает урезанный состав из данных SETTLEMENTS, город — полный. */
-function settlementSpot(cells,size,rng,keep,center,minR,maxR){
-  for(let radius=minR;radius<=maxR;radius++){
-    for(let k=0;k<80;k++){
-      const x=clamp(center.x+rngInt(rng,-radius,radius),2,size-3);
-      const y=clamp(center.y+rngInt(rng,-radius,radius),2,size-3);
-      const ring=Math.max(Math.abs(x-center.x),Math.abs(y-center.y));
-      if(ring<minR||ring>radius||keep.has(ckey(x,y))) continue;
-      if(!GROUND_IDS.includes(cells[y][x].t)) continue;
-      return {x,y};
-    }
-  }
-  return null;
-}
+/* Официальные здания поселения образуют один двор: ратуша в центре, остальные
+   здания расходятся по спирали до радиуса 4. Все клетки двора очищаются от дикого
+   рельефа и связываются дорогами, поэтому состав SETTLEMENTS placement не теряет. */
 function placeSettlement(cells,size,rng,keep,cx,cy,def){
   const center={x:clamp(cx+2,2,size-3),y:clamp(cy-2,2,size-3)};
-  const deco=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&!b.shop_kind.length);
-  const buildings=[]; let hall=null;
+  const deco=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
+  const used=new Set([ckey(center.x,center.y)]);
+  const buildings=[];
+  const put=(spot,b,kind)=>{
+    const c=cells[spot.y][spot.x];
+    const ground=GROUND_IDS.includes(c.t)?c.t:(GROUND_IDS.includes(c.ground)?c.ground:'grass');
+    const cell={t:kind==='house'?'house':'shop',buildingId:b.id,kind,official:true,
+      shop_kind:kind==='house'?null:[kind],ground};
+    if(kind==='house'){ cell.houseName=b.signName||b.title; cell.deco=b.deco; }
+    else{ cell.shopName=b.signName||b.title; cell.buildingTitle=b.signName||b.title; }
+    cells[spot.y][spot.x]=cell;
+    keep.add(ckey(spot.x,spot.y)); used.add(ckey(spot.x,spot.y));
+    const item={kind,x:spot.x,y:spot.y,name:b.signName||b.title,buildingId:b.id};
+    buildings.push(item);
+    return item;
+  };
+  const hallDef=BUILDING_TYPES.find(b=>b.id==='hall_0')||BUILDING_TYPES[0];
+  const hall=put(center,hallDef,'hall');
+  const offsets=[];
+  for(let r=1;r<=4;r++) for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+    if(Math.max(Math.abs(dx),Math.abs(dy))!==r) continue;
+    // Чётная манхэттенская чётность: здания не стоят бок о бок, у каждого есть проход.
+    if((Math.abs(dx)+Math.abs(dy))%2) continue;
+    offsets.push({dx,dy,r,angle:Math.atan2(dy,dx)});
+  }
+  offsets.sort((a,b)=>a.r-b.r||a.angle-b.angle);
   def.shops.forEach(kind=>{
+    if(kind==='hall') return;
     const house=kind==='house';
     const b=house?rngPick(rng,deco):BUILDING_TYPES.find(x=>Array.isArray(x.shop_kind)&&x.shop_kind.includes(kind));
     if(!b) return;
-    const s=settlementSpot(cells,size,rng,keep,center,1,6);
-    if(!s) return;
-    keep.add(ckey(s.x,s.y));
-    if(house){
-      cells[s.y][s.x]={t:'house',buildingId:b.id,kind:b.kind,shop_kind:null,houseName:b.signName||b.title,deco:b.deco,ground:cells[s.y][s.x].ground};
-    }else{
-      cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:[kind],shopName:b.signName||b.title,buildingTitle:b.signName||b.title,ground:cells[s.y][s.x].ground};
+    for(const o of offsets){
+      const x=clamp(center.x+o.dx,1,size-2), y=clamp(center.y+o.dy,1,size-2);
+      const k=ckey(x,y);
+      if(used.has(k)||keep.has(k)) continue;
+      if(['gate','boss','chest','treasure'].includes(cells[y][x].t)) continue;
+      put({x,y},b,kind);
+      return;
     }
-    const item={kind,x:s.x,y:s.y,name:b.signName||b.title,buildingId:b.id};
-    buildings.push(item);
-    if(kind==='hall') hall=item;
   });
-  if(!hall){
-    const s=settlementSpot(cells,size,rng,keep,center,0,6)||center;
-    const b=BUILDING_TYPES.find(x=>x.id==='hall_0')||BUILDING_TYPES[0];
-    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind:'hall',shop_kind:['hall'],shopName:b.signName||b.title,buildingTitle:b.signName||b.title,ground:'grass'};
-    hall={kind:'hall',x:s.x,y:s.y,name:b.signName||b.title,buildingId:b.id};
-    buildings.push(hall);
+  // Улицы двора: нечётные клетки вокруг зданий остаются проходимыми.
+  for(let dy=-4;dy<=4;dy++) for(let dx=-4;dx<=4;dx++){
+    if((Math.abs(dx)+Math.abs(dy))%2===0) continue;
+    const x=center.x+dx, y=center.y+dy;
+    if(x<1||y<1||x>=size-1||y>=size-1) continue;
+    const c=cells[y][x];
+    if(['gate','boss','chest','treasure'].includes(c.t)) continue;
+    const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
+    cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
   }
   carveRoad(cells,size,rng,{x:cx,y:cy},{x:center.x,y:center.y},'stone');
   buildings.forEach(b=>carveRoad(cells,size,rng,{x:center.x,y:center.y},{x:b.x,y:b.y},'brick'));
   return {id:def.id,name:def.name,type:def.type,x:center.x,y:center.y,hall:{x:hall.x,y:hall.y},buildings};
+}
+/* Доступность объектов: сундуки, находки, выходы и босс должны иметь путь от
+   входа по проходимым клеткам. Если путь перекрыт, прокладываем к объекту дорогу. */
+function passableForWalk(c){
+  return GROUND_IDS.includes(c.t)||['road','bridge','ice','swamp','gate','chest','treasure'].includes(c.t);
+}
+function reachableCells(cells,size,sx,sy){
+  const seen=new Set([ckey(sx,sy)]), queue=[{x:sx,y:sy}];
+  for(let head=0;head<queue.length;head++){
+    const p=queue[head];
+    for(const v of DIRS){
+      const x=p.x+v[0], y=p.y+v[1];
+      if(x<0||y<0||x>=size||y>=size) continue;
+      const k=ckey(x,y);
+      if(seen.has(k)||!passableForWalk(cells[y][x])) continue;
+      seen.add(k); queue.push({x,y});
+    }
+  }
+  return seen;
+}
+function objectAccessible(cells,size,seen,x,y){
+  return DIRS.some(v=>{
+    const nx=x+v[0], ny=y+v[1];
+    return nx>=0&&ny>=0&&nx<size&&ny<size&&seen.has(ckey(nx,ny));
+  });
+}
+function connectObjects(cells,size,rng,cx,cy){
+  let seen=reachableCells(cells,size,cx,cy);
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const c=cells[y][x], t=c.t;
+    if(!['gate','boss','chest','treasure'].includes(t)&&!c.official) continue;
+    if(objectAccessible(cells,size,seen,x,y)) continue;
+    let best=null,bestD=Infinity;
+    for(const k of seen){
+      const [rx,ry]=k.split(',').map(Number);
+      const d=Math.abs(rx-x)+Math.abs(ry-y);
+      if(d<bestD){ bestD=d; best={x:rx,y:ry}; }
+    }
+    if(!best) continue;
+    // Цель — проходимая клетка рядом с объектом: босс и здания сами дорогой не заменяются.
+    const targets=DIRS.map(v=>({x:x+v[0],y:y+v[1]})).filter(p=>
+      p.x>=0&&p.y>=0&&p.x<size&&p.y<size&&
+      !['gate','boss','shop','house','mountain','rock','tree'].includes(cells[p.y][p.x].t))
+      .sort((a,b)=>(Math.abs(a.x-best.x)+Math.abs(a.y-best.y))-(Math.abs(b.x-best.x)+Math.abs(b.y-best.y)));
+    const target=targets[0]||{x,y};
+    carveRoad(cells,size,rng,best,target,'stone');
+    seen=reachableCells(cells,size,cx,cy);
+  }
 }
 const LAIR_DISTANCE={mouse_nest:8,spider_lair:12,bone_yard:18};
 function lairAnchor(id,cx,cy,size,rng){
@@ -2147,6 +2278,16 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     const nextBiome=BIOME_KEYS[ni%BIOME_KEYS.length];
     cells[y][x]={t:'gate',dir,to:ni,biome:nextBiome,bname:BIOMES[nextBiome].name,ground:cells[y][x].ground||'grass'};
   });
+  // Дорога выходит на саму границу секции: рядом с воротами прокладывается
+  // короткая дорожная ветка по кромке карты.
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    if(cells[y][x].t!=='gate') continue;
+    let tx=x, ty=y;
+    if(y===0||y===size-1) tx=clamp(x<cx?x+2:x-2,0,size-1);
+    else if(x===0||x===size-1) ty=clamp(y<cy?y+2:y-2,0,size-1);
+    if(tx===x&&ty===y) continue;
+    carveRoad(cells,size,rng,{x,y},{x:tx,y:ty},kinds[(x+y)%kinds.length]);
+  }
   cells[farY][farX]={t:'boss',opened:false,ground:cells[farY][farX].ground||'grass'};
   if(GROUND_IDS.includes(cells[farY][chestX].t)||cells[farY][chestX].t==='road')
     cells[farY][chestX]={t:'chest',boss:true,opened:false,ground:'grass'};
@@ -2201,6 +2342,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   // Дороги двора прокладываются последними, чтобы лес и трава не перекрыли подходы к лавкам.
   courtyard.forEach(b=>carveRoad(cells,size,rng,{x:town.x,y:town.y},{x:b.x,y:b.y},'brick'));
   courtyard.forEach(b=>{ cells[b.y][b.x]=b.cell; });
+  connectObjects(cells,size,rng,cx,cy);
 
   /* Дикая сложность зависит от манхэттенского расстояния до входа на карту.
      Размер карты и номер этажа больше не влияют на таблицы монстров. */
@@ -6990,6 +7132,59 @@ function difficultyReport(){
     samples:all.slice(0,30),violations:{nearOthers:nearOthers.length,wyvernNear:wyvernNear.length,
       easyBad:easyBad.length,bandMismatch:bandMismatch.length}};
 }
+/* Отчёт ЧАСТИ 4: компактный двор, дороги до края карты, обход препятствий
+   и доступность всех бонусов/объектов из точки входа. */
+function accessReport(){
+  const errors=[],maps=game&&game.world?game.world.maps:[];
+  const rows=maps.map(m=>{
+    const size=m.size, seen=reachableCells(m.cells,size,m.entry.x,m.entry.y);
+    const objects=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const t=m.cells[y][x].t;
+      if(!['gate','boss','chest','treasure'].includes(t)) continue;
+      const access=objectAccessible(m.cells,size,seen,x,y);
+      if(!access) errors.push('карта '+m.index+': '+t+'@'+x+','+y);
+      objects.push({t,x,y,access,near:access?null:DIRS.map(v=>{
+        const nx=x+v[0],ny=y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size?m.cells[ny][nx].t:'edge';
+      })});
+    }
+    let edgeRoads=0,obstaclesOnRoad=0;
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const c=m.cells[y][x];
+      if((c.t==='road'||c.t==='bridge')&&(x===0||y===0||x===size-1||y===size-1)) edgeRoads++;
+      if(['mountain','rock','tree','house','shop'].includes(c.t)&&c.roadKind) obstaclesOnRoad++;
+    }
+    const gateRoads=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      if(m.cells[y][x].t!=='gate') continue;
+      const roads=DIRS.filter(v=>{
+        const nx=x+v[0],ny=y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size&&['road','bridge'].includes(m.cells[ny][nx].t);
+      }).length;
+      if(!roads) errors.push('карта '+m.index+': выход без дороги@'+x+','+y);
+      const edge=DIRS.map(v=>({x:x+v[0],y:y+v[1]})).filter(p=>p.x>=0&&p.y>=0&&p.x<size&&p.y<size&&
+        (p.x===0||p.y===0||p.x===size-1||p.y===size-1)).map(p=>({x:p.x,y:p.y,t:m.cells[p.y][p.x].t}));
+      gateRoads.push({x,y,roads,edge});
+    }
+    const b=m.settlement&&m.settlement.buildings||[];
+    const spread=b.length?Math.max(...b.map(q=>Math.max(Math.abs(q.x-m.settlement.x),Math.abs(q.y-m.settlement.y)))):99;
+    const connected=b.filter(q=>objectAccessible(m.cells,size,seen,q.x,q.y)).length;
+    const unreachableBuildings=b.filter(q=>!objectAccessible(m.cells,size,seen,q.x,q.y))
+      .map(q=>({kind:q.kind,x:q.x,y:q.y,near:DIRS.map(v=>{
+        const nx=q.x+v[0],ny=q.y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size?m.cells[ny][nx].t:'edge';
+      })}));
+    if(spread>4) errors.push('карта '+m.index+': здания поселения разбросаны на '+spread);
+    if(connected!==b.length) errors.push('карта '+m.index+': недоступны здания '+(b.length-connected));
+    if(!edgeRoads) errors.push('карта '+m.index+': дороги не доходят до края');
+    if(obstaclesOnRoad) errors.push('карта '+m.index+': дорога поверх препятствия');
+    return {map:m.index,size,objects:objects.length,unreachable:objects.filter(o=>!o.access).length,
+      edgeRoads,gateRoads,clusterSpread:spread,buildings:b.length,connected,unreachableBuildings,
+      details:objects.filter(o=>!o.access),obstaclesOnRoad};
+  });
+  return {ok:!errors.length,errors:errors.slice(0,20),rows};
+}
 function settlementReport(){
   const errors=[],maps=game&&game.world?game.world.maps:[];
   const settlements=maps.map(m=>({map:m.index,name:m.settlement&&m.settlement.name,
@@ -7040,6 +7235,7 @@ window.__mm6Debug={
   setTurn:(n)=>{ if(game){ game.world.turn=Math.max(0,Math.round(n||0)); updateWeatherByTurn(); } return weather.debug(); },
   setSeason:(season)=>({season:setGameSeason(season),...treesReport()}),
   treesReport:()=>treesReport(),
+  accessReport:()=>accessReport(),
   startBattle:(which)=>{
     if(!game||game.battle) return null;
     if(Array.isArray(which)&&which.length) return startBattle(which.map(e=>(e&&e.maxHp?e:spawnMonster(e,0,0,0,null,false,false))),null);

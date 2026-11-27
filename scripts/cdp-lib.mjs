@@ -3,7 +3,7 @@
 // Импорт: import { runCdp } from './cdp-lib.mjs';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { readFile, mkdtemp } from 'node:fs/promises';
+import { readFile, writeFile, mkdtemp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, extname, normalize } from 'node:path';
@@ -92,6 +92,11 @@ export async function runCdp(label, fn) {
       await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
       await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
+    },
+    // Скриншоты сохраняются только во временную папку: новых PNG в репозиторий не добавляем.
+    async screenshot(file) {
+      const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+      await writeFile(file, Buffer.from(shot.data, 'base64'));
     },
     async startGame() {
       await send('Page.navigate', { url: base + '/games/mm6/index.html' });
