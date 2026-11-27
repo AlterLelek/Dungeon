@@ -104,6 +104,7 @@ button,input,select{font-family:inherit}
 .overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(3,4,10,.86);overflow:auto}
 /* Все окна и стат-блоки увеличены на 10% относительно прежних размеров; высота по-прежнему ограничена экраном. */
 .box{width:min(792px,96vw);max-height:92vh;overflow:auto;padding:18px;border:1px solid rgba(251,191,36,.45);border-radius:14px;background:linear-gradient(160deg,#161a33,#080a18);box-shadow:0 0 50px rgba(0,0,0,.8)}
+#inventory>.box{width:min(880px,98vw);max-height:98vh}
 #start .box{width:min(616px,96vw)}
 h1{margin:0;font-size:25px;letter-spacing:3px;color:#ffdc7a;text-shadow:0 0 16px rgba(251,191,36,.5)}
 h1 span{color:#fff3c4;border:1px solid rgba(251,191,36,.6);border-radius:6px;padding:0 6px;font-size:20px}
@@ -1376,7 +1377,9 @@ function isTwoHanded(it){
    это маркер занятости, а не второй предмет (вес и урон от него не удваиваются). */
 const OFFHAND_SLOT='offhand';
 function isShieldItem(it){ return !!it&&it.type==='armor'&&(it.slot||'body')==='shield'; }
-function isSecondHandItem(it){ return !!it&&it.type==='weapon'&&!isTwoHanded(it)&&!isRingItem(it)&&!isAmmoItem(it); }
+function isSecondHandItem(it){
+  return !!it&&it.type==='weapon'&&!isTwoHanded(it)&&!isRingItem(it)&&!isAmuletItem(it)&&!isAmmoItem(it);
+}
 function twoHandedWeapon(h){ const w=equippedWeapon(h); return w&&isTwoHanded(w)?w:null; }
 function isOffhandMarker(h,slotId){
   if(!h||!h.equip||slotId!=='offhand'||!h.equip.weapon||h.equip.offhand!==h.equip.weapon) return false;
@@ -1395,6 +1398,12 @@ function mannequinSlotForItem(it){
     return null;
   }
   if(it.type==='amulet') return 'amulet';
+  if(it.type==='container'){
+    if(it.containerKind==='belt') return 'belt';
+    if(it.containerKind==='purse') return 'pouch';
+    // Сундук и мешок надеваются только как ёмкости в секции экипировки.
+    return null;
+  }
   return null;
 }
 function equipKeysForSlot(slotId){
@@ -1462,7 +1471,10 @@ function equipOnHero(h,slot,it){
   const target=requested===OFFHAND_SLOT&&isSecondHandItem(it)?OFFHAND_SLOT:mannequinSlotForItem(it);
   if(equipBlockReason(h,it,requested||target)) return false;
   if(!target) return false;
-  if(requested&&requested!==target&&!((target==='body'||target==='cloak')&&(requested==='body'||requested==='cloak'))) return false;
+  const compatible=requested===target||
+    ((target==='body'||target==='cloak')&&(requested==='body'||requested==='cloak'))||
+    ((requested===OFFHAND_SLOT||requested==='weapon')&&['amulet','ring','belt','pouch'].includes(target));
+  if(requested&&!compatible) return false;
   const prev=heroSlotItem(h,target);
   const prevUid=prev?prev.uid:null;
   party().forEach(x=>{
@@ -2502,13 +2514,25 @@ function afterStep(cost){
   maybeSpawnAnimal();
   updateParty();
 }
+let lastAddBlocked=false;
+function looseInventoryCount(){
+  if(!game) return 0;
+  const equipped=equippedUidSet();
+  return game.bag.filter(i=>!equipped.has(i.uid)&&!i.container).length;
+}
 function addItem(o){
   const found=game.bag.find(i=>i.id&&i.id===o.id&&i.type===o.type);
   if(found&&o.count!==undefined){ found.count+=o.count||1; return found; }
   const it=makeItem(o);
   /* Авто-подбор кладёт находку в подходящий контейнер. Если все подходящие
-     контейнеры полны, предмет остаётся в общем инвентаре — он не теряется. */
+     контейнеры полны, предмет остаётся в общем инвентаре — но только пока
+     есть свободная клетка сетки 9×16; лишнее не добавляется и не теряется. */
   const target=pickContainerFor(it);
+  if(!target&&looseInventoryCount()>=INVENTORY_GRID.cells){
+    lastAddBlocked=true;
+    toast('Инвентарь полон: сетка 9×16 занята.');
+    return null;
+  }
   it.container=target||null;
   if(!target) toast('Контейнер переполнен: предмет остался в инвентаре.');
   game.bag.push(it);
@@ -2632,7 +2656,10 @@ function updateParty(){
 // Полная очередь ходов: текущий ход всегда сверху, следующие — под ним.
 // Имена классов пишутся полностью; одинаковые классы и монстры получают номер.
 function enemyQueueLabels(b){
-  const names=(b&&b.enemies?b.enemies:[]).filter(e=>e&&e.alive).map(e=>e.name||'Враг');
+  // Нумерация привязана к исходному индексу врага: смерть одного не сдвигает
+  // имена и номера остальных, а строка очереди всегда читает свой индекс.
+  const enemies=(b&&b.enemies?b.enemies:[]);
+  const names=enemies.map(e=>(e&&e.name)||'Враг');
   const counts={}, used={};
   names.forEach(n=>counts[n]=(counts[n]||0)+1);
   return names.map(n=>{
@@ -3192,7 +3219,7 @@ function closeBattleKeep(){
   clearArmedAction();
   game.battle.pendingXp=0; game.pendingXp=0;
   game.battle=null; game.msg='Вы отступили. Враги остались на карте.';
-  clearStatuses(); updateControls();
+  clearStatuses(); updateParty(); updateControls();
 }
 /* Единая точка начисления опыта: убийство фиксируется здесь независимо от
    источника (удар, заклинание, яд, предмет), но опыт воплощается только после победы. */
@@ -3630,8 +3657,15 @@ function buy(price,add){
   const cost=Math.max(0,Math.round(price));
   if(!game||!game.shopOpen) return false;
   if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
+  const goldBefore=game.gold;
   game.gold-=cost;
+  lastAddBlocked=false;
   add();
+  if(lastAddBlocked){
+    game.gold=goldBefore;
+    toast('Покупка отменена: нет места в инвентаре.');
+    renderShop(); updateParty(); return false;
+  }
   beep(720,.09); renderShop(); updateParty();
   return true;
 }
@@ -4114,10 +4148,10 @@ function renderShop(){
     }),game.gold<f.cost)],'ЕДА'));
   }
   if(def.id==='market'){
+    shopSec('Зелья и товары');
     const basicPotion=(price,name,sub,props,id)=>shopRow('🧪',name,sub,[shopButton('🪙 '+price,()=>buy(price,()=>{
       addItem(Object.assign({id:id,type:'potion',name:name,icon:'🧪',cost:price,sell:Math.floor(price*.5)},props));
     }),game.gold<price)],'ПОКУПКА');
-    shopSec('Зелья и товары');
     basicPotion(6,'Зелье жизни','Лечит 40 HP',{heal:40},'potion_hp');
     basicPotion(7,'Зелье маны','Восстанавливает 15 MP',{mp:15},'potion_mp');
     MATERIALS.forEach(mat=>shopRow(mat.icon,mat.name,mat.desc,[shopButton('🪙 '+mat.cost,()=>buy(mat.cost,()=>{
@@ -4382,7 +4416,7 @@ const CONTAINER_DEFS=[
   {id:'chest',name:'Сундук',capacity:12,step:3,cost:10,weight:0,
     accept:['weapon','armor','scroll','material','crystal','grenade','container','chest']}
 ];
-const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Еда','Гранаты','Свитки','Ремесло','Сундуки'];
+const INV_TABS=['Общий','Оружие','Броня','Магия','Травы','Еда','Гранаты','Свитки','Ремесло'];
 function ensureContainers(snap){
   const out={};
   CONTAINER_DEFS.forEach(def=>{
@@ -4641,10 +4675,11 @@ function armorSlotName(slot){
 function itemStatsText(it,h){
   if(!it) return '';
   if(it.type==='weapon'){
-    if(isRingItem(it)) return 'Кольцо · слот отложен · пока не экипируется.';
+    if(isRingItem(it)) return 'Кольцо · слот: кольцо';
+    if(isAmuletItem(it)) return 'Амулет · слот: амулет · руки не заняты';
     const kind=it.wkind||weaponKind(it.name||'');
     const q=(QUALITY[it.quality]||QUALITY[0]||{}).name||'';
-    let s='Урон '+it.dmg+(q?' · '+q:'')+' · слот: руки';
+    let s='Урон '+it.dmg+(q?' · '+q:'')+' · слот: '+(isSecondHandItem(it)?'оружие/вторая рука':'руки');
     if(isTwoHanded(it)) s+=' · двуручное, щит блокируется';
     if(it.enchant) s+=' · '+it.enchant.stat+' +'+it.enchant.value;
     if(h) s+=weightForecast(h,it);
@@ -4694,7 +4729,6 @@ function invTabItems(tab){
   if(tab==='Еда') return bag.filter(i=>i.type==='food');
   if(tab==='Гранаты') return bag.filter(i=>i.type==='grenade');
   if(tab==='Свитки') return bag.filter(i=>i.type==='scroll');
-  if(tab==='Сундуки') return bag.filter(i=>i.type==='chest');
   return bag;
 }
 function moveContainerItem(uid,target){
@@ -4903,7 +4937,7 @@ function mannequinStage(){
     if(!paths.length) return '';
     const spread=slot.id==='weapon'||slot.id==='shield'?22:slot.id==='body'||slot.id==='cloak'?16:6;
     const left=clamp(slot.x-spread/2,0,100-spread), top=clamp(slot.y-spread/2,0,100-spread);
-    return '<div class="mq-worn" style="left:'+left+'%;top:'+top+'%;width:'+spread+'%;height:'+spread+'%">'+
+    return '<div class="mq-worn" data-worn-slot="'+slot.id+'" style="left:'+left+'%;top:'+top+'%;width:'+spread+'%;height:'+spread+'%">'+
       paths.map(src=>'<img src="'+src+'" alt="" onerror="this.style.display=\'none\'">').join('')+'</div>';
   }).join('');
   return '<div class="mq-stage">'+silhouette+'<div class="mq-worn-layer">'+worn+'</div>'+MANNEQUIN_SLOTS.map(slot=>{
@@ -5039,7 +5073,12 @@ function renderInventory(){
       chip.dataset.containerItem=it.uid;
       chip.innerHTML='<b>🎒 '+esc(it.name)+'</b><small>'+esc(containerDef(it.containerKind)?.name||it.containerKind||'ёмкость')+
         ' · '+esc(containerTier(it.tier||'rusty').name)+' · '+esc(String(it.capacity||0))+' слотов</small>';
-      chip.onclick=()=>{ if(installContainerItem(it.uid)){ renderInventory(); updateParty(); } };
+      chip.onclick=()=>{
+        // Пояс и мошна надеваются на манекен; сундук и мешок устанавливаются как ёмкости.
+        const h=party()[game.invHero||0], wornSlot=mannequinSlotForItem(it);
+        const ok=wornSlot?equipOnHero(h,wornSlot,it):installContainerItem(it.uid);
+        if(ok){ if(wornSlot) toast('Надето: '+it.name); renderInventory(); updateParty(); }
+      };
       gear.appendChild(chip);
     });
     list.appendChild(gear);
@@ -5128,7 +5167,7 @@ function renderInventory(){
     const empty=document.createElement('div'); empty.className='invCell empty'; empty.title='Пустая клетка';
     if(!cells.length&&i===0){
       empty.classList.add('emptyNote');
-      empty.textContent=invTab==='Сундуки'?'Сундуков нет':'Пусто';
+      empty.textContent='Пусто';
     }
     grid.appendChild(empty);
   }
@@ -7174,7 +7213,7 @@ window.__mm6Debug={
     const stage=document.querySelector('#mannequin .mq-stage');
     return {slots:MANNEQUIN_SLOTS.map(s=>s.id),
       layers:[...(stage?stage.querySelectorAll('.mq-worn-layer .mq-worn'):[])].map(el=>({
-        left:el.style.left,top:el.style.top,w:el.style.width,h:el.style.height,
+        slot:el.dataset.wornSlot,left:el.style.left,top:el.style.top,w:el.style.width,h:el.style.height,
         images:el.querySelectorAll('img').length})),
       slotsInDom:[...(stage?stage.querySelectorAll('.mq-slot[data-slot]'):[])].map(el=>el.dataset.slot),
       containerSection:!!document.querySelector('#invList .invSlotStrip[data-section="containers"]')};

@@ -118,6 +118,25 @@ try {
     inv.desc[0] === '53px' && inv.desc[1] === '53px' &&
     inv.detail[0] === '46px' && inv.detail[1] === '46px' && inv.log === '97px',
     JSON.stringify({ stats: inv.stats, desc: inv.desc, detail: inv.detail, log: inv.log }));
+  const invBox = await ev(`(()=>{const s=getComputedStyle(document.querySelector('#inventory>.box'));
+    return {max:parseFloat(s.maxHeight),expected:window.innerHeight*0.98,
+      tabs:[...document.querySelectorAll('#invTabs [data-tab]')].map(b=>b.dataset.tab)};})()`);
+  check('окно инвентаря выше базового и без мёртвой вкладки «Сундуки»',
+    invBox.max >= invBox.expected - 2 && !invBox.tabs.includes('Сундуки'),
+    JSON.stringify({ max: invBox.max, expected: invBox.expected, tabs: invBox.tabs }));
+
+  const capacity = await ev(`(()=>{const d=window.__mm6Debug,g=window.__mm6State(),start=g.bag.length,uids=[];
+    for(let i=0;i<145;i++){
+      const uid=d.addItemBySpec({id:'b-cap-'+i,type:'note',name:'Заполнитель '+i,icon:'•',cost:0,sell:0});
+      if(uid) uids.push(uid);
+    }
+    const r=d.inventoryGridReport(), note=document.querySelectorAll('#invList .invNote').length;
+    uids.forEach(uid=>{const ix=g.bag.findIndex(x=>x.uid===uid);if(ix>=0)g.bag.splice(ix,1);});
+    d.toggleInventory(true);
+    return {added:uids.length,items:r.items,note};})()`);
+  check('свыше 144 клеток предметы не добавляются и не прячутся',
+    capacity.added === 144 && capacity.items === 144 && capacity.note === 0,
+    JSON.stringify(capacity));
 
   const chestUid = await ev(`window.__mm6Debug.addCatalogItem('chest_plain')`);
   const bagUid = await ev(`window.__mm6Debug.addCatalogItem('bag_plain')`);
@@ -159,6 +178,20 @@ try {
     dollImages.length > 0 && dollImages.every(src => /^\.\.\/\.\.\/assets\//.test(src)),
     JSON.stringify(dollImages));
 
+  const beltUid = await ev(`window.__mm6Debug.addCatalogItem('belt_plain')`);
+  const pouchUid = await ev(`window.__mm6Debug.addCatalogItem('purse_plain')`);
+  await ev(`(()=>{
+    document.querySelector('[data-container-item="${beltUid}"]').click();
+    document.querySelector('[data-container-item="${pouchUid}"]').click();
+    return true;})()`);
+  const wornContainers = await ev(`(()=>{const h=window.__mm6State().party[0];
+    return {belt:h.equip.belt,pouch:h.equip.pouch,report:window.__mm6Debug.paperDollReport()};})()`);
+  check('пояс и мошна надеваются через секцию ёмкостей и видны на манекене',
+    wornContainers.belt === beltUid && wornContainers.pouch === pouchUid &&
+    ['belt', 'pouch'].every(slot => wornContainers.report.layers.some(l => l.slot === slot && l.images > 0)),
+    JSON.stringify({ belt: wornContainers.belt, pouch: wornContainers.pouch,
+      layers: wornContainers.report.layers.filter(l => ['belt', 'pouch'].includes(l.slot)) }));
+
   // 4. Амулет идёт только в «Амулет», кольцо наконец экипируется.
   const amuletUid = await ev(`window.__mm6Debug.addItemBySpec({type:'weapon',name:'Амулет',wkind:'amulet',dmg:2,cost:24,sell:12,icon:'◈'})`);
   const ringUid = await ev(`window.__mm6Debug.addItemBySpec({type:'weapon',name:'Кольцо (1 ур.)',wkind:'ring',dmg:1,cost:12,sell:6,icon:'◯'})`);
@@ -169,6 +202,13 @@ try {
     JSON.stringify({ amuletUid, gear }));
   check('кольцо экипируется в отдельный слот', ringOk && gear.ring === ringUid,
     JSON.stringify({ ringUid, gear }));
+  const amuletOffUid = await ev(`window.__mm6Debug.addItemBySpec({id:'b-amulet-off',type:'weapon',name:'Амулет',wkind:'amulet',dmg:2,cost:24,sell:12,icon:'◈'})`);
+  const offhandAmulet = await ev(`(()=>{const d=window.__mm6Debug,ok=d.equipByUid('${amuletOffUid}','offhand'),h=window.__mm6State().party[0];
+    return {ok,amulet:h.equip.amulet,offhand:h.equip.offhand,weapon:h.equip.weapon};})()`);
+  check('выбор «Второй руки» не переводит амулет в руки',
+    offhandAmulet.ok && offhandAmulet.amulet === amuletOffUid &&
+    offhandAmulet.offhand !== amuletOffUid && offhandAmulet.weapon !== amuletOffUid,
+    JSON.stringify(offhandAmulet));
 
   await ev(`window.__mm6Debug.toggleInventory(false)`);
 
@@ -190,6 +230,14 @@ try {
     JSON.stringify({ classes: queue.classNames, enemies: queue.enemyNames, rows: queue.rows.map(r => r.name) }));
   check('цвет активной строки — цвет героя', /rgb\(/.test(queue.rows[0].color),
     JSON.stringify({ color: queue.rows[0].color }));
+  await ev(`(()=>{const g=window.__mm6State(),b=g.battle;
+    b.enemies[0].alive=false; b.enemies[0].hp=0;
+    b.units.forEach(u=>{if(u.side==='enemy'&&u.idx===0)u.next=9999;});
+    window.__mm6Debug.setPartyGold(g.gold); return true;})()`);
+  const afterDeath = await ev(`window.__mm6Debug.turnQueueReport()`);
+  check('смерть одного врага не сдвигает номера остальных',
+    afterDeath.rows.filter(r => r.side === 'enemy').map(r => r.name).join('|') === 'МЫШЬ 2',
+    JSON.stringify({ enemies: afterDeath.rows.filter(r => r.side === 'enemy').map(r => r.name), labels: afterDeath.enemyNames }));
 
   // 6. Имя и HP врага не перекрываются даже у длинного названия.
   await ev(`(()=>{const g=window.__mm6State();g.battle=null;
@@ -200,6 +248,9 @@ try {
     !hud.nameHp.overlap && hud.nameHp.name.width <= hud.nameHp.name.maxW,
     JSON.stringify(hud.nameHp));
   await ev(`window.__mm6Debug.closeBattle()`);
+  const closed = await ev(`window.__mm6Debug.turnQueueReport()`);
+  check('очередь скрывается при закрытии боя', closed === null || !closed.visible,
+    JSON.stringify(closed && { visible: closed.visible, rows: closed.rows.length }));
 
   // 7. Плашки врагов на карте: только долгое наведение или удержание.
   await ev(`(()=>{const g=window.__mm6State(),m=g.world.maps[g.world.current],p=g.player;
@@ -243,6 +294,11 @@ try {
   check('названия товаров несут качество/стихии каталога',
     armory && armory.ok && shopNames.some(n => /Ржавый|Острый|пламени|света|крови|льда|воды|земли|ветра|дым/i.test(n)),
     JSON.stringify(shopNames.slice(0, 6)));
+  const market = await ev(`window.__mm6Debug.forceShop('market')`);
+  const potionCat = market && market.categories.find(c => /Зелья и товары/.test(c.title));
+  check('зелья рынка попадают в свой раздел разбивки', !!potionCat && potionCat.rows >= 2,
+    JSON.stringify({ potionCat, categories: market && market.categories.map(c => ({ title: c.title, rows: c.rows })) }));
+  await ev(`window.__mm6Debug.forceShop('armory')`);
   await ev(`window.__mm6Debug.toggleShopSale()`);
   await sleep(120);
   const sale = await ev(`window.__mm6Debug.shopReport()`);
