@@ -151,19 +151,29 @@ export const SPELLS = [
   { id: 'teleport', name: 'Прыжок', mp: 3, tier: 'weak', icon: '🌀', desc: 'Побег из боя без штрафа.' }
 ];
 
+/* Роль: alchemy — компонент зелий, magic — чародейская трава,
+   food — еда/отвар, sale — редкая трава на продажу. */
 export const HERBS = [
-  { id: 'mint', name: 'Мята', icon: '🌿', effect: 'mana', value: 3, desc: '+3 MP', weight: 0 },
-  { id: 'sage', name: 'Шалфей', icon: '🌾', effect: 'hp', value: 12, desc: '+12 HP', weight: 0 },
-  { id: 'thistle', name: 'Чертополох', icon: '🌵', effect: 'poison', value: 2, desc: 'яд 2', weight: 0 },
-  { id: 'moss', name: 'Мох', icon: '🍀', effect: 'def', value: 3, desc: '+3 брони', weight: 0 },
-  { id: 'root', name: 'Корень', icon: '🥕', effect: 'hp', value: 24, desc: '+24 HP', weight: 0 },
-  { id: 'fern', name: 'Папоротник', icon: '🌿', effect: 'mana', value: 6, desc: '+6 MP', weight: 0 },
-  { id: 'bloom', name: 'Цветок света', icon: '🌼', effect: 'curse', value: 1, desc: 'снимает проклятие', weight: 0 },
-  { id: 'bark', name: 'Кора', icon: '🪵', effect: 'def', value: 5, desc: '+5 брони', weight: 0 },
-  { id: 'berry', name: 'Ягода', icon: '🫐', effect: 'hp', value: 8, desc: '+8 HP', weight: 0 },
-  { id: 'crystalgrass', name: 'Кристалл-трава', icon: '💎', effect: 'crystal', value: 1, desc: '+1 кристалл', weight: 0 },
-  { id: 'firepetal', name: 'Огненный лепесток', icon: '🔥', effect: 'atk', value: 4, desc: '+4 атаки', weight: 0 },
-  { id: 'iceflower', name: 'Ледяной цветок', icon: '❄', effect: 'slow', value: 2, desc: 'замедление', weight: 0 }
+  { id: 'mint', name: 'Мята', icon: '🌿', effect: 'mana', value: 3, desc: '+3 MP', weight: 0, role: 'alchemy', found: 'луга, рынок' },
+  { id: 'sage', name: 'Шалфей', icon: '🌾', effect: 'hp', value: 12, desc: '+12 HP', weight: 0, role: 'alchemy', found: 'луга, обочины, рынок' },
+  { id: 'thistle', name: 'Чертополох', icon: '🌵', effect: 'poison', value: 2, desc: 'яд 2', weight: 0, role: 'alchemy', found: 'пустыри, рынок' },
+  { id: 'moss', name: 'Мох', icon: '🍀', effect: 'def', value: 3, desc: '+3 брони', weight: 0, role: 'alchemy', found: 'лес, камни, рынок' },
+  { id: 'root', name: 'Корень', icon: '🥕', effect: 'hp', value: 24, desc: '+24 HP', weight: 0, role: 'food', found: 'поле, амбары, рынок' },
+  { id: 'fern', name: 'Папоротник', icon: '🌿', effect: 'mana', value: 6, desc: '+6 MP', weight: 0, role: 'magic', found: 'лес, магия, рынок' },
+  { id: 'bloom', name: 'Цветок света', icon: '🌼', effect: 'curse', value: 1, desc: 'снимает проклятие', weight: 0, role: 'magic', found: 'луга, рынок' },
+  { id: 'bark', name: 'Кора', icon: '🪵', effect: 'def', value: 5, desc: '+5 брони', weight: 0, role: 'alchemy', found: 'лес, рынок' },
+  { id: 'berry', name: 'Ягода', icon: '🫐', effect: 'hp', value: 8, desc: '+8 HP', weight: 0, role: 'food', found: 'кусты, таверна, рынок' },
+  { id: 'crystalgrass', name: 'Кристалл-трава', icon: '💎', effect: 'crystal', value: 1, desc: '+1 кристалл', weight: 0, role: 'magic', found: 'горы, мышиные гнёзда, магия' },
+  { id: 'firepetal', name: 'Огненный лепесток', icon: '🔥', effect: 'atk', value: 4, desc: '+4 атаки', weight: 0, role: 'magic', found: 'жаркие поля, магия' },
+  { id: 'iceflower', name: 'Ледяной цветок', icon: '❄', effect: 'slow', value: 2, desc: 'замедление', weight: 0, role: 'magic', found: 'горы, магия' },
+  { id: 'nettle', name: 'Крапива', icon: '🌿', effect: 'hp', value: 6, desc: '+6 HP', weight: 0, role: 'alchemy', found: 'пустыри, рынок' },
+  { id: 'chamomile', name: 'Ромашка', icon: '🌼', effect: 'mana', value: 4, desc: '+4 MP', weight: 0, role: 'magic', found: 'луга, рынок' },
+  { id: 'mushroom', name: 'Мухомор', icon: '🍄', effect: 'poison', value: 3, desc: 'яд 3', weight: 0, role: 'alchemy', found: 'лес, болота, рынок' },
+  { id: 'silverleaf', name: 'Серебряный лист', icon: '🍃', effect: 'curse', value: 1, desc: 'снимает проклятие', weight: 0, role: 'magic', found: 'родники, магия' },
+  { id: 'sunpetal', name: 'Солнечный лепесток', icon: '🌻', effect: 'atk', value: 3, desc: '+3 атаки', weight: 0, role: 'food', found: 'поля, рынок' },
+  { id: 'nightshade', name: 'Паслён', icon: '🖤', effect: 'poison', value: 4, desc: 'яд 4', weight: 0, role: 'sale', found: 'тенистый лес, магия' },
+  { id: 'dewdrop', name: 'Роса', icon: '💧', effect: 'mana', value: 2, desc: '+2 MP', weight: 0, role: 'magic', found: 'луга на рассвете, магия' },
+  { id: 'pine_needle', name: 'Сосновая игла', icon: '🌲', effect: 'atk', value: 2, desc: '+2 атаки', weight: 0, role: 'sale', found: 'хвойный лес, горы, магия' }
 ];
 
 // Еда и напитки: эффект хранится прямо в предмете и применяется useItem().
@@ -190,11 +200,15 @@ export const RECIPES = [
   { id: 'crystal_tonic', name: 'Кристальный тоник', need: ['crystalgrass', 'mint'], give: { id: 'crystal_tonic', count: 1 }, icon: '🧪', kind: 'herb', desc: 'Даёт кристалл.' },
   { id: 'frost_flask', name: 'Морозная колба', need: ['iceflower', 'fern'], give: { id: 'frost_flask', count: 1 }, icon: '🧪', kind: 'herb', desc: 'Мороз по врагам.' },
   { id: 'greater_heal', name: 'Большое зелье', need: ['root', 'sage', 'bloom'], give: { id: 'greater_heal', count: 1 }, icon: '🧪', kind: 'herb', desc: 'Лечит весь отряд.' },
+  { id: 'herb_tea', name: 'Травяной чай', need: ['nettle', 'chamomile'], give: { id: 'potion_mp', count: 1 }, icon: '🍵', kind: 'herb', desc: 'Базовое зелье маны из крапивы и ромашки.' },
+  { id: 'root_soup', name: 'Корневой отвар', need: ['root', 'sunpetal'], give: { id: 'potion_hp', count: 2 }, icon: '🥣', kind: 'herb', desc: 'Базовое зелье жизни из корня и солнечного лепестка.' },
+  { id: 'silver_draught', name: 'Серебряный настой', need: ['silverleaf', 'dewdrop'], give: { id: 'crystal_tonic', count: 1 }, icon: '🧪', kind: 'herb', desc: 'Даёт кристалл из серебряного листа и росы.' },
   { id: 'craft_sword', name: 'Сковать меч', need: ['ore', 'ore'], give: { id: 'craft_sword', count: 1 }, icon: '⚔', kind: 'weapon', desc: 'Урон 6, качество «Острое».' },
   { id: 'craft_axe', name: 'Сковать топор', need: ['ore', 'wood'], give: { id: 'craft_axe', count: 1 }, icon: '🪓', kind: 'weapon', desc: 'Урон 7, качество «Острое».' },
   { id: 'craft_armor', name: 'Сшить доспех', need: ['cloth', 'cloth', 'ore'], give: { id: 'craft_armor', count: 1 }, icon: '🛡', kind: 'armor', desc: 'Защита 4, слот «тело».' },
   { id: 'craft_shield', name: 'Сковать щит', need: ['ore', 'wood'], give: { id: 'craft_shield', count: 1 }, icon: '🛡', kind: 'armor', desc: 'Защита 3, слот «щит».' },
-  { id: 'craft_scroll', name: 'Создать свиток молнии', need: ['fern', 'crystalgrass'], give: { id: 'craft_scroll', count: 1 }, icon: '📜', kind: 'spell', desc: 'Свиток слабой молнии.' }
+  { id: 'craft_scroll', name: 'Создать свиток молнии', need: ['fern', 'crystalgrass'], give: { id: 'craft_scroll', count: 1 }, icon: '📜', kind: 'spell', desc: 'Свиток слабой молнии.' },
+  { id: 'craft_enchanted_bag', name: 'Зачаровать сумку', need: ['crystal', 'silverleaf', 'cloth'], give: { id: 'craft_enchanted_bag', count: 1, kind: 'container', containerKind: 'bag', tier: 'enchanted' }, icon: '🎒', kind: 'container', desc: 'Даёт сумке тир «Зачарованный» (+6 слотов, вес 0.2).' }
 ];
 
 export const LIQUIDS = [
@@ -341,12 +355,15 @@ export const SHOP_STOCK = {
   armory: { weapons: [], armor: [2, 5, 9, 11, 14, 20, 23, 25, 27], price: 1.15, sell: 0.62, magic: false },
   forge: { weapons: [0, 1, 2, 3, 4, 5, 6, 7], armor: [], price: 0.9, sell: 0.55, magic: false },
   armor: { weapons: [], armor: [1, 2, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], price: 1, sell: 0.6, magic: false },
-  magic: { weapons: [0, 5, 6, 10, 11], armor: [5, 16, 17, 18, 28], price: 1.25, sell: 0.58, magic: true, spellDiscount: 0.65, crystals: 2 },
+  magic: { weapons: [0, 5, 6, 10, 11], armor: [5, 16, 17, 18, 28], price: 1.25, sell: 0.58, magic: true, spellDiscount: 0.65, crystals: 2,
+    herbs: ['firepetal', 'iceflower', 'silverleaf', 'nightshade', 'dewdrop', 'crystalgrass', 'pine_needle'], herbPrice: 5 },
   jeweler: { weapons: [10, 11, 14, 15], armor: [4, 18, 27, 28], price: 1.6, sell: 0.75, magic: true, crystals: 5, noHeavy: true },
-  market: { weapons: [0, 1, 5], armor: [1, 8, 24, 26], price: 0.95, sell: 0.5, berries: true, food: true },
+  market: { weapons: [0, 1, 5], armor: [1, 8, 24, 26], price: 0.95, sell: 0.5, berries: true, food: true,
+    herbs: ['mint', 'sage', 'thistle', 'moss', 'root', 'fern', 'bloom', 'bark', 'berry', 'nettle', 'chamomile', 'mushroom', 'sunpetal'], herbPrice: 2, containers: true },
   tavern: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, food: true },
   inn: { weapons: [0, 5], armor: [1, 8], price: 1.1, sell: 0.5, rest: true },
-  church: { weapons: [], armor: [], price: 1, sell: 0.5, church: true }
+  church: { weapons: [], armor: [], price: 1, sell: 0.5, church: true },
+  hall: { weapons: [], armor: [], price: 1, sell: 0.5, quests: true }
 };
 
 export const SHOP_TYPES = [
@@ -359,7 +376,8 @@ export const SHOP_TYPES = [
   { id: 'market', title: 'Рынок', icon: '🛒', accent: '#fbbf24', desc: 'Травы, еда, разные товары.', names: ['Рынок у фонтана', 'Торговая площадь', 'Рынок «Ягода»'] },
   { id: 'tavern', title: 'Таверна', icon: '🍺', accent: '#fbbf24', desc: 'Еда за монеты.', names: ['Таверна «Золотой бокал»', 'Таверна «У доброго трактирщика»', 'Харчевня «Круглый стол»'] },
   { id: 'inn', title: 'Гостиница', icon: '🛏', accent: '#a78bfa', desc: 'Сон и восстановление.', names: ['Гостиница «Отдых»', 'Постоялый двор', 'Гостиница «Тихий двор»'] },
-  { id: 'church', title: 'Церковь', icon: '⛪', accent: '#fde68a', desc: 'Воскрешение за десятину.', names: ['Церковь Света', 'Храм Тихого Покаяния', 'Часовня у городских ворот'] }
+  { id: 'church', title: 'Церковь', icon: '⛪', accent: '#fde68a', desc: 'Воскрешение за десятину.', names: ['Церковь Света', 'Храм Тихого Покаяния', 'Часовня у городских ворот'] },
+  { id: 'hall', title: 'Ратуша', icon: '🏛', accent: '#fcd34d', desc: 'Задания лавок и журнал походов.', names: ['Городская ратуша', 'Ратуша у площади', 'Приказная изба'] }
 ];
 
 // Каталог зданий. Поле shop_kind повторяет assets/manifest.json
@@ -388,7 +406,9 @@ export const BUILDING_TYPES = [
   { id: 'magic_0', title: 'Магазин магии', kind: 'magic', shop_kind: ['magic'] },
   { id: 'inn_0', title: 'Гостиница', kind: 'inn', shop_kind: ['inn'] },
   { id: 'church_0', title: 'Церковь', kind: 'church', shop_kind: ['church'],
-    deco: 'В храме пахнет ладаном. Служитель принимает десятину за воскрешение.' }
+    deco: 'В храме пахнет ладаном. Служитель принимает десятину за воскрешение.' },
+  { id: 'hall_0', title: 'Ратуша', kind: 'hall', shop_kind: ['hall'],
+    deco: 'В ратуше принимают заказы лавок и ведут журнал заданий.' }
 ];
 
 export const BIOMES = {

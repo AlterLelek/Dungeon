@@ -2,7 +2,7 @@
    Формула урона из docs/COMBAT_SPEC.md здесь не дублируется: правила прогрессии
    не меняют max(0, attack - defense) и не трогают текст журнала боя. */
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const BASE_XP = 50;
 export const SKILL_CAP_PER_LEVEL = 2;
 export const ACTIVE_ENEMY_LIMIT = 12;
@@ -111,13 +111,56 @@ export const SKILL_DEFS = [
   { id: 'dodge',    name: 'Уклонение',   building: 'tavern',  guild: 'novice' },
   { id: 'magic',    name: 'Магия',       building: 'magic',   guild: 'novice' },
   { id: 'spells',   name: 'Заклинания',  building: 'magic',   guild: 'leading' },
-  { id: 'craft',    name: 'Ремесло',     building: 'weapons', guild: 'novice' }
+  { id: 'craft',    name: 'Ремесло',     building: 'weapons', guild: 'novice' },
+  /* Носка не тренируется: её ранг равен рангу гильдии и доступен всем классам. */
+  { id: 'carrying', name: 'Носка',       building: null,      guild: 'novice', auto: true }
 ];
 export const GUILD_RANKS = ['novice', 'leading', 'expert'];
 export const SKILL_COOLDOWN_TURNS = 2;
 export const SKILL_POINTS_PER_RANK = 10;
 export const skillDef = (id) => SKILL_DEFS.find(s => s.id === id) || null;
 export const guildAtLeast = (have, need) => GUILD_RANKS.indexOf(have) >= GUILD_RANKS.indexOf(need);
+export const guildRankNumber = (rank) => clamp(GUILD_RANKS.indexOf(rank) + 1, 1, GUILD_RANKS.length);
+/* Носка: ранг гильдии 1/2/3 даёт одну/две/три ёмкости плюс карманы.
+   Пояс как съёмный предмет отложен — поле зарезервировано в герое. */
+export function carryingRank(hero) {
+  return guildRankNumber((hero && hero.promotion && hero.promotion.guild) || 'novice');
+}
+/* Карманы и мошна (золото) доступны всегда; носка открывает сумку, сундук и пояс.
+   Пояс-предмет отложен: зарезервировано поле hero.beltSlot. */
+export const CARRY_ORDER = ['bag', 'chest', 'belt'];
+export function heroCarryingIds(hero) {
+  return CARRY_ORDER.slice(0, Math.max(1, carryingRank(hero)));
+}
+/* Ранг растёт по заданиям ратуши и/или плате. Очки заданий дают скидку на плату;
+   полный порог очков открывает ранг бесплатно. */
+export const GUILD_POINT_THRESHOLDS = { leading: 60, expert: 180 };
+export const GUILD_DISCOUNT_STEP = 30;
+export const guildPointsNeeded = (rank) => GUILD_POINT_THRESHOLDS[rank] || 0;
+export function guildRankCost(rank, points) {
+  const base = trainerCost({ kind: 'guild', rank: guildRankNumber(rank) });
+  const need = guildPointsNeeded(rank), have = Math.max(0, finite(points, 0));
+  if (need && have >= need) return 0;
+  /* Каждые 30 очков заданий дают −25% платы, максимум −50%. */
+  const discount = clamp(Math.floor(have / GUILD_DISCOUNT_STEP) * 0.25, 0, 0.5);
+  return Math.max(1, Math.round(base * (1 - discount)));
+}
+/* Гейт магии: обучение заклинания требует ранга гильдии по его кругу. */
+export const SPELL_TIER_RANK = { weak: 'novice', medium: 'leading', strong: 'expert' };
+export const spellTierRank = (s) => SPELL_TIER_RANK[(s && s.tier) || 'weak'] || 'novice';
+
+/* Тиры ёмкостей: выше тир — больше слотов при меньшем собственном весе.
+   Собственный вес: 0 → 0.6 → 0.4 → 0.2. */
+export const CONTAINER_TIERS = [
+  { id: 'rusty',      name: 'Ржавый',      slots: 0, weight: 0,   source: 'торговцы' },
+  { id: 'leather',    name: 'Кожаный',     slots: 2, weight: 0.6, source: 'торговцы/лавки' },
+  { id: 'reinforced', name: 'Усиленный',   slots: 4, weight: 0.4, source: 'награды ратуши и рангов' },
+  { id: 'enchanted',  name: 'Зачарованный', slots: 6, weight: 0.2, source: 'крафт и редкий лут' }
+];
+export const CONTAINER_TIER_IDS = CONTAINER_TIERS.map(t => t.id);
+export function containerTier(id) {
+  return CONTAINER_TIERS.find(t => t.id === id) || CONTAINER_TIERS[0];
+}
 /* Попадание оружием качает профиль оружия и меткость; пустая атака — ничего. */
 export function skillForWeapon(w) {
   const kind = String((w && (w.wkind || w.kind)) || '');
@@ -134,7 +177,7 @@ export function skillForWeapon(w) {
 export const LOOT_TABLES = {
   mouse:        { common: { chance: 1, gold: [1, 3] }, medium: { chance: 0.05, items: ['crystalgrass', 'scroll_1'] }, rare: { chance: 0.05, items: ['ring_1'], floor: true } },
   mouse_wizard: { common: { chance: 1, gold: [2, 5] }, medium: { chance: 0.15, items: ['potion_mp', 'scroll_1'] }, rare: null },
-  mouse_king:   { common: { chance: 1, gold: [10, 25] }, medium: { chance: 0.25, items: ['food', 'potion_hp', 'potion_mp'] }, rare: { chance: 0.25, firstKillChance: 1, items: ['ring_1', 'crown'], floor: true } },
+  mouse_king:   { common: { chance: 1, gold: [10, 25] }, medium: { chance: 0.25, items: ['food', 'potion_hp', 'potion_mp'] }, rare: { chance: 0.25, firstKillChance: 1, items: ['ring_1', 'crown'], floor: true, extra: { chance: 0.1, items: ['enchanted_bag'], floor: true } } },
   spider:       { common: { chance: 1, items: ['poison_gland', 'silk'], gold: [2, 6] }, medium: null, rare: { chance: 0.1, items: ['scroll_poison'] } },
   skeleton:     { common: { chance: 1, items: ['bone'], gold: [3, 8] }, medium: { chance: 0.15, items: ['shield'] }, rare: { chance: 0.12, items: ['helmet'], else: 'bone_dust' } },
   goblin:       { common: { chance: 1, items: ['food'], gold: [3, 10] }, medium: { chance: 0.15, items: ['club_axe'] }, rare: { chance: 0.25, items: ['ore'] } },
@@ -215,6 +258,21 @@ export const LAIR_TEMPLATES = {
   }
 };
 
+/* Ратуша собирает заказы лавок, обеспокоенных нечистью вокруг себя.
+   Цель — разорить логово и победить его короля/предводителя. */
+export const SHOP_QUESTS = [
+  { id: 'q_mouse_market', giver: 'market', title: 'Мыши у амбара', lair: 'mouse_nest', need: 1,
+    target: 'mouse_king', goal: 'Разорить гнездо мышей и победить короля гнезда',
+    reward: { gold: 45, xp: 40, points: 30, rank: 0, containerTier: 'reinforced' } },
+  { id: 'q_spider_tavern', giver: 'tavern', title: 'Паутина у таверны', lair: 'spider_lair', need: 1,
+    target: 'spider_elite', goal: 'Зачистить логово пауков и убить элитного паука',
+    reward: { gold: 55, xp: 50, points: 40, rank: 0, containerTier: 'reinforced' } },
+  { id: 'q_bone_forge', giver: 'forge', title: 'Кости у кузницы', lair: 'bone_yard', need: 1,
+    target: 'skeleton_leader', goal: 'Зачистить костницу и победить предводителя',
+    reward: { gold: 70, xp: 65, points: 60, rank: 1, containerTier: 'enchanted' } }
+];
+export const questDef = (id) => SHOP_QUESTS.find(q => q.id === id) || null;
+
 export const ASSET_STRUCTURE_PROPOSAL = {
   principle: 'один файл — один путь; варианты одного типа группируются по подпапкам',
   groups: {
@@ -236,8 +294,18 @@ export function defaultHeroProgression() {
     skillXp: {},
     skills: {},
     skillCooldown: {},
-    promotion: { guild: 'novice', spells: 'novice' }
+    promotion: { guild: 'novice', spells: 'novice' },
+    guildPoints: 0,
+    /* Носка выводится из ранга гильдии; пояс-предмет пока не реализован. */
+    carrying: ['bag'],
+    beltSlot: null
   };
+}
+export function defaultQuestState() {
+  return { accepted: {}, done: {}, progress: {} };
+}
+export function defaultJournal() {
+  return { active: [], done: [] };
 }
 export function migrateSave(raw) {
   const src = raw && typeof raw === 'object' ? raw : {};
@@ -250,6 +318,10 @@ export function migrateSave(raw) {
   out.pendingXp = Math.max(0, finite(src.pendingXp, 0));
   out.pendingLoot = Array.isArray(src.pendingLoot) ? src.pendingLoot.slice() : [];
   out.battleLimit = clamp(Math.floor(finite(src.battleLimit, ACTIVE_ENEMY_LIMIT)), 6, ACTIVE_ENEMY_LIMIT);
+  out.quests = Object.assign(defaultQuestState(), src.quests && typeof src.quests === 'object' ? src.quests : {});
+  out.journal = Object.assign(defaultJournal(), src.journal && typeof src.journal === 'object' ? src.journal : {});
+  if (!Array.isArray(out.journal.active)) out.journal.active = [];
+  if (!Array.isArray(out.journal.done)) out.journal.done = [];
   out.party = Array.isArray(src.party) ? src.party.map(h => {
     const hero = Object.assign({}, h);
     const defaults = defaultHeroProgression();
@@ -259,6 +331,11 @@ export function migrateSave(raw) {
     hero.skillCooldown = Object.assign({}, hero.skillCooldown && typeof hero.skillCooldown === 'object' ? hero.skillCooldown : {});
     hero.promotion = Object.assign({}, defaults.promotion, hero.promotion && typeof hero.promotion === 'object' ? hero.promotion : {});
     if (!GUILD_RANKS.includes(hero.promotion.guild)) hero.promotion.guild = 'novice';
+    if (!GUILD_RANKS.includes(hero.promotion.spells)) hero.promotion.spells = 'novice';
+    hero.guildPoints = Math.max(0, Math.floor(finite(hero.guildPoints, 0)));
+    /* Носка — производная от ранга, поэтому старые сейвы получат её автоматически. */
+    hero.carrying = heroCarryingIds(hero);
+    if (!('beltSlot' in hero)) hero.beltSlot = null;
     hero.exp = Math.max(0, finite(hero.exp, 0));
     return hero;
   }) : [];
@@ -272,5 +349,11 @@ export const RULES_SUMMARY = {
   diminishing: 'base * max(0.1, 1 - 0.1*k), k = heroLevel - enemyLevel',
   battleBudget: 'clamp(sum(levels)*2 + heroes*6 + elites*4, 16, 80); active <= 12',
   tithe: `max(${CHURCH_TITHE_MIN}, floor(gold*${CHURCH_TITHE_RATE}))`,
-  friendlyFire: FRIENDLY_FIRE_RATIO
+  friendlyFire: FRIENDLY_FIRE_RATIO,
+  carrying: 'rank 1/2/3 = bag / bag+chest / bag+chest+belt; pockets and purse always',
+  guildPoints: GUILD_POINT_THRESHOLDS,
+  guildDiscountStep: GUILD_DISCOUNT_STEP,
+  spellTiers: SPELL_TIER_RANK,
+  containerTiers: CONTAINER_TIERS.map(t => `${t.id}:+${t.slots} slots, weight ${t.weight}`),
+  quests: SHOP_QUESTS.map(q => q.id)
 };
