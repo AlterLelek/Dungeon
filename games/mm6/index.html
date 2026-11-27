@@ -246,6 +246,23 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:46px;max-height:46px;overflow-y:auto;overflow-wrap:anywhere}
 .invDetail b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .invNote{padding:10px;border-radius:9px;border:1px dashed rgba(255,255,255,.12);color:#8b94b2;font-size:11px;line-height:1.45;text-align:center}
+/* Контекстное меню трав и свитков + простая таблица алхимии без прокрутки сетки. */
+.invCell .ctxBtn{position:absolute;top:1px;right:1px;width:12px;height:12px;padding:0;margin:0;border:0;border-radius:4px;
+  background:rgba(6,8,18,.8);color:#ffe9b0;font-size:10px;line-height:10px;cursor:pointer;z-index:3}
+.invCell .ctxBtn:hover{background:rgba(251,191,36,.28)}
+.invContext{position:fixed;z-index:30;min-width:150px;padding:5px;border:1px solid rgba(251,191,36,.45);border-radius:9px;
+  background:#10142c;box-shadow:0 8px 24px rgba(0,0,0,.6);font-size:10px;color:#c8d2f0}
+.invContext b{display:block;padding:3px 5px;color:#ffe9b0;font-size:11px}
+.invContext button{display:block;width:100%;padding:5px 7px;margin:2px 0;border:1px solid rgba(255,255,255,.12);border-radius:6px;
+  background:rgba(255,255,255,.04);color:#c8d2f0;text-align:left;cursor:pointer;font-size:10px}
+.invContext button:hover{border-color:#fbbf24;color:#ffe9b0}
+.alchemyTable{margin-bottom:6px;padding:7px;border:1px solid rgba(125,255,178,.35);border-radius:9px;background:rgba(6,8,18,.78);font-size:10px}
+.alchemyTable h3{margin:0 0 5px;color:#7dffb2;font-size:11px}
+.alchemyTable table{width:100%;border-collapse:collapse}
+.alchemyTable th,.alchemyTable td{padding:3px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.alchemyTable th{color:#9fb0d8;font-weight:700}
+.alchemyTable button{padding:2px 6px;border:1px solid rgba(251,191,36,.35);border-radius:5px;background:rgba(251,191,36,.1);color:#ffe9b0;cursor:pointer;font-size:9px}
+.alchemyTable button:disabled{opacity:.4;cursor:not-allowed}
 /* Сводка отряда: по одной строке-статусу на каждого героя, те же ячейки, что и в манекене. */
 .partySummary{margin-top:12px;padding-top:8px;border-top:1px solid rgba(251,191,36,.28)}
 .ps-row{display:grid;grid-template-columns:minmax(96px,1.3fr) repeat(4,minmax(76px,1fr));gap:6px;align-items:center;
@@ -471,6 +488,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <div class="head"><h2>🎒 Инвентарь</h2><button class="link" id="invClose">Закрыть [I]</button></div>
   <div class="invBody"><div class="mannequin" id="mannequin"></div><div class="invRight"><div class="tabs" id="invTabs"></div><div id="invList"></div></div></div>
   <div id="partySummary" class="partySummary" aria-label="Сводка отряда"></div>
+  <div id="invContext" class="invContext hidden" aria-label="Действия с предметом"></div>
 </div></div>
 
 <div id="bigMap" class="overlay hidden"><div class="box" style="width:min(792px,96vw)">
@@ -1523,7 +1541,7 @@ function gearRecipeBlock(){ return ''; }
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
 let selHero=[0,1,2], selDiff=settings.difficulty, heroNameText='Герой', pickHeroTab=0;
-let invTab='Общий', invSlot=null, invArmedSlot=null, invContainer=null;
+let invTab='Общий', invSlot=null, invArmedSlot=null, invContainer=null, invContextUid=null;
 
 function makeItem(o){
   const item=Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
@@ -4673,6 +4691,17 @@ function ensureContainers(snap){
 }
 function containerDef(id){ return CONTAINER_DEFS.find(d=>d.id===id)||null; }
 function containerState(id){ return game&&game.containers?game.containers[id]:null; }
+/* Мастерство ёмкости: простой → изысканный → волшебный. Классы задают и имя,
+   и требуемый ранг гильдии; старые сейвы с upgrade=0 остаются простыми. */
+function containerMastery(st){
+  const i=clamp(Number(st&&st.upgrade)||0,0,CONTAINER_CLASSES.length-1);
+  return CONTAINER_CLASSES[i]||CONTAINER_CLASSES[0];
+}
+function nextContainerCapacity(def,st){
+  if(!def||!st) return 0;
+  const cur=containerMastery(st), next=CONTAINER_CLASSES[Math.min(st.upgrade+1,CONTAINER_CLASSES.length-1)];
+  return st.capacity+def.step+Math.max(0,next.slots-cur.slots);
+}
 /* Ёмкости отряда открываются ноской: карманы и мошна всегда, сумка/сундук/пояс —
    по максимальному рангу гильдии в отряде, чтобы общая сумка не ломалась. */
 function partyCarryingIds(){
@@ -4734,9 +4763,8 @@ function containerWeight(){
   return round1(CONTAINER_DEFS.reduce((sum,def)=>sum+(Number((game.containers[def.id]||{}).weight)||0),0));
 }
 function containerTabLabel(def){
-  const st=containerState(def.id);
-  const prefix=st&&st.tier&&st.tier!=='rusty'?containerTier(st.tier).name.slice(0,2)+' ':'';
-  return prefix+def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity)+
+  const st=containerState(def.id), cls=containerMastery(st);
+  return cls.name+' '+def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity)+
     (containerAvailable(def.id)?'':' 🔒');
 }
 function containerReport(){
@@ -4750,8 +4778,10 @@ function containerReport(){
     const items=containerItems(def.id);
     if(st&&items.length>st.capacity) errors.push(def.name+' переполнена');
     if(st&&!CONTAINER_TIER_IDS.includes(st.tier)) errors.push(def.name+' имеет неизвестный тир');
+    const cls=containerMastery(st);
     return {id:def.id,name:def.name,used:items.length,capacity:st?st.capacity:def.capacity,
-      upgrade:st?st.upgrade:0,tier:st?st.tier:'rusty',magic:st?Object.assign({},st.magic||{}):{},
+      upgrade:st?st.upgrade:0,tier:st?st.tier:'rusty',mastery:cls.name,rank:cls.rank,classNumber:cls.number,
+      magic:st?Object.assign({},st.magic||{}):{},
       available:containerAvailable(def.id),weight:st?st.weight:0,accept:def.accept.slice(),tab:containerTabLabel(def)};
   });
   const loose=game.bag.filter(it=>!worn.has(it.uid)&&!it.container).map(it=>it.name);
@@ -4811,22 +4841,24 @@ const ITEM_SPRITE_BASE='../../assets/sprites/items/';
 const UI_SPRITE_BASE='../../assets/sprites/ui/';
 /* PR #9: восемь слотов манекена + независимые слоты main (boots/bracers/cloak).
    feet сохранён как старый слот PR #9; boots — новый слот main. */
+/* Слоты манекена не перекрываются: каждый можно нажать отдельно, включая
+   вторую руку, пояс и ёмкости. Координаты — проценты арены 200/350. */
 const MANNEQUIN_SLOTS=[
-  {id:'body',label:'Торс',hint:'мантия или доспех',x:31,y:19,w:38,h:31},
-  {id:'legs',label:'Поножи',hint:'поножи',x:32,y:51,w:36,h:18},
-  {id:'feet',label:'Сапоги',hint:'сапоги',x:28,y:86,w:44,h:10},
-  {id:'shield',label:'Щит',hint:'щит',x:3,y:21,w:27,h:26},
-  {id:'weapon',label:'Руки',hint:'оружие',x:64,y:18,w:34,h:42},
-  {id:'offhand',label:'Вторая рука',hint:'свободна',x:72,y:78,w:24,h:8},
-  {id:'hands',label:'Перчатки',hint:'перчатки',x:4,y:48,w:25,h:14},
-  {id:'helmet',label:'Голова',hint:'шлем',x:22,y:3,w:20,h:15},
-  {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:15,w:16,h:8},
-  {id:'ring',label:'Кольцо',hint:'кольцо',x:54,y:44,w:13,h:9},
-  {id:'boots',label:'Ботинки',hint:'ботинки main',x:28,y:72,w:44,h:12},
-  {id:'belt',label:'Пояс',hint:'пояс',x:31,y:69,w:38,h:8},
-  {id:'pouch',label:'Сумка',hint:'сумка или мошна',x:66,y:86,w:24,h:10},
-  {id:'bracers',label:'Поручи',hint:'поручи',x:71,y:62,w:25,h:14},
-  {id:'cloak',label:'Плащ',hint:'плащ или роба',x:3,y:64,w:25,h:12}
+  {id:'body',label:'Торс',hint:'мантия или доспех',x:33,y:26,w:34,h:24},
+  {id:'legs',label:'Поножи',hint:'поножи',x:33,y:52,w:34,h:14},
+  {id:'feet',label:'Сапоги',hint:'сапоги',x:33,y:86,w:34,h:10},
+  {id:'shield',label:'Щит',hint:'щит',x:2,y:20,w:24,h:24},
+  {id:'weapon',label:'Руки',hint:'оружие',x:74,y:16,w:24,h:40},
+  {id:'offhand',label:'Вторая рука',hint:'свободна',x:82,y:62,w:16,h:10},
+  {id:'hands',label:'Перчатки',hint:'перчатки',x:2,y:46,w:24,h:14},
+  {id:'helmet',label:'Голова',hint:'шлем',x:38,y:2,w:24,h:13},
+  {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:16,w:16,h:7},
+  {id:'ring',label:'Кольцо',hint:'кольцо',x:68,y:62,w:12,h:8},
+  {id:'boots',label:'Ботинки',hint:'ботинки main',x:33,y:76,w:34,h:8},
+  {id:'belt',label:'Пояс',hint:'пояс',x:33,y:68,w:34,h:6},
+  {id:'pouch',label:'Мошна',hint:'сумка или мошна',x:74,y:86,w:24,h:10},
+  {id:'bracers',label:'Поручи',hint:'поручи',x:74,y:74,w:24,h:10},
+  {id:'cloak',label:'Плащ',hint:'плащ или роба',x:2,y:62,w:24,h:14}
 ];
 const SLOT_GLYPHS={
   helmet:'<path d="M5 12a7 7 0 0 1 14 0v4h-4v-3H9v3H5z"/>',
@@ -4989,19 +5021,25 @@ function upgradeContainer(id){
   const def=containerDef(id), st=containerState(id);
   if(!def||!st) return false;
   if(!containerAvailable(id)){ toast(def.name+' пока недоступна: нужна носка.'); return false; }
-  if(st.upgrade>=3){ toast('Достигнут лимит улучшений контейнера.'); return false; }
-  const nextClass=CONTAINER_CLASSES[st.upgrade+1];
+  if(st.upgrade>=CONTAINER_CLASSES.length-1){
+    toast('Достигнуто мастерство «'+containerMastery(st).name+'»: улучшений больше нет.'); return false;
+  }
+  const curClass=containerMastery(st), nextClass=CONTAINER_CLASSES[st.upgrade+1];
   if(nextClass&&!party().some(h=>guildAtLeast((h.promotion&&h.promotion.guild)||'novice',nextClass.rank))){
-    toast('Для класса «'+nextClass.name+'» нужна носка: '+nextClass.rank+'.'); return false;
+    toast('Для мастерства «'+nextClass.name+'» нужна носка: '+nextClass.rank+'.'); return false;
   }
   const cost=def.cost*(st.upgrade+1);
   if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
-  game.gold-=cost; st.upgrade++; st.capacity+=def.step;
+  game.gold-=cost; st.upgrade++;
+  st.tier=nextClass.tier; st.mastery=nextClass.rank; st.classNumber=nextClass.number;
+  st.capacity=Math.max(st.capacity+def.step+Math.max(0,nextClass.slots-curClass.slots),
+    def.capacity+nextClass.slots+st.upgrade*def.step);
+  if(nextClass.magic) st.magic=Object.assign({},st.magic||{},{slots:nextClass.slots});
   /* Освободившиеся слоты сразу забирают предметы, оставшиеся без контейнера. */
   game.bag.filter(i=>!i.container&&containerAccepts(def,i)).forEach(i=>{
     if(containerRoom(id)>0) i.container=id;
   });
-  toast(def.name+' улучшена: '+st.capacity+' слотов.');
+  toast(def.name+': '+nextClass.name+', '+containerItems(id).length+'/'+st.capacity+' слотов.');
   renderInventory(); updateParty(); return true;
 }
 function installContainerItem(uid){
@@ -5034,6 +5072,50 @@ function grantContainerTier(id,tier){
   if(!containerAvailable(id)) return false;
   return setContainerTier(id,tier);
 }
+function closeItemContext(){
+  invContextUid=null;
+  const el=$('invContext'); if(el) el.classList.add('hidden');
+}
+function openItemContext(uid,btn){
+  const it=game&&game.bag.find(i=>i.uid===uid), host=$('invContext');
+  if(!it||!host||!['herb','scroll'].includes(it.type)) return false;
+  invContextUid=uid;
+  host.innerHTML='<b>'+esc(it.name)+'</b>';
+  const act=(label,fn)=>{
+    const b=document.createElement('button'); b.type='button'; b.dataset.ctxAction=label;
+    b.textContent=label; b.onclick=()=>{ fn(); closeItemContext(); }; host.appendChild(b);
+  };
+  if(it.type==='herb'){
+    act('Использовать траву',()=>{ useItem(uid); renderInventory(); updateParty(); });
+    act('Рецепты алхимии',()=>{ invTab='Травы'; invArmedSlot=null; renderInventory(); });
+  }else{
+    act('Изучить / применить',()=>{ useItem(uid); renderInventory(); updateParty(); });
+    act('Описание свитка',()=>{
+      toast((spell(it.spell)||{}).name+' · '+(spell(it.spell)||{}).desc||'Магический свиток.');
+    });
+  }
+  const r=btn?btn.getBoundingClientRect():null;
+  host.style.left=Math.max(4,Math.min(window.innerWidth-174,r?r.right-150:40))+'px';
+  host.style.top=Math.max(4,Math.min(window.innerHeight-130,r?r.bottom+4:40))+'px';
+  host.classList.remove('hidden'); return true;
+}
+function alchemyTablePanel(){
+  const h=party()[game.invHero||0];
+  const rows=RECIPES.filter(r=>(r.kind||'herb')==='herb'||r.kind==='spell').map(r=>{
+    const have=r.need.every(hasNeedItem), block=gearRecipeBlock(r,h);
+    const need=r.need.map(id=>{
+      const name=(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name;
+      const count=(game.bag.filter(i=>i.id===id&&((i.count||1)>0)).reduce((s,i)=>s+(i.count||1),0));
+      return name+' '+count;
+    }).join(' + ');
+    return {id:r.id,name:r.name,need,ready:have&&!block,block:block||(!have?'Не хватает компонентов':'')};
+  });
+  return '<div class="alchemyTable" id="alchemyTable"><h3>🧪 Простая алхимия</h3><table><thead><tr>'+
+    '<th>Рецепт</th><th>Нужно (есть)</th><th></th></tr></thead><tbody>'+rows.map(r=>
+      '<tr data-recipe="'+r.id+'"><td>'+esc(r.name)+'</td><td>'+esc(r.need)+'</td><td>'+
+      '<button type="button" data-craft="'+r.id+'"'+(r.ready?'':' disabled')+' title="'+esc(r.block)+'">'+
+      (r.ready?'Сварить':'—')+'</button></td></tr>').join('')+'</tbody></table></div>';
+}
 function itemCell(it,h){
   const target=mannequinSlotForItem(it);
   // Выбранный на манекене слот второй руки направляет туда одноручное оружие.
@@ -5054,6 +5136,7 @@ function itemCell(it,h){
   }
   return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),spritePaths:itemSpritePaths(it),
     count:it.count||1,action,
+    context:(it.type==='herb'||it.type==='scroll')?it.uid:null,contextKind:it.type,
     blocked:!!block&&(it.type==='weapon'||it.type==='armor'),
     moveFrom:invContainer?it.uid:null,moveTo:invContainer?nextContainerFor(it,invContainer):null};
 }
@@ -5124,6 +5207,13 @@ function makeInvCell(cell){
     mv.textContent='→';
     mv.onclick=e=>{ e.stopPropagation(); moveContainerItem(cell.moveFrom,cell.moveTo); };
     b.appendChild(mv);
+  }
+  if(cell.context){
+    const ctx=document.createElement('button');
+    ctx.type='button'; ctx.className='ctxBtn'; ctx.dataset.context=cell.context;
+    ctx.title='Действия с предметом'; ctx.textContent='⋯';
+    ctx.onclick=e=>{ e.stopPropagation(); openItemContext(cell.context,ctx); };
+    b.appendChild(ctx);
   }
   const show=()=>showInvDetail(cell);
   b.addEventListener('mouseenter',show);
@@ -5246,6 +5336,7 @@ function renderPartySummary(){
 }
 function renderInventory(){
   if(!game) return;
+  closeItemContext();
   const h=party()[game.invHero||0];
   if(!h) return;
   if(invContainer&&!containerAvailable(invContainer)) invContainer=null;
@@ -5341,6 +5432,15 @@ function renderInventory(){
     list.appendChild(ctabs);
   }
 
+  if(invTab==='Травы'||invTab==='Ремесло'){
+    const table=document.createElement('div'); table.innerHTML=alchemyTablePanel();
+    const panel=table.firstElementChild; list.appendChild(panel);
+    panel.querySelectorAll('button[data-craft]').forEach(b=>b.onclick=()=>{
+      const r=RECIPES.find(x=>x.id===b.dataset.craft);
+      if(r&&craftRecipe(r)){ renderInventory(); updateParty(); }
+    });
+  }
+
   const grid=document.createElement('div'); grid.className='invGrid';
   const cells=[];
   if(invTab==='Магия'){
@@ -5382,11 +5482,12 @@ function renderInventory(){
     if(invContainer){
       const def=containerDef(invContainer), st=containerState(invContainer);
       if(def&&st){
-        const cost=def.cost*(st.upgrade+1), over=st.upgrade>=3, poor=game.gold<cost;
+        const cls=containerMastery(st), next=CONTAINER_CLASSES[Math.min(st.upgrade+1,CONTAINER_CLASSES.length-1)];
+        const cost=def.cost*(st.upgrade+1), over=st.upgrade>=CONTAINER_CLASSES.length-1, poor=game.gold<cost;
         cells.push({
-          name:'Улучшить '+def.name,
-          desc:'Слотов: '+containerItems(def.id).length+'/'+st.capacity+' → '+(st.capacity+def.step)+
-            ' · 🪙 '+cost+(over?' · лимит улучшений':poor?' · не хватает золота':''),
+          name:'Улучшить '+def.name+' · '+cls.name+' → '+next.name,
+          desc:'Слотов: '+containerItems(def.id).length+'/'+st.capacity+' → '+nextContainerCapacity(def,st)+
+            ' · 🪙 '+cost+(over?' · предел мастерства':poor?' · не хватает золота':''),
           blocked:over||poor,
           action:()=>upgradeContainer(def.id)
         });
@@ -7530,6 +7631,41 @@ window.__mm6Debug={
       slotsInDom:[...(stage?stage.querySelectorAll('.mq-slot[data-slot]'):[])].map(el=>el.dataset.slot),
       containerSection:!!document.querySelector('#invList .invSlotStrip[data-section="containers"]')};
   },
+  paperDollLayoutReport:()=>{
+    const stage=document.querySelector('#mannequin .mq-stage');
+    const slots=[...(stage?stage.querySelectorAll('.mq-slot[data-slot]'):[])].map(el=>{
+      const r=el.getBoundingClientRect();
+      return {id:el.dataset.slot,x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)};
+    });
+    const overlaps=[];
+    for(let i=0;i<slots.length;i++) for(let j=i+1;j<slots.length;j++){
+      const a=slots[i], b=slots[j];
+      if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h) overlaps.push([a.id,b.id]);
+    }
+    return {slots,overlaps,unique:new Set(slots.map(s=>s.id)).size===MANNEQUIN_SLOTS.length};
+  },
+  inventoryPart7Report:()=>{
+    const grid=document.querySelector('.invGrid'), cs=grid?getComputedStyle(grid):null;
+    const ctx=$('invContext'), table=$('alchemyTable');
+    const containers=game&&game.containers?CONTAINER_DEFS.map(def=>{
+      const st=containerState(def.id), cls=containerMastery(st);
+      return {id:def.id,mastery:cls.name,rank:cls.rank,used:containerItems(def.id).length,
+        capacity:st?st.capacity:def.capacity,label:containerTabLabel(def)};
+    }):[];
+    return {
+      grid:{cells:grid?grid.children.length:0,columns:cs?cs.gridTemplateColumns.split(' ').length:0,
+        rows:cs?cs.gridTemplateRows.split(' ').length:0,overflow:cs?cs.overflow:null,
+        height:grid?grid.clientHeight:0,content:grid?grid.scrollHeight:0},
+      context:{open:!!ctx&&!ctx.classList.contains('hidden'),uid:invContextUid,
+        title:ctx?ctx.querySelector('b')?.textContent||'':'' ,actions:ctx?[...ctx.querySelectorAll('button')].map(b=>b.textContent):[]},
+      alchemy:{present:!!table,rows:table?[...table.querySelectorAll('tbody tr')].map(tr=>({
+        id:tr.dataset.recipe,ready:!!tr.querySelector('button:not([disabled])')})):[]},
+      containers,
+      clusterButton:!!document.querySelector('.invCell .ctxBtn')
+    };
+  },
+  openItemContext:(uid)=>openItemContext(uid),
+  closeItemContext:()=>{ closeItemContext(); return true; },
   containerReport:()=>containerReport(),
   itemsReport:()=>itemReport(),
   rollCatalogItem:(type,tier,rng)=>rollCatalogItem(type,tier,rng),
