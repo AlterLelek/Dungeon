@@ -150,20 +150,31 @@ try {
     unseenHint.title === 'Неразведанная клетка' && JSON.stringify(await player()) === JSON.stringify(beforeSeen),
     JSON.stringify({ hint: unseenHint, player: await player() }));
 
+  const openPoint = await ev(`(()=>{const cv=document.getElementById('cv').getBoundingClientRect(),r=window.__mm6Debug.mapReport().rect;
+    return {x:cv.left+(r.x+r.w/2)*cv.width/640,y:cv.top+(r.y+r.h+24)*cv.height/360};})()`);
+  await click(openPoint.x, openPoint.y);
+  const fromMinimap = await ev(`({open:!!window.__mm6State().mapOpen,
+    title:document.getElementById('bigMapTitle').textContent})`);
+  check('ссылка под миникартой открывает карту всего мира',
+    fromMinimap.open && fromMinimap.title.includes('Весь мир'), JSON.stringify(fromMinimap));
+  await ev('window.__mm6Debug.toggleBigMap(false)');
+
   await key('m', 'KeyM', 77);
   const opened = await ev(`({open:!!window.__mm6State().mapOpen,hidden:document.getElementById('bigMap').classList.contains('hidden'),
     title:document.getElementById('bigMapTitle').textContent})`);
-  check('M открывает большую карту', opened.open && !opened.hidden && opened.title.includes('100×100'), JSON.stringify(opened));
+  check('M открывает большую карту', opened.open && !opened.hidden && opened.title.includes('Весь мир'), JSON.stringify(opened));
 
-  const bmRect = await ev(`(()=>{const r=document.getElementById('bigMapCanvas').getBoundingClientRect();
-    return {left:r.left,top:r.top,w:r.width,h:r.height};})()`);
-  const px = await ev(`(()=>{const r=document.getElementById('bigMapCanvas').getBoundingClientRect();
-    return {x:(${center}+.5)*r.width/100,y:(${center}+.5)*r.height/100};})()`);
-  await click(bmRect.left + px.x, bmRect.top + px.y);
+  // Большая карта теперь показывает весь мир: клик попадает в локацию, а не в клетку 100×100.
+  const location = await ev(`(()=>{const g=window.__mm6State(),m=g.world.maps[g.world.current],
+    geo=window.__mm6Debug.worldMapReport().geometry,s=m.slot,r=document.getElementById('bigMapCanvas').getBoundingClientRect();
+    return {x:r.left+(geo.ox+s.gx*geo.cell+geo.cell/2)*r.width/640,
+      y:r.top+(geo.oy+s.gy*geo.cell+geo.cell/2)*r.height/640,index:m.index,name:m.settlement&&m.settlement.name};})()`);
+  await click(location.x, location.y);
   const bigHint = (await report()).hint;
-  check('клик по большой карте показывает клетку без перемещения',
-    bigHint && bigHint.x === center && bigHint.y === center && JSON.stringify(await player()) === JSON.stringify(beforeSeen),
-    JSON.stringify({ hint: bigHint, player: await player() }));
+  check('клик по большой карте показывает локацию без перемещения',
+    bigHint && bigHint.index === location.index && bigHint.title === location.name &&
+    JSON.stringify(await player()) === JSON.stringify(beforeSeen),
+    JSON.stringify({ hint: bigHint, location, player: await player() }));
 
   await key('ь', 'KeyM', 77);
   check('Ь закрывает большую карту',
