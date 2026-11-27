@@ -213,6 +213,41 @@ try {
   check('тиры дают больше слотов и меньший вес', tiers.ok && tiers.set && tiers.after > tiers.before &&
     tiers.tier === 'enchanted' && tiers.weight === 0.2 && tiers.tiers[3].slots === 6,
     JSON.stringify({ before: tiers.before, after: tiers.after, weight: tiers.weight, errors: tiers.errors }));
+
+  // Пересозданная база предметов: id, имена, школы, грейды и слои.
+  const items = await ev('window.__mm6Debug.itemsReport()');
+  check('каталог из 202 предметов без магии на тирах 1–2', items.ok && items.count === 202 &&
+    items.types.weapon === 70 && items.types.armor === 120 && items.types.container === 12 &&
+    items.magicTiers1_2.length === 0,
+    JSON.stringify({ ok: items.ok, errors: items.errors, count: items.count, types: items.types,
+      magicTiers1_2: items.magicTiers1_2 }));
+  check('имена: английский id и русское название по шаблону', items.examples.dagger_rusty === 'Ржавый кинжал' &&
+    items.examples.dagger_flame === 'Кинжал пламени' && items.examples.sword_holy === 'Меч света' &&
+    items.examples.sword_dark === 'Тёмный меч крови' && items.examples.sword_dark_ice === 'Тёмный ледяной меч' &&
+    items.examples.breastplate_flame === 'Панцирь пламени', JSON.stringify(items.examples));
+  check('ученик 10–20%, мастер 25–35%, вторая школа только 8–10', items.powers.novice >= 10 &&
+    items.powers.novice <= 20 && items.powers.master >= 25 && items.powers.master <= 35 &&
+    items.powers.expert >= 40 && items.powers.second >= 5 && items.powers.second <= 20 &&
+    items.secondSchoolTiers.every(t => t >= 8 && t <= 10) && items.powers.armor === 5,
+    JSON.stringify({ powers: items.powers, secondSchoolTiers: items.secondSchoolTiers }));
+  check('шесть школ и шесть отдельных SVG-слоёв', items.elements.length === 6 && items.layers.length === 6 &&
+    ['flame', 'water', 'earth', 'wind', 'dark', 'light'].every(id => items.elements.includes(id)) &&
+    items.layers.every(p => p.endsWith('.svg') && p.includes('/elements/')),
+    JSON.stringify({ elements: items.elements, layers: items.layers }));
+  check('механики школ и заклинания эксперта зафиксированы', items.mechanics.flame.expert === 'Огненная стрела при ударе' &&
+    items.mechanics.water.expert === 'Оцепенение' && items.mechanics.earth.expert === 'Каменная кожа' &&
+    items.mechanics.wind.expert === 'Рывок ветра' && items.mechanics.dark.expert === 'усиленный вампиризм' &&
+    items.mechanics.light.expert === 'Луч света' &&
+    items.grades.apprentice.name === 'Ученик' && items.grades.master.name === 'Мастер' &&
+    items.grades.expert.name === 'Эксперт', JSON.stringify({ mechanics: items.mechanics, grades: items.grades }));
+  const generated = await ev(`(()=>{const d=window.__mm6Debug,got=d.rollCatalogItem('weapon',3,()=>0.5);
+    return got?{id:got.id,type:got.type,tier:got.tier,damage:got.damage,drop:got.drop,schools:got.schools}:null;})()`);
+  check('каталог генерирует локальные записи с уроном и шансом выпадения',
+    generated && /^[a-z0-9_]+$/.test(generated.id) && generated.type === 'weapon' &&
+    generated.tier === 3 && typeof generated.damage === 'number' && generated.damage > 0 &&
+    typeof generated.drop === 'number' && generated.drop > 0 && Array.isArray(generated.schools),
+    JSON.stringify(generated));
+
   const herbs = await ev('window.__mm6Debug.herbReport()');
   check('20 трав с ролями, дефицит в магической лавке и новые рецепты', herbs.ok && herbs.count === 20 &&
     herbs.roles.length === 4 && herbs.scarce.includes('pine_needle') &&

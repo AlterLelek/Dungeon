@@ -1,5 +1,564 @@
 [
   {
+    "file": "bracers.svg",
+    "path": "assets/items/armor/bracers.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "breastplate.svg",
+    "path": "assets/items/armor/breastplate.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "chainmail.svg",
+    "path": "assets/items/armor/chainmail.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "gloves.svg",
+    "path": "assets/items/armor/gloves.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "robe.svg",
+    "path": "assets/items/armor/robe.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "shield.svg",
+    "path": "assets/items/armor/shield.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "boots.svg",
+    "path": "assets/items/boots/boots.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "greaves.svg",
+    "path": "assets/items/boots/greaves.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "sandals.svg",
+    "path": "assets/items/boots/sandals.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "bag.svg",
+    "path": "assets/items/containers/bag.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "belt.svg",
+    "path": "assets/items/containers/belt.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "chest.svg",
+    "path": "assets/items/containers/chest.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "pouch.svg",
+    "path": "assets/items/containers/pouch.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "dark.svg",
+    "path": "assets/items/elements/dark.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "earth.svg",
+    "path": "assets/items/elements/earth.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "flame.svg",
+    "path": "assets/items/elements/flame.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "light.svg",
+    "path": "assets/items/elements/light.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "water.svg",
+    "path": "assets/items/elements/water.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "wind.svg",
+    "path": "assets/items/elements/wind.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "crown.svg",
+    "path": "assets/items/head/crown.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "helmet.svg",
+    "path": "assets/items/head/helmet.svg",
+    "type": "armor",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/data.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "hood.svg",
+    "path": "assets/items/head/hood.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "axe.svg",
+    "path": "assets/items/weapons/axe.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "bow.svg",
+    "path": "assets/items/weapons/bow.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "dagger.svg",
+    "path": "assets/items/weapons/dagger.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "mace.svg",
+    "path": "assets/items/weapons/mace.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "spear.svg",
+    "path": "assets/items/weapons/spear.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "staff.svg",
+    "path": "assets/items/weapons/staff.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "sword.svg",
+    "path": "assets/items/weapons/sword.svg",
+    "type": "weapon",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
     "file": "armor_0.png",
     "path": "assets/kenney/items/armor_0.png",
     "type": "armor",
@@ -1320,131 +1879,269 @@
     "file": "arrow_1.svg",
     "path": "assets/sprites/items/arrow_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_2.svg",
     "path": "assets/sprites/items/arrow_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_3.svg",
     "path": "assets/sprites/items/arrow_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_4.svg",
     "path": "assets/sprites/items/arrow_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_5.svg",
     "path": "assets/sprites/items/arrow_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_6.svg",
     "path": "assets/sprites/items/arrow_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_7.svg",
     "path": "assets/sprites/items/arrow_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_8.svg",
     "path": "assets/sprites/items/arrow_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_9.svg",
     "path": "assets/sprites/items/arrow_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "arrow_10.svg",
     "path": "assets/sprites/items/arrow_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "axe_0.png",
     "path": "assets/sprites/items/axe_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon28"
+      "dungeon28",
+      "adventurer"
     ],
     "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js",
       "games/sf2_battles/index.html"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "axe_1.png",
     "path": "assets/sprites/items/axe_1.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "axe_2.png",
     "path": "assets/sprites/items/axe_2.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "axe_3.png",
     "path": "assets/sprites/items/axe_3.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_1.svg",
@@ -1454,10 +2151,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_2.svg",
@@ -1467,10 +2170,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_3.svg",
@@ -1480,10 +2189,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_4.svg",
@@ -1493,10 +2208,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_5.svg",
@@ -1506,10 +2227,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_6.svg",
@@ -1519,10 +2246,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_7.svg",
@@ -1532,10 +2265,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_8.svg",
@@ -1545,10 +2284,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_9.svg",
@@ -1558,10 +2303,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "boots_10.svg",
@@ -1571,180 +2322,362 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_1.svg",
     "path": "assets/sprites/items/bow_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_2.svg",
     "path": "assets/sprites/items/bow_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_3.svg",
     "path": "assets/sprites/items/bow_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_4.svg",
     "path": "assets/sprites/items/bow_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_5.svg",
     "path": "assets/sprites/items/bow_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_6.svg",
     "path": "assets/sprites/items/bow_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_7.svg",
     "path": "assets/sprites/items/bow_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_8.svg",
     "path": "assets/sprites/items/bow_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_9.svg",
     "path": "assets/sprites/items/bow_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow_10.svg",
     "path": "assets/sprites/items/bow_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow0_0.png",
     "path": "assets/sprites/items/bow0_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon28"
+      "dungeon28",
+      "adventurer"
     ],
     "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js",
       "games/sf2_battles/index.html"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow0_1.png",
     "path": "assets/sprites/items/bow0_1.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow0_2.png",
     "path": "assets/sprites/items/bow0_2.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow0_3.png",
     "path": "assets/sprites/items/bow0_3.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow1_0.png",
     "path": "assets/sprites/items/bow1_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon28"
+      "dungeon28",
+      "adventurer"
     ],
     "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js",
       "games/sf2_battles/index.html"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow1_1.png",
     "path": "assets/sprites/items/bow1_1.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow1_2.png",
     "path": "assets/sprites/items/bow1_2.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bow1_3.png",
     "path": "assets/sprites/items/bow1_3.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_1.svg",
@@ -1754,10 +2687,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_2.svg",
@@ -1767,10 +2706,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_3.svg",
@@ -1780,10 +2725,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_4.svg",
@@ -1793,10 +2744,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_5.svg",
@@ -1806,10 +2763,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_6.svg",
@@ -1819,10 +2782,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_7.svg",
@@ -1832,10 +2801,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_8.svg",
@@ -1845,10 +2820,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_9.svg",
@@ -1858,10 +2839,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "bracers_10.svg",
@@ -1871,100 +2858,206 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_1.svg",
     "path": "assets/sprites/items/dagger_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_2.svg",
     "path": "assets/sprites/items/dagger_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_3.svg",
     "path": "assets/sprites/items/dagger_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_4.svg",
     "path": "assets/sprites/items/dagger_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_5.svg",
     "path": "assets/sprites/items/dagger_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_6.svg",
     "path": "assets/sprites/items/dagger_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_7.svg",
     "path": "assets/sprites/items/dagger_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_8.svg",
     "path": "assets/sprites/items/dagger_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_9.svg",
     "path": "assets/sprites/items/dagger_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dagger_10.svg",
     "path": "assets/sprites/items/dagger_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_1.svg",
@@ -1974,10 +3067,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_2.svg",
@@ -1987,10 +3086,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_3.svg",
@@ -2000,10 +3105,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_4.svg",
@@ -2013,10 +3124,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_5.svg",
@@ -2026,10 +3143,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_6.svg",
@@ -2039,10 +3162,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_7.svg",
@@ -2052,10 +3181,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_8.svg",
@@ -2065,10 +3200,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_9.svg",
@@ -2078,10 +3219,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "gloves_10.svg",
@@ -2091,10 +3238,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_1.svg",
@@ -2104,10 +3257,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_2.svg",
@@ -2117,10 +3276,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_3.svg",
@@ -2130,10 +3295,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_4.svg",
@@ -2143,10 +3314,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_5.svg",
@@ -2156,10 +3333,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_6.svg",
@@ -2169,10 +3352,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_7.svg",
@@ -2182,10 +3371,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_8.svg",
@@ -2195,10 +3390,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_9.svg",
@@ -2208,10 +3409,16 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "greaves_10.svg",
@@ -2221,406 +3428,852 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_1.svg",
     "path": "assets/sprites/items/herb_1.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_2.svg",
     "path": "assets/sprites/items/herb_2.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_3.svg",
     "path": "assets/sprites/items/herb_3.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_4.svg",
     "path": "assets/sprites/items/herb_4.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_5.svg",
     "path": "assets/sprites/items/herb_5.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_6.svg",
     "path": "assets/sprites/items/herb_6.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_7.svg",
     "path": "assets/sprites/items/herb_7.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_8.svg",
     "path": "assets/sprites/items/herb_8.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_9.svg",
     "path": "assets/sprites/items/herb_9.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_10.svg",
     "path": "assets/sprites/items/herb_10.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_11.svg",
     "path": "assets/sprites/items/herb_11.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_12.svg",
     "path": "assets/sprites/items/herb_12.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_13.svg",
     "path": "assets/sprites/items/herb_13.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_14.svg",
     "path": "assets/sprites/items/herb_14.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_15.svg",
     "path": "assets/sprites/items/herb_15.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_16.svg",
     "path": "assets/sprites/items/herb_16.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_17.svg",
     "path": "assets/sprites/items/herb_17.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_18.svg",
     "path": "assets/sprites/items/herb_18.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_19.svg",
     "path": "assets/sprites/items/herb_19.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "herb_20.svg",
     "path": "assets/sprites/items/herb_20.svg",
     "type": "herb",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_1.svg",
     "path": "assets/sprites/items/mace_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_2.svg",
     "path": "assets/sprites/items/mace_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_3.svg",
     "path": "assets/sprites/items/mace_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_4.svg",
     "path": "assets/sprites/items/mace_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_5.svg",
     "path": "assets/sprites/items/mace_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_6.svg",
     "path": "assets/sprites/items/mace_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_7.svg",
     "path": "assets/sprites/items/mace_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_8.svg",
     "path": "assets/sprites/items/mace_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_9.svg",
     "path": "assets/sprites/items/mace_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "mace_10.svg",
     "path": "assets/sprites/items/mace_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_1.svg",
     "path": "assets/sprites/items/quiver_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_2.svg",
     "path": "assets/sprites/items/quiver_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_3.svg",
     "path": "assets/sprites/items/quiver_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_4.svg",
     "path": "assets/sprites/items/quiver_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_5.svg",
     "path": "assets/sprites/items/quiver_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_6.svg",
     "path": "assets/sprites/items/quiver_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_7.svg",
     "path": "assets/sprites/items/quiver_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_8.svg",
     "path": "assets/sprites/items/quiver_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_9.svg",
     "path": "assets/sprites/items/quiver_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "quiver_10.svg",
     "path": "assets/sprites/items/quiver_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_1.svg",
     "path": "assets/sprites/items/robe_1.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_2.svg",
     "path": "assets/sprites/items/robe_2.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_3.svg",
     "path": "assets/sprites/items/robe_3.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_4.svg",
     "path": "assets/sprites/items/robe_4.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_5.svg",
@@ -2630,91 +4283,187 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_6.svg",
     "path": "assets/sprites/items/robe_6.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_7.svg",
     "path": "assets/sprites/items/robe_7.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_8.svg",
     "path": "assets/sprites/items/robe_8.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_9.svg",
     "path": "assets/sprites/items/robe_9.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "robe_10.svg",
     "path": "assets/sprites/items/robe_10.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_1.svg",
     "path": "assets/sprites/items/shield_1.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_2.svg",
     "path": "assets/sprites/items/shield_2.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_3.svg",
     "path": "assets/sprites/items/shield_3.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_4.svg",
     "path": "assets/sprites/items/shield_4.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_5.svg",
@@ -2724,419 +4473,859 @@
       "adventurer"
     ],
     "refs": [
-      "games/mm6/data.js"
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_6.svg",
     "path": "assets/sprites/items/shield_6.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_7.svg",
     "path": "assets/sprites/items/shield_7.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_8.svg",
     "path": "assets/sprites/items/shield_8.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_9.svg",
     "path": "assets/sprites/items/shield_9.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "shield_10.svg",
     "path": "assets/sprites/items/shield_10.svg",
     "type": "armor",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_0.png",
     "path": "assets/sprites/items/staff_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon28"
+      "dungeon28",
+      "adventurer"
     ],
     "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js",
       "games/sf2_battles/index.html"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_1.png",
     "path": "assets/sprites/items/staff_1.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_1.svg",
     "path": "assets/sprites/items/staff_1.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_2.png",
     "path": "assets/sprites/items/staff_2.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_2.svg",
     "path": "assets/sprites/items/staff_2.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_3.png",
     "path": "assets/sprites/items/staff_3.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_3.svg",
     "path": "assets/sprites/items/staff_3.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_4.svg",
     "path": "assets/sprites/items/staff_4.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_5.svg",
     "path": "assets/sprites/items/staff_5.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_6.svg",
     "path": "assets/sprites/items/staff_6.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_7.svg",
     "path": "assets/sprites/items/staff_7.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_8.svg",
     "path": "assets/sprites/items/staff_8.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_9.svg",
     "path": "assets/sprites/items/staff_9.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff_10.svg",
     "path": "assets/sprites/items/staff_10.svg",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "staff.png",
     "path": "assets/sprites/items/staff.png",
     "type": "weapon",
     "used_in": [
-      "dungeon"
+      "dungeon",
+      "adventurer"
     ],
     "refs": [
       "games/dungeon28/config.js",
-      "games/dungeon28/main.js"
+      "games/dungeon28/main.js",
+      "games/mm6/index.html",
+      "games/mm6/items.js"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "sword_0.png",
     "path": "assets/sprites/items/sword_0.png",
     "type": "weapon",
     "used_in": [
-      "dungeon28"
+      "dungeon28",
+      "adventurer"
     ],
     "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js",
       "games/sf2_battles/index.html"
     ],
-    "dynamic": false,
-    "dynamic_in": {}
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "sword_1.png",
     "path": "assets/sprites/items/sword_1.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "sword_2.png",
     "path": "assets/sprites/items/sword_2.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "sword_3.png",
     "path": "assets/sprites/items/sword_3.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_anime_sword.png",
     "path": "assets/sprites/items/weapon_anime_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_axe.png",
     "path": "assets/sprites/items/weapon_axe.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_baton_with_spikes.png",
     "path": "assets/sprites/items/weapon_baton_with_spikes.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_big_hammer.png",
     "path": "assets/sprites/items/weapon_big_hammer.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_cleaver.png",
     "path": "assets/sprites/items/weapon_cleaver.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_duel_sword.png",
     "path": "assets/sprites/items/weapon_duel_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_golden_sword.png",
     "path": "assets/sprites/items/weapon_golden_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_hammer.png",
     "path": "assets/sprites/items/weapon_hammer.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_katana.png",
     "path": "assets/sprites/items/weapon_katana.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_knife.png",
     "path": "assets/sprites/items/weapon_knife.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_knight_sword.png",
     "path": "assets/sprites/items/weapon_knight_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_lavish_sword.png",
     "path": "assets/sprites/items/weapon_lavish_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_mace.png",
     "path": "assets/sprites/items/weapon_mace.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_machete.png",
     "path": "assets/sprites/items/weapon_machete.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_red_gem_sword.png",
     "path": "assets/sprites/items/weapon_red_gem_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_red_magic_staff.png",
     "path": "assets/sprites/items/weapon_red_magic_staff.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_regular_sword.png",
     "path": "assets/sprites/items/weapon_regular_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_rusty_sword.png",
     "path": "assets/sprites/items/weapon_rusty_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_saw_sword.png",
     "path": "assets/sprites/items/weapon_saw_sword.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "weapon_spear.png",
     "path": "assets/sprites/items/weapon_spear.png",
     "type": "weapon",
-    "used_in": [],
-    "refs": [],
-    "dynamic": false,
-    "dynamic_in": {}
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
   },
   {
     "file": "dark_archer_0.png",

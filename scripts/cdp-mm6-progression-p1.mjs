@@ -123,6 +123,22 @@ try {
     migrated.saved && migrated.loaded && migrated.version === 3 && migrated.gold === 999 &&
     migrated.exp === 777 && migrated.level === 1 && migrated.fields && migrated.items > 0 && migrated.report,
     JSON.stringify(migrated));
+  const unknownIds = await ev(`(()=>{
+    const key='mm6_world_save_v1',d=window.__mm6Debug;
+    if(!d.saveWorld()) return {saved:false};
+    const raw=JSON.parse(localStorage.getItem(key));
+    raw.bag.push({uid:'x-ghost',id:'ghost_sword',type:'weapon',name:'Призрачный меч',dmg:1,baseDmg:1,cost:1,sell:1,icon:'⚔'});
+    raw.bag.push({uid:'x-herb',id:'c2-herb',type:'herb',name:'Трава',icon:'🌿',cost:1,sell:1});
+    raw.bag.push({uid:'x-catalog',id:'sword_dark_ice',type:'weapon',name:'Тёмный ледяной меч',dmg:9,cost:5,sell:2,icon:'⚔'});
+    localStorage.setItem(key,JSON.stringify(raw));
+    if(!d.loadWorld()) return {loaded:false};
+    const ids=window.__mm6State().bag.map(i=>i.id);
+    return {saved:true,loaded:true,ghost:ids.includes('ghost_sword'),herb:ids.includes('c2-herb'),
+      catalog:ids.includes('sword_dark_ice')};
+  })()`);
+  check('неизвестные catalog- id молча отбрасываются, остальные остаются',
+    unknownIds.saved && unknownIds.loaded && !unknownIds.ghost && unknownIds.herb && unknownIds.catalog,
+    JSON.stringify(unknownIds));
   check('консоль без ошибок', consoleErrors.length === 0, JSON.stringify(consoleErrors));
   check('нет 4xx/5xx', badResponses.length === 0, JSON.stringify(badResponses));
   console.log(failures ? `PROGRESSION P1 CHECKS FAILED (${failures})` : 'PROGRESSION P1 CHECKS PASSED');

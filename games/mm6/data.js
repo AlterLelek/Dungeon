@@ -1,12 +1,24 @@
 // MM6 expansion pack. Dungeon28 remains the canonical base; everything here extends it locally.
 // Все пользовательские строки — на русском языке.
 
+import { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
+  schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
+  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
+  CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport } from './items.js';
+
+export { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
+  schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
+  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
+  CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport };
+
+// Числовой индекс качества сохраняет совместимость с перековкой; тиры заданы в items.js.
 export const QUALITY = [
-  { id: 0, name: 'Ржавое', short: 'Рж', mult: 1, forgeCost: 0, crit: 0 },
-  { id: 1, name: 'Острое', short: 'Остр', mult: 1.25, forgeCost: 1, crit: 2 },
-  { id: 2, name: 'Золотое', short: 'Зол', mult: 1.5, forgeCost: 2, crit: 4 },
-  { id: 3, name: 'Волшебное', short: 'Волш', mult: 1.8, forgeCost: 3, crit: 6 },
-  { id: 4, name: 'Зачарованное', short: 'Зач', mult: 2.1, forgeCost: 4, crit: 8 }
+  { id: 0, name: 'Ржавое', short: 'Рж', tiers: [1], mult: 1, forgeCost: 0, crit: 0 },
+  { id: 1, name: 'Острое', short: 'Остр', tiers: [2], mult: 1.25, forgeCost: 1, crit: 2 },
+  { id: 2, name: 'Золотое', short: 'Зол', tiers: [3, 5], mult: 1.5, forgeCost: 2, crit: 4 },
+  { id: 3, name: 'Волшебное', short: 'Волш', tiers: [6, 10], mult: 1.8, forgeCost: 3, crit: 6 }
 ];
 
 // 10 героев: первые пять — канонические герои Dungeon28, ещё пять — расширение MM6.
@@ -235,118 +247,35 @@ export const SCROLLS = [
   { id: 'scroll_heal_all', name: 'Свиток исцеления отряда', spell: 'heal_all', cost: 26, icon: '📜', weight: 0 }
 ];
 
-const I = '../../assets/sprites/items/';
 const UI = '../../assets/sprites/ui/';
-const K = '../../assets/kenney/items/';
-const ARMOR_ICON = K + 'armor_0.png';
 
 // 8 слотов: поножи, сапоги, поручи и перчатки — независимые слоты,
 // каждый со своим предметом и своей парой «слот + защита».
 export const ARMOR_SLOTS = [
-  { id: 'shield', name: 'Щит', icon: '🛡', sprite: I + 'shield_5.svg' },
-  { id: 'helmet', name: 'Шлем', icon: '⛑' },
-  { id: 'body', name: 'Тело', icon: '👕' },
-  { id: 'legs', name: 'Поножи', icon: '🦵', sprite: I + 'greaves_5.svg' },
-  { id: 'boots', name: 'Сапоги', icon: '👢', sprite: I + 'boots_5.svg' },
-  { id: 'bracers', name: 'Поручи', icon: '💪', sprite: I + 'bracers_5.svg' },
-  { id: 'hands', name: 'Перчатки', icon: '🧤', sprite: I + 'gloves_5.svg' },
-  { id: 'cloak', name: 'Плащ', icon: '🧥', sprite: I + 'robe_5.svg' }
+  { id: 'shield', name: 'Щит', icon: '🛡', sprite: ITEM_ASSET_BASE + 'armor/shield.svg' },
+  { id: 'helmet', name: 'Шлем', icon: '⛑', sprite: ITEM_ASSET_BASE + 'head/helmet.svg' },
+  { id: 'body', name: 'Тело', icon: '👕', sprite: ITEM_ASSET_BASE + 'armor/breastplate.svg' },
+  { id: 'legs', name: 'Поножи', icon: '🦵', sprite: ITEM_ASSET_BASE + 'boots/greaves.svg' },
+  { id: 'boots', name: 'Сапоги', icon: '👢', sprite: ITEM_ASSET_BASE + 'boots/boots.svg' },
+  { id: 'bracers', name: 'Поручи', icon: '💪', sprite: ITEM_ASSET_BASE + 'armor/bracers.svg' },
+  { id: 'hands', name: 'Перчатки', icon: '🧤', sprite: ITEM_ASSET_BASE + 'armor/gloves.svg' },
+  { id: 'cloak', name: 'Плащ', icon: '🧥', sprite: ITEM_ASSET_BASE + 'armor/robe.svg' }
 ];
 
-export const ARMORS = [
-  // Стартовые лохмотья: нельзя снять и нельзя продать, при надевании другой одежды удаляются.
-  { name: 'Тряпичная одежда', weight: 1, armorCategory: 'cloth', def: 0, cost: 0, set: 'any', slot: 'body', dir: 'def', sprite: ARMOR_ICON,
-    unsellable: true, unequippable: true, starting: true },
-  { name: 'Деревянный щит', weight: 1, armorCategory: 'cloth', def: 1, cost: 2, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
-  { name: 'Кожаный щит', weight: 4, armorCategory: 'leather', def: 3, cost: 5, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
-  { name: 'Рыцарский щит', weight: 7, armorCategory: 'light_metal', def: 6, cost: 11, set: 'warrior', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
-  { name: 'Золотой щит', weight: 8, armorCategory: 'light_metal', def: 9, cost: 18, set: 'any', slot: 'shield', dir: 'def', sprite: K + 'shield.png' },
-  { name: 'Тканевый капюшон', weight: 1, armorCategory: 'cloth', def: 1, cost: 2, set: 'any', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
-  { name: 'Кожаный шлем', weight: 3, armorCategory: 'leather', def: 2, cost: 4, set: 'warrior', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
-  { name: 'Стальной шлем', weight: 6, armorCategory: 'light_metal', def: 4, cost: 9, set: 'warrior', slot: 'helmet', dir: 'def', sprite: K + 'helmet.png' },
-  { name: 'Кожаный жилет', weight: 3, armorCategory: 'leather', def: 1, cost: 2, set: 'any', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Кожаный доспех', weight: 4, armorCategory: 'leather', def: 2, cost: 4, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Кольчуга', weight: 6, armorCategory: 'light_metal', def: 3, cost: 6, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Ламелляр', weight: 7, armorCategory: 'light_metal', def: 4, cost: 8, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Стальной панцирь', weight: 8, armorCategory: 'heavy', def: 5, cost: 10, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Рыцарский облач', weight: 9, armorCategory: 'heavy', def: 6, cost: 12, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Тяжёлая броня', weight: 12, armorCategory: 'heavy', def: 7, cost: 14, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Мантия мага', weight: 1, armorCategory: 'robe', def: 1, cost: 3, set: 'mage', slot: 'cloak', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Украшенная роба', weight: 2, armorCategory: 'robe', def: 2, cost: 6, set: 'mage', slot: 'cloak', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Роба архимага', weight: 2, armorCategory: 'robe', def: 3, cost: 10, set: 'mage', slot: 'cloak', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Куртка следопыта', weight: 6, armorCategory: 'leather', def: 8, cost: 14, set: 'archer', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Плащ разбойника', weight: 1, armorCategory: 'cloth', def: 4, cost: 8, set: 'archer', slot: 'cloak', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Лесной доспех', weight: 6, armorCategory: 'leather', def: 9, cost: 16, set: 'archer', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Святые доспехи', weight: 11, armorCategory: 'heavy', def: 10, cost: 20, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Доспех круглого стола', weight: 15, armorCategory: 'heavy', def: 11, cost: 26, set: 'warrior', slot: 'body', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Стальные поножи', weight: 6, armorCategory: 'light_metal', def: 3, cost: 7, set: 'warrior', slot: 'legs', dir: 'def', sprite: I + 'greaves_5.svg' },
-  { name: 'Кожаные сапоги', weight: 3, armorCategory: 'leather', def: 1, cost: 2, set: 'any', slot: 'boots', dir: 'def', sprite: I + 'boots_5.svg' },
-  { name: 'Сапоги следопыта', weight: 4, armorCategory: 'leather', def: 2, cost: 6, set: 'archer', slot: 'boots', dir: 'def', sprite: I + 'boots_5.svg' },
-  { name: 'Кожаные поручи', weight: 3, armorCategory: 'leather', def: 1, cost: 2, set: 'any', slot: 'bracers', dir: 'def', sprite: I + 'bracers_5.svg' },
-  { name: 'Рыцарские наручи', weight: 6, armorCategory: 'light_metal', def: 3, cost: 8, set: 'warrior', slot: 'bracers', dir: 'def', sprite: I + 'bracers_5.svg' },
-  { name: 'Наручи чародея', weight: 2, armorCategory: 'robe', def: 2, cost: 7, set: 'mage', slot: 'bracers', dir: 'def', sprite: I + 'bracers_5.svg' },
-  { name: 'Кожаные перчатки', weight: 3, armorCategory: 'leather', def: 1, cost: 2, set: 'any', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Рыцарские рукавицы', weight: 6, armorCategory: 'light_metal', def: 3, cost: 8, set: 'warrior', slot: 'hands', dir: 'def', sprite: ARMOR_ICON },
-  { name: 'Рукавицы чародея', weight: 2, armorCategory: 'robe', def: 2, cost: 7, set: 'mage', slot: 'hands', dir: 'def', sprite: ARMOR_ICON }
-];
+/* Старый ворох брони удалён без миграции: источник — пересозданная база items.js. */
+export const ARMORS = [STARTING_RAGS, ...armorDefs()];
 
 // Комплект иконок по тирам: tier === номер SVG. Лёгкое — магу, среднее — следопыту,
 // тяжёлое (защита 7 и выше) — воину. Поле group разделяет варианты одного слота в аудитах.
 export const EQUIPMENT_GROUPS = [
-  { id: 'greaves', name: 'Поножи', sprite: I + 'greaves_5.svg' },
-  { id: 'boots', name: 'Сапоги', sprite: I + 'boots_5.svg' },
-  { id: 'bracers', name: 'Поручи', sprite: I + 'bracers_5.svg' },
-  { id: 'gloves', name: 'Перчатки', sprite: I + 'gloves_5.svg' }
+  { id: 'greaves', name: 'Поножи', sprite: ITEM_ASSET_BASE + 'boots/greaves.svg' },
+  { id: 'boots', name: 'Сапоги', sprite: ITEM_ASSET_BASE + 'boots/boots.svg' },
+  { id: 'bracers', name: 'Поручи', sprite: ITEM_ASSET_BASE + 'armor/bracers.svg' },
+  { id: 'gloves', name: 'Перчатки', sprite: ITEM_ASSET_BASE + 'armor/gloves.svg' }
 ];
 
-// 40 предметов четырёх независимых слотов. Тир = защита; лёгкие тиры 1–3
-// продаёт только магия, средние и тяжёлые — только бронница/оружейная палата.
-// Рынок и кузница не продают предметы комплекта, чтобы ассортименты не пересекались.
-export const TIERED_EQUIPMENT = [
-  { id: 'greaves_1', group: 'greaves', tier: 1, name: 'Тряпичные обмотки', def: 1, cost: 2, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic'], sprite: I + 'greaves_1.svg', icon: '🛡', weight: 1, armorCategory: 'cloth' },
-  { id: 'greaves_2', group: 'greaves', tier: 2, name: 'Тканевые поножи', def: 2, cost: 4, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic'], sprite: I + 'greaves_2.svg', icon: '🛡', weight: 2, armorCategory: 'cloth' },
-  { id: 'greaves_3', group: 'greaves', tier: 3, name: 'Кожаные поножи', def: 3, cost: 7, set: 'mage', slot: 'legs', dir: 'def', shops: ['magic'], sprite: I + 'greaves_3.svg', icon: '🛡', weight: 4, armorCategory: 'leather' },
-  { id: 'greaves_4', group: 'greaves', tier: 4, name: 'Походные поножи', def: 4, cost: 11, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_4.svg', icon: '🛡', weight: 5, armorCategory: 'leather' },
-  { id: 'greaves_5', group: 'greaves', tier: 5, name: 'Лесные поножи', def: 5, cost: 16, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_5.svg', icon: '🛡', weight: 5, armorCategory: 'leather' },
-  { id: 'greaves_6', group: 'greaves', tier: 6, name: 'Стрелецкие поножи', def: 6, cost: 22, set: 'archer', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_6.svg', icon: '🛡', weight: 6, armorCategory: 'leather' },
-  { id: 'greaves_7', group: 'greaves', tier: 7, name: 'Железные поножи', def: 7, cost: 29, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_7.svg', icon: '🛡', weight: 7, armorCategory: 'light_metal' },
-  { id: 'greaves_8', group: 'greaves', tier: 8, name: 'Латные поножи', def: 8, cost: 37, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_8.svg', icon: '🛡', weight: 9, armorCategory: 'heavy' },
-  { id: 'greaves_9', group: 'greaves', tier: 9, name: 'Серебряные латные поножи', def: 9, cost: 46, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_9.svg', icon: '🛡', weight: 10, armorCategory: 'heavy' },
-  { id: 'greaves_10', group: 'greaves', tier: 10, name: 'Золотые латные поножи', def: 10, cost: 56, set: 'warrior', slot: 'legs', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'greaves_10.svg', icon: '🛡', weight: 11, armorCategory: 'heavy' },
-
-  { id: 'boots_1', group: 'boots', tier: 1, name: 'Тряпичные сандалии', def: 1, cost: 2, set: 'mage', slot: 'boots', dir: 'def', shops: ['magic'], sprite: I + 'boots_1.svg', icon: '🛡', weight: 1, armorCategory: 'cloth' },
-  { id: 'boots_2', group: 'boots', tier: 2, name: 'Тканевые башмаки', def: 2, cost: 4, set: 'mage', slot: 'boots', dir: 'def', shops: ['magic'], sprite: I + 'boots_2.svg', icon: '🛡', weight: 2, armorCategory: 'cloth' },
-  { id: 'boots_3', group: 'boots', tier: 3, name: 'Мягкие сапожки', def: 3, cost: 6, set: 'mage', slot: 'boots', dir: 'def', shops: ['magic'], sprite: I + 'boots_3.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'boots_4', group: 'boots', tier: 4, name: 'Походные сапоги', def: 4, cost: 9, set: 'archer', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_4.svg', icon: '🛡', weight: 4, armorCategory: 'leather' },
-  { id: 'boots_5', group: 'boots', tier: 5, name: 'Лесные сапоги', def: 5, cost: 13, set: 'archer', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_5.svg', icon: '🛡', weight: 4, armorCategory: 'leather' },
-  { id: 'boots_6', group: 'boots', tier: 6, name: 'Сапоги лучника', def: 6, cost: 18, set: 'archer', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_6.svg', icon: '🛡', weight: 5, armorCategory: 'leather' },
-  { id: 'boots_7', group: 'boots', tier: 7, name: 'Укреплённые сапоги', def: 7, cost: 24, set: 'warrior', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_7.svg', icon: '🛡', weight: 6, armorCategory: 'light_metal' },
-  { id: 'boots_8', group: 'boots', tier: 8, name: 'Стальные сапоги', def: 8, cost: 31, set: 'warrior', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_8.svg', icon: '🛡', weight: 8, armorCategory: 'heavy' },
-  { id: 'boots_9', group: 'boots', tier: 9, name: 'Рыцарские сапоги', def: 9, cost: 39, set: 'warrior', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_9.svg', icon: '🛡', weight: 9, armorCategory: 'heavy' },
-  { id: 'boots_10', group: 'boots', tier: 10, name: 'Золотые сапоги', def: 10, cost: 48, set: 'warrior', slot: 'boots', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'boots_10.svg', icon: '🛡', weight: 10, armorCategory: 'heavy' },
-
-  { id: 'bracers_1', group: 'bracers', tier: 1, name: 'Тканевые наручи', def: 1, cost: 2, set: 'mage', slot: 'bracers', dir: 'def', shops: ['magic'], sprite: I + 'bracers_1.svg', icon: '🛡', weight: 1, armorCategory: 'cloth' },
-  { id: 'bracers_2', group: 'bracers', tier: 2, name: 'Кожаные поручи', def: 2, cost: 4, set: 'mage', slot: 'bracers', dir: 'def', shops: ['magic'], sprite: I + 'bracers_2.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'bracers_3', group: 'bracers', tier: 3, name: 'Мягкие наручи', def: 3, cost: 7, set: 'mage', slot: 'bracers', dir: 'def', shops: ['magic'], sprite: I + 'bracers_3.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'bracers_4', group: 'bracers', tier: 4, name: 'Походные поручи', def: 4, cost: 11, set: 'archer', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_4.svg', icon: '🛡', weight: 4, armorCategory: 'leather' },
-  { id: 'bracers_5', group: 'bracers', tier: 5, name: 'Лесные поручи', def: 5, cost: 16, set: 'archer', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_5.svg', icon: '🛡', weight: 5, armorCategory: 'leather' },
-  { id: 'bracers_6', group: 'bracers', tier: 6, name: 'Стрелецкие поручи', def: 6, cost: 22, set: 'archer', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_6.svg', icon: '🛡', weight: 5, armorCategory: 'leather' },
-  { id: 'bracers_7', group: 'bracers', tier: 7, name: 'Укреплённые поручи', def: 7, cost: 29, set: 'warrior', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_7.svg', icon: '🛡', weight: 7, armorCategory: 'light_metal' },
-  { id: 'bracers_8', group: 'bracers', tier: 8, name: 'Железные наручи', def: 8, cost: 37, set: 'warrior', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_8.svg', icon: '🛡', weight: 8, armorCategory: 'heavy' },
-  { id: 'bracers_9', group: 'bracers', tier: 9, name: 'Рыцарские наручи', def: 9, cost: 46, set: 'warrior', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_9.svg', icon: '🛡', weight: 9, armorCategory: 'heavy' },
-  { id: 'bracers_10', group: 'bracers', tier: 10, name: 'Золотые наручи', def: 10, cost: 56, set: 'warrior', slot: 'bracers', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'bracers_10.svg', icon: '🛡', weight: 10, armorCategory: 'heavy' },
-
-  { id: 'gloves_1', group: 'gloves', tier: 1, name: 'Тряпичные варежки', def: 1, cost: 2, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic'], sprite: I + 'gloves_1.svg', icon: '🛡', weight: 1, armorCategory: 'cloth' },
-  { id: 'gloves_2', group: 'gloves', tier: 2, name: 'Тканевые перчатки', def: 2, cost: 4, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic'], sprite: I + 'gloves_2.svg', icon: '🛡', weight: 1, armorCategory: 'cloth' },
-  { id: 'gloves_3', group: 'gloves', tier: 3, name: 'Мягкие рукавицы', def: 3, cost: 7, set: 'mage', slot: 'hands', dir: 'def', shops: ['magic'], sprite: I + 'gloves_3.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'gloves_4', group: 'gloves', tier: 4, name: 'Походные перчатки', def: 4, cost: 11, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_4.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'gloves_5', group: 'gloves', tier: 5, name: 'Лесные рукавицы', def: 5, cost: 16, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_5.svg', icon: '🛡', weight: 3, armorCategory: 'leather' },
-  { id: 'gloves_6', group: 'gloves', tier: 6, name: 'Рукавицы стрелка', def: 6, cost: 22, set: 'archer', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_6.svg', icon: '🛡', weight: 4, armorCategory: 'leather' },
-  { id: 'gloves_7', group: 'gloves', tier: 7, name: 'Укреплённые рукавицы', def: 7, cost: 29, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_7.svg', icon: '🛡', weight: 7, armorCategory: 'light_metal' },
-  { id: 'gloves_8', group: 'gloves', tier: 8, name: 'Железные рукавицы', def: 8, cost: 37, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_8.svg', icon: '🛡', weight: 8, armorCategory: 'heavy' },
-  { id: 'gloves_9', group: 'gloves', tier: 9, name: 'Рыцарские рукавицы', def: 9, cost: 46, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_9.svg', icon: '🛡', weight: 9, armorCategory: 'heavy' },
-  { id: 'gloves_10', group: 'gloves', tier: 10, name: 'Золотые рукавицы', def: 10, cost: 56, set: 'warrior', slot: 'hands', dir: 'def', shops: ['armory', 'armor'], sprite: I + 'gloves_10.svg', icon: '🛡', weight: 10, armorCategory: 'heavy' }
-];
+// 40 предметов четырёх независимых слотов из пересозданной базы (без старых PNG).
+export const TIERED_EQUIPMENT = tieredEquipmentDefs();
 
 // Ассортимент и наценки. У каждой лавки товары свои.
 export const SHOP_STOCK = {

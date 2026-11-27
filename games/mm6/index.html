@@ -172,6 +172,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   background:rgba(255,255,255,.035);color:#9fb0d8;cursor:pointer;font-size:9px;line-height:1.2;text-align:left}
 .invSlotChip.withIcon{padding-right:24px}
 .invSlotChip img{position:absolute;right:4px;top:5px;width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
+.invSlotChip .itemStack{position:absolute;right:4px;top:5px;width:16px;height:16px;flex:none}
+.invSlotChip .itemStack img{position:absolute;inset:0;width:16px;height:16px;max-width:16px;max-height:16px}
 .invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
 .invSlotChip.busy{border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.08);color:#bbf7d0}
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
@@ -193,18 +195,24 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .bigMapInfo{margin-top:7px;padding:6px 8px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
   background:rgba(255,255,255,.035);color:#c8d2f0;font-size:11px;line-height:1.4;min-height:30px}
 .bigMapInfo b{color:#ffe9b0}
-.invGrid{display:grid;grid-template-columns:repeat(auto-fill,48px);grid-auto-rows:48px;gap:6px;justify-content:start;align-content:start;
-  max-height:min(58vh,520px);overflow:auto;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
-  background:rgba(0,0,0,.2);min-height:160px}
-.invCell{position:relative;flex:0 0 48px;width:48px;height:48px;padding:3px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:8px;
+/* Фиксированная сетка 9×16 (жёсткий максимум 144 клеток, без скролла). */
+.invGrid{display:grid;grid-template-columns:repeat(9,minmax(0,40px));grid-template-rows:repeat(16,34px);gap:2px;justify-content:start;align-content:start;
+  overflow:hidden;padding:5px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  background:rgba(0,0,0,.2);min-height:0}
+.invCell{position:relative;width:100%;height:100%;padding:2px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:6px;
   background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.38));display:flex;align-items:center;justify-content:center;overflow:hidden;
   cursor:pointer;color:#c8d2f0}
+.invCell.empty{cursor:default;opacity:.35;background:rgba(0,0,0,.18)}
+.invCell.emptyNote{opacity:.7;color:#9fb0d8;font-size:8px;line-height:1.1;text-align:center;padding:2px;overflow:hidden}
+.itemStack{position:relative;display:block;width:28px;height:28px;flex:0 0 28px}
+.itemStack img{position:absolute;inset:0;width:100%;height:100%;margin:0}
 .invCell:hover,.invCell:focus-visible{border-color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.3);outline:none}
 .invCell.craftable{border-color:rgba(125,255,178,.45)}
 .invCell.blocked{border-color:rgba(248,113,113,.35)}
-.invCell img{display:block;flex:0 1 auto;width:36px;height:36px;max-width:36px;max-height:36px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
-.invCell .ph{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;
-  background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:18px;font-weight:800}
+.invCell img{display:block;flex:0 1 auto;width:28px;height:28px;max-width:28px;max-height:28px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.itemStack img{width:28px;height:28px;max-width:28px;max-height:28px}
+.invCell .ph{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;
+  background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:15px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
 .invCell .spellRune{display:flex;align-items:center;justify-content:center;width:36px;height:36px;color:#e9d5ff;font-size:22px;font-weight:800}
 .invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:42px;max-height:42px;overflow-y:auto;overflow-wrap:anywhere}
@@ -254,7 +262,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* В бою тост поднимается над плашками героев, чтобы не закрывать данные отряда. */
 #toast.in-battle{bottom:calc(var(--toast-bottom,110px) + env(safe-area-inset-bottom,0px))}
-@media (max-width:620px){.invBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(200px,68vw)}.invGrid{grid-template-columns:repeat(auto-fill,48px);max-height:none}.box{padding:12px}}
+@media (max-width:620px){.invBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(200px,68vw)}.invGrid{grid-template-columns:repeat(9,minmax(0,1fr))}.box{padding:12px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
   #start .box{width:min(680px,92vw)}
@@ -442,7 +450,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES, INVENTORY_GRID, MAGIC_GRADES, SCHOOLS, SCHOOL_MECHANICS, elementLayerPaths, elementLayers,
+  itemById, ITEM_ID_SET, itemInstance, catalogItems, rollCatalogItem, itemReport, CONTAINER_CLASSES } from './data.js';
 import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, guildRankNumber, carryingRank, heroCarryingIds, CARRY_ORDER, GUILD_POINT_THRESHOLDS, GUILD_DISCOUNT_STEP, guildPointsNeeded, guildRankCost, SPELL_TIER_RANK, spellTierRank, CONTAINER_TIERS, CONTAINER_TIER_IDS, containerTier, SHOP_QUESTS, questDef, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, defaultQuestState, defaultJournal, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
@@ -664,11 +673,23 @@ function qualityOf(css,name){
   if(name.includes('★')) return 3; if(name.includes('++')) return 2;
   if(name.includes('+')) return 1; return 0;
 }
+/* Каталог предметов даёт стартовому и лавочному оружию базовый SVG и школы.
+   Имена и урон остаются каноническими D28, чтобы не ломать сохранения. */
+function catalogWeaponFor(name,kind,quality){
+  const tier=({0:1,1:2,2:4,3:7})[quality]||1;
+  const pool=catalogItems('weapon',tier).filter(w=>w.wkind===kind);
+  const def=pool[0]||catalogItems('weapon').find(w=>w.wkind===kind)||null;
+  return def?{id:def.id,sprite:def.sprite,tier:def.tier,schools:def.schools.slice(),grade:def.grade}:{};
+}
 const HEROES = D28_DATA.heroes.map((h,i)=>({
   name:h.name, key:h.key, set:h.set, emoji:h.emoji||'⚔️', sprite:h.sprite, hp:h.maxHp, mp:h.maxMp,
   desc:h.desc||HERO_DESC[i]||'Герой из Подземелья 28.',
   pros:h.pros||[], cons:h.cons||[], line:h.line||'',
-  weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>({name:w.name,dmg:w.dmg,cost:w.cost,kind:weaponKind(w.name),quality:qualityOf(w.css,w.name),weight:weaponWeight({name:w.name})}))
+  weapons:(D28_DATA.weapons[h.set]||D28_DATA.weapons.warrior).map(w=>{
+    const kind=weaponKind(w.name), quality=qualityOf(w.css,w.name);
+    return Object.assign({name:w.name,dmg:w.dmg,cost:w.cost,kind,quality,weight:weaponWeight({name:w.name})},
+      catalogWeaponFor(w.name,kind,quality));
+  })
 }));
 function moveEveryFor(m){
   if(m.id==='spider') return 5;
@@ -1140,9 +1161,22 @@ function iconHtml(icon){
   if(kind&&ITEM_SPRITES[kind]) return '<img class="ic" src="'+ITEM_SPRITES[kind]+'" alt="">';
   return '<span class="ic">'+icon+'</span>';
 }
-/* Предметы комплекта хранят SVG в поле sprite; старые предметы продолжают использовать emoji. */
+/* Предмет — базовый SVG, школы — отдельные слои из assets/items/elements/.
+   Старые предметы без sprite продолжают использовать emoji. */
+function itemSpritePaths(it){
+  if(!it) return [];
+  const def=itemById(it.id)||null;
+  const base=it.sprite||(def&&def.sprite)||itemSpritePath(it);
+  if(!base) return [];
+  return [base].concat(elementLayers(def||it).map(l=>l.src));
+}
+function spriteStackHtml(paths){
+  return paths.length===1?'<img class="ic" src="'+paths[0]+'" alt="">'
+    :'<span class="ic itemStack">'+paths.map(src=>'<img src="'+src+'" alt="">').join('')+'</span>';
+}
 function itemIconHtml(it){
-  return it&&it.sprite?'<img class="ic" src="'+it.sprite+'" alt="">':iconHtml(it&&it.icon);
+  const paths=itemSpritePaths(it);
+  return paths.length?spriteStackHtml(paths):iconHtml(it&&it.icon);
 }
 function slotIconHtml(slot){
   return slot&&slot.sprite?'<img class="ic" src="'+slot.sprite+'" alt="">':iconHtml(slot&&slot.icon);
@@ -1397,7 +1431,8 @@ function makeHeroState(def,slot){
   /* Кулаки — только подпись пустого слота: предмета в сумке нет, цены и торговли нет. */
   const weapon=isFists(w)?null:makeItem({type:'weapon',owner:slot,name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:w.cost,
     sell:Math.max(1,Math.floor(w.cost*.6)),quality:w.quality===undefined?1:w.quality,weight:w.weight,
-    wkind:w.kind||weaponKind(w.name),set:def.set||'any',reforges:0,enchant:null,icon:'⚔'});
+    wkind:w.kind||weaponKind(w.name),set:def.set||'any',reforges:0,enchant:null,icon:'⚔',
+    id:w.id||null,sprite:w.sprite||null,tier:w.tier||null,schools:(w.schools||[]).slice(),grade:w.grade||null});
   const armor=makeItem({type:'armor',owner:slot,name:RAGS,def:0,cost:0,sell:0,armorDef:0,slot:'body',dir:'def',icon:'🛡',
     weight:1,armorCategory:'cloth',unsellable:true,unequippable:true,starting:true});
   if(weapon) game.bag.push(weapon);
@@ -1539,6 +1574,13 @@ function loadWorldState(){
   if(!data||!data.world||!Array.isArray(data.world.maps)||!data.world.maps.length) return false;
   /* v3: новые поля прогрессии, заданий и журнала получают дефолты даже в старых сейвах. */
   const migrated=migrateSave(data);
+  /* Неизвестные id из каталога предметов молча не загружаются. Остальные id
+     (травы, материалы, рецепты, ad-hoc предметы харнесов) сохраняются как есть. */
+  if(Array.isArray(migrated.bag)) migrated.bag=migrated.bag.filter(it=>{
+    if(!it||typeof it.id!=='string'||!/^[a-z0-9_]+$/.test(it.id)) return true;
+    if(!['weapon','armor','container'].includes(it.type)) return true;
+    return ITEM_ID_SET.has(it.id);
+  });
   const shell=freshGameShell(migrated.difficulty||selDiff);
   Object.assign(shell,migrated);
   game=shell;
@@ -2389,6 +2431,12 @@ function addItem(o){
   game.bag.push(it);
   return it;
 }
+/* Лут из локального каталога: тип, урон и шанс выпадения уже хранятся в записи.
+   Сеть не используется; старые ad-hoc находки остаются на месте. */
+function catalogTreasure(type,tier){
+  const def=rollCatalogItem(type,tier);
+  return def?itemInstance(def.id):null;
+}
 function collectTreasure(c){
   const t=c.item, d=game.world.difficulty;
   const gm=DIFFICULTY.find(x=>x.id===d)||DIFFICULTY[1];
@@ -2397,12 +2445,14 @@ function collectTreasure(c){
   else if(t.kind==='crystal'){ addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6}); game.msg='Находка: 💎 кристалл.'; }
   else if(t.kind==='scroll'){ const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)}); game.msg='Находка: 📜 '+s.name+'.'; }
   else if(t.kind==='weapon'){
-    const it=addItem({type:'weapon',name:t.name,dmg:t.level+1,baseDmg:t.level+1,cost:t.level*2,sell:t.level,
+    const inst=catalogTreasure('weapon',Math.max(1,t.level||1));
+    const it=addItem(inst||{type:'weapon',name:t.name,dmg:t.level+1,baseDmg:t.level+1,cost:t.level*2,sell:t.level,
       quality:Math.min(3,t.level),wkind:weaponKind(t.name),set:'any',reforges:0,enchant:null,icon:'⚔'});
     game.msg='Находка: ⚔ '+it.name+'.';
   }else if(t.kind==='armor'){
-    const a=ARMORS[Math.min(ARMORS.length-1,t.level+1)];
-    addItem({type:'armor',name:a.name,armorDef:a.def,cost:a.cost,sell:Math.max(1,Math.floor(a.cost*.5)),
+    const inst=catalogTreasure('armor',Math.max(1,t.level||1));
+    const a=inst||ARMORS[Math.min(ARMORS.length-1,t.level+1)];
+    addItem(inst||{type:'armor',name:a.name,armorDef:a.def,cost:a.cost,sell:Math.max(1,Math.floor(a.cost*.5)),
       slot:a.slot||'body',dir:a.dir||'def',set:a.set||'any',icon:'🛡'});
     game.msg='Находка: 🛡 '+a.name+'.';
   }else if(t.kind==='material'){
@@ -3177,7 +3227,11 @@ const LOOT_ITEM_DEFS={
   enchanted_bag:{type:'container',containerKind:'bag',tier:'enchanted',name:'Зачарованная сумка',icon:'🎒',
     desc:'Сумка тира «Зачарованный»',capacity:22,weight:0.2,cost:90,sell:45,magic:{slots:6}}
 };
-function lootItemSpec(id){ return Object.assign({id},LOOT_ITEM_DEFS[id]||{type:'misc',name:String(id),icon:'•',cost:1,sell:1}); }
+function lootItemSpec(id){
+  const catalog=itemById(id);
+  if(catalog) return Object.assign({id},itemInstance(id));
+  return Object.assign({id},LOOT_ITEM_DEFS[id]||{type:'misc',name:String(id),icon:'•',cost:1,sell:1});
+}
 const GRENADE_ICONS={smoke:'💨',frost:'❄',acid:'🧪',lava:'🌋',dark:'🌑',holy:'✝'};
 const GRENADE_ITEMS=Object.values(GRENADES).map(g=>({
   id:'grenade_'+g.id,type:'grenade',element:g.id,name:g.name+' граната',icon:GRENADE_ICONS[g.id]||'💣',
@@ -3471,26 +3525,31 @@ function priceMult(def,base){
 }
 function addShopWeapon(def,w,h){
   const price=priceMult(def,w);
-  const preview={type:'weapon',name:w.name,wkind:w.kind||weaponKind(w.name),quality:w.quality,set:w.set||'any',weight:w.weight};
-  shopRow(weaponIcon(w.kind),w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name+' · '+(w.set||'любой')+' набор'+
+  const preview={type:'weapon',name:w.name,wkind:w.kind||weaponKind(w.name),quality:w.quality,set:w.set||'any',weight:w.weight,
+    id:w.id,sprite:w.sprite,tier:w.tier,schools:w.schools,grade:w.grade};
+  shopRow(itemIconHtml(preview),w.name,'Урон '+w.dmg+' · '+QUALITY[w.quality].name+' · '+(w.set||'любой')+' набор'+
     weightForecast(h,preview)+(game.gold<price?' · ⚠ не хватает золота':''),
     [shopButton('🪙 '+price,()=>buy(price,()=>{
       const it=addItem({type:'weapon',owner:h.slot,name:w.name,dmg:w.dmg,baseDmg:w.dmg,cost:price,
         sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),quality:w.quality,wkind:w.kind||weaponKind(w.name),set:w.set||'any',
-        weight:w.weight,reforges:0,enchant:null,icon:'⚔'});
+        weight:w.weight,reforges:0,enchant:null,icon:'⚔',id:w.id||null,sprite:w.sprite||null,tier:w.tier||null,
+        schools:(w.schools||[]).slice(),grade:w.grade||null});
       equipOnHero(h,'weapon',it); toast('Куплено и надето на '+heroName(h)+': '+w.name);
     }),game.gold<price)],'ПОКУПКА');
 }
 function addShopArmor(def,a,h){
   const price=priceMult(def,a);
   const slot=a.slot||'body';
-  const preview={type:'armor',name:a.name,armorDef:a.def,slot,set:a.set,weight:a.weight,armorCategory:a.armorCategory};
-  shopRow(itemIconHtml(a),a.name,'Защита +'+a.def+(a.tier?' · тир '+a.tier:'')+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+
+  const preview={type:'armor',name:a.name,armorDef:a.def,slot,set:a.set,weight:a.weight,armorCategory:a.armorCategory,
+    id:a.id,sprite:a.sprite,tier:a.tier,schools:a.schools,grade:a.grade};
+  shopRow(itemIconHtml(preview),a.name,'Защита +'+a.def+(a.tier?' · тир '+a.tier:'')+' · слот: '+((ARMOR_SLOTS.find(s=>s.id===slot)||{}).name||'тело')+
     ' · '+(a.set==='any'?'любой набор':a.set)+weightForecast(h,preview)+(game.gold<price?' · ⚠ не хватает золота':''),
     [shopButton('🪙 '+price,()=>buy(price,()=>{
       const it=addItem({type:'armor',owner:h.slot,name:a.name,armorDef:a.def,baseArmor:a.def,cost:price,
         sell:Math.max(1,Math.floor(price*((SHOP_STOCK[def.id]||{}).sell||.6))),slot,dir:a.dir||'def',set:a.set||'any',
-        weight:a.weight,armorCategory:a.armorCategory,quality:1,upgrades:0,icon:a.icon||'🛡',sprite:a.sprite||null,tier:a.tier||null,id:a.id||null,group:a.group||null});
+        weight:a.weight,armorCategory:a.armorCategory,quality:a.quality===undefined?1:a.quality,upgrades:0,
+        icon:a.icon||'🛡',sprite:a.sprite||null,tier:a.tier||null,id:a.id||null,group:a.group||null,
+        schools:(a.schools||[]).slice(),grade:a.grade||null});
       equipOnHero(h,slot,it); toast('Надето на '+heroName(h)+': '+a.name);
     }),game.gold<price)],'ПОКУПКА');
 }
@@ -3895,16 +3954,17 @@ function renderShop(){
       addItem({id:mat.id,type:'material',name:mat.name,icon:mat.icon,desc:mat.desc,cost:mat.cost,sell:mat.sell});
     }),game.gold<mat.cost)],'ПОКУПКА'));
     if(stock.containers){
-      shopSec('Ёмкости · ржавые и кожаные');
-      CONTAINER_DEFS.forEach(c=>{
-        CONTAINER_TIERS.filter(t=>t.id==='rusty'||t.id==='leather').forEach(t=>{
-          const price=(t.id==='rusty'?8:22)+c.cost, capacity=c.capacity+t.slots;
-          shopRow('🎒',t.name+' '+c.name.toLowerCase(),'Слотов: '+capacity+' · вес '+t.weight+
-            ' · заменяется в инвентаре'+(containerAvailable(c.id)?'':' · нужна носка'),[
+      shopSec('Ёмкости каталога · класс 1 и 2');
+      ['chest','bag','purse','belt'].forEach(kind=>{
+        const c=CONTAINER_DEFS.find(d=>d.id===kind)||{cost:0};
+        CONTAINER_CLASSES.filter(cls=>cls.id==='plain'||cls.id==='fine').forEach(cls=>{
+          const def=itemById(kind+'_'+cls.id); if(!def) return;
+          const price=(cls.id==='plain'?8:22)+c.cost;
+          shopRow(itemIconHtml(def),def.name,'Слотов: '+def.capacity+' · вес '+def.weight+' · '+def.purpose+
+            ' · класс '+cls.number+(containerAvailable(kind)?'':' · нужна носка'),[
             shopButton('🪙 '+price,()=>buy(price,()=>{
-              addItem({type:'container',containerKind:c.id,tier:t.id,name:t.name+' '+c.name.toLowerCase(),icon:'🎒',
-                desc:'Сменная ёмкость',capacity,weight:t.weight,cost:price,sell:Math.floor(price*.5),magic:{}});
-              toast('Куплено: '+t.name+' '+c.name.toLowerCase()+'. Замените ёмкость в инвентаре.');
+              addItem(itemInstance(def.id,{cost:price,sell:Math.floor(price*.5)}));
+              toast('Куплено: '+def.name+'. Замените ёмкость в инвентаре.');
             }),game.gold<price)
           ],'ЁМКОСТЬ');
         });
@@ -4358,6 +4418,7 @@ function spriteVariant(it,total){
 }
 function weaponSprite(it){
   if(!it) return null;
+  if(it.sprite) return it.sprite;
   const n=(it.name||'').toLowerCase();
   if(isRingItem(it)||n.includes('амулет')||/стрел|колчан|болт/.test(n)) return null;
   const kind=it.wkind||weaponKind(it.name||'');
@@ -4385,6 +4446,7 @@ function armorSprite(it){
 }
 function itemSpritePath(it){
   if(!it) return null;
+  if(it.sprite) return it.sprite;
   if(it.type==='weapon') return weaponSprite(it);
   if(it.type==='armor') return armorSprite(it);
   if(it.type==='herb') return ITEM_SPRITE_BASE+'herb_'+spriteVariant(it,20)+'.svg';
@@ -4487,6 +4549,10 @@ function upgradeContainer(id){
   if(!def||!st) return false;
   if(!containerAvailable(id)){ toast(def.name+' пока недоступна: нужна носка.'); return false; }
   if(st.upgrade>=3){ toast('Достигнут лимит улучшений контейнера.'); return false; }
+  const nextClass=CONTAINER_CLASSES[st.upgrade+1];
+  if(nextClass&&!party().some(h=>guildAtLeast((h.promotion&&h.promotion.guild)||'novice',nextClass.rank))){
+    toast('Для класса «'+nextClass.name+'» нужна носка: '+nextClass.rank+'.'); return false;
+  }
   const cost=def.cost*(st.upgrade+1);
   if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
   game.gold-=cost; st.upgrade++; st.capacity+=def.step;
@@ -4500,10 +4566,19 @@ function upgradeContainer(id){
 function installContainerItem(uid){
   const it=game&&game.bag.find(i=>i.uid===uid);
   if(!it||it.type!=='container'||!containerDef(it.containerKind)) return false;
+  const catalog=itemById(it.id), def=catalog&&catalog.type==='container'?catalog:null;
+  if(def){
+    if(def.mastery&&!party().some(h=>guildAtLeast((h.promotion&&h.promotion.guild)||'novice',def.mastery))){
+      toast('Ёмкость требует носки: '+def.mastery+'.'); return false;
+    }
+    it.containerKind=def.containerKind; it.accept=def.accept.slice(); it.worn=def.worn;
+    it.mastery=def.mastery; it.classNumber=def.classNumber;
+  }
   const id=it.containerKind, st=containerState(id);
   if(!st||!containerAvailable(id)) return false;
   st.capacity=Math.max(st.capacity,Number(it.capacity)||st.capacity);
-  st.weight=Number(it.weight)||containerTier(it.tier||'rusty').weight;
+  /* каталожный вес остаётся на предмете; у ad-hoc ёмкостей сохраняем старый учёт. */
+  if(!def) st.weight=Number(it.weight)||containerTier(it.tier||'rusty').weight;
   st.tier=CONTAINER_TIER_IDS.includes(it.tier)?it.tier:st.tier||'rusty';
   st.magic=it.magic&&typeof it.magic==='object'?Object.assign({},it.magic):(st.magic||{});
   st.level=Number(it.level)||1;
@@ -4536,7 +4611,8 @@ function itemCell(it,h){
   }else if(it.type==='herb'||it.type==='potion'||it.type==='liquid'||it.type==='scroll'||it.type==='food'||it.type==='chest'){
     action=()=>{ useItem(it.uid); renderInventory(); };
   }
-  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),count:it.count||1,action,
+  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),spritePaths:itemSpritePaths(it),
+    count:it.count||1,action,
     blocked:!!block&&(it.type==='weapon'||it.type==='armor'),
     moveFrom:invContainer?it.uid:null,moveTo:invContainer?nextContainerFor(it,invContainer):null};
 }
@@ -4575,13 +4651,17 @@ function makeInvCell(cell){
   b.type='button';
   b.className='invCell'+(cell.craftable?' craftable':'')+(cell.blocked?' blocked':'');
   b.title=cell.name+(cell.desc?' — '+cell.desc:'');
-  if(cell.sprite){
-    const img=document.createElement('img');
-    img.alt='';
-    img.loading='lazy';
-    img.addEventListener('error',()=>{ img.remove(); b.insertBefore(placeholderEl(cell.name),b.firstChild); });
-    img.src=cell.sprite;
-    b.appendChild(img);
+  const paths=cell.spritePaths||(cell.sprite?[cell.sprite]:[]);
+  if(paths.length){
+    const wrap=document.createElement('span');
+    wrap.className='itemStack';
+    paths.forEach(src=>{
+      const img=document.createElement('img');
+      img.alt=''; img.loading='lazy';
+      img.addEventListener('error',()=>{ wrap.remove(); b.insertBefore(placeholderEl(cell.name),b.firstChild); });
+      img.src=src; wrap.appendChild(img);
+    });
+    b.appendChild(wrap);
   }else if(cell.symbol){
     const sp=document.createElement('span');
     sp.className='spellRune';
@@ -4726,10 +4806,16 @@ function renderInventory(){
     chip.className='invSlotChip'+(busy?' busy':(it?' filled':''))+(invSlot===s.id?' sel':'');
     chip.dataset.slot=s.id;
     chip.title=s.label+': '+(busy?'занято древком '+it.name:(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint));
-    if(s.id==='weapon'&&it&&itemSpritePath(it)){
+    const paths=s.id==='weapon'&&it?itemSpritePaths(it):[];
+    if(paths.length){
       chip.classList.add('withIcon');
-      const img=document.createElement('img'); img.src=itemSpritePath(it); img.alt='';
-      chip.appendChild(img);
+      if(paths.length===1){
+        const img=document.createElement('img'); img.src=paths[0]; img.alt=''; chip.appendChild(img);
+      }else{
+        const stack=document.createElement('span'); stack.className='itemStack';
+        paths.forEach(src=>{ const img=document.createElement('img'); img.src=src; img.alt=''; stack.appendChild(img); });
+        chip.appendChild(stack);
+      }
     }
     const name=document.createElement('b');
     name.textContent=s.label+(it?' · '+it.name:'');
@@ -4825,12 +4911,20 @@ function renderInventory(){
       }
     }
   }
-  if(cells.length){
-    cells.forEach(c=>grid.appendChild(makeInvCell(c)));
-  }else{
-    const note=document.createElement('div'); note.className='invNote';
-    note.textContent=invTab==='Сундуки'?'Сундуков нет — ищите их на карте.':'Пусто. Находите предметы на карте и в лавках.';
-    grid.appendChild(note);
+  const visible=cells.slice(0,INVENTORY_GRID.cells);
+  visible.forEach(c=>grid.appendChild(makeInvCell(c)));
+  for(let i=visible.length;i<INVENTORY_GRID.cells;i++){
+    const empty=document.createElement('div'); empty.className='invCell empty'; empty.title='Пустая клетка';
+    if(!cells.length&&i===0){
+      empty.classList.add('emptyNote');
+      empty.textContent=invTab==='Сундуки'?'Сундуков нет':'Пусто';
+    }
+    grid.appendChild(empty);
+  }
+  if(cells.length>INVENTORY_GRID.cells){
+    const over=document.createElement('div'); over.className='invNote';
+    over.textContent='Сетка 9×16 заполнена: ещё '+(cells.length-INVENTORY_GRID.cells)+' предметов не показаны.';
+    list.appendChild(over);
   }
   list.appendChild(grid);
   const detail=document.createElement('div');
@@ -6231,7 +6325,7 @@ function armorDuplicates(){
   const seen=new Map(), duplicates=[];
   // group отделяет варианты одного слота (поножи/сапоги/перчатки) с одинаковой защитой.
   [...ARMORS,...TIERED_EQUIPMENT].forEach((a,i)=>{
-    const key=(a.group||'base')+'|'+(a.slot||'body')+'|'+(a.dir||'def')+'|'+(a.def||0);
+    const key=(a.group||'base')+'|'+(a.slot||'body')+'|'+(a.dir||'def')+'|'+(a.def||0)+'|'+(a.tier||'')+'|'+(a.id||a.name);
     if(seen.has(key)) duplicates.push({key,first:seen.get(key),second:i,names:[(ARMORS[seen.get(key)]||TIERED_EQUIPMENT[seen.get(key)-ARMORS.length]).name,a.name]});
     else seen.set(key,i);
   });
@@ -6780,6 +6874,20 @@ window.__mm6Debug={
       dom,chipBusy:!!(chip&&chip.className.includes('busy')),slots:MANNEQUIN_SLOTS.map(s=>s.id)};
   },
   containerReport:()=>containerReport(),
+  itemsReport:()=>itemReport(),
+  rollCatalogItem:(type,tier,rng)=>rollCatalogItem(type,tier,rng),
+  inventoryGridReport:()=>{
+    const el=document.querySelector('.invGrid'), cs=el?getComputedStyle(el):null;
+    return {expected:INVENTORY_GRID,cells:el?el.children.length:0,
+      items:el?el.querySelectorAll('.invCell:not(.empty)').length:0,
+      overflow:cs?cs.overflowY:null,columns:cs?cs.gridTemplateColumns.split(' ').length:0,
+      rows:cs?cs.gridTemplateRows.split(' ').length:0,
+      scroll:el?{height:el.clientHeight,content:el.scrollHeight}:null};
+  },
+  renderedItemLayers:(uid)=>{
+    const it=game&&game.bag.find(i=>i.uid===uid);
+    return it?itemSpritePaths(it):[];
+  },
   setGuildRank:(i,rank)=>{ const h=party()[i]; return h?setGuildRank(h,rank):false; },
   setGuildPoints:(i,n)=>{ const h=party()[i]; if(!h) return false;
     h.guildPoints=Math.max(0,Math.floor(Number(n)||0)); return h.guildPoints; },
@@ -6804,6 +6912,10 @@ window.__mm6Debug={
   minimapCellAt:(px,py)=>minimapCellAt(px,py),
   bigMapCellAt:(x,y)=>bigMapCellAt(x,y),
   addItemBySpec:(o)=>{ const it=addItem(o); renderInventory(); updateParty(); return it?it.uid:null; },
+  addCatalogItem:(id,extra)=>{
+    const inst=itemInstance(id,extra); if(!inst) return null;
+    const it=addItem(inst); renderInventory(); updateParty(); return it?it.uid:null;
+  },
   moveToContainer:(uid,id)=>moveContainerItem(uid,id),
   upgradeContainer:(id)=>upgradeContainer(id),
   replaceBelt:(uid)=>replaceBelt(uid),
