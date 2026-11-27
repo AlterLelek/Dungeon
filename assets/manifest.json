@@ -6629,6 +6629,114 @@
     }
   },
   {
+    "file": "mage_0.svg",
+    "path": "assets/sprites/portraits/mage_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mage_1.svg",
+    "path": "assets/sprites/portraits/mage_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mage_2.svg",
+    "path": "assets/sprites/portraits/mage_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "mage_3.svg",
+    "path": "assets/sprites/portraits/mage_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_0.svg",
+    "path": "assets/sprites/portraits/paladin_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_1.svg",
+    "path": "assets/sprites/portraits/paladin_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_2.svg",
+    "path": "assets/sprites/portraits/paladin_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "paladin_3.svg",
+    "path": "assets/sprites/portraits/paladin_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "warrior_0.svg",
+    "path": "assets/sprites/portraits/warrior_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "warrior_1.svg",
+    "path": "assets/sprites/portraits/warrior_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "warrior_2.svg",
+    "path": "assets/sprites/portraits/warrior_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "warrior_3.svg",
+    "path": "assets/sprites/portraits/warrior_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "coin.png",
     "path": "assets/sprites/ui/coin.png",
     "type": "ui",

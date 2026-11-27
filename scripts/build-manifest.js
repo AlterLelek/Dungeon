@@ -95,6 +95,7 @@ function detectType(relAsset, file) {
   const base = name.replace(/\.[^.]+$/, '');
 
   if (rel.startsWith('sprites/heroes/') || rel.startsWith('heroes/')) return 'character';
+  if (rel.startsWith('sprites/portraits/')) return 'portrait';
   if (rel.startsWith('sprites/monsters/') || rel.startsWith('monsters/')) return 'enemy';
   if (rel.startsWith('wildlife/') || rel.startsWith('sprites/wildlife/')) return 'wildlife';
   if (rel.startsWith('sprites/ui/') || rel.startsWith('ui/')) return 'ui';

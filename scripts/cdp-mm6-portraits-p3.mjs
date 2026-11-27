@@ -39,6 +39,12 @@ await runCdp('PORTRAITS PART 3', async api => {
       return new Set(marks).size === 4;
     }), JSON.stringify(assets.map(a => [a.url, a.markup.length])));
 
+  const manifest = await api.ev(`fetch('assets/manifest.json').then(r=>r.json())`);
+  const entries = manifest.filter(e => e.type === 'portrait');
+  api.check('12 портретов зарегистрированы в манифесте с типом portrait',
+    entries.length === 12 && assets.every(a => entries.some(e => e.path === a.url)),
+    JSON.stringify(entries.map(e => e.path)));
+
   await api.ev(`location.href='${api.base}/games/mm6/index.html'`);
   await api.waitFor(`!!window.__mm6Debug`, 8000);
   await api.ev(`document.getElementById('heroName').value='Тереза'; window.__mm6Debug.startGame()`);
