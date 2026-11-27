@@ -124,6 +124,20 @@ const files = {
     ${highlight(26, 21, 3, 5, '#c3d0d9', -20)}
   `),
 
+  'armor/bracers.svg': svg(`
+    <path d="M18 13 H46 L43 48 Q32 54 21 48 Z" fill="#7a4b2a"/>
+    <path d="M18 20 H46 M19 29 H45 M20 38 H44" fill="none" stroke="#b98a52" stroke-width="2.4"/>
+    <path d="M24 17 V46" stroke="#d1a165" stroke-width="2"/>
+    ${highlight(39, 25, 2, 5, '#d1a165', 12)}
+  `),
+
+  'armor/gloves.svg': svg(`
+    <path d="M20 13 Q32 8 44 13 L46 40 Q43 51 32 54 Q21 51 18 40 Z" fill="#7a4b2a"/>
+    <path d="M22 13 V30 M28 11 V31 M36 11 V31 M42 13 V30" fill="none" stroke="#b98a52" stroke-width="2.2"/>
+    <path d="M19 38 Q32 45 45 38" fill="none" stroke="#d1a165" stroke-width="2.4"/>
+    ${highlight(26, 43, 3, 2, '#d1a165')}
+  `),
+
   // ── Head ────────────────────────────────────────────────────────────
   'head/helmet.svg': svg(`
     <path d="M14 34 Q14 9 32 9 Q50 9 50 34 L45 45 H19 Z" fill="#9fabb6"/>
