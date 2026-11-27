@@ -46,6 +46,7 @@ button,input,select{font-family:inherit}
 .pcard[data-hero="2"].active{border-color:var(--hero-3);box-shadow:0 0 8px rgba(252,165,165,.35)}
 .pcard[data-hero="3"].active{border-color:var(--hero-4);box-shadow:0 0 8px rgba(253,230,138,.35)}
 .pcard[data-hero="4"].active{border-color:var(--hero-5);box-shadow:0 0 8px rgba(196,181,253,.35)}
+.pcard.dead{opacity:.45;filter:grayscale(.8)}
 /* Вертикальная очередь ходов: верхняя строка — текущий герой, ниже — следующие. */
 #turnQueue{position:absolute;left:8px;top:88px;z-index:5;width:104px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
 .tq-row{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:5px;background:rgba(6,8,18,.86);
@@ -58,6 +59,8 @@ button,input,select{font-family:inherit}
 .tq-row.active .tq-rank{color:var(--tq-color,var(--hero-1))}
 .tq-row[data-side="enemy"]{border-color:rgba(252,165,165,.32);color:#fca5a5}
 .tq-row[data-side="enemy"].active{border-color:#fca5a5;color:#fecaca;box-shadow:0 0 9px rgba(252,165,165,.25)}
+.tq-row[data-dead="1"]{opacity:.32;filter:grayscale(1)}
+.tq-row[data-dead="1"] .tq-name{text-decoration:line-through;text-decoration-color:#fca5a5}
 @keyframes tq-rise{from{transform:translateY(18px);opacity:.25}to{transform:translateY(0);opacity:1}}
 /* Стилистические эффекты боя: короткая вспышка по краю и тряска кадра. */
 #fxEdge{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
@@ -550,6 +553,8 @@ const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weathe
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
   msgW:500,enemyPanelW:236,enemyPanelH:64,badgeW:100};
+// Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
+const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
 const HERO_COLORS=['#7dffb2','#93c5fd','#fca5a5','#fde68a','#c4b5fd'];
 // Информационные панели карты не заходят на фигуру героя (левый край спрайта с оружием).
@@ -2894,7 +2899,7 @@ function updateParty(){
   $('party').innerHTML=game.party.map((h,i)=>{
     const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
     const statusLine=heroStatusLine(h);
-    return '<div class="pcard'+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop">'+
+    return '<div class="pcard'+(h.hp<=0?' dead':'')+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop">'+
       '<img class="pface" src="'+portraitSrc(h,i)+'" alt="" onerror="this.style.display=\'none\'">'+
       '<span class="pemoji">'+h.def.emoji+'</span>'+
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
@@ -2932,15 +2937,19 @@ function battleQueueRows(b){
   if(!b||!Array.isArray(b.units)) return [];
   const heroLabels=partyClassLabels(), enemyLabels=enemyQueueLabels(b);
   const rows=b.units.filter(u=>{
-    if(u.side==='hero'){ const h=party()[u.idx]; return h&&h.hp>0; }
+    // Павшие герои остаются в очереди как зачёркнутые, но ход получают только живые.
+    if(u.side==='hero') return !!party()[u.idx];
     const e=b.enemies[u.idx]; return e&&e.alive;
-  }).map(u=>({
-    side:u.side,idx:u.idx,next:u.next||0,
-    name:u.side==='hero'?(heroLabels[u.idx]||'Герой'):(enemyLabels[u.idx]||'Враг')
-  })).sort((a,c)=>(a.next-c.next)||(a.side==='hero'?-1:1)||(a.idx-c.idx));
+  }).map(u=>{
+    const hero=u.side==='hero', h=hero?party()[u.idx]:null;
+    return {side:u.side,idx:u.idx,next:u.next||0,
+      name:hero?(heroLabels[u.idx]||'Герой'):(enemyLabels[u.idx]||'Враг'),
+      dead:!!(hero&&h&&h.hp<=0)};
+  }).sort((a,c)=>(Number(!!a.dead)-Number(!!c.dead))||(a.next-c.next)||
+    (a.side==='hero'?-1:1)||(a.idx-c.idx));
   const activeUnit=b.units[b.turnIndex];
-  const active=activeUnit&&rows.findIndex(r=>r.side===activeUnit.side&&r.idx===activeUnit.idx);
-  const at=active>=0?active:(b.turn==='hero'?rows.findIndex(r=>r.side==='hero'&&r.idx===b.heroIdx):-1);
+  const active=activeUnit&&rows.findIndex(r=>!r.dead&&r.side===activeUnit.side&&r.idx===activeUnit.idx);
+  const at=active>=0?active:(b.turn==='hero'?rows.findIndex(r=>!r.dead&&r.side==='hero'&&r.idx===b.heroIdx):-1);
   return at>0?rows.slice(at).concat(rows.slice(0,at)):rows;
 }
 const TURN_QUEUE_LIMIT=5;
@@ -2952,8 +2961,9 @@ function updateTurnQueue(){
   el.innerHTML=shown.map((u,i)=>{
     const hero=u.side==='hero', color=hero?heroColor(u.idx):'#fca5a5';
     return '<div class="tq-row'+(i===0?' active':'')+'" data-side="'+u.side+'" '+
-      (hero?'data-hero="'+u.idx+'"':'data-enemy="'+u.idx+'"')+' style="--tq-color:'+color+'">'+
-      '<span class="tq-rank">'+(i+1)+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
+      (hero?'data-hero="'+u.idx+'"':'data-enemy="'+u.idx+'"')+' data-dead="'+(u.dead?'1':'0')+'" '+
+      'style="--tq-color:'+color+'">'+
+      '<span class="tq-rank">'+(u.dead?'†':(i+1))+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
   }).join('')+(rows.length>shown.length?'<div class="tq-more">… ещё '+(rows.length-shown.length)+'</div>':'');
   el.classList.remove('hidden');
 }
@@ -3141,6 +3151,7 @@ function nextTurn(){
   while(guard++<240){
     if(checkBattleEnd()) return;
     const ready=b.units.filter(u=>{
+      // Павший герой автоматически выпадает из ready и не получает ход.
       if(u.side==='hero'){ const h=party()[u.idx]; return h&&h.hp>0; }
       const e=b.enemies[u.idx]; return e&&e.alive;
     });
@@ -3585,7 +3596,8 @@ function restParty(minutes){
   if(!game) return false;
   advanceGameTime(minutes===undefined?480:minutes);
   game.hunger=clamp((game.hunger||0)+20,0,100);
-  party().forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+  // Отдых лечит живых: павшего героя воскрешает только церковь.
+  party().forEach(h=>{ if(h.hp<=0) return; h.hp=h.maxHp; h.mp=h.maxMp; });
   boostRegen(30);
   return true;
 }
@@ -5609,13 +5621,16 @@ function useItem(uid){
   if(!game||!uid) return false;
   const it=game.bag.find(i=>i.uid===uid); if(!it) return false;
   const h=party()[game.invHero||0];
+  if(h&&h.hp<=0&&!it.healAll&&['potion','liquid','herb','food'].includes(it.type)){
+    toast('Герой без сознания — воскрешает только церковь.'); return false;
+  }
   if(it.type==='potion'){
-    if(it.healAll){ party().forEach(x=>x.hp=Math.min(x.maxHp,x.hp+it.healAll)); toast('Все герои лечатся.'); }
+    if(it.healAll){ party().forEach(x=>{ if(x.hp>0) x.hp=Math.min(x.maxHp,x.hp+it.healAll); }); toast('Все живые герои лечатся.'); }
     else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(heroName(h)+': +'+it.heal+' HP.'); }
-    if(it.mp) h.mp=Math.min(h.maxMp,h.mp+it.mp);
-    if(it.cure){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
-    if(it.def){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
-    if(it.atk){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
+    if(it.mp&&h.hp>0) h.mp=Math.min(h.maxMp,h.mp+it.mp);
+    if(it.cure&&h.hp>0){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
+    if(it.def&&h.hp>0){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
+    if(it.atk&&h.hp>0){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp=Math.max(0,e.hp-12); if(e.hp<=0) onEnemyKilled(game.battle,e); } }); toast('Мороз бьёт по врагам.'); }
   }else if(it.type==='liquid'){
@@ -6126,6 +6141,20 @@ function drawHeroFigure(x,y,s,h,now){
   }
   endSpriteBreath(breath);
 }
+function drawHeroCorpse(x,y,s,h){
+  // Повернутый и приглушённый силуэт: тот же спрайт, никаких новых PNG.
+  ctx.save();
+  ctx.translate(x,y-4*s);
+  ctx.rotate(-Math.PI/2.7);
+  ctx.globalAlpha=.42;
+  drawHeroFigure(0,0,s,h,0);
+  ctx.restore();
+  ctx.save();
+  ctx.globalAlpha=.85; ctx.fillStyle='#fca5a5';
+  setFont(Math.max(9,Math.round(11*s))); ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('†',x,y-28*s);
+  ctx.restore();
+}
 
 /* ============================ 11. КАРТА ============================ */
 const MINIMAP_VIEW=30, MINIMAP_PX=112;
@@ -6578,9 +6607,13 @@ function drawBattle(now,dt){
     setFont(9); ctx.fillStyle='#fde68a'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText('ЦЕЛЬ',p.x,p.y-87*s); ctx.restore();
   }
+  corpseDrawState.drawn=[]; corpseDrawState.at=now;
   party().forEach((h,i)=>{
-    if(h.hp<=0) return;
     const p=battleHeroPoint(b,i);
+    if(h.hp<=0){
+      if(!b.end){ drawHeroCorpse(p.x,p.y,BF.heroScale,h); corpseDrawState.drawn.push(i); }
+      return;
+    }
     drawHeroFigure(p.x+hj,p.y,BF.heroScale,h,now);
   });
   if(b.floaters&&b.floaters.length){
@@ -7006,6 +7039,8 @@ function churchReport(){
   const costs={at0:churchCost(0),at100:churchCost(100),at500:churchCost(500)};
   if(costs.at0!==10||costs.at100!==10||costs.at500!==50) errors.push('Десятина должна быть max(10, floor(gold*0.1))');
   if(!/churchTithe\(\)/.test(src)||!/h\.hp=Math\.max\(1/.test(src)) errors.push('Воскрешение не привязано к десятине');
+  if(!/if\(h\.hp<=0\) return/.test(String(restParty))) errors.push('Отдых воскрешает павшего героя');
+  if(!/x\.hp>0/.test(String(useItem))) errors.push('Лечение предметами воскрешает павшего героя');
   if(!SHOP_TYPES.some(s=>s.id==='church')) errors.push('Нет здания церкви');
   const hasChurch=!!(game&&game.world.maps.some(m=>(m.shops||[]).some(s=>s.kind==='church')));
   return {ok:!errors.length,errors,costs,hasChurch,dead:party().filter(h=>h.hp<=0).length};
@@ -7606,6 +7641,9 @@ window.__mm6Debug={
         enemy:r.dataset.enemy===undefined?null:+r.dataset.enemy,
         name:r.querySelector('.tq-name').textContent,
         active:r.classList.contains('active'),color,animation:s.animationName,
+        dead:r.dataset.dead==='1',
+        decoration:getComputedStyle(r.querySelector('.tq-name')).textDecorationLine,
+        opacity:+Number(s.opacity).toFixed(2),
         y:+r.getBoundingClientRect().y.toFixed(1)};
     });
     return {visible:!el.classList.contains('hidden'),rows,pointerEvents:getComputedStyle(el).pointerEvents,
@@ -7757,6 +7795,13 @@ window.__mm6Debug={
     const it=makeItem(Object.assign({},def)); game.bag.push(it); updateParty(); return true; },
   setHeroHp:(i,hp)=>{ const h=party()[i]; if(!h) return false;
     h.hp=Math.max(0,Math.min(h.maxHp,Math.round(Number(hp)||0))); updateParty(); return true; },
+  restParty:(minutes)=>restParty(minutes),
+  useItem:(uid)=>useItem(uid),
+  nextTurn:()=>{ nextTurn(); return window.__mm6Debug.turnQueueReport(); },
+  corpseDrawReport:()=>({...corpseDrawState,inBattle:!!(game&&game.battle),
+    ended:!!(game&&game.battle&&game.battle.end)}),
+  drawBattleNow:()=>{ if(!game||!game.battle) return null;
+    drawBattle(performance.now(),16); return window.__mm6Debug.corpseDrawReport(); },
   setPartyGold:(gold)=>{ if(!game) return false; game.gold=Math.max(0,Math.round(Number(gold)||0)); updateParty(); return true; },
   churchTithe:()=>churchTithe(),
   resurrectAtChurch:()=>resurrectAtChurch(),
