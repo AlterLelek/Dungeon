@@ -271,7 +271,11 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 #shopSticky h2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #shopRes{display:flex;gap:10px;flex:0 0 auto;font-size:11px;color:#fbbf24;white-space:nowrap}
 #shopRes b{color:#fff3c4}
-#shopTabs{position:sticky;top:0;margin-bottom:4px;background:#161a33;padding:3px 0}
+/* Горизонтальная шапка лавки: шесть вкладок в одну строку, продажа — полная вкладка. */
+#shopTabs{position:sticky;top:0;margin-bottom:4px;background:#161a33;padding:3px 0;
+  display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;scrollbar-width:thin}
+#shopTabs .tab{flex:0 0 auto;min-height:32px;padding:5px 7px;white-space:nowrap}
+#shopTabs .tab:disabled{opacity:.38;cursor:not-allowed}
 #shopArt{display:block;width:100%;height:auto;max-height:165px;border:1px solid rgba(251,191,36,.35);border-radius:9px;margin:4px 0 8px;background:#0a0d1c;image-rendering:pixelated}
 /* Ассортимент слева, разбивка по разделам справа — как два столбца инвентаря. */
 #shopBody{display:flex;gap:12px;align-items:flex-start}
@@ -3796,7 +3800,7 @@ function openShop(type,name,cell){
   const def=SHOP_TYPES.find(s=>s.id===type&&allowed.includes(s.id))||
     SHOP_TYPES.find(s=>s.id===allowed[0]);
   game.shopKinds=allowed.slice();
-  shopSaleOnly=false;
+  shopCategory=defaultShopCategory(def); shopSaleOnly=false;
   game.shopType=def.id;
   game.shopCell=target;
   game.shopName=name||buildingTitleOf(target)||def.title;
@@ -3818,8 +3822,10 @@ function toggleShop(open,type){
   return openShop(wanted,null,cell);
 }
 function shopSec(title){
-  const d=document.createElement('div'); d.className='sec'; d.textContent=title; $('shopList').appendChild(d);
-  shopCategories.push({title,rows:0});
+  const d=document.createElement('div'); d.className='sec'; d.textContent=title;
+  const category=shopCategoryFromTitle(title); d.dataset.shopCategory=category||'';
+  $('shopList').appendChild(d);
+  shopCategories.push({title,rows:0,category});
 }
 function shopButton(text,fn,disabled,cls,reason){
   const b=document.createElement('button'); b.className='act'+(cls?' '+cls:''); b.textContent=text;
@@ -4163,22 +4169,83 @@ function questReport(){
     entries:(game.journal.active||[]).concat(game.journal.done||[]).map(x=>x.id)};
   return {ok:!errors.length,errors,quests,journal,hallMap:hall&&hall.index,tagged,saveIncludesJournal:!!game.journal};
 }
-let shopCategories=[], shopSaleOnly=false;
+let shopCategories=[], shopSaleOnly=false, shopCategory=null;
+const SHOP_HEADER_TABS=[
+  {id:'weapons',label:'Оружие',icon:'⚔️'},
+  {id:'armor',label:'Броня',icon:'🛡️'},
+  {id:'magic',label:'Магия',icon:'✨'},
+  {id:'stones',label:'Камни',icon:'💎'},
+  {id:'herbs',label:'Травы',icon:'🌿'},
+  {id:'sale',label:'Продажа',icon:'💰'}
+];
+function defaultShopCategory(def){
+  if(['weapons','forge'].includes(def.id)) return 'weapons';
+  if(['armory','armor'].includes(def.id)) return 'armor';
+  if(def.id==='magic') return 'magic';
+  if(def.id==='jeweler') return 'stones';
+  if(def.id==='market') return 'herbs';
+  return null;
+}
+function shopCategoryFromTitle(title){
+  const t=String(title).toLowerCase();
+  if(/продажа/.test(t)) return 'sale';
+  if(/кристалл|жидкост/.test(t)) return 'stones';
+  if(/свитки|заклинани|гранат|гильдия магии/.test(t)) return 'magic';
+  if(/оружие|переков/.test(t)) return 'weapons';
+  if(/брон|доспех|поножи|сапоги|поручи|перчатки|зачарован/.test(t)) return 'armor';
+  if(/трав|рецепт|ягод|зелья и товары|ёмкост|еда|слух|отдых|тренер|сохранение|церковь|задания|материал/.test(t)) return 'herbs';
+  return null;
+}
+function shopCategoryAvailable(id,def,stock){
+  if(id==='sale') return !['tavern','inn','church','hall'].includes(def.id);
+  if(id==='weapons') return (stock.weapons||[]).length>0||['forge','weapons'].includes(def.id);
+  if(id==='armor') return (stock.armor||[]).length>0||['forge','armor'].includes(def.id)||
+    EQUIPMENT_GROUPS.some(g=>TIERED_EQUIPMENT.some(a=>a.group===g.id&&(a.shops||[]).includes(def.id)));
+  if(id==='magic') return def.id==='magic';
+  if(id==='stones') return def.id==='jeweler'||def.id==='magic'||!!stock.crystals;
+  if(id==='herbs') return !!stock.herbs||!!stock.food||!!stock.containers||!!stock.berries||def.id==='market';
+  return false;
+}
+function renderShopHeaderTabs(def,stock){
+  const host=$('shopTabs'); if(!host) return;
+  host.innerHTML=SHOP_HEADER_TABS.map(t=>{
+    const enabled=shopCategoryAvailable(t.id,def,stock);
+    const selected=shopCategory===t.id;
+    return '<button type="button" class="tab'+(selected?' sel':'')+'" data-shop-tab="'+t.id+'"'+
+      (t.id==='sale'?' data-sale="1"':'')+(enabled?'':' disabled')+'>'+t.icon+' '+t.label+'</button>';
+  }).join('');
+  host.querySelectorAll('button[data-shop-tab]').forEach(b=>b.onclick=()=>{
+    if(!b.disabled) setShopCategory(b.dataset.shopTab);
+  });
+}
+function setShopCategory(id){
+  shopCategory=id;
+  shopSaleOnly=id==='sale';
+  renderShop();
+}
+function applyShopCategoryFilter(){
+  const list=$('shopList'); if(!list) return;
+  let current=null;
+  [...list.children].forEach(el=>{
+    if(el.classList.contains('sec')) current=el.dataset.shopCategory||null;
+    el.style.display=(!shopCategory||current===shopCategory)?'':'none';
+  });
+}
+function finishShopRender(def,stock){
+  applyShopCategoryFilter();
+  renderShopHeaderTabs(def,stock);
+  renderShopCategoryPanel();
+  $('shopGold').textContent=game.gold;
+  $('shopCrystals').textContent=crystalCount();
+  updateParty();
+}
 function renderShopCategoryPanel(){
   const el=$('shopCategories'); if(!el) return;
-  const rows=shopCategories.filter(c=>c.rows>0);
+  const rows=shopCategories.filter(c=>c.rows>0&&(!shopCategory||c.category===shopCategory));
   el.innerHTML='<h3>Разделы лавки</h3>'+(rows.length?rows.map(c=>
     '<div class="sc-row"><span>'+esc(c.title)+'</span><b>'+c.rows+'</b></div>').join(''):
     '<div class="sc-row"><span>Товаров нет</span><b>0</b></div>')+
     '<div class="sc-row sc-total"><span>Итого</span><b>'+rows.reduce((s,c)=>s+c.rows,0)+'</b></div>';
-}
-function renderShopSaleTab(def){
-  if(['tavern','inn','church','hall'].includes(def.id)) return;
-  const tab=document.createElement('button');
-  tab.type='button'; tab.className='tab'+(shopSaleOnly?' sel':''); tab.dataset.sale='1';
-  tab.textContent='💰 Продажа';
-  tab.onclick=()=>{ shopSaleOnly=!shopSaleOnly; renderShop(); };
-  $('shopList').appendChild(tab);
 }
 function renderShopSale(def){
   shopSec('Продажа товаров');
@@ -4198,21 +4265,12 @@ function renderShop(){
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
   const stock=SHOP_STOCK[def.id]||SHOP_STOCK.market;
   const h=party()[game.invHero||0];
-  const allowed=(Array.isArray(game.shopKinds)&&game.shopKinds.length)
-    ? game.shopKinds.filter(id=>SHOP_TYPES.some(s=>s.id===id))
-    : shopKindsOf(game.shopCell);
-  const tabs=SHOP_TYPES.filter(s=>allowed.includes(s.id));
   $('shopTitle').textContent=def.id==='magic'?'Магазин Магии':def.icon+' '+(game.shopName||def.title);
-  $('shopTabs').innerHTML=tabs.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
-  $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
   $('shopList').innerHTML='';
   shopCategories=[];
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
-  if(def.id==='hall'){ renderQuestOffers(); renderShopCategoryPanel(); return; }
-  if(shopSaleOnly){
-    renderShopSale(def); renderShopSaleTab(def); renderShopCategoryPanel();
-    $('shopGold').textContent=game.gold; $('shopCrystals').textContent=crystalCount(); updateParty(); return;
-  }
+  if(def.id==='hall'){ renderQuestOffers(); finishShopRender(def,stock); return; }
+  if(shopSaleOnly){ renderShopSale(def); finishShopRender(def,stock); return; }
 
   // Оружейная и палата продают свой товар плюс 10% чужого; кузница перековывает всё.
   // Рынок остаётся общим лавком, но не продаёт предметы комплекта.
@@ -4415,11 +4473,7 @@ function renderShop(){
   }
 
   renderShopSale(def);
-  renderShopSaleTab(def);
-  renderShopCategoryPanel();
-  $('shopGold').textContent=game.gold;
-  $('shopCrystals').textContent=crystalCount();
-  updateParty();
+  finishShopRender(def,stock);
 }
 function crystalCount(){ return game?game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0):0; }
 function forgeItem(uid){
@@ -6999,11 +7053,14 @@ function shopReport(){
   if(/почин/i.test(shopText)) errors.push('В лавке осталось слово «Починка»');
   const titleText=String(($('shopTitle')?$('shopTitle').textContent:''));
   if(opened&&def.id==='magic'&&!/Магазин Магии/.test(titleText)) errors.push('Нет точного заголовка «Магазин Магии»');
-  const catPanel=$('shopCategories'), saleTab=$('shopList')?$('shopList').querySelector('[data-sale="1"]'):null;
+  const catPanel=$('shopCategories'), headerTabs=$('shopTabs');
+  const saleTab=headerTabs?headerTabs.querySelector('[data-sale="1"]'):null;
+  const bottomSale=$('shopList')?$('shopList').querySelector('[data-sale="1"]'):null;
   if(opened&&def.id!=='hall'&&(!catPanel||catPanel.querySelectorAll('.sc-row').length<2))
     errors.push('Нет разбивки ассортимента справа');
   if(opened&&!['tavern','inn','church','hall'].includes(def.id)&&(!saleTab||!/Продажа/.test(saleTab.textContent)))
-    errors.push('Нет нижней вкладки «Продажа»');
+    errors.push('Нет вкладки «Продажа» в шапке лавки');
+  if(bottomSale) errors.push('Вкладка «Продажа» осталась внизу списка товаров');
   const buttons=$('shopList')?Array.from($('shopList').querySelectorAll('button.act')):[];
   const priceButtons=buttons.filter(b=>/🪙\s*\d+/.test(b.textContent||''));
   const over=priceButtons.filter(b=>!b.disabled).map(b=>{
@@ -7039,6 +7096,8 @@ function shopReport(){
   return {
     ok:!errors.length, errors, open:opened, shop:def.id, title:def.title, displayedTitle:titleText,
     categories:shopCategories.slice(), saleTab:!!saleTab, saleOnly:shopSaleOnly,
+    category:shopCategory, tabs:headerTabs?[...headerTabs.querySelectorAll('button[data-shop-tab]')].map(b=>({
+      id:b.dataset.shopTab,label:b.textContent.trim(),selected:b.classList.contains('sel'),disabled:b.disabled})):[],
     gold:game?game.gold:0, crystals:crystalCount(),
     stockKeys:stock?Object.keys(stock):[], buyButtons:priceButtons.length,
     disabledBuyButtons:priceButtons.filter(b=>b.disabled).length,
@@ -7257,9 +7316,13 @@ window.__mm6Debug={
   forceShop:(type)=>{
     if(!game||!SHOP_TYPES.some(s=>s.id===type)) return null;
     game.shopType=type; game.shopOpen=true; game.shopKinds=[type]; game.shopCell=null;
+    shopCategory=defaultShopCategory(SHOP_TYPES.find(s=>s.id===type)); shopSaleOnly=false;
     $('shop').classList.remove('hidden'); renderShop(); return shopReport();
   },
-  toggleShopSale:()=>{ shopSaleOnly=!shopSaleOnly; renderShop(); return shopSaleOnly; },
+  toggleShopSale:()=>{
+    const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
+    setShopCategory(shopSaleOnly?defaultShopCategory(def):'sale'); return shopSaleOnly;
+  },
   openBossChest:()=>openBossChest(),
   progressionState:()=>({version:game&&game.version,clockMinutes:game&&game.clockMinutes,hunger:game&&game.hunger,
     pendingXp:game&&game.pendingXp,partyLevel:partyLevel(),

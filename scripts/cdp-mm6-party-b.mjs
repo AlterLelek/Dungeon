@@ -288,7 +288,7 @@ try {
     magic && magic.ok && magic.displayedTitle === 'Магазин Магии' &&
     magic.categories.length > 1 && magic.categories.some(c => c.rows > 0),
     JSON.stringify({ title: magic && magic.displayedTitle, categories: magic && magic.categories.map(c => c.title), errors: magic && magic.errors }));
-  check('внизу лавки есть вкладка «Продажа»', magic.saleTab && !magic.saleOnly, JSON.stringify({ saleTab: magic.saleTab }));
+  check('в шапке лавки есть вкладка «Продажа»', magic.saleTab && !magic.saleOnly, JSON.stringify({ saleTab: magic.saleTab }));
   const armory = await ev(`window.__mm6Debug.forceShop('armory')`);
   const shopNames = await ev(`[...document.querySelectorAll('#shopList .rowItem .info b')].map(b=>b.textContent)`);
   check('названия товаров несут качество/стихии каталога',
