@@ -313,31 +313,33 @@ export const SHOP_TYPES = [
 // Каталог зданий. Поле shop_kind повторяет assets/manifest.json
 // (источник — assets/buildings-batch.json). null/[] означает, что торговли нет:
 // такое здание показывает только декоративную реплику.
+// signName — название на вывеске; оно же записано в assets/buildings-batch.json
+// и полностью отрисовывается в SVG здания (см. scripts/gen-building-svgs.js).
 export const BUILDING_TYPES = [
-  { id: 'house_straw_0', title: 'Соломенная хижина', kind: 'house', shop_kind: null,
+  { id: 'house_straw_0', title: 'Соломенная хижина', signName: 'Хижина «Под Соломкой»', kind: 'house', shop_kind: null,
     deco: 'В соломенной хижине тихо: хозяева ушли на рынок.' },
-  { id: 'house_tile_0', title: 'Черепичный дом', kind: 'house', shop_kind: null,
+  { id: 'house_tile_0', title: 'Черепичный дом', signName: 'Дом «Черепица и Кофе»', kind: 'house', shop_kind: null,
     deco: 'Из-за черепичной двери доносится детский смех и запах похлёбки.' },
-  { id: 'stone_house_0', title: 'Каменный дом', kind: 'house', shop_kind: null,
+  { id: 'stone_house_0', title: 'Каменный дом', signName: 'Каменный дом «У Глины»', kind: 'house', shop_kind: null,
     deco: 'Каменный дом заперт на тяжёлый засов. Здесь живут, а не торгуют.' },
-  { id: 'barn_0', title: 'Амбар', kind: 'barn', shop_kind: null,
+  { id: 'barn_0', title: 'Амбар', signName: 'Амбар «Золотой Сноп»', kind: 'barn', shop_kind: null,
     deco: 'В амбаре пахнет сеном и зерном. Ничего для продажи не выставлено.' },
-  { id: 'shed_0', title: 'Сарай', kind: 'shed', shop_kind: null,
+  { id: 'shed_0', title: 'Сарай', signName: 'Сарай «Старые Грабли»', kind: 'shed', shop_kind: null,
     deco: 'В сарае свалены старые грабли и бочки. Хозяин не любит гостей.' },
-  { id: 'well_0', title: 'Колодец', kind: 'well', shop_kind: null,
-    deco: 'Вы заглядываете в колодец: в тёмной воде отражается небо.' },
-  { id: 'stable_0', title: 'Конюшня', kind: 'stable', shop_kind: null,
+  { id: 'well_0', title: 'Колодец', signName: 'Колодец «Тихий Вход»', kind: 'well', shop_kind: null,
+    deco: 'Вы заглядываете в колодец: за воротом и ведром прячётся тёмный вход.' },
+  { id: 'stable_0', title: 'Конюшня', signName: 'Конюшня «Тихий Овёс»', kind: 'stable', shop_kind: null,
     deco: 'Лошади фыркают и косятся на вас. Конюх занят и не торгует.' },
-  { id: 'forge_0', title: 'Кузница', kind: 'forge', shop_kind: ['forge'] },
-  { id: 'shop_0', title: 'Лавка', kind: 'market', shop_kind: ['market'] },
-  { id: 'tavern_0', title: 'Таверна', kind: 'tavern', shop_kind: ['tavern'] },
-  { id: 'armory_0', title: 'Оружейня', kind: 'weapons', shop_kind: ['weapons', 'armory', 'armor'] },
-  { id: 'jewelry_0', title: 'Ювелирная лавка', kind: 'jeweler', shop_kind: ['jeweler'] },
-  { id: 'magic_0', title: 'Магазин магии', kind: 'magic', shop_kind: ['magic'] },
-  { id: 'inn_0', title: 'Гостиница', kind: 'inn', shop_kind: ['inn'] },
-  { id: 'church_0', title: 'Церковь', kind: 'church', shop_kind: ['church'],
+  { id: 'forge_0', title: 'Кузница', signName: 'Кузница «Гром и Наковальня»', kind: 'forge', shop_kind: ['forge'] },
+  { id: 'shop_0', title: 'Лавка', signName: 'Лавка «Мешок и Монета»', kind: 'market', shop_kind: ['market'] },
+  { id: 'tavern_0', title: 'Таверна', signName: 'Таверна «Пенная Кружка»', kind: 'tavern', shop_kind: ['tavern'] },
+  { id: 'armory_0', title: 'Оружейня', signName: 'Оружейная «Острый Клинок»', kind: 'weapons', shop_kind: ['weapons', 'armory', 'armor'] },
+  { id: 'jewelry_0', title: 'Ювелирная лавка', signName: 'Ювелирная «Изумрудный Глаз»', kind: 'jeweler', shop_kind: ['jeweler'] },
+  { id: 'magic_0', title: 'Магазин магии', signName: 'Магазин магии «Звёздная Склянка»', kind: 'magic', shop_kind: ['magic'] },
+  { id: 'inn_0', title: 'Гостиница', signName: 'Гостиница «Спокойная Подушка»', kind: 'inn', shop_kind: ['inn'] },
+  { id: 'church_0', title: 'Церковь', signName: 'Церковь Света', kind: 'church', shop_kind: ['church'],
     deco: 'В храме пахнет ладаном. Служитель принимает десятину за воскрешение.' },
-  { id: 'hall_0', title: 'Ратуша', kind: 'hall', shop_kind: ['hall'],
+  { id: 'hall_0', title: 'Ратуша', signName: 'Ратуша у площади', kind: 'hall', shop_kind: ['hall'],
     deco: 'В ратуше принимают заказы лавок и ведут журнал заданий.' }
 ];
 
@@ -504,7 +506,7 @@ export const DEFAULT_SETTINGS = {
   difficulty: 'normal', floors: 5, cellSize: 16, mapSize: 30, monstersAdd: 0, itemRate: 2,
   shieldVal: 3, starVal: 1, sound: 10, sfx: 10, amb: 10, music: 0, tempo: 600,
   melody: 'town', simple: true, extreme: false, criticalAI: false, vibro: true,
-  keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false,
+  keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false, speech: false,
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
   bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,

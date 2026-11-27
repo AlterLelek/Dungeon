@@ -46,18 +46,29 @@ button,input,select{font-family:inherit}
 .pcard[data-hero="2"].active{border-color:var(--hero-3);box-shadow:0 0 8px rgba(252,165,165,.35)}
 .pcard[data-hero="3"].active{border-color:var(--hero-4);box-shadow:0 0 8px rgba(253,230,138,.35)}
 .pcard[data-hero="4"].active{border-color:var(--hero-5);box-shadow:0 0 8px rgba(196,181,253,.35)}
+.pcard.dead{opacity:.45;filter:grayscale(.8)}
 /* Вертикальная очередь ходов: верхняя строка — текущий герой, ниже — следующие. */
-#turnQueue{position:absolute;left:8px;top:96px;z-index:5;width:116px;display:flex;flex-direction:column;gap:3px;pointer-events:none}
-.tq-row{display:flex;align-items:center;gap:5px;padding:3px 5px;border-radius:6px;background:rgba(6,8,18,.86);
-  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:10px;line-height:1.1;opacity:.72}
-.tq-row .tq-rank{width:9px;flex:none;font-size:8px;color:#9fb0d8;text-align:center}
+#turnQueue{position:absolute;left:8px;top:88px;z-index:5;width:104px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.tq-row{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:5px;background:rgba(6,8,18,.86);
+  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:9px;line-height:1.1;opacity:.72}
+.tq-more{padding:1px 4px;color:#9fb0d8;font-size:8px;text-align:right;line-height:1.1}
+.tq-row .tq-rank{width:8px;flex:none;font-size:8px;color:#9fb0d8;text-align:center}
 .tq-row .tq-name{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
 .tq-row.active{border-color:var(--tq-color,var(--hero-1));color:var(--tq-color,var(--hero-1));opacity:1;
   background:rgba(6,8,18,.96);box-shadow:0 0 9px rgba(255,255,255,.12);animation:tq-rise .34s ease-out}
 .tq-row.active .tq-rank{color:var(--tq-color,var(--hero-1))}
 .tq-row[data-side="enemy"]{border-color:rgba(252,165,165,.32);color:#fca5a5}
 .tq-row[data-side="enemy"].active{border-color:#fca5a5;color:#fecaca;box-shadow:0 0 9px rgba(252,165,165,.25)}
+.tq-row[data-dead="1"]{opacity:.32;filter:grayscale(1)}
+.tq-row[data-dead="1"] .tq-name{text-decoration:line-through;text-decoration-color:#fca5a5}
 @keyframes tq-rise{from{transform:translateY(18px);opacity:.25}to{transform:translateY(0);opacity:1}}
+/* Стилистические эффекты боя: короткая вспышка по краю и тряска кадра. */
+#fxEdge{position:absolute;inset:0;z-index:8;pointer-events:none;opacity:0;
+  box-shadow:inset 0 0 0 3px var(--fx-color,#fff),inset 0 0 38px 8px var(--fx-color,#fff);
+  transition:opacity .12s linear}
+#fxEdge.on{opacity:.62}
+#stage.fx-shake{animation:fx-shake .18s linear}
+@keyframes fx-shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,1px)}45%{transform:translate(3px,-2px)}70%{transform:translate(-2px,2px)}}
 .pcard .ptop{display:flex;align-items:center;gap:4px}
 .pcard .pemoji{font-size:17px}
 .pcard .pname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
@@ -69,18 +80,22 @@ button,input,select{font-family:inherit}
 .pcard .mini{display:flex;justify-content:space-between;color:#cbd5e1;font-size:8px;margin-top:1px}
 .pcard .mini i{font-style:normal}
 .pcard .fx{display:flex;justify-content:flex-end;gap:5px;margin-top:2px;color:#fde68a;font-size:9px;letter-spacing:.3px}
+.pcard .pface{width:17px;height:17px;flex:0 0 17px;border:1px solid rgba(251,191,36,.55);background:#2a1c12}
+.pcard .pstatus{color:#fde68a;font-size:8px;line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
-/* Боевые плашки увеличены примерно на 20% и остаются внизу экрана. */
-#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(790px,74vw);gap:5px}
-#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:264px;padding:3px 6px;font-size:12px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats";column-gap:7px}
+/* Боевые плашки компактные, около +10% к обычным, и остаются внизу экрана. */
+#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(720px,70vw);gap:4px}
+#party.in-battle .pcard{flex:1 1 0;width:auto;max-width:238px;padding:2px 5px;font-size:11px;background:rgba(6,8,18,.94);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "status status";column-gap:6px}
 #party.in-battle .pcard .ptop{grid-area:top;min-width:0}
-#party.in-battle .pcard .pemoji{font-size:18px}
-#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:12px;gap:7px}
-#party.in-battle .pcard .pbar{grid-area:hp;height:4px;margin-top:2px}
+#party.in-battle .pcard .pemoji{font-size:16px}
+#party.in-battle .pcard .pface{width:20px;height:20px;flex-basis:20px}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:10px;margin-top:1px}
+#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:6px}
+#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-#party.in-battle .pcard .mini{grid-area:stats;font-size:11px;margin-top:2px;gap:4px}
-#party.in-battle .pcard .fx{display:none}
+/* Итог атаки/защиты есть в инвентаре — в бою цифры не дублируются. */
+#party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
   #controls{display:none!important}
   #stage{height:100%}
@@ -241,6 +256,23 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .invDetail{padding:7px 9px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);font-size:10px;line-height:1.4;color:#a8afc8;min-height:46px;max-height:46px;overflow-y:auto;overflow-wrap:anywhere}
 .invDetail b{color:#ffe9b0;display:block;font-size:11px;margin-bottom:1px}
 .invNote{padding:10px;border-radius:9px;border:1px dashed rgba(255,255,255,.12);color:#8b94b2;font-size:11px;line-height:1.45;text-align:center}
+/* Контекстное меню трав и свитков + простая таблица алхимии без прокрутки сетки. */
+.invCell .ctxBtn{position:absolute;top:1px;right:1px;width:12px;height:12px;padding:0;margin:0;border:0;border-radius:4px;
+  background:rgba(6,8,18,.8);color:#ffe9b0;font-size:10px;line-height:10px;cursor:pointer;z-index:3}
+.invCell .ctxBtn:hover{background:rgba(251,191,36,.28)}
+.invContext{position:fixed;z-index:30;min-width:150px;padding:5px;border:1px solid rgba(251,191,36,.45);border-radius:9px;
+  background:#10142c;box-shadow:0 8px 24px rgba(0,0,0,.6);font-size:10px;color:#c8d2f0}
+.invContext b{display:block;padding:3px 5px;color:#ffe9b0;font-size:11px}
+.invContext button{display:block;width:100%;padding:5px 7px;margin:2px 0;border:1px solid rgba(255,255,255,.12);border-radius:6px;
+  background:rgba(255,255,255,.04);color:#c8d2f0;text-align:left;cursor:pointer;font-size:10px}
+.invContext button:hover{border-color:#fbbf24;color:#ffe9b0}
+.alchemyTable{margin-bottom:6px;padding:7px;border:1px solid rgba(125,255,178,.35);border-radius:9px;background:rgba(6,8,18,.78);font-size:10px}
+.alchemyTable h3{margin:0 0 5px;color:#7dffb2;font-size:11px}
+.alchemyTable table{width:100%;border-collapse:collapse}
+.alchemyTable th,.alchemyTable td{padding:3px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.alchemyTable th{color:#9fb0d8;font-weight:700}
+.alchemyTable button{padding:2px 6px;border:1px solid rgba(251,191,36,.35);border-radius:5px;background:rgba(251,191,36,.1);color:#ffe9b0;cursor:pointer;font-size:9px}
+.alchemyTable button:disabled{opacity:.4;cursor:not-allowed}
 /* Сводка отряда: по одной строке-статусу на каждого героя, те же ячейки, что и в манекене. */
 .partySummary{margin-top:12px;padding-top:8px;border-top:1px solid rgba(251,191,36,.28)}
 .ps-row{display:grid;grid-template-columns:minmax(96px,1.3fr) repeat(4,minmax(76px,1fr));gap:6px;align-items:center;
@@ -266,7 +298,11 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 #shopSticky h2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #shopRes{display:flex;gap:10px;flex:0 0 auto;font-size:11px;color:#fbbf24;white-space:nowrap}
 #shopRes b{color:#fff3c4}
-#shopTabs{position:sticky;top:0;margin-bottom:4px;background:#161a33;padding:3px 0}
+/* Горизонтальная шапка лавки: шесть вкладок в одну строку, продажа — полная вкладка. */
+#shopTabs{position:sticky;top:0;margin-bottom:4px;background:#161a33;padding:3px 0;
+  display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;scrollbar-width:thin}
+#shopTabs .tab{flex:0 0 auto;min-height:32px;padding:5px 7px;white-space:nowrap}
+#shopTabs .tab:disabled{opacity:.38;cursor:not-allowed}
 #shopArt{display:block;width:100%;height:auto;max-height:165px;border:1px solid rgba(251,191,36,.35);border-radius:9px;margin:4px 0 8px;background:#0a0d1c;image-rendering:pixelated}
 /* Ассортимент слева, разбивка по разделам справа — как два столбца инвентаря. */
 #shopBody{display:flex;gap:12px;align-items:flex-start}
@@ -333,6 +369,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="app">
   <div id="stage">
     <canvas id="cv" width="640" height="360" aria-label="Авантюрист"></canvas>
+    <div id="fxEdge" aria-hidden="true"></div>
     <div id="party" class="hidden"></div>
     <div id="turnQueue" class="hidden" aria-label="Очередность ходов"></div>
   </div>
@@ -421,6 +458,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
     <div class="setRow"><span class="setLabel">Мелодия</span><input type="number" id="setMelody" min="0" max="10" step="1" value="5"></div>
     <div class="setRow"><span class="setLabel">Темп (мс)</span><input type="number" id="setTempo" min="300" max="1200" step="100" value="600"></div>
     <div class="setRow"><span class="setLabel">Тема</span><select id="setMelodyTheme"><option value="town">Городская 🎵</option><option value="cave">Подземелье</option><option value="elven">Эльфийская</option><option value="dwarven">Гномия</option><option value="dice">Кости 🎲</option></select></div>
+    <div class="setCheck"><input type="checkbox" id="setSpeech"><span>🗣 Озвучивать события (если доступно)</span></div>
   </div></details>
   <details class="setAcc"><summary>🛡️ Магия и монстры</summary><div class="setBody">
     <div class="setRow"><span class="setLabel">🛡️ Сила щита</span><input type="number" id="setShieldVal" min="1" max="10" step="1" value="3"></div>
@@ -462,6 +500,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   <div class="head"><h2>🎒 Инвентарь</h2><button class="link" id="invClose">Закрыть [I]</button></div>
   <div class="invBody"><div class="mannequin" id="mannequin"></div><div class="invRight"><div class="tabs" id="invTabs"></div><div id="invList"></div></div></div>
   <div id="partySummary" class="partySummary" aria-label="Сводка отряда"></div>
+  <div id="invContext" class="invContext hidden" aria-label="Действия с предметом"></div>
 </div></div>
 
 <div id="bigMap" class="overlay hidden"><div class="box" style="width:min(792px,96vw)">
@@ -501,7 +540,8 @@ import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
 import { D28_DATA } from '../dungeon28/shared-data.js';
 import { recordDeath, unlockRecord, recordsHTML, recordsList, RECORDS } from '../shared/records.js';
-import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound } from '../dungeon28/audio.js';
+import { initAudio, startAmbient, startMusic, getTrack, setTrack, setVolume, playSound,
+  audioEngineReport, resetAudioStats, SFX_EVENTS, SFX_VOICE_LIMIT } from '../dungeon28/audio.js';
 import { initUnifiedLaunch } from '../shared/launch.js';
 import { HERO_DOSSIERS, RULES } from '../shared/universe.js';
 
@@ -512,7 +552,9 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgW:500,enemyPanelW:257,enemyPanelH:70,badgeW:100};
+  msgW:500,enemyPanelW:236,enemyPanelH:64,badgeW:100};
+// Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
+const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
 const HERO_COLORS=['#7dffb2','#93c5fd','#fca5a5','#fde68a','#c4b5fd'];
 // Информационные панели карты не заходят на фигуру героя (левый край спрайта с оружием).
@@ -679,7 +721,7 @@ function toggleEventLog(open){
   game.logOpen=show;
   $('eventLog').classList.toggle('hidden',!show);
   if(show) renderEventLog(false);
-  updateControls(); beep(430,.05);
+  updateControls(); sfx('ui');
   return show;
 }
 function beep(freq,dur){ try{
@@ -692,6 +734,49 @@ function beep(freq,dur){ try{
   g.gain.setValueAtTime(vol,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+dur);
   o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+dur);
 }catch(e){} }
+/* Звуковые события часть 8: WebAudio-синтез, 64 голоса с запасом, вспышки и тряска. */
+const AUDIO_EVENT_LOG=[];
+const FX_STATE={flashes:0,shakes:0,lastFlash:null,lastShakeAt:0};
+const SPEECH_STATE={requested:0,spoken:0,fallback:0,last:null};
+const SPELL_SCHOOL={fire:'flame',heal:'light',heal_weak:'light',heal_strong:'light',heal_all:'light',
+  bless:'light',light:'light',mana:'water',ice:'water',quake:'earth',shield:'earth',
+  wind:'wind',lightning:'wind',lightning_weak:'wind',lightning_strong:'wind',lightning_all:'wind',
+  poison:'dark',sleep:'dark',stun:'dark',curse:'dark',vampire:'dark'};
+function sfx(event,element){
+  const name=SFX_EVENTS.includes(event)?event:'ui';
+  AUDIO_EVENT_LOG.push({event:name,t:performance.now()});
+  if(AUDIO_EVENT_LOG.length>200) AUDIO_EVENT_LOG.shift();
+  playSound(name);
+  if(element) edgeFlash(element);
+  return name;
+}
+function edgeFlash(element){
+  const el=$('fxEdge'); if(!el) return false;
+  const school=SCHOOLS.find(s=>s.id===element||s.layer===element||s.name===element);
+  const color=(school&&school.color)||({flame:'#d94a20',water:'#2f78b5',earth:'#6b7a3c',
+    wind:'#d5e0e6',dark:'#42206e',light:'#f2c94c'}[element]||'#ffe9b0');
+  el.style.setProperty('--fx-color',color);
+  el.classList.add('on'); FX_STATE.flashes++; FX_STATE.lastFlash=element||'light';
+  clearTimeout(el._fxTimer); el._fxTimer=setTimeout(()=>el.classList.remove('on'),180);
+  return true;
+}
+function shakeScreen(){
+  const stage=$('stage'); if(!stage) return false;
+  stage.classList.remove('fx-shake'); void stage.offsetWidth; stage.classList.add('fx-shake');
+  FX_STATE.shakes++; FX_STATE.lastShakeAt=performance.now();
+  clearTimeout(stage._shakeTimer); stage._shakeTimer=setTimeout(()=>stage.classList.remove('fx-shake'),200);
+  return true;
+}
+/* Флаг озвучки выключен по умолчанию; при lack голоса/API тихо откатываемся к тексту. */
+function speakEvent(text){
+  SPEECH_STATE.requested++; SPEECH_STATE.last=String(text||'');
+  if(!settings||settings.speech!==true){ SPEECH_STATE.fallback++; return false; }
+  try{
+    if(typeof SpeechSynthesisUtterance!=='function'||!window.speechSynthesis){ SPEECH_STATE.fallback++; return false; }
+    const u=new SpeechSynthesisUtterance(String(text||'')); u.lang='ru-RU'; u.volume=.7;
+    window.speechSynthesis.speak(u); SPEECH_STATE.spoken++; return true;
+  }catch(e){ SPEECH_STATE.fallback++; return false; }
+}
 function record(id){ const r=GAME_RECORDS.find(x=>x.id===id); return r?r.text:''; }
 function recordAnnounce(id,got){
   if(!got) return;
@@ -974,7 +1059,7 @@ const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
-const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim'];
+const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','speech'];
 function normalizeSettings(raw){
   const s=Object.assign({},DEFAULT_SETTINGS,raw||{});
   Object.entries(SETTING_RANGES).forEach(([key,[min,max]])=>{
@@ -1009,7 +1094,8 @@ function syncSettings(){
     setKeysMode:'keysMode',setKeysLayout:'keysLayout'};
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
-    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim'};
+    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
+    setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
 }
 function bindSettings(){
@@ -1042,7 +1128,8 @@ function bindSettings(){
     });
   });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
-    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim'};
+    setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
+    setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{ settings[key]=el.checked; saveSettings(); });
   });
@@ -1514,7 +1601,7 @@ function gearRecipeBlock(){ return ''; }
 /* ============================ 3. СОСТОЯНИЕ И ОТРЯД ============================ */
 let game=null, phase='start', last=performance.now();
 let selHero=[0,1,2], selDiff=settings.difficulty, heroNameText='Герой', pickHeroTab=0;
-let invTab='Общий', invSlot=null, invArmedSlot=null, invContainer=null;
+let invTab='Общий', invSlot=null, invArmedSlot=null, invContainer=null, invContextUid=null;
 
 function makeItem(o){
   const item=Object.assign({uid:uid(),count:1,cost:1,sell:1,type:'misc',name:'Предмет',icon:'•'},o);
@@ -1552,6 +1639,38 @@ function addStatus(h,id,turns,data){
 }
 function statusSum(h,stat){ return (h.statuses||[]).reduce((s,x)=>s+(x[stat]||0),0); }
 function statusIcons(h){ return (h.statuses||[]).map(s=>(s.icon||'✦')+s.turns).join(' '); }
+
+/* Портреты в медальоне: три класса по четыре варианта, SVG из assets/sprites/portraits. */
+const PORTRAIT_BASE='../../assets/sprites/portraits/';
+function portraitClass(h){
+  const set=String((h&&h.def&&h.def.set)||'');
+  const name=String((h&&h.def&&h.def.name)||'');
+  if(set==='mage'||set==='paladin'||set==='angel') {
+    return set==='mage'||/Маг|Друид|колдун/i.test(name)?'mage':'paladin';
+  }
+  if(/Паладин|Ангел/i.test(name)) return 'paladin';
+  if(/Маг|Друид|колдун/i.test(name)) return 'mage';
+  return 'warrior';
+}
+function portraitVariant(h,i){
+  const own=Number(h&&h.skin);
+  return Number.isFinite(own)?Math.max(0,Math.min(3,own)):Math.max(0,Math.min(3,i||0));
+}
+function portraitSrc(h,i){ return PORTRAIT_BASE+portraitClass(h)+'_'+portraitVariant(h,i)+'.svg'; }
+function heroCondition(h){
+  if(!h||h.hp<=0) return 'Без сознания';
+  const pct=h.hp/Math.max(1,h.maxHp);
+  if(pct>=.7) return 'Хорошее';
+  if(pct>=.3) return 'Ранен';
+  return 'Тяжёло';
+}
+function heroStatusName(h){
+  const idx=party().indexOf(h);
+  return idx>0?(h.def.name+' '+(idx+1)):heroName(h);
+}
+function heroStatusLine(h){
+  return '«'+heroStatusName(h)+', '+((h&&h.def&&h.def.name)||'Герой')+': '+heroCondition(h)+'»';
+}
 function tickStatuses(h){
   if(!h.statuses||!h.statuses.length) return;
   h.statuses=h.statuses.filter(s=>--s.turns>0);
@@ -1644,7 +1763,7 @@ function startGame(diffId,a,b){
   $('party').classList.remove('hidden');
   updateParty(); updateControls();
   toast('Сложность: '+d.name+' · карт: '+game.world.count);
-  beep(540,.12);
+  sfx('ui');
   return game;
 }
 /* Полное сохранение мира: рельеф, дороги, мосты, флора и сезон хранятся в cells. */
@@ -1814,7 +1933,7 @@ function normalizeRoads(cells,size){
     const linked=DIRS.some(v=>{
       const nx=x+v[0],ny=y+v[1];
       return nx>=0&&ny>=0&&nx<size&&ny<size&&
-        ['road','bridge','gate','boss','chest'].includes(cells[ny][nx].t);
+        ['road','bridge','gate','boss','chest','treasure','shop','house'].includes(cells[ny][nx].t);
     });
     if(linked) continue;
     const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
@@ -1834,6 +1953,12 @@ function scatterSwamp(cells,size,rng,count,exclude){
     }
   }
 }
+function clearRoadObstacle(cells,x,y){
+  const c=cells[y][x];
+  if(!['mountain','rock','tree'].includes(c.t)) return;
+  const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
+  cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
+}
 function applyRoadCell(cells,x,y,kind,rng){
   const c=cells[y][x];
   if(['gate','boss','chest','shop','house','treasure','mountain','rock'].includes(c.t)) return;
@@ -1841,27 +1966,89 @@ function applyRoadCell(cells,x,y,kind,rng){
   c.t='road'; c.roadKind=kind; c.roadOffset=Math.round((rng()-.5)*60)/100;
   if(!c.ground) c.ground='grass';
 }
+/* Дорога обходит непроходимые клетки (горы, валуны, деревья, постройки).
+   Вода допустима только как последний способ: тогда дорога становится мостом.
+   Конец пути может лежать на самой границе карты — у ворот или у босса. */
+function roadCrossable(c,mode){
+  const obstacle=['mountain','rock','tree','house','shop'].includes(c.t);
+  if(obstacle&&mode!=='clear') return false;
+  if(c.water&&mode===false) return false;
+  return true;
+}
+function roadPath(cells,size,from,to){
+  const start=ckey(from.x,from.y), goal=ckey(to.x,to.y);
+  if(start===goal) return [{x:from.x,y:from.y}];
+  for(const mode of [false,true,'clear']){
+    const prev=new Map([[start,null]]), queue=[{x:from.x,y:from.y}];
+    let found=false;
+    for(let head=0;head<queue.length&&!found;head++){
+      const cur=queue[head];
+      for(const v of DIRS){
+        const nx=cur.x+v[0], ny=cur.y+v[1];
+        if(nx<0||ny<0||nx>=size||ny>=size) continue;
+        const k=ckey(nx,ny);
+        if(prev.has(k)) continue;
+        // Особые клетки не становятся транзитом: дорога на них не рисуется и рвет путь.
+        const special=['gate','boss','chest','treasure','shop','house'].includes(cells[ny][nx].t);
+        if(k!==start&&k!==goal&&special) continue;
+        if(k!==goal&&!roadCrossable(cells[ny][nx],mode)) continue;
+        prev.set(k,cur);
+        if(k===goal){ found=true; break; }
+        queue.push({x:nx,y:ny});
+      }
+    }
+    if(!found) continue;
+    const path=[];
+    for(let cur={x:to.x,y:to.y};cur;cur=prev.get(ckey(cur.x,cur.y))) path.push(cur);
+    return path.reverse();
+  }
+  return null;
+}
 function carveRoad(cells,size,rng,from,to,kind){
-  const dx=to.x-from.x, dy=to.y-from.y, len=Math.hypot(dx,dy);
-  if(len<1) return;
+  const a={x:clamp(from.x,0,size-1),y:clamp(from.y,0,size-1)};
+  const b={x:clamp(to.x,0,size-1),y:clamp(to.y,0,size-1)};
+  if(Math.abs(a.x-b.x)+Math.abs(a.y-b.y)<1) return;
+  const path=roadPath(cells,size,a,b);
+  if(path&&path.length>1){
+    let prev=null;
+    path.forEach(p=>{
+      if(prev){
+        let cx=prev.x,cy=prev.y,guard=0;
+        while((cx!==p.x||cy!==p.y)&&guard++<80){
+          const sx=Math.sign(p.x-cx), sy=Math.sign(p.y-cy);
+          if(sx&&sy){ if(guard%2) cx+=sx; else cy+=sy; }
+          else if(sx) cx+=sx; else cy+=sy;
+          clearRoadObstacle(cells,cx,cy);
+          applyRoadCell(cells,cx,cy,kind,rng);
+        }
+      }
+      clearRoadObstacle(cells,p.x,p.y);
+      applyRoadCell(cells,p.x,p.y,kind,rng);
+      prev={x:p.x,y:p.y};
+    });
+    return;
+  }
+  // Резервный изгиб для вырожденных случаев, когда обход не найден.
+  const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
   const ox=-dy/len, oy=dx/len;
   const bend=(rng()-.5)*Math.min(7,len*.24);
   const steps=Math.max(3,Math.ceil(len*1.7));
   let prev=null;
   for(let i=0;i<=steps;i++){
     const t=i/steps, off=Math.sin(Math.PI*t)*bend+(rng()-.5)*.4;
-    const x=clamp(Math.round(from.x+dx*t+ox*off),1,size-2);
-    const y=clamp(Math.round(from.y+dy*t+oy*off),1,size-2);
+    const x=clamp(Math.round(a.x+dx*t+ox*off),0,size-1);
+    const y=clamp(Math.round(a.y+dy*t+oy*off),0,size-1);
     if(prev){
       let cx=prev.x,cy=prev.y,guard=0;
       while((cx!==x||cy!==y)&&guard++<80){
         const sx=Math.sign(x-cx), sy=Math.sign(y-cy);
-        // Диагональные шаги чередуются: дорога изгибается без прямых углов.
         if(sx&&sy){ if(guard%2) cx+=sx; else cy+=sy; }
         else if(sx) cx+=sx; else cy+=sy;
+        clearRoadObstacle(cells,cx,cy);
         applyRoadCell(cells,cx,cy,kind,rng);
       }
     }
+    clearRoadObstacle(cells,x,y);
     applyRoadCell(cells,x,y,kind,rng);
     prev={x,y};
   }
@@ -1954,49 +2141,112 @@ function generateForest(cells,size,occupied,cx,cy,farX,farY,rng){
 }
 /* Поселение — один двор: все официальные здания стоят рядом и соединены дорогами.
    Деревня получает урезанный состав из данных SETTLEMENTS, город — полный. */
-function settlementSpot(cells,size,rng,keep,center,minR,maxR){
-  for(let radius=minR;radius<=maxR;radius++){
-    for(let k=0;k<80;k++){
-      const x=clamp(center.x+rngInt(rng,-radius,radius),2,size-3);
-      const y=clamp(center.y+rngInt(rng,-radius,radius),2,size-3);
-      const ring=Math.max(Math.abs(x-center.x),Math.abs(y-center.y));
-      if(ring<minR||ring>radius||keep.has(ckey(x,y))) continue;
-      if(!GROUND_IDS.includes(cells[y][x].t)) continue;
-      return {x,y};
-    }
-  }
-  return null;
-}
+/* Официальные здания поселения образуют один двор: ратуша в центре, остальные
+   здания расходятся по спирали до радиуса 4. Все клетки двора очищаются от дикого
+   рельефа и связываются дорогами, поэтому состав SETTLEMENTS placement не теряет. */
 function placeSettlement(cells,size,rng,keep,cx,cy,def){
   const center={x:clamp(cx+2,2,size-3),y:clamp(cy-2,2,size-3)};
-  const deco=BUILDING_TYPES.filter(b=>Array.isArray(b.shop_kind)&&!b.shop_kind.length);
-  const buildings=[]; let hall=null;
+  const deco=BUILDING_TYPES.filter(b=>!Array.isArray(b.shop_kind)||!b.shop_kind.length);
+  const used=new Set([ckey(center.x,center.y)]);
+  const buildings=[];
+  const put=(spot,b,kind)=>{
+    const c=cells[spot.y][spot.x];
+    const ground=GROUND_IDS.includes(c.t)?c.t:(GROUND_IDS.includes(c.ground)?c.ground:'grass');
+    const cell={t:kind==='house'?'house':'shop',buildingId:b.id,kind,official:true,
+      shop_kind:kind==='house'?null:[kind],ground};
+    if(kind==='house'){ cell.houseName=b.signName||b.title; cell.deco=b.deco; }
+    else{ cell.shopName=b.signName||b.title; cell.buildingTitle=b.signName||b.title; }
+    cells[spot.y][spot.x]=cell;
+    keep.add(ckey(spot.x,spot.y)); used.add(ckey(spot.x,spot.y));
+    const item={kind,x:spot.x,y:spot.y,name:b.signName||b.title,buildingId:b.id};
+    buildings.push(item);
+    return item;
+  };
+  const hallDef=BUILDING_TYPES.find(b=>b.id==='hall_0')||BUILDING_TYPES[0];
+  const hall=put(center,hallDef,'hall');
+  const offsets=[];
+  for(let r=1;r<=4;r++) for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
+    if(Math.max(Math.abs(dx),Math.abs(dy))!==r) continue;
+    // Чётная манхэттенская чётность: здания не стоят бок о бок, у каждого есть проход.
+    if((Math.abs(dx)+Math.abs(dy))%2) continue;
+    offsets.push({dx,dy,r,angle:Math.atan2(dy,dx)});
+  }
+  offsets.sort((a,b)=>a.r-b.r||a.angle-b.angle);
   def.shops.forEach(kind=>{
+    if(kind==='hall') return;
     const house=kind==='house';
     const b=house?rngPick(rng,deco):BUILDING_TYPES.find(x=>Array.isArray(x.shop_kind)&&x.shop_kind.includes(kind));
     if(!b) return;
-    const s=settlementSpot(cells,size,rng,keep,center,1,6);
-    if(!s) return;
-    keep.add(ckey(s.x,s.y));
-    if(house){
-      cells[s.y][s.x]={t:'house',buildingId:b.id,kind:b.kind,shop_kind:null,houseName:b.title,deco:b.deco,ground:cells[s.y][s.x].ground};
-    }else{
-      cells[s.y][s.x]={t:'shop',buildingId:b.id,kind,shop_kind:[kind],shopName:b.title,buildingTitle:b.title,ground:cells[s.y][s.x].ground};
+    for(const o of offsets){
+      const x=clamp(center.x+o.dx,1,size-2), y=clamp(center.y+o.dy,1,size-2);
+      const k=ckey(x,y);
+      if(used.has(k)||keep.has(k)) continue;
+      if(['gate','boss','chest','treasure'].includes(cells[y][x].t)) continue;
+      put({x,y},b,kind);
+      return;
     }
-    const item={kind,x:s.x,y:s.y,name:b.title,buildingId:b.id};
-    buildings.push(item);
-    if(kind==='hall') hall=item;
   });
-  if(!hall){
-    const s=settlementSpot(cells,size,rng,keep,center,0,6)||center;
-    const b=BUILDING_TYPES.find(x=>x.id==='hall_0')||BUILDING_TYPES[0];
-    cells[s.y][s.x]={t:'shop',buildingId:b.id,kind:'hall',shop_kind:['hall'],shopName:b.title,buildingTitle:b.title,ground:'grass'};
-    hall={kind:'hall',x:s.x,y:s.y,name:b.title,buildingId:b.id};
-    buildings.push(hall);
+  // Улицы двора: нечётные клетки вокруг зданий остаются проходимыми.
+  for(let dy=-4;dy<=4;dy++) for(let dx=-4;dx<=4;dx++){
+    if((Math.abs(dx)+Math.abs(dy))%2===0) continue;
+    const x=center.x+dx, y=center.y+dy;
+    if(x<1||y<1||x>=size-1||y>=size-1) continue;
+    const c=cells[y][x];
+    if(['gate','boss','chest','treasure'].includes(c.t)) continue;
+    const ground=GROUND_IDS.includes(c.ground)?c.ground:'grass';
+    cells[y][x]={t:ground,ground,decoSeed:c.decoSeed};
   }
   carveRoad(cells,size,rng,{x:cx,y:cy},{x:center.x,y:center.y},'stone');
   buildings.forEach(b=>carveRoad(cells,size,rng,{x:center.x,y:center.y},{x:b.x,y:b.y},'brick'));
   return {id:def.id,name:def.name,type:def.type,x:center.x,y:center.y,hall:{x:hall.x,y:hall.y},buildings};
+}
+/* Доступность объектов: сундуки, находки, выходы и босс должны иметь путь от
+   входа по проходимым клеткам. Если путь перекрыт, прокладываем к объекту дорогу. */
+function passableForWalk(c){
+  return GROUND_IDS.includes(c.t)||['road','bridge','ice','swamp','gate','chest','treasure'].includes(c.t);
+}
+function reachableCells(cells,size,sx,sy){
+  const seen=new Set([ckey(sx,sy)]), queue=[{x:sx,y:sy}];
+  for(let head=0;head<queue.length;head++){
+    const p=queue[head];
+    for(const v of DIRS){
+      const x=p.x+v[0], y=p.y+v[1];
+      if(x<0||y<0||x>=size||y>=size) continue;
+      const k=ckey(x,y);
+      if(seen.has(k)||!passableForWalk(cells[y][x])) continue;
+      seen.add(k); queue.push({x,y});
+    }
+  }
+  return seen;
+}
+function objectAccessible(cells,size,seen,x,y){
+  return DIRS.some(v=>{
+    const nx=x+v[0], ny=y+v[1];
+    return nx>=0&&ny>=0&&nx<size&&ny<size&&seen.has(ckey(nx,ny));
+  });
+}
+function connectObjects(cells,size,rng,cx,cy){
+  let seen=reachableCells(cells,size,cx,cy);
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    const c=cells[y][x], t=c.t;
+    if(!['gate','boss','chest','treasure'].includes(t)&&!c.official) continue;
+    if(objectAccessible(cells,size,seen,x,y)) continue;
+    let best=null,bestD=Infinity;
+    for(const k of seen){
+      const [rx,ry]=k.split(',').map(Number);
+      const d=Math.abs(rx-x)+Math.abs(ry-y);
+      if(d<bestD){ bestD=d; best={x:rx,y:ry}; }
+    }
+    if(!best) continue;
+    // Цель — проходимая клетка рядом с объектом: босс и здания сами дорогой не заменяются.
+    const targets=DIRS.map(v=>({x:x+v[0],y:y+v[1]})).filter(p=>
+      p.x>=0&&p.y>=0&&p.x<size&&p.y<size&&
+      !['gate','boss','shop','house','mountain','rock','tree'].includes(cells[p.y][p.x].t))
+      .sort((a,b)=>(Math.abs(a.x-best.x)+Math.abs(a.y-best.y))-(Math.abs(b.x-best.x)+Math.abs(b.y-best.y)));
+    const target=targets[0]||{x,y};
+    carveRoad(cells,size,rng,best,target,'stone');
+    seen=reachableCells(cells,size,cx,cy);
+  }
 }
 const LAIR_DISTANCE={mouse_nest:8,spider_lair:12,bone_yard:18};
 function lairAnchor(id,cx,cy,size,rng){
@@ -2111,6 +2361,16 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     const nextBiome=BIOME_KEYS[ni%BIOME_KEYS.length];
     cells[y][x]={t:'gate',dir,to:ni,biome:nextBiome,bname:BIOMES[nextBiome].name,ground:cells[y][x].ground||'grass'};
   });
+  // Дорога выходит на саму границу секции: рядом с воротами прокладывается
+  // короткая дорожная ветка по кромке карты.
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    if(cells[y][x].t!=='gate') continue;
+    let tx=x, ty=y;
+    if(y===0||y===size-1) tx=clamp(x<cx?x+2:x-2,0,size-1);
+    else if(x===0||x===size-1) ty=clamp(y<cy?y+2:y-2,0,size-1);
+    if(tx===x&&ty===y) continue;
+    carveRoad(cells,size,rng,{x,y},{x:tx,y:ty},kinds[(x+y)%kinds.length]);
+  }
   cells[farY][farX]={t:'boss',opened:false,ground:cells[farY][farX].ground||'grass'};
   if(GROUND_IDS.includes(cells[farY][chestX].t)||cells[farY][chestX].t==='road')
     cells[farY][chestX]={t:'chest',boss:true,opened:false,ground:'grass'};
@@ -2146,7 +2406,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
     const ground=t==='water'?'sand':t==='rock'?'stone':(cells[s.y][s.x].ground||'grass');
     const sprite=t==='rock'?manifestSprite('mountain',cellHash(s.x,s.y,seed)):null;
     cells[s.y][s.x]=t==='house'
-      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.title,deco:deco.deco,ground}
+      ?{t,buildingId:deco.id,kind:deco.kind,shop_kind:null,houseName:deco.signName||deco.title,deco:deco.deco,ground}
       :{t,ground,decoSeed:cellHash(s.x,s.y,seed),...(t==='water'?{water:true}:{}),...(sprite?{mountainSprite:sprite}:{})};
   }
   const rate=clamp(Number(settings.itemRate)||2,1,5);
@@ -2165,6 +2425,7 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   // Дороги двора прокладываются последними, чтобы лес и трава не перекрыли подходы к лавкам.
   courtyard.forEach(b=>carveRoad(cells,size,rng,{x:town.x,y:town.y},{x:b.x,y:b.y},'brick'));
   courtyard.forEach(b=>{ cells[b.y][b.x]=b.cell; });
+  connectObjects(cells,size,rng,cx,cy);
 
   /* Дикая сложность зависит от манхэттенского расстояния до входа на карту.
      Размер карты и номер этажа больше не влияют на таблицы монстров. */
@@ -2391,7 +2652,7 @@ function buildingReply(cell){
 function interactBuilding(cell){
   const speaker=buildingTitleOf(cell), text=buildingReply(cell);
   toast(text,'npc',speaker);
-  game.msg=text; beep(180,.08);
+  game.msg=text; sfx('ui');
   return false;
 }
 function openBuilding(cell){
@@ -2415,7 +2676,7 @@ function relativeMove(forward,side){
 function turnPlayer(d){
   if(!game||phase!=='play'||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
   game.player.dir=(game.player.dir+d+4)%4;
-  game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; beep(330,.05);
+  game.msg='Поворот: '+DIR_NAMES[game.player.dir]+'.'; sfx('ui');
 }
 function tryMove(dx,dy){
   if(phase!=='play'||!game||game.battle||game.shopOpen||game.invOpen||game.reward||game.spellOpen) return;
@@ -2427,14 +2688,14 @@ function tryMove(dx,dy){
   if(e){ startBattle(battleGroup(e),null); game.msg='Враги преградили путь: '+battleGroup(e).map(x=>x.name).join(', ')+'.'; return; }
   const c=m.cells[ny][nx];
   if(c.water&&c.t!=='bridge'&&currentSeason()!=='winter'){
-    game.msg='Глубоко: вода непроходима.'; toast('Глубоко'); beep(120,.05); return;
+    game.msg='Глубоко: вода непроходима.'; toast('Глубоко'); sfx('miss'); return;
   }
   const stepCost=enterTurnCost(c);
   if(isBlocking(c)){
     if(c.t==='boss'){ startBattle([m.boss.def,...battleGroup(null)],m); return; }
     if(c.t==='shop'){ openBuilding(c); return; }
     if(c.t==='house'){ interactBuilding(c); return; }
-    game.msg='Проход закрыт.'; beep(120,.05); return;
+    game.msg='Проход закрыт.'; sfx('miss'); return;
   }
   p.fromX=p.px; p.fromY=p.py; p.x=nx; p.y=ny; p.moveT=1; beep(280,.04);
   if(c.t==='gate'){
@@ -2450,7 +2711,7 @@ function tryMove(dx,dy){
     Object.assign(game.player,{x:gx,y:gy,px:gx,py:gy,fromX:gx,fromY:gy,moveT:0,dir:nd});
     markSeen(nm,gx,gy);
     game.msg='Дорога привела в '+BIOMES[nm.biome].name+'.';
-    toast('Переход: '+BIOMES[nm.biome].name); beep(620,.14);
+    toast('Переход: '+BIOMES[nm.biome].name); sfx('door');
     updateParty(); return;
   }
   if(c.t==='treasure'){
@@ -2571,7 +2832,7 @@ function collectTreasure(c){
     addItem({id,type:'potion',name:t.name,icon:t.icon,cost:5,sell:3,heal:t.id==='potion_hp'?40:0,mp:t.id==='potion_mp'?15:0});
     game.msg='Находка: '+t.icon+' '+t.name+'.';
   }
-  pushHistory(game.msg,'neutral'); toast(game.msg); beep(760,.1);
+  pushHistory(game.msg,'neutral'); toast(game.msg); sfx('coins');
 }
 function openSmallChest(c){
   if(c.opened) return; c.opened=true;
@@ -2581,12 +2842,12 @@ function openSmallChest(c){
     if(Array.isArray(c.lairChest.gold)) entries.push({kind:'gold',amount:rnd(c.lairChest.gold[0],c.lairChest.gold[1])});
     const loot=materializeLoot(entries);
     game.msg='Сундук логовища: 🪙 '+loot.gold+', вещей '+loot.items+'.';
-    toast(game.msg); pushHistory(game.msg,'neutral'); beep(820,.12); updateParty();
+    toast(game.msg); pushHistory(game.msg,'neutral'); sfx('coins'); updateParty();
     return;
   }
   const gold=rnd(3,8); game.gold+=gold;
   if(Math.random()<.5){ const h=pick(HERBS); addItem({id:h.id,type:'herb',name:h.name,icon:h.icon,desc:h.desc,effect:h.effect,value:h.value,cost:2,sell:1}); }
-  game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); beep(820,.12);
+  game.msg='Сундук: 🪙 '+gold+'.'; toast(game.msg); sfx('chest');
 }
 function openBossChest(){
   const m=currentMap(); if(!m||!m.boss.dead){ toast('Сначала победите босса.'); return false; }
@@ -2601,7 +2862,7 @@ function openBossChest(){
   const s=pick(SCROLLS); addItem({id:s.id,type:'scroll',name:s.name,icon:s.icon,spell:s.spell,cost:s.cost,sell:Math.floor(s.cost*.5)});
   const liq=pick(LIQUIDS); addItem({id:liq.id,type:'liquid',name:liq.name,icon:liq.icon,color:liq.color,stat:liq.stat,value:liq.value,cost:9,sell:5});
   game.msg='Золотой сундук: 🪙 '+amount+', 💎×2, 📜, 🧴.';
-  toast('Золотой сундук открыт!'); beep(980,.3);
+  toast('Золотой сундук открыт!'); sfx('chest'); sfx('coins'); shakeScreen();
   return true;
 }
 function tryInteract(){
@@ -2637,8 +2898,12 @@ function updateParty(){
   const active=game.battle&&game.battle.turn==='hero'?game.battle.heroIdx:0;
   $('party').innerHTML=game.party.map((h,i)=>{
     const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
-    return '<div class="pcard'+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop"><span class="pemoji">'+h.def.emoji+'</span>'+
+    const statusLine=heroStatusLine(h);
+    return '<div class="pcard'+(h.hp<=0?' dead':'')+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop">'+
+      '<img class="pface" src="'+portraitSrc(h,i)+'" alt="" onerror="this.style.display=\'none\'">'+
+      '<span class="pemoji">'+h.def.emoji+'</span>'+
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
+      '<div class="pstatus" title="'+esc(statusLine)+'">'+esc(statusLine)+'</div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
       '<div class="pbar"><i style="width:'+hp+'%"></i></div><div class="pbar mp"><i style="width:'+mp+'%"></i></div>'+
       '<div class="mini"><i title="Итоговая атака: оружие, броня, эффекты">⚔ Атака '+heroAtk(h)+'</i>'+
@@ -2672,27 +2937,34 @@ function battleQueueRows(b){
   if(!b||!Array.isArray(b.units)) return [];
   const heroLabels=partyClassLabels(), enemyLabels=enemyQueueLabels(b);
   const rows=b.units.filter(u=>{
-    if(u.side==='hero'){ const h=party()[u.idx]; return h&&h.hp>0; }
+    // Павшие герои остаются в очереди как зачёркнутые, но ход получают только живые.
+    if(u.side==='hero') return !!party()[u.idx];
     const e=b.enemies[u.idx]; return e&&e.alive;
-  }).map(u=>({
-    side:u.side,idx:u.idx,next:u.next||0,
-    name:u.side==='hero'?(heroLabels[u.idx]||'Герой'):(enemyLabels[u.idx]||'Враг')
-  })).sort((a,c)=>(a.next-c.next)||(a.side==='hero'?-1:1)||(a.idx-c.idx));
+  }).map(u=>{
+    const hero=u.side==='hero', h=hero?party()[u.idx]:null;
+    return {side:u.side,idx:u.idx,next:u.next||0,
+      name:hero?(heroLabels[u.idx]||'Герой'):(enemyLabels[u.idx]||'Враг'),
+      dead:!!(hero&&h&&h.hp<=0)};
+  }).sort((a,c)=>(Number(!!a.dead)-Number(!!c.dead))||(a.next-c.next)||
+    (a.side==='hero'?-1:1)||(a.idx-c.idx));
   const activeUnit=b.units[b.turnIndex];
-  const active=activeUnit&&rows.findIndex(r=>r.side===activeUnit.side&&r.idx===activeUnit.idx);
-  const at=active>=0?active:(b.turn==='hero'?rows.findIndex(r=>r.side==='hero'&&r.idx===b.heroIdx):-1);
+  const active=activeUnit&&rows.findIndex(r=>!r.dead&&r.side===activeUnit.side&&r.idx===activeUnit.idx);
+  const at=active>=0?active:(b.turn==='hero'?rows.findIndex(r=>!r.dead&&r.side==='hero'&&r.idx===b.heroIdx):-1);
   return at>0?rows.slice(at).concat(rows.slice(0,at)):rows;
 }
+const TURN_QUEUE_LIMIT=5;
 function updateTurnQueue(){
   const el=$('turnQueue'), b=game&&game.battle;
   if(!el) return;
   if(!b||b.end){ el.classList.add('hidden'); el.innerHTML=''; return; }
-  el.innerHTML=battleQueueRows(b).map((u,i)=>{
+  const rows=battleQueueRows(b), shown=rows.slice(0,TURN_QUEUE_LIMIT);
+  el.innerHTML=shown.map((u,i)=>{
     const hero=u.side==='hero', color=hero?heroColor(u.idx):'#fca5a5';
     return '<div class="tq-row'+(i===0?' active':'')+'" data-side="'+u.side+'" '+
-      (hero?'data-hero="'+u.idx+'"':'data-enemy="'+u.idx+'"')+' style="--tq-color:'+color+'">'+
-      '<span class="tq-rank">'+(i+1)+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
-  }).join('');
+      (hero?'data-hero="'+u.idx+'"':'data-enemy="'+u.idx+'"')+' data-dead="'+(u.dead?'1':'0')+'" '+
+      'style="--tq-color:'+color+'">'+
+      '<span class="tq-rank">'+(u.dead?'†':(i+1))+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
+  }).join('')+(rows.length>shown.length?'<div class="tq-more">… ещё '+(rows.length-shown.length)+'</div>':'');
   el.classList.remove('hidden');
 }
 function setActionButton(id,disabled,title){
@@ -2748,7 +3020,7 @@ function cycleTarget(d){
   if(!live.length) return;
   const at=live.findIndex(o=>o.i===b.targetIdx);
   const next=at<0?(d>0?0:live.length-1):(at+d+live.length)%live.length;
-  b.targetIdx=live[next].i; clearArmedAction(); beep(520,.05); toast('Цель: '+live[next].e.name);
+  b.targetIdx=live[next].i; clearArmedAction(); sfx('ui'); toast('Цель: '+live[next].e.name);
 }
 // Погибшая цель не заменяется молча: при одном оставшемся враге он берётся сам,
 // при нескольких — выдаётся запрос выбора.
@@ -2856,7 +3128,7 @@ function startBattle(list,mapRef,opts){
   enemies.forEach(e=>pushLog(e.name+' — атака '+e.atk+', защита '+e.defVal+', скорость '+monsterSpeedValue(e)+'.',C_ENEMY,'enemy'));
   pushHistory('Бой начался: '+party().map(heroName).join(', ')+' против '+enemies.map(e=>e.name).join(', ')+'.','neutral');
   game.msg='Бой! Цель — нажмите на монстра · Пробел — атака · F — магия · R — бегство.';
-  nextTurn(); updateParty(); updateControls(); beep(420,.12);
+  nextTurn(); updateParty(); updateControls(); sfx('ui');
   return b;
 }
 function pushLog(text,color,side){
@@ -2879,6 +3151,7 @@ function nextTurn(){
   while(guard++<240){
     if(checkBattleEnd()) return;
     const ready=b.units.filter(u=>{
+      // Павший герой автоматически выпадает из ready и не получает ход.
       if(u.side==='hero'){ const h=party()[u.idx]; return h&&h.hp>0; }
       const e=b.enemies[u.idx]; return e&&e.alive;
     });
@@ -3008,7 +3281,7 @@ function heroAttack(){
   /* Навык качает только реальный эффект: пустая атака (нет цели/нулевой урон) — ничего. */
   if(dmg>0){ awardSkill(h,skillForWeapon(w)); awardSkill(h,'accuracy'); }
   if(target.hp<=0) onEnemyKilled(b,target);
-  beep(440,.09); updateParty();
+  sfx(dmg>0?'hit':'miss'); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
   return true;
@@ -3023,7 +3296,7 @@ function enemyAct(b,idx){
   if(m.ranged&&Math.random()<clamp(Number(m.missChance)||ARCHER_VARIANT.missChance,ARCHER_MISS_RANGE[0],ARCHER_MISS_RANGE[1])){
     pushLog(m.name+' выпустил стрелу, но промахнулся по '+h.def.name+'.',C_NEUTRAL,'neutral');
     addBattleFloater(battleHeroPoint(b,hIdx),'мимо',C_NEUTRAL);
-    awardSkill(h,'dodge'); b.anim={who:'enemy',t:1,jump:6}; beep(200,.08);
+    awardSkill(h,'dodge'); b.anim={who:'enemy',t:1,jump:6}; sfx('miss');
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
     return;
   }
@@ -3049,7 +3322,7 @@ function enemyAct(b,idx){
   }
   if(h.hp<=0) b.killerName=m.name;
   b.anim={who:'enemy',t:1,jump:10};
-  beep(180,.12); updateParty();
+  sfx(dmg>0?'hit':'miss'); updateParty();
   if(checkBattleEnd()) return;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
 }
@@ -3071,7 +3344,7 @@ function castSpell(id,targetIdx){
   const failInfo=loadInfo(h);
   if(!failInfo.magicBlocked&&failInfo.failChance>0&&Math.random()*100<failInfo.failChance){
     pushLog('«'+heroName(h)+' пытался применить «'+s.name+'», но метал сковал чары: провал ('+failInfo.failChance+'%). Мана потрачена.»',C_NEUTRAL,'neutral');
-    b.anim={who:'hero',t:1,jump:6}; beep(180,.12);
+    b.anim={who:'hero',t:1,jump:6}; sfx('miss');
     closeSpellMenu(); updateParty();
     setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
     return true;
@@ -3105,7 +3378,9 @@ function castSpell(id,targetIdx){
   /* Заклинание качает магию/заклинания только когда эффект действительно случился. */
   awardSkill(h,s.power?'magic':'spells');
   pushLog(txt,C_HERO,'hero');
-  b.anim={who:'hero',t:1,jump:18}; beep(700,.14);
+  const school=SPELL_SCHOOL[id]||'light';
+  sfx(school,school); if(s.power) shakeScreen();
+  b.anim={who:'hero',t:1,jump:18};
   closeSpellMenu(); updateParty();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },420);
@@ -3184,7 +3459,7 @@ function throwGrenade(element,targetIdx,uid){
   if(h&&live.length) awardSkill(h,'throwing');
   const used=uid?game.bag.find(i=>i.uid===uid):null;
   if(used){ used.count=(used.count||1)-1; if(used.count<=0) game.bag.splice(game.bag.indexOf(used),1); }
-  b.anim={who:'hero',t:1,jump:14}; beep(560,.16);
+  b.anim={who:'hero',t:1,jump:14}; sfx('ui');
   updateParty(); updateControls();
   if(checkBattleEnd()) return true;
   setTimeout(()=>{ if(game&&game.battle===b&&!b.end) nextTurn(); },460);
@@ -3205,7 +3480,7 @@ function fleeBattle(){
     b.pendingXp=0; if(game) game.pendingXp=0;
     pushLog('Побег удался! Потеряно '+loss+' HP.',C_HERO,'hero');
     recordAnnounce('flee_mm6',unlockRecord('flee_mm6'));
-    progress.flees++; saveProgress(); updateParty(); beep(680,.16);
+    progress.flees++; saveProgress(); updateParty(); sfx('ui');
     setTimeout(closeBattleKeep,650);
     return true;
   }
@@ -3321,7 +3596,8 @@ function restParty(minutes){
   if(!game) return false;
   advanceGameTime(minutes===undefined?480:minutes);
   game.hunger=clamp((game.hunger||0)+20,0,100);
-  party().forEach(h=>{ h.hp=h.maxHp; h.mp=h.maxMp; });
+  // Отдых лечит живых: павшего героя воскрешает только церковь.
+  party().forEach(h=>{ if(h.hp<=0) return; h.hp=h.maxHp; h.mp=h.maxMp; });
   boostRegen(30);
   return true;
 }
@@ -3349,7 +3625,9 @@ function trainLevel(idx){
   const next=(h.level||1)+1, cost=trainerCost({kind:'level',level:next}), need=xpTotalToLevel(next)-Math.floor(h.exp||0);
   if(need>0){ toast('Нужно ещё '+need+' XP для уровня '+next+'.'); return false; }
   if(game.gold<cost){ toast('Не хватает золота тренеру: нужно '+cost+'.'); return false; }
-  buy(cost,()=>{ h.level=next; restParty(); toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
+  buy(cost,()=>{ h.level=next; restParty(); sfx('level_up');
+    speakEvent(heroName(h)+', уровень '+next);
+    toast(heroName(h)+': уровень '+next+' пройден за 🪙 '+cost+' и отдых.'); });
   updateParty(); renderShop();
   return true;
 }
@@ -3403,7 +3681,7 @@ function collectFloorLoot(){
     if(f.spoiled){ toast(f.name+' испорчена кислотой и бесполезна.'); return; }
     addItem(lootItemSpec(f.id)); toast('Поднято с пола: '+f.name);
   });
-  updateParty(); beep(640,.08);
+  updateParty(); sfx('coins');
   return true;
 }
 function materializeLoot(entries){
@@ -3462,6 +3740,7 @@ function onEnemyKilled(b,e,opts){
   addReinforcement(battle);
   retargetAfterKill(battle);
   pushLog(e.name+' повержен.',C_NEUTRAL,'neutral');
+  sfx(e.isBoss?'crit':'death'); shakeScreen();
   trackQuestKills(e);
   return true;
 }
@@ -3471,7 +3750,7 @@ function finishBattle(win){
   b.end=win?'win':'lose';
   clearStatuses();
   pushLog(win?'ПОБЕДА!':'Поражение.',win?C_HERO:C_ENEMY,win?'hero':'enemy');
-  beep(win?980:120,.3); updateControls();
+  sfx(win?'level_up':'death'); updateControls();
   if(!win){
     /* Поражение и бегство не дают опыта: накопленные kill-очки сгорают. */
     b.pendingXp=0; if(game) game.pendingXp=0;
@@ -3511,7 +3790,7 @@ function showBossReward(m,boss){
   $('rewardText').textContent='Выберите награду для всего отряда. После выбора откроется золотой сундук.';
   $('rewardList').innerHTML=BOSS_BONUSES.map(b=>'<button class="rewardBtn" data-bonus="'+b.id+'">'+b.icon+' '+b.name+' ('+(b.id==='atk'?'+'+b.value+' атаки':b.id==='def'?'+'+b.value+' защиты':'+'+b.value+' магии')+')</button>').join('');
   $('rewardList').querySelectorAll('button').forEach(btn=>btn.onclick=()=>chooseReward(btn.dataset.bonus));
-  $('reward').classList.remove('hidden'); updateControls(); beep(1040,.25);
+  $('reward').classList.remove('hidden'); updateControls(); sfx('level_up');
 }
 function chooseReward(id){
   if(!game||!game.reward) return;
@@ -3605,18 +3884,18 @@ function openShop(type,name,cell){
   const allowed=shopKindsOf(target);
   if(!allowed.length){
     if(target) return interactBuilding(target);
-    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); sfx('miss');
     return false;
   }
   const def=SHOP_TYPES.find(s=>s.id===type&&allowed.includes(s.id))||
     SHOP_TYPES.find(s=>s.id===allowed[0]);
   game.shopKinds=allowed.slice();
-  shopSaleOnly=false;
+  shopCategory=defaultShopCategory(def); shopSaleOnly=false;
   game.shopType=def.id;
   game.shopCell=target;
   game.shopName=name||buildingTitleOf(target)||def.title;
   game.shopOpen=true; $('shop').classList.remove('hidden');
-  renderShop(); updateControls(); beep(520,.1);
+  renderShop(); updateControls(); sfx('door');
   return true;
 }
 function toggleShop(open,type){
@@ -3627,14 +3906,16 @@ function toggleShop(open,type){
   const wanted=(allowed.includes(open)?open:null)||(allowed.includes(type)?type:null)||allowed[0];
   if(!wanted){
     if(cell) return interactBuilding(cell);
-    game.msg='Рядом нет торгового здания.'; toast(game.msg); beep(160,.06);
+    game.msg='Рядом нет торгового здания.'; toast(game.msg); sfx('miss');
     return false;
   }
   return openShop(wanted,null,cell);
 }
 function shopSec(title){
-  const d=document.createElement('div'); d.className='sec'; d.textContent=title; $('shopList').appendChild(d);
-  shopCategories.push({title,rows:0});
+  const d=document.createElement('div'); d.className='sec'; d.textContent=title;
+  const category=shopCategoryFromTitle(title); d.dataset.shopCategory=category||'';
+  $('shopList').appendChild(d);
+  shopCategories.push({title,rows:0,category});
 }
 function shopButton(text,fn,disabled,cls,reason){
   const b=document.createElement('button'); b.className='act'+(cls?' '+cls:''); b.textContent=text;
@@ -3666,7 +3947,7 @@ function buy(price,add){
     toast('Покупка отменена: нет места в инвентаре.');
     renderShop(); updateParty(); return false;
   }
-  beep(720,.09); renderShop(); updateParty();
+  sfx('coins'); renderShop(); updateParty();
   return true;
 }
 function forgeCost(it){ return 1+(QUALITY[it.quality]||QUALITY[0]).id+(it.reforges||0)+(it.level||0); }
@@ -3830,7 +4111,7 @@ function acceptQuest(qid){
   game.quests.accepted[qid]=true;
   game.quests.progress[qid]=defaultQuestProgress();
   journalAdd('active',q,'Принято в ратуше: '+q.goal+'.');
-  toast('Задание принято: '+q.title); beep(640,.12); renderShop(); return true;
+  toast('Задание принято: '+q.title); sfx('ui'); renderShop(); return true;
 }
 function completeQuest(qid){
   const q=questDef(qid), p=game&&game.quests.progress[qid];
@@ -3856,7 +4137,7 @@ function completeQuest(qid){
   game.journal.active=(game.journal.active||[]).filter(x=>x.id!==qid);
   journalAdd('done',q,'Сдано в ратуше: 🪙 '+(r.gold||0)+', очков гильдии '+(r.points||0)+
     (r.containerTier?', ёмкость «'+containerTier(r.containerTier).name+'»':'')+'.');
-  toast('Задание сдано: '+q.title+'!'); beep(880,.2); updateParty(); renderShop(); return true;
+  toast('Задание сдано: '+q.title+'!'); sfx('coins'); updateParty(); renderShop(); return true;
 }
 function questStatusText(q){
   if(game.quests.done[q.id]) return 'Выполнено · сдано в ратуше';
@@ -3978,22 +4259,83 @@ function questReport(){
     entries:(game.journal.active||[]).concat(game.journal.done||[]).map(x=>x.id)};
   return {ok:!errors.length,errors,quests,journal,hallMap:hall&&hall.index,tagged,saveIncludesJournal:!!game.journal};
 }
-let shopCategories=[], shopSaleOnly=false;
+let shopCategories=[], shopSaleOnly=false, shopCategory=null;
+const SHOP_HEADER_TABS=[
+  {id:'weapons',label:'Оружие',icon:'⚔️'},
+  {id:'armor',label:'Броня',icon:'🛡️'},
+  {id:'magic',label:'Магия',icon:'✨'},
+  {id:'stones',label:'Камни',icon:'💎'},
+  {id:'herbs',label:'Травы',icon:'🌿'},
+  {id:'sale',label:'Продажа',icon:'💰'}
+];
+function defaultShopCategory(def){
+  if(['weapons','forge'].includes(def.id)) return 'weapons';
+  if(['armory','armor'].includes(def.id)) return 'armor';
+  if(def.id==='magic') return 'magic';
+  if(def.id==='jeweler') return 'stones';
+  if(def.id==='market') return 'herbs';
+  return null;
+}
+function shopCategoryFromTitle(title){
+  const t=String(title).toLowerCase();
+  if(/продажа/.test(t)) return 'sale';
+  if(/кристалл|жидкост/.test(t)) return 'stones';
+  if(/свитки|заклинани|гранат|гильдия магии/.test(t)) return 'magic';
+  if(/оружие|переков/.test(t)) return 'weapons';
+  if(/брон|доспех|поножи|сапоги|поручи|перчатки|зачарован/.test(t)) return 'armor';
+  if(/трав|рецепт|ягод|зелья и товары|ёмкост|еда|слух|отдых|тренер|сохранение|церковь|задания|материал/.test(t)) return 'herbs';
+  return null;
+}
+function shopCategoryAvailable(id,def,stock){
+  if(id==='sale') return !['tavern','inn','church','hall'].includes(def.id);
+  if(id==='weapons') return (stock.weapons||[]).length>0||['forge','weapons'].includes(def.id);
+  if(id==='armor') return (stock.armor||[]).length>0||['forge','armor'].includes(def.id)||
+    EQUIPMENT_GROUPS.some(g=>TIERED_EQUIPMENT.some(a=>a.group===g.id&&(a.shops||[]).includes(def.id)));
+  if(id==='magic') return def.id==='magic';
+  if(id==='stones') return def.id==='jeweler'||def.id==='magic'||!!stock.crystals;
+  if(id==='herbs') return !!stock.herbs||!!stock.food||!!stock.containers||!!stock.berries||def.id==='market';
+  return false;
+}
+function renderShopHeaderTabs(def,stock){
+  const host=$('shopTabs'); if(!host) return;
+  host.innerHTML=SHOP_HEADER_TABS.map(t=>{
+    const enabled=shopCategoryAvailable(t.id,def,stock);
+    const selected=shopCategory===t.id;
+    return '<button type="button" class="tab'+(selected?' sel':'')+'" data-shop-tab="'+t.id+'"'+
+      (t.id==='sale'?' data-sale="1"':'')+(enabled?'':' disabled')+'>'+t.icon+' '+t.label+'</button>';
+  }).join('');
+  host.querySelectorAll('button[data-shop-tab]').forEach(b=>b.onclick=()=>{
+    if(!b.disabled) setShopCategory(b.dataset.shopTab);
+  });
+}
+function setShopCategory(id){
+  shopCategory=id;
+  shopSaleOnly=id==='sale';
+  renderShop();
+}
+function applyShopCategoryFilter(){
+  const list=$('shopList'); if(!list) return;
+  let current=null;
+  [...list.children].forEach(el=>{
+    if(el.classList.contains('sec')) current=el.dataset.shopCategory||null;
+    el.style.display=(!shopCategory||current===shopCategory)?'':'none';
+  });
+}
+function finishShopRender(def,stock){
+  applyShopCategoryFilter();
+  renderShopHeaderTabs(def,stock);
+  renderShopCategoryPanel();
+  $('shopGold').textContent=game.gold;
+  $('shopCrystals').textContent=crystalCount();
+  updateParty();
+}
 function renderShopCategoryPanel(){
   const el=$('shopCategories'); if(!el) return;
-  const rows=shopCategories.filter(c=>c.rows>0);
+  const rows=shopCategories.filter(c=>c.rows>0&&(!shopCategory||c.category===shopCategory));
   el.innerHTML='<h3>Разделы лавки</h3>'+(rows.length?rows.map(c=>
     '<div class="sc-row"><span>'+esc(c.title)+'</span><b>'+c.rows+'</b></div>').join(''):
     '<div class="sc-row"><span>Товаров нет</span><b>0</b></div>')+
     '<div class="sc-row sc-total"><span>Итого</span><b>'+rows.reduce((s,c)=>s+c.rows,0)+'</b></div>';
-}
-function renderShopSaleTab(def){
-  if(['tavern','inn','church','hall'].includes(def.id)) return;
-  const tab=document.createElement('button');
-  tab.type='button'; tab.className='tab'+(shopSaleOnly?' sel':''); tab.dataset.sale='1';
-  tab.textContent='💰 Продажа';
-  tab.onclick=()=>{ shopSaleOnly=!shopSaleOnly; renderShop(); };
-  $('shopList').appendChild(tab);
 }
 function renderShopSale(def){
   shopSec('Продажа товаров');
@@ -4013,21 +4355,12 @@ function renderShop(){
   const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
   const stock=SHOP_STOCK[def.id]||SHOP_STOCK.market;
   const h=party()[game.invHero||0];
-  const allowed=(Array.isArray(game.shopKinds)&&game.shopKinds.length)
-    ? game.shopKinds.filter(id=>SHOP_TYPES.some(s=>s.id===id))
-    : shopKindsOf(game.shopCell);
-  const tabs=SHOP_TYPES.filter(s=>allowed.includes(s.id));
   $('shopTitle').textContent=def.id==='magic'?'Магазин Магии':def.icon+' '+(game.shopName||def.title);
-  $('shopTabs').innerHTML=tabs.map(s=>'<button class="tab'+(s.id===game.shopType?' sel':'')+'" data-shop="'+s.id+'">'+s.icon+' '+s.title+'</button>').join('');
-  $('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>toggleShop(b.dataset.shop));
   $('shopList').innerHTML='';
   shopCategories=[];
   drawShopInterior(def.id,performance.now(),game.shopName||def.title);
-  if(def.id==='hall'){ renderQuestOffers(); renderShopCategoryPanel(); return; }
-  if(shopSaleOnly){
-    renderShopSale(def); renderShopSaleTab(def); renderShopCategoryPanel();
-    $('shopGold').textContent=game.gold; $('shopCrystals').textContent=crystalCount(); updateParty(); return;
-  }
+  if(def.id==='hall'){ renderQuestOffers(); finishShopRender(def,stock); return; }
+  if(shopSaleOnly){ renderShopSale(def); finishShopRender(def,stock); return; }
 
   // Оружейная и палата продают свой товар плюс 10% чужого; кузница перековывает всё.
   // Рынок остаётся общим лавком, но не продаёт предметы комплекта.
@@ -4190,7 +4523,7 @@ function renderShop(){
   if(def.id==='tavern'){
     shopSec('Слухи');
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
-      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); beep(520,.08);
+      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); sfx('ui');
     })],'СЛУХИ');
     renderSkillTrainers('tavern');
   }
@@ -4213,7 +4546,7 @@ function renderShop(){
     });
     shopSec('Сохранение');
     shopRow('📖','Книга постояльцев','Отметить поход и сохранить прогресс',[shopButton('Сохранить',()=>{
-      saveProgress(); toast('Прогресс сохранён.'); beep(620,.1);
+      saveProgress(); toast('Прогресс сохранён.'); sfx('ui');
     })],'СОХРАНЕНИЕ');
   }
 
@@ -4230,11 +4563,7 @@ function renderShop(){
   }
 
   renderShopSale(def);
-  renderShopSaleTab(def);
-  renderShopCategoryPanel();
-  $('shopGold').textContent=game.gold;
-  $('shopCrystals').textContent=crystalCount();
-  updateParty();
+  finishShopRender(def,stock);
 }
 function crystalCount(){ return game?game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0):0; }
 function forgeItem(uid){
@@ -4246,7 +4575,7 @@ function forgeItem(uid){
   game.gold-=cost; it.reforges=(it.reforges||0)+1;
   it.dmg+=Math.max(1,Math.ceil(it.baseDmg/5));
   toast('Перековка: '+it.name+' +'+Math.max(1,Math.ceil(it.baseDmg/5))+' урона');
-  beep(660,.14); updateParty(); return true;
+  sfx('coins'); updateParty(); return true;
 }
 function enchantItem(uid,liquidId,withCrystal){
   const it=game.bag.find(i=>i.uid===uid); if(!it||it.type!=='weapon') return false;
@@ -4264,7 +4593,7 @@ function enchantItem(uid,liquidId,withCrystal){
   it.enchant={id:liq.id,stat:liq.stat,value:liq.value,color:liq.color};
   const base=it.baseName||it.name.replace(/ [^ ]+$/,'');
   it.baseName=base; it.name=base+' '+(LIQUID_NAME[liq.id]||liq.stat);
-  toast('Зачарование: '+it.name); beep(880,.18); updateParty(); return true;
+  toast('Зачарование: '+it.name); sfx('ui'); updateParty(); return true;
 }
 function forgeItemFree(it){
   if((it.reforges||0)>=5) return;
@@ -4279,7 +4608,7 @@ function sellBagItem(uid,silent){
   const gain=Math.round(i.sell)*(i.count||1);
   game.gold+=gain;
   game.bag.splice(game.bag.indexOf(i),1);
-  if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); beep(560,.08); }
+  if(!silent){ toast('Продано: '+i.name+' (+🪙 '+gain+')'); sfx('coins'); }
   updateParty(); return true;
 }
 function hasNeedItem(id){
@@ -4327,7 +4656,7 @@ function craftRecipe(r){
       desc:r.desc||'',capacity:def.capacity+tier.slots,weight:tier.weight,cost:12,sell:6,magic:{slots:tier.slots}});
   }
   else addItem({id:r.give.id,type:'potion',name:r.name,icon:r.icon,cost:8,sell:4,count:r.give.count,...eff});
-  toast('Создано: '+r.name+' ×'+(r.give.count||1)); beep(840,.16); updateParty(); return true;
+  toast('Создано: '+r.name+' ×'+(r.give.count||1)); sfx('ui'); updateParty(); return true;
 }
 
 /* Интерьеры лавок: разные для каждого типа, продавец за прилавком с лёгкой анимацией. */
@@ -4434,6 +4763,17 @@ function ensureContainers(snap){
 }
 function containerDef(id){ return CONTAINER_DEFS.find(d=>d.id===id)||null; }
 function containerState(id){ return game&&game.containers?game.containers[id]:null; }
+/* Мастерство ёмкости: простой → изысканный → волшебный. Классы задают и имя,
+   и требуемый ранг гильдии; старые сейвы с upgrade=0 остаются простыми. */
+function containerMastery(st){
+  const i=clamp(Number(st&&st.upgrade)||0,0,CONTAINER_CLASSES.length-1);
+  return CONTAINER_CLASSES[i]||CONTAINER_CLASSES[0];
+}
+function nextContainerCapacity(def,st){
+  if(!def||!st) return 0;
+  const cur=containerMastery(st), next=CONTAINER_CLASSES[Math.min(st.upgrade+1,CONTAINER_CLASSES.length-1)];
+  return st.capacity+def.step+Math.max(0,next.slots-cur.slots);
+}
 /* Ёмкости отряда открываются ноской: карманы и мошна всегда, сумка/сундук/пояс —
    по максимальному рангу гильдии в отряде, чтобы общая сумка не ломалась. */
 function partyCarryingIds(){
@@ -4495,9 +4835,8 @@ function containerWeight(){
   return round1(CONTAINER_DEFS.reduce((sum,def)=>sum+(Number((game.containers[def.id]||{}).weight)||0),0));
 }
 function containerTabLabel(def){
-  const st=containerState(def.id);
-  const prefix=st&&st.tier&&st.tier!=='rusty'?containerTier(st.tier).name.slice(0,2)+' ':'';
-  return prefix+def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity)+
+  const st=containerState(def.id), cls=containerMastery(st);
+  return cls.name+' '+def.name+' '+(st?containerItems(def.id).length:0)+'/'+(st?st.capacity:def.capacity)+
     (containerAvailable(def.id)?'':' 🔒');
 }
 function containerReport(){
@@ -4511,8 +4850,10 @@ function containerReport(){
     const items=containerItems(def.id);
     if(st&&items.length>st.capacity) errors.push(def.name+' переполнена');
     if(st&&!CONTAINER_TIER_IDS.includes(st.tier)) errors.push(def.name+' имеет неизвестный тир');
+    const cls=containerMastery(st);
     return {id:def.id,name:def.name,used:items.length,capacity:st?st.capacity:def.capacity,
-      upgrade:st?st.upgrade:0,tier:st?st.tier:'rusty',magic:st?Object.assign({},st.magic||{}):{},
+      upgrade:st?st.upgrade:0,tier:st?st.tier:'rusty',mastery:cls.name,rank:cls.rank,classNumber:cls.number,
+      magic:st?Object.assign({},st.magic||{}):{},
       available:containerAvailable(def.id),weight:st?st.weight:0,accept:def.accept.slice(),tab:containerTabLabel(def)};
   });
   const loose=game.bag.filter(it=>!worn.has(it.uid)&&!it.container).map(it=>it.name);
@@ -4566,28 +4907,30 @@ function toggleInventory(open){
   game.invOpen=!!open;
   $('inventory').classList.toggle('hidden',!game.invOpen);
   if(game.invOpen) renderInventory();
-  updateControls(); beep(400,.06);
+  updateControls(); sfx('ui');
 }
 const ITEM_SPRITE_BASE='../../assets/sprites/items/';
 const UI_SPRITE_BASE='../../assets/sprites/ui/';
 /* PR #9: восемь слотов манекена + независимые слоты main (boots/bracers/cloak).
    feet сохранён как старый слот PR #9; boots — новый слот main. */
+/* Слоты манекена не перекрываются: каждый можно нажать отдельно, включая
+   вторую руку, пояс и ёмкости. Координаты — проценты арены 200/350. */
 const MANNEQUIN_SLOTS=[
-  {id:'body',label:'Торс',hint:'мантия или доспех',x:31,y:19,w:38,h:31},
-  {id:'legs',label:'Поножи',hint:'поножи',x:32,y:51,w:36,h:18},
-  {id:'feet',label:'Сапоги',hint:'сапоги',x:28,y:86,w:44,h:10},
-  {id:'shield',label:'Щит',hint:'щит',x:3,y:21,w:27,h:26},
-  {id:'weapon',label:'Руки',hint:'оружие',x:64,y:18,w:34,h:42},
-  {id:'offhand',label:'Вторая рука',hint:'свободна',x:72,y:78,w:24,h:8},
-  {id:'hands',label:'Перчатки',hint:'перчатки',x:4,y:48,w:25,h:14},
-  {id:'helmet',label:'Голова',hint:'шлем',x:22,y:3,w:20,h:15},
-  {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:15,w:16,h:8},
-  {id:'ring',label:'Кольцо',hint:'кольцо',x:54,y:44,w:13,h:9},
-  {id:'boots',label:'Ботинки',hint:'ботинки main',x:28,y:72,w:44,h:12},
-  {id:'belt',label:'Пояс',hint:'пояс',x:31,y:69,w:38,h:8},
-  {id:'pouch',label:'Сумка',hint:'сумка или мошна',x:66,y:86,w:24,h:10},
-  {id:'bracers',label:'Поручи',hint:'поручи',x:71,y:62,w:25,h:14},
-  {id:'cloak',label:'Плащ',hint:'плащ или роба',x:3,y:64,w:25,h:12}
+  {id:'body',label:'Торс',hint:'мантия или доспех',x:33,y:26,w:34,h:24},
+  {id:'legs',label:'Поножи',hint:'поножи',x:33,y:52,w:34,h:14},
+  {id:'feet',label:'Сапоги',hint:'сапоги',x:33,y:86,w:34,h:10},
+  {id:'shield',label:'Щит',hint:'щит',x:2,y:20,w:24,h:24},
+  {id:'weapon',label:'Руки',hint:'оружие',x:74,y:16,w:24,h:40},
+  {id:'offhand',label:'Вторая рука',hint:'свободна',x:82,y:62,w:16,h:10},
+  {id:'hands',label:'Перчатки',hint:'перчатки',x:2,y:46,w:24,h:14},
+  {id:'helmet',label:'Голова',hint:'шлем',x:38,y:2,w:24,h:13},
+  {id:'amulet',label:'Амулет',hint:'амулет',x:42,y:16,w:16,h:7},
+  {id:'ring',label:'Кольцо',hint:'кольцо',x:68,y:62,w:12,h:8},
+  {id:'boots',label:'Ботинки',hint:'ботинки main',x:33,y:76,w:34,h:8},
+  {id:'belt',label:'Пояс',hint:'пояс',x:33,y:68,w:34,h:6},
+  {id:'pouch',label:'Мошна',hint:'сумка или мошна',x:74,y:86,w:24,h:10},
+  {id:'bracers',label:'Поручи',hint:'поручи',x:74,y:74,w:24,h:10},
+  {id:'cloak',label:'Плащ',hint:'плащ или роба',x:2,y:62,w:24,h:14}
 ];
 const SLOT_GLYPHS={
   helmet:'<path d="M5 12a7 7 0 0 1 14 0v4h-4v-3H9v3H5z"/>',
@@ -4750,19 +5093,25 @@ function upgradeContainer(id){
   const def=containerDef(id), st=containerState(id);
   if(!def||!st) return false;
   if(!containerAvailable(id)){ toast(def.name+' пока недоступна: нужна носка.'); return false; }
-  if(st.upgrade>=3){ toast('Достигнут лимит улучшений контейнера.'); return false; }
-  const nextClass=CONTAINER_CLASSES[st.upgrade+1];
+  if(st.upgrade>=CONTAINER_CLASSES.length-1){
+    toast('Достигнуто мастерство «'+containerMastery(st).name+'»: улучшений больше нет.'); return false;
+  }
+  const curClass=containerMastery(st), nextClass=CONTAINER_CLASSES[st.upgrade+1];
   if(nextClass&&!party().some(h=>guildAtLeast((h.promotion&&h.promotion.guild)||'novice',nextClass.rank))){
-    toast('Для класса «'+nextClass.name+'» нужна носка: '+nextClass.rank+'.'); return false;
+    toast('Для мастерства «'+nextClass.name+'» нужна носка: '+nextClass.rank+'.'); return false;
   }
   const cost=def.cost*(st.upgrade+1);
   if(game.gold<cost){ toast('Не хватает золота: нужно '+cost+' монет.'); return false; }
-  game.gold-=cost; st.upgrade++; st.capacity+=def.step;
+  game.gold-=cost; st.upgrade++;
+  st.tier=nextClass.tier; st.mastery=nextClass.rank; st.classNumber=nextClass.number;
+  st.capacity=Math.max(st.capacity+def.step+Math.max(0,nextClass.slots-curClass.slots),
+    def.capacity+nextClass.slots+st.upgrade*def.step);
+  if(nextClass.magic) st.magic=Object.assign({},st.magic||{},{slots:nextClass.slots});
   /* Освободившиеся слоты сразу забирают предметы, оставшиеся без контейнера. */
   game.bag.filter(i=>!i.container&&containerAccepts(def,i)).forEach(i=>{
     if(containerRoom(id)>0) i.container=id;
   });
-  toast(def.name+' улучшена: '+st.capacity+' слотов.');
+  toast(def.name+': '+nextClass.name+', '+containerItems(id).length+'/'+st.capacity+' слотов.');
   renderInventory(); updateParty(); return true;
 }
 function installContainerItem(uid){
@@ -4795,6 +5144,50 @@ function grantContainerTier(id,tier){
   if(!containerAvailable(id)) return false;
   return setContainerTier(id,tier);
 }
+function closeItemContext(){
+  invContextUid=null;
+  const el=$('invContext'); if(el) el.classList.add('hidden');
+}
+function openItemContext(uid,btn){
+  const it=game&&game.bag.find(i=>i.uid===uid), host=$('invContext');
+  if(!it||!host||!['herb','scroll'].includes(it.type)) return false;
+  invContextUid=uid;
+  host.innerHTML='<b>'+esc(it.name)+'</b>';
+  const act=(label,fn)=>{
+    const b=document.createElement('button'); b.type='button'; b.dataset.ctxAction=label;
+    b.textContent=label; b.onclick=()=>{ fn(); closeItemContext(); }; host.appendChild(b);
+  };
+  if(it.type==='herb'){
+    act('Использовать траву',()=>{ useItem(uid); renderInventory(); updateParty(); });
+    act('Рецепты алхимии',()=>{ invTab='Травы'; invArmedSlot=null; renderInventory(); });
+  }else{
+    act('Изучить / применить',()=>{ useItem(uid); renderInventory(); updateParty(); });
+    act('Описание свитка',()=>{
+      toast((spell(it.spell)||{}).name+' · '+(spell(it.spell)||{}).desc||'Магический свиток.');
+    });
+  }
+  const r=btn?btn.getBoundingClientRect():null;
+  host.style.left=Math.max(4,Math.min(window.innerWidth-174,r?r.right-150:40))+'px';
+  host.style.top=Math.max(4,Math.min(window.innerHeight-130,r?r.bottom+4:40))+'px';
+  host.classList.remove('hidden'); return true;
+}
+function alchemyTablePanel(){
+  const h=party()[game.invHero||0];
+  const rows=RECIPES.filter(r=>(r.kind||'herb')==='herb'||r.kind==='spell').map(r=>{
+    const have=r.need.every(hasNeedItem), block=gearRecipeBlock(r,h);
+    const need=r.need.map(id=>{
+      const name=(herb(id)||MATERIALS.find(m=>m.id===id)||{name:id}).name;
+      const count=(game.bag.filter(i=>i.id===id&&((i.count||1)>0)).reduce((s,i)=>s+(i.count||1),0));
+      return name+' '+count;
+    }).join(' + ');
+    return {id:r.id,name:r.name,need,ready:have&&!block,block:block||(!have?'Не хватает компонентов':'')};
+  });
+  return '<div class="alchemyTable" id="alchemyTable"><h3>🧪 Простая алхимия</h3><table><thead><tr>'+
+    '<th>Рецепт</th><th>Нужно (есть)</th><th></th></tr></thead><tbody>'+rows.map(r=>
+      '<tr data-recipe="'+r.id+'"><td>'+esc(r.name)+'</td><td>'+esc(r.need)+'</td><td>'+
+      '<button type="button" data-craft="'+r.id+'"'+(r.ready?'':' disabled')+' title="'+esc(r.block)+'">'+
+      (r.ready?'Сварить':'—')+'</button></td></tr>').join('')+'</tbody></table></div>';
+}
 function itemCell(it,h){
   const target=mannequinSlotForItem(it);
   // Выбранный на манекене слот второй руки направляет туда одноручное оружие.
@@ -4815,6 +5208,7 @@ function itemCell(it,h){
   }
   return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),spritePaths:itemSpritePaths(it),
     count:it.count||1,action,
+    context:(it.type==='herb'||it.type==='scroll')?it.uid:null,contextKind:it.type,
     blocked:!!block&&(it.type==='weapon'||it.type==='armor'),
     moveFrom:invContainer?it.uid:null,moveTo:invContainer?nextContainerFor(it,invContainer):null};
 }
@@ -4885,6 +5279,13 @@ function makeInvCell(cell){
     mv.textContent='→';
     mv.onclick=e=>{ e.stopPropagation(); moveContainerItem(cell.moveFrom,cell.moveTo); };
     b.appendChild(mv);
+  }
+  if(cell.context){
+    const ctx=document.createElement('button');
+    ctx.type='button'; ctx.className='ctxBtn'; ctx.dataset.context=cell.context;
+    ctx.title='Действия с предметом'; ctx.textContent='⋯';
+    ctx.onclick=e=>{ e.stopPropagation(); openItemContext(cell.context,ctx); };
+    b.appendChild(ctx);
   }
   const show=()=>showInvDetail(cell);
   b.addEventListener('mouseenter',show);
@@ -5007,6 +5408,7 @@ function renderPartySummary(){
 }
 function renderInventory(){
   if(!game) return;
+  closeItemContext();
   const h=party()[game.invHero||0];
   if(!h) return;
   if(invContainer&&!containerAvailable(invContainer)) invContainer=null;
@@ -5102,6 +5504,15 @@ function renderInventory(){
     list.appendChild(ctabs);
   }
 
+  if(invTab==='Травы'||invTab==='Ремесло'){
+    const table=document.createElement('div'); table.innerHTML=alchemyTablePanel();
+    const panel=table.firstElementChild; list.appendChild(panel);
+    panel.querySelectorAll('button[data-craft]').forEach(b=>b.onclick=()=>{
+      const r=RECIPES.find(x=>x.id===b.dataset.craft);
+      if(r&&craftRecipe(r)){ renderInventory(); updateParty(); }
+    });
+  }
+
   const grid=document.createElement('div'); grid.className='invGrid';
   const cells=[];
   if(invTab==='Магия'){
@@ -5143,11 +5554,12 @@ function renderInventory(){
     if(invContainer){
       const def=containerDef(invContainer), st=containerState(invContainer);
       if(def&&st){
-        const cost=def.cost*(st.upgrade+1), over=st.upgrade>=3, poor=game.gold<cost;
+        const cls=containerMastery(st), next=CONTAINER_CLASSES[Math.min(st.upgrade+1,CONTAINER_CLASSES.length-1)];
+        const cost=def.cost*(st.upgrade+1), over=st.upgrade>=CONTAINER_CLASSES.length-1, poor=game.gold<cost;
         cells.push({
-          name:'Улучшить '+def.name,
-          desc:'Слотов: '+containerItems(def.id).length+'/'+st.capacity+' → '+(st.capacity+def.step)+
-            ' · 🪙 '+cost+(over?' · лимит улучшений':poor?' · не хватает золота':''),
+          name:'Улучшить '+def.name+' · '+cls.name+' → '+next.name,
+          desc:'Слотов: '+containerItems(def.id).length+'/'+st.capacity+' → '+nextContainerCapacity(def,st)+
+            ' · 🪙 '+cost+(over?' · предел мастерства':poor?' · не хватает золота':''),
           blocked:over||poor,
           action:()=>upgradeContainer(def.id)
         });
@@ -5209,13 +5621,16 @@ function useItem(uid){
   if(!game||!uid) return false;
   const it=game.bag.find(i=>i.uid===uid); if(!it) return false;
   const h=party()[game.invHero||0];
+  if(h&&h.hp<=0&&!it.healAll&&['potion','liquid','herb','food'].includes(it.type)){
+    toast('Герой без сознания — воскрешает только церковь.'); return false;
+  }
   if(it.type==='potion'){
-    if(it.healAll){ party().forEach(x=>x.hp=Math.min(x.maxHp,x.hp+it.healAll)); toast('Все герои лечатся.'); }
+    if(it.healAll){ party().forEach(x=>{ if(x.hp>0) x.hp=Math.min(x.maxHp,x.hp+it.healAll); }); toast('Все живые герои лечатся.'); }
     else if(it.heal){ h.hp=Math.min(h.maxHp,h.hp+it.heal); toast(heroName(h)+': +'+it.heal+' HP.'); }
-    if(it.mp) h.mp=Math.min(h.maxMp,h.mp+it.mp);
-    if(it.cure){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
-    if(it.def){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
-    if(it.atk){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
+    if(it.mp&&h.hp>0) h.mp=Math.min(h.maxMp,h.mp+it.mp);
+    if(it.cure&&h.hp>0){ h.statuses=(h.statuses||[]).filter(s=>s.id!=='poison'); h.poison=0; h.poisonTurns=0; toast('Яд снят.'); }
+    if(it.def&&h.hp>0){ addStatus(h,'def',3,{def:it.def,icon:'🛡'}); toast('Защита +'+it.def+' на 3 хода.'); }
+    if(it.atk&&h.hp>0){ addStatus(h,'atk',3,{atk:it.atk,icon:'⚔'}); toast('Атака +'+it.atk+' на 3 хода.'); }
     if(it.crystal) addItem({id:'crystal',type:'crystal',name:'Кристалл',icon:'💎',cost:7,sell:6});
     if(it.frost&&game.battle){ game.battle.enemies.forEach(e=>{ if(e.alive){ e.hp=Math.max(0,e.hp-12); if(e.hp<=0) onEnemyKilled(game.battle,e); } }); toast('Мороз бьёт по врагам.'); }
   }else if(it.type==='liquid'){
@@ -5256,7 +5671,7 @@ function useItem(uid){
     toast('Сундук: золото и кристалл.');
   }else{ toast('Этот предмет нельзя использовать.'); return false; }
   it.count=(it.count||1)-1; if(it.count<=0) game.bag.splice(game.bag.indexOf(it),1);
-  beep(760,.1); updateParty(); return true;
+  sfx('coins'); updateParty(); return true;
 }
 
 /* ============================ 10. ПРОЦЕДУРНАЯ ГРАФИКА ============================ */
@@ -5726,6 +6141,20 @@ function drawHeroFigure(x,y,s,h,now){
   }
   endSpriteBreath(breath);
 }
+function drawHeroCorpse(x,y,s,h){
+  // Повернутый и приглушённый силуэт: тот же спрайт, никаких новых PNG.
+  ctx.save();
+  ctx.translate(x,y-4*s);
+  ctx.rotate(-Math.PI/2.7);
+  ctx.globalAlpha=.42;
+  drawHeroFigure(0,0,s,h,0);
+  ctx.restore();
+  ctx.save();
+  ctx.globalAlpha=.85; ctx.fillStyle='#fca5a5';
+  setFont(Math.max(9,Math.round(11*s))); ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('†',x,y-28*s);
+  ctx.restore();
+}
 
 /* ============================ 11. КАРТА ============================ */
 const MINIMAP_VIEW=30, MINIMAP_PX=112;
@@ -5903,7 +6332,7 @@ function toggleBigMap(open){
   const el=document.getElementById('bigMap');
   if(el) el.classList.toggle('hidden',!game.mapOpen);
   if(game.mapOpen) drawBigMap();
-  updateControls(); beep(420,.06);
+  updateControls(); sfx('ui');
   return game.mapOpen;
 }
 function bigMapCellAt(clientX,clientY){
@@ -6178,9 +6607,13 @@ function drawBattle(now,dt){
     setFont(9); ctx.fillStyle='#fde68a'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText('ЦЕЛЬ',p.x,p.y-87*s); ctx.restore();
   }
+  corpseDrawState.drawn=[]; corpseDrawState.at=now;
   party().forEach((h,i)=>{
-    if(h.hp<=0) return;
     const p=battleHeroPoint(b,i);
+    if(h.hp<=0){
+      if(!b.end){ drawHeroCorpse(p.x,p.y,BF.heroScale,h); corpseDrawState.drawn.push(i); }
+      return;
+    }
     drawHeroFigure(p.x+hj,p.y,BF.heroScale,h,now);
   });
   if(b.floaters&&b.floaters.length){
@@ -6191,7 +6624,7 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель увеличена примерно на 20%; подпись группы честно перечисляет врагов.
+  // Верхняя панель компактная, около +10%; подпись группы честно перечисляет врагов.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
   const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
   panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
@@ -6204,10 +6637,10 @@ function drawBattle(now,dt){
   ctx.fillText(hpText,epanel+BF.enemyPanelW-12,26);
   ctx.textAlign='left';
   const hpRatio=e?clamp(e.hp/e.maxHp,0,1):0;
-  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,42,BF.enemyPanelW-24,7,3); ctx.fill();
-  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,42,Math.max(3,(BF.enemyPanelW-24)*hpRatio),7,3); ctx.fill(); }
-  setFont(11,false); ctx.fillStyle='#fca5a5';
-  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,62);
+  ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,41,BF.enemyPanelW-24,5,2); ctx.fill();
+  if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,41,Math.max(3,(BF.enemyPanelW-24)*hpRatio),5,2); ctx.fill(); }
+  setFont(10,false); ctx.fillStyle='#fca5a5';
+  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,57);
   // Узкий бейдж хода не заходит на увеличенную панель врага.
   roundRect(W/2-BF.badgeW/2,12,BF.badgeW,26,7); ctx.fillStyle='rgba(6,8,18,.9)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.lineWidth=1.5; ctx.stroke();
@@ -6249,7 +6682,7 @@ function renderHeroPick(slot){
 function renderDiff(){
   $('diffRow').innerHTML=DIFFICULTY.map(d=>'<button class="diff'+(d.id===selDiff?' sel':'')+'" data-diff="'+d.id+'">'+d.name+
     '<small>'+d.maps[0]+'–'+d.maps[1]+' карт · 30/60/100 клеток</small></button>').join('');
-  $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); beep(420,.05); });
+  $('diffRow').querySelectorAll('button').forEach(b=>b.onclick=()=>{ selDiff=b.dataset.diff; renderDiff(); sfx('ui'); });
 }
 function renderStart(){ updateProgressUI(); renderHeroPick(0); renderHeroPick(1); renderHeroPick(2); renderDiff(); }
 
@@ -6351,7 +6784,7 @@ cv.addEventListener('pointerdown',e=>{
   if(idx>=0){
     // Клик/тап по врагу только выбирает цель: он не бьёт и не тратит ману.
     // Удар/заклинание выполняются отдельной кнопкой или пробелом по выбранной цели.
-    b.targetIdx=idx; clearArmedAction(); beep(520,.05);
+    b.targetIdx=idx; clearArmedAction(); sfx('ui');
     toast('Цель: '+(b.enemies[idx]&&b.enemies[idx].name||'враг'));
     updateParty(); updateControls();
     return;
@@ -6606,6 +7039,8 @@ function churchReport(){
   const costs={at0:churchCost(0),at100:churchCost(100),at500:churchCost(500)};
   if(costs.at0!==10||costs.at100!==10||costs.at500!==50) errors.push('Десятина должна быть max(10, floor(gold*0.1))');
   if(!/churchTithe\(\)/.test(src)||!/h\.hp=Math\.max\(1/.test(src)) errors.push('Воскрешение не привязано к десятине');
+  if(!/if\(h\.hp<=0\) return/.test(String(restParty))) errors.push('Отдых воскрешает павшего героя');
+  if(!/x\.hp>0/.test(String(useItem))) errors.push('Лечение предметами воскрешает павшего героя');
   if(!SHOP_TYPES.some(s=>s.id==='church')) errors.push('Нет здания церкви');
   const hasChurch=!!(game&&game.world.maps.some(m=>(m.shops||[]).some(s=>s.kind==='church')));
   return {ok:!errors.length,errors,costs,hasChurch,dead:party().filter(h=>h.hp<=0).length};
@@ -6814,11 +7249,14 @@ function shopReport(){
   if(/почин/i.test(shopText)) errors.push('В лавке осталось слово «Починка»');
   const titleText=String(($('shopTitle')?$('shopTitle').textContent:''));
   if(opened&&def.id==='magic'&&!/Магазин Магии/.test(titleText)) errors.push('Нет точного заголовка «Магазин Магии»');
-  const catPanel=$('shopCategories'), saleTab=$('shopList')?$('shopList').querySelector('[data-sale="1"]'):null;
+  const catPanel=$('shopCategories'), headerTabs=$('shopTabs');
+  const saleTab=headerTabs?headerTabs.querySelector('[data-sale="1"]'):null;
+  const bottomSale=$('shopList')?$('shopList').querySelector('[data-sale="1"]'):null;
   if(opened&&def.id!=='hall'&&(!catPanel||catPanel.querySelectorAll('.sc-row').length<2))
     errors.push('Нет разбивки ассортимента справа');
   if(opened&&!['tavern','inn','church','hall'].includes(def.id)&&(!saleTab||!/Продажа/.test(saleTab.textContent)))
-    errors.push('Нет нижней вкладки «Продажа»');
+    errors.push('Нет вкладки «Продажа» в шапке лавки');
+  if(bottomSale) errors.push('Вкладка «Продажа» осталась внизу списка товаров');
   const buttons=$('shopList')?Array.from($('shopList').querySelectorAll('button.act')):[];
   const priceButtons=buttons.filter(b=>/🪙\s*\d+/.test(b.textContent||''));
   const over=priceButtons.filter(b=>!b.disabled).map(b=>{
@@ -6854,6 +7292,8 @@ function shopReport(){
   return {
     ok:!errors.length, errors, open:opened, shop:def.id, title:def.title, displayedTitle:titleText,
     categories:shopCategories.slice(), saleTab:!!saleTab, saleOnly:shopSaleOnly,
+    category:shopCategory, tabs:headerTabs?[...headerTabs.querySelectorAll('button[data-shop-tab]')].map(b=>({
+      id:b.dataset.shopTab,label:b.textContent.trim(),selected:b.classList.contains('sel'),disabled:b.disabled})):[],
     gold:game?game.gold:0, crystals:crystalCount(),
     stockKeys:stock?Object.keys(stock):[], buyButtons:priceButtons.length,
     disabledBuyButtons:priceButtons.filter(b=>b.disabled).length,
@@ -6950,6 +7390,59 @@ function difficultyReport(){
     samples:all.slice(0,30),violations:{nearOthers:nearOthers.length,wyvernNear:wyvernNear.length,
       easyBad:easyBad.length,bandMismatch:bandMismatch.length}};
 }
+/* Отчёт ЧАСТИ 4: компактный двор, дороги до края карты, обход препятствий
+   и доступность всех бонусов/объектов из точки входа. */
+function accessReport(){
+  const errors=[],maps=game&&game.world?game.world.maps:[];
+  const rows=maps.map(m=>{
+    const size=m.size, seen=reachableCells(m.cells,size,m.entry.x,m.entry.y);
+    const objects=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const t=m.cells[y][x].t;
+      if(!['gate','boss','chest','treasure'].includes(t)) continue;
+      const access=objectAccessible(m.cells,size,seen,x,y);
+      if(!access) errors.push('карта '+m.index+': '+t+'@'+x+','+y);
+      objects.push({t,x,y,access,near:access?null:DIRS.map(v=>{
+        const nx=x+v[0],ny=y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size?m.cells[ny][nx].t:'edge';
+      })});
+    }
+    let edgeRoads=0,obstaclesOnRoad=0;
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const c=m.cells[y][x];
+      if((c.t==='road'||c.t==='bridge')&&(x===0||y===0||x===size-1||y===size-1)) edgeRoads++;
+      if(['mountain','rock','tree','house','shop'].includes(c.t)&&c.roadKind) obstaclesOnRoad++;
+    }
+    const gateRoads=[];
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      if(m.cells[y][x].t!=='gate') continue;
+      const roads=DIRS.filter(v=>{
+        const nx=x+v[0],ny=y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size&&['road','bridge'].includes(m.cells[ny][nx].t);
+      }).length;
+      if(!roads) errors.push('карта '+m.index+': выход без дороги@'+x+','+y);
+      const edge=DIRS.map(v=>({x:x+v[0],y:y+v[1]})).filter(p=>p.x>=0&&p.y>=0&&p.x<size&&p.y<size&&
+        (p.x===0||p.y===0||p.x===size-1||p.y===size-1)).map(p=>({x:p.x,y:p.y,t:m.cells[p.y][p.x].t}));
+      gateRoads.push({x,y,roads,edge});
+    }
+    const b=m.settlement&&m.settlement.buildings||[];
+    const spread=b.length?Math.max(...b.map(q=>Math.max(Math.abs(q.x-m.settlement.x),Math.abs(q.y-m.settlement.y)))):99;
+    const connected=b.filter(q=>objectAccessible(m.cells,size,seen,q.x,q.y)).length;
+    const unreachableBuildings=b.filter(q=>!objectAccessible(m.cells,size,seen,q.x,q.y))
+      .map(q=>({kind:q.kind,x:q.x,y:q.y,near:DIRS.map(v=>{
+        const nx=q.x+v[0],ny=q.y+v[1];
+        return nx>=0&&ny>=0&&nx<size&&ny<size?m.cells[ny][nx].t:'edge';
+      })}));
+    if(spread>4) errors.push('карта '+m.index+': здания поселения разбросаны на '+spread);
+    if(connected!==b.length) errors.push('карта '+m.index+': недоступны здания '+(b.length-connected));
+    if(!edgeRoads) errors.push('карта '+m.index+': дороги не доходят до края');
+    if(obstaclesOnRoad) errors.push('карта '+m.index+': дорога поверх препятствия');
+    return {map:m.index,size,objects:objects.length,unreachable:objects.filter(o=>!o.access).length,
+      edgeRoads,gateRoads,clusterSpread:spread,buildings:b.length,connected,unreachableBuildings,
+      details:objects.filter(o=>!o.access),obstaclesOnRoad};
+  });
+  return {ok:!errors.length,errors:errors.slice(0,20),rows};
+}
 function settlementReport(){
   const errors=[],maps=game&&game.world?game.world.maps:[];
   const settlements=maps.map(m=>({map:m.index,name:m.settlement&&m.settlement.name,
@@ -7000,6 +7493,7 @@ window.__mm6Debug={
   setTurn:(n)=>{ if(game){ game.world.turn=Math.max(0,Math.round(n||0)); updateWeatherByTurn(); } return weather.debug(); },
   setSeason:(season)=>({season:setGameSeason(season),...treesReport()}),
   treesReport:()=>treesReport(),
+  accessReport:()=>accessReport(),
   startBattle:(which)=>{
     if(!game||game.battle) return null;
     if(Array.isArray(which)&&which.length) return startBattle(which.map(e=>(e&&e.maxHp?e:spawnMonster(e,0,0,0,null,false,false))),null);
@@ -7011,6 +7505,7 @@ window.__mm6Debug={
   },
   toggleInventory:(open)=>toggleInventory(open),
   castSpell:(id,target)=>castSpell(id,target),
+  heroAttack:()=>heroAttack(),
   tryMove:(dx,dy)=>tryMove(dx,dy),
   fleeBattle:()=>fleeBattle(),
   closeBattle:()=>closeBattleKeep(),
@@ -7018,9 +7513,13 @@ window.__mm6Debug={
   forceShop:(type)=>{
     if(!game||!SHOP_TYPES.some(s=>s.id===type)) return null;
     game.shopType=type; game.shopOpen=true; game.shopKinds=[type]; game.shopCell=null;
+    shopCategory=defaultShopCategory(SHOP_TYPES.find(s=>s.id===type)); shopSaleOnly=false;
     $('shop').classList.remove('hidden'); renderShop(); return shopReport();
   },
-  toggleShopSale:()=>{ shopSaleOnly=!shopSaleOnly; renderShop(); return shopSaleOnly; },
+  toggleShopSale:()=>{
+    const def=SHOP_TYPES.find(s=>s.id===game.shopType)||SHOP_TYPES[0];
+    setShopCategory(shopSaleOnly?defaultShopCategory(def):'sale'); return shopSaleOnly;
+  },
   openBossChest:()=>openBossChest(),
   progressionState:()=>({version:game&&game.version,clockMinutes:game&&game.clockMinutes,hunger:game&&game.hunger,
     pendingXp:game&&game.pendingXp,partyLevel:partyLevel(),
@@ -7142,9 +7641,14 @@ window.__mm6Debug={
         enemy:r.dataset.enemy===undefined?null:+r.dataset.enemy,
         name:r.querySelector('.tq-name').textContent,
         active:r.classList.contains('active'),color,animation:s.animationName,
+        dead:r.dataset.dead==='1',
+        decoration:getComputedStyle(r.querySelector('.tq-name')).textDecorationLine,
+        opacity:+Number(s.opacity).toFixed(2),
         y:+r.getBoundingClientRect().y.toFixed(1)};
     });
     return {visible:!el.classList.contains('hidden'),rows,pointerEvents:getComputedStyle(el).pointerEvents,
+      total:battleQueueRows(b).length,limit:TURN_QUEUE_LIMIT,
+      more:!!el.querySelector('.tq-more'),
       classNames:partyClassLabels(),fullNames:partyClassLabels().map(n=>n.toUpperCase()),
       enemyNames:enemyQueueLabels(b)};
   },
@@ -7161,6 +7665,14 @@ window.__mm6Debug={
           y:+r.getBoundingClientRect().y.toFixed(1),h:+r.getBoundingClientRect().height.toFixed(1)};
       }),classes:party().map((h,i)=>heroClassLabel(i))};
   },
+  portraitReport:()=>({cards:[...document.querySelectorAll('#party .pcard')].map((card,i)=>{
+    const img=card.querySelector('.pface'), status=card.querySelector('.pstatus');
+    const h=party()[i];
+    return {hero:i,src:img&&img.getAttribute('src'),loaded:!!img&&img.complete&&img.naturalWidth>0,
+      visible:!!img&&getComputedStyle(img).display!=='none',
+      status:status&&status.textContent,expected:heroStatusLine(h),
+      cls:portraitClass(h),variant:portraitVariant(h,i)};
+  })}),
   loadReport:()=>party().map(h=>{ const i=loadInfo(h); return {hero:h.def.name,strength:heroStrength(h.def),...i}; }),
   equipByUid:(uid,slot)=>{
     if(!game) return false;
@@ -7218,6 +7730,41 @@ window.__mm6Debug={
       slotsInDom:[...(stage?stage.querySelectorAll('.mq-slot[data-slot]'):[])].map(el=>el.dataset.slot),
       containerSection:!!document.querySelector('#invList .invSlotStrip[data-section="containers"]')};
   },
+  paperDollLayoutReport:()=>{
+    const stage=document.querySelector('#mannequin .mq-stage');
+    const slots=[...(stage?stage.querySelectorAll('.mq-slot[data-slot]'):[])].map(el=>{
+      const r=el.getBoundingClientRect();
+      return {id:el.dataset.slot,x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)};
+    });
+    const overlaps=[];
+    for(let i=0;i<slots.length;i++) for(let j=i+1;j<slots.length;j++){
+      const a=slots[i], b=slots[j];
+      if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h) overlaps.push([a.id,b.id]);
+    }
+    return {slots,overlaps,unique:new Set(slots.map(s=>s.id)).size===MANNEQUIN_SLOTS.length};
+  },
+  inventoryPart7Report:()=>{
+    const grid=document.querySelector('.invGrid'), cs=grid?getComputedStyle(grid):null;
+    const ctx=$('invContext'), table=$('alchemyTable');
+    const containers=game&&game.containers?CONTAINER_DEFS.map(def=>{
+      const st=containerState(def.id), cls=containerMastery(st);
+      return {id:def.id,mastery:cls.name,rank:cls.rank,used:containerItems(def.id).length,
+        capacity:st?st.capacity:def.capacity,label:containerTabLabel(def)};
+    }):[];
+    return {
+      grid:{cells:grid?grid.children.length:0,columns:cs?cs.gridTemplateColumns.split(' ').length:0,
+        rows:cs?cs.gridTemplateRows.split(' ').length:0,overflow:cs?cs.overflow:null,
+        height:grid?grid.clientHeight:0,content:grid?grid.scrollHeight:0},
+      context:{open:!!ctx&&!ctx.classList.contains('hidden'),uid:invContextUid,
+        title:ctx?ctx.querySelector('b')?.textContent||'':'' ,actions:ctx?[...ctx.querySelectorAll('button')].map(b=>b.textContent):[]},
+      alchemy:{present:!!table,rows:table?[...table.querySelectorAll('tbody tr')].map(tr=>({
+        id:tr.dataset.recipe,ready:!!tr.querySelector('button:not([disabled])')})):[]},
+      containers,
+      clusterButton:!!document.querySelector('.invCell .ctxBtn')
+    };
+  },
+  openItemContext:(uid)=>openItemContext(uid),
+  closeItemContext:()=>{ closeItemContext(); return true; },
   containerReport:()=>containerReport(),
   itemsReport:()=>itemReport(),
   rollCatalogItem:(type,tier,rng)=>rollCatalogItem(type,tier,rng),
@@ -7248,6 +7795,13 @@ window.__mm6Debug={
     const it=makeItem(Object.assign({},def)); game.bag.push(it); updateParty(); return true; },
   setHeroHp:(i,hp)=>{ const h=party()[i]; if(!h) return false;
     h.hp=Math.max(0,Math.min(h.maxHp,Math.round(Number(hp)||0))); updateParty(); return true; },
+  restParty:(minutes)=>restParty(minutes),
+  useItem:(uid)=>useItem(uid),
+  nextTurn:()=>{ nextTurn(); return window.__mm6Debug.turnQueueReport(); },
+  corpseDrawReport:()=>({...corpseDrawState,inBattle:!!(game&&game.battle),
+    ended:!!(game&&game.battle&&game.battle.end)}),
+  drawBattleNow:()=>{ if(!game||!game.battle) return null;
+    drawBattle(performance.now(),16); return window.__mm6Debug.corpseDrawReport(); },
   setPartyGold:(gold)=>{ if(!game) return false; game.gold=Math.max(0,Math.round(Number(gold)||0)); updateParty(); return true; },
   churchTithe:()=>churchTithe(),
   resurrectAtChurch:()=>resurrectAtChurch(),
@@ -7279,7 +7833,35 @@ window.__mm6Debug={
     settings=normalizeSettings(Object.assign({},settings,patch||{}));
     saveSettings(); syncSettings();
     if(window.UnifiedLaunch) window.UnifiedLaunch.setHeroCount(settings.partySize);
+    try{ setVolume('master',settings.sound); setVolume('sfx',settings.sfx);
+      setVolume('ambient',settings.amb); setVolume('tempo',settings.tempo); }catch(e){}
     return normalizeSettings(settings);
+  },
+  audioPart8Report:()=>{
+    const edge=$('fxEdge'), stage=$('stage');
+    return {
+      engine:audioEngineReport(), voiceLimit:SFX_VOICE_LIMIT, events:SFX_EVENTS.slice(),
+      recent:AUDIO_EVENT_LOG.slice(-20).map(e=>e.event),
+      fx:{...FX_STATE,edgeOn:!!(edge&&edge.classList.contains('on')),
+        edgeColor:edge?edge.style.getPropertyValue('--fx-color').trim():null,
+        stageShake:!!(stage&&stage.classList.contains('fx-shake'))},
+      speech:{...SPEECH_STATE,flag:settings.speech===true,
+        hasApi:typeof SpeechSynthesisUtterance==='function'&&!!window.speechSynthesis},
+      volumes:{sound:settings.sound,sfx:settings.sfx,amb:settings.amb,music:settings.music},
+      speechControl:!!$('setSpeech')
+    };
+  },
+  fireSfx:(event,element)=>sfx(event,element),
+  resetAudioStats:()=>{ resetAudioStats(); return audioEngineReport(); },
+  fireShake:()=>shakeScreen(),
+  fireSpeech:(text)=>speakEvent(text),
+  resetAudioFx:()=>{
+    AUDIO_EVENT_LOG.length=0;
+    FX_STATE.flashes=0; FX_STATE.shakes=0; FX_STATE.lastFlash=null; FX_STATE.lastShakeAt=0;
+    SPEECH_STATE.requested=0; SPEECH_STATE.spoken=0; SPEECH_STATE.fallback=0; SPEECH_STATE.last=null;
+    const edge=$('fxEdge'); if(edge){ edge.classList.remove('on'); clearTimeout(edge._fxTimer); }
+    const stage=$('stage'); if(stage){ stage.classList.remove('fx-shake'); clearTimeout(stage._shakeTimer); }
+    return true;
   },
   mechanicsReport:()=>({
     party:party().map(h=>{

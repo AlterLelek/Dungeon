@@ -4,7 +4,7 @@
 иерархией, привязкой к играм и превью. Формат повторяет каталог ассетов
 на хабе (`index.html`), но добавлены колонки «Обозначение», «Иерархия» и «Пара».
 
-Всего: **1020 SVG** и **275 PNG**. Из них SVG в каталоге хаба — 711,
+Всего: **1032 SVG** и **275 PNG**. Из них SVG в каталоге хаба — 723,
 мастер-SVG (`shared/assets/master`) — 303, остальные — локальные копии и обёртки.
 
 ## Как читать колонки
@@ -259,7 +259,7 @@
 | shield_8.svg | 🛡 Броня · `shield` | Броня › items | + Авантюрист · дин.<br>games/mm6/index.html, games/mm6/items.js | — | ![shield_8.svg](../assets/sprites/items/shield_8.svg) |
 | shield_9.svg | 🛡 Броня · `shield` | Броня › items | + Авантюрист · дин.<br>games/mm6/index.html, games/mm6/items.js | — | ![shield_9.svg](../assets/sprites/items/shield_9.svg) |
 
-### 🎒 Предметы (15)
+### 🎒 Предметы (27)
 
 | Название файла | Обозначение | Иерархия | Привязка | PNG/SVG-пара | Картинка |
 |---|---|---|---|---|---|
@@ -278,6 +278,18 @@
 | wind.svg | 🎒 Предметы · `wind` | Предметы › elements | + Авантюрист · дин.<br>games/mm6/index.html, games/mm6/items.js | — | ![wind.svg](../assets/items/elements/wind.svg) |
 | crown.svg | 🎒 Предметы · `crown` | Предметы › head | + Авантюрист · дин.<br>games/mm6/index.html, games/mm6/items.js | — | ![crown.svg](../assets/items/head/crown.svg) |
 | hood.svg | 🎒 Предметы · `hood` | Предметы › head | + Авантюрист · дин.<br>games/mm6/index.html, games/mm6/items.js | — | ![hood.svg](../assets/items/head/hood.svg) |
+| mage_0.svg | 🎒 Предметы · `mage` | Предметы › portraits | − | — | ![mage_0.svg](../assets/sprites/portraits/mage_0.svg) |
+| mage_1.svg | 🎒 Предметы · `mage` | Предметы › portraits | − | — | ![mage_1.svg](../assets/sprites/portraits/mage_1.svg) |
+| mage_2.svg | 🎒 Предметы · `mage` | Предметы › portraits | − | — | ![mage_2.svg](../assets/sprites/portraits/mage_2.svg) |
+| mage_3.svg | 🎒 Предметы · `mage` | Предметы › portraits | − | — | ![mage_3.svg](../assets/sprites/portraits/mage_3.svg) |
+| paladin_0.svg | 🎒 Предметы · `paladin` | Предметы › portraits | −, упоминания: games/dungeon28/heroes/paladin.js, games/labyrinth/index.html, games/sf2_battles/index.html, handoff/payload/assets/manifest.json | — | ![paladin_0.svg](../assets/sprites/portraits/paladin_0.svg) |
+| paladin_1.svg | 🎒 Предметы · `paladin` | Предметы › portraits | −, упоминания: games/dungeon28/heroes/paladin.js, handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json | — | ![paladin_1.svg](../assets/sprites/portraits/paladin_1.svg) |
+| paladin_2.svg | 🎒 Предметы · `paladin` | Предметы › portraits | −, упоминания: games/dungeon28/heroes/paladin.js, handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json | — | ![paladin_2.svg](../assets/sprites/portraits/paladin_2.svg) |
+| paladin_3.svg | 🎒 Предметы · `paladin` | Предметы › portraits | −, упоминания: games/dungeon28/heroes/paladin.js, handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json | — | ![paladin_3.svg](../assets/sprites/portraits/paladin_3.svg) |
+| warrior_0.svg | 🎒 Предметы · `warrior` | Предметы › portraits | − | — | ![warrior_0.svg](../assets/sprites/portraits/warrior_0.svg) |
+| warrior_1.svg | 🎒 Предметы · `warrior` | Предметы › portraits | − | — | ![warrior_1.svg](../assets/sprites/portraits/warrior_1.svg) |
+| warrior_2.svg | 🎒 Предметы · `warrior` | Предметы › portraits | − | — | ![warrior_2.svg](../assets/sprites/portraits/warrior_2.svg) |
+| warrior_3.svg | 🎒 Предметы · `warrior` | Предметы › portraits | − | — | ![warrior_3.svg](../assets/sprites/portraits/warrior_3.svg) |
 
 ### 🌿 Травы (20)
 
@@ -790,20 +802,20 @@
 
 | Название файла | Обозначение | Иерархия | Привязка | PNG/SVG-пара | Картинка |
 |---|---|---|---|---|---|
-| armory_0.svg | ⚔ `shield_sword` — Оружейня · тип лавки: weapons, armory, armor | Здания › Магазин › Оружейная | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![armory_0.svg](../shared/assets/master/buildings/armory_0.svg) |
-| barn_0.svg | 🌾 `barn` — Амбар | Здания › Хозпостройка | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![barn_0.svg](../shared/assets/master/buildings/barn_0.svg) |
-| forge_0.svg | 🔨 `anvil_hammer` — Кузница · тип лавки: forge | Здания › Мастерская › Кузница | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![forge_0.svg](../shared/assets/master/buildings/forge_0.svg) |
-| house_straw_0.svg | 🏠 `house` — Соломенная хижина | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![house_straw_0.svg](../shared/assets/master/buildings/house_straw_0.svg) |
-| house_tile_0.svg | 🏠 `house` — Черепичный дом | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![house_tile_0.svg](../shared/assets/master/buildings/house_tile_0.svg) |
-| inn_0.svg | 🛏 `bed` — Гостиница · тип лавки: inn | Здания › Гостиница | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![inn_0.svg](../shared/assets/master/buildings/inn_0.svg) |
-| jewelry_0.svg | 💍 `ring_gem` — Ювелирная лавка · тип лавки: jeweler | Здания › Магазин › Ювелир | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![jewelry_0.svg](../shared/assets/master/buildings/jewelry_0.svg) |
-| magic_0.svg | 📜 `scroll` — Магазин магии · тип лавки: magic | Здания › Магазин магии | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![magic_0.svg](../shared/assets/master/buildings/magic_0.svg) |
-| shed_0.svg | 🛖 `shed` — Сарай | Здания › Хозпостройка | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![shed_0.svg](../shared/assets/master/buildings/shed_0.svg) |
-| shop_0.svg | 🪙 `coin_sack` — Лавка · тип лавки: market | Здания › Магазин › Рынок | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![shop_0.svg](../shared/assets/master/buildings/shop_0.svg) |
-| stable_0.svg | 🐎 `stable` — Конюшня | Здания › Конюшня | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![stable_0.svg](../shared/assets/master/buildings/stable_0.svg) |
-| stone_house_0.svg | 🏠 `house` — Каменный дом | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![stone_house_0.svg](../shared/assets/master/buildings/stone_house_0.svg) |
-| tavern_0.svg | 🍺 `mug` — Таверна · тип лавки: tavern | Здания › Таверна | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![tavern_0.svg](../shared/assets/master/buildings/tavern_0.svg) |
-| well_0.svg | 💧 `well` — Колодец | Здания › Колодец | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json | — | ![well_0.svg](../shared/assets/master/buildings/well_0.svg) |
+| armory_0.svg | 🏠 `sword` — Оружейная «Острый Клинок» · тип лавки: weapons, armory, armor | Здания › Магазин › Оружейная | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![armory_0.svg](../shared/assets/master/buildings/armory_0.svg) |
+| barn_0.svg | 🏠 `sheaf` — Амбар «Золотой Сноп» | Здания › Хозпостройка | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![barn_0.svg](../shared/assets/master/buildings/barn_0.svg) |
+| forge_0.svg | 🏠 `anvil` — Кузница «Гром и Наковальня» · тип лавки: forge | Здания › Мастерская › Кузница | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![forge_0.svg](../shared/assets/master/buildings/forge_0.svg) |
+| house_straw_0.svg | 🏠 `house` — Хижина «Под Соломкой» | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![house_straw_0.svg](../shared/assets/master/buildings/house_straw_0.svg) |
+| house_tile_0.svg | 🏠 `house` — Дом «Черепица и Кофе» | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![house_tile_0.svg](../shared/assets/master/buildings/house_tile_0.svg) |
+| inn_0.svg | 🛏 `bed` — Гостиница «Спокойная Подушка» · тип лавки: inn | Здания › Гостиница | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p1.mjs | — | ![inn_0.svg](../shared/assets/master/buildings/inn_0.svg) |
+| jewelry_0.svg | 🏠 `gem` — Ювелирная «Изумрудный Глаз» · тип лавки: jeweler | Здания › Магазин › Ювелир | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![jewelry_0.svg](../shared/assets/master/buildings/jewelry_0.svg) |
+| magic_0.svg | 🏠 `potion_star` — Магазин магии «Звёздная Склянка» · тип лавки: magic | Здания › Магазин магии | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![magic_0.svg](../shared/assets/master/buildings/magic_0.svg) |
+| shed_0.svg | 🏠 `rake` — Сарай «Старые Грабли» | Здания › Хозпостройка | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![shed_0.svg](../shared/assets/master/buildings/shed_0.svg) |
+| shop_0.svg | 🪙 `coin_sack` — Лавка «Мешок и Монета» · тип лавки: market | Здания › Магазин › Рынок | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![shop_0.svg](../shared/assets/master/buildings/shop_0.svg) |
+| stable_0.svg | 🏠 `horseshoe` — Конюшня «Тихий Овёс» | Здания › Конюшня | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![stable_0.svg](../shared/assets/master/buildings/stable_0.svg) |
+| stone_house_0.svg | 🏠 `house` — Каменный дом «У Глины» | Здания › Жилой дом | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p2.mjs | — | ![stone_house_0.svg](../shared/assets/master/buildings/stone_house_0.svg) |
+| tavern_0.svg | 🍺 `mug` — Таверна «Пенная Кружка» · тип лавки: tavern | Здания › Таверна | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p1.mjs | — | ![tavern_0.svg](../shared/assets/master/buildings/tavern_0.svg) |
+| well_0.svg | 🏠 `bucket` — Колодец «Тихий Вход» | Здания › Колодец › Воровской притон | −, упоминания: games/mm6/data.js, handoff/payload/assets/buildings-batch.json, handoff/payload/assets/manifest.json, scripts/cdp-mm6-buildings-p1.mjs | — | ![well_0.svg](../shared/assets/master/buildings/well_0.svg) |
 
 ### 🧙 Мастер › Герои (27)
 
@@ -944,7 +956,7 @@
 | bow_7.svg | 🎒 Мастер › Предметы · `bow` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![bow_7.svg](../shared/assets/master/items/bow_7.svg) |
 | bow_8.svg | 🎒 Мастер › Предметы · `bow` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![bow_8.svg](../shared/assets/master/items/bow_8.svg) |
 | bow_9.svg | 🎒 Мастер › Предметы · `bow` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![bow_9.svg](../shared/assets/master/items/bow_9.svg) |
-| coin.svg | 🎒 Мастер › Предметы · `coin` | Мастер › Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/coin.png` | ![coin.svg](../shared/assets/master/items/coin.svg) |
+| coin.svg | 🎒 Мастер › Предметы · `coin` | Мастер › Предметы › items | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/coin.png` | ![coin.svg](../shared/assets/master/items/coin.svg) |
 | dagger_1.svg | 🎒 Мастер › Предметы · `dagger` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![dagger_1.svg](../shared/assets/master/items/dagger_1.svg) |
 | dagger_10.svg | 🎒 Мастер › Предметы · `dagger` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![dagger_10.svg](../shared/assets/master/items/dagger_10.svg) |
 | dagger_2.svg | 🎒 Мастер › Предметы · `dagger` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![dagger_2.svg](../shared/assets/master/items/dagger_2.svg) |
@@ -1079,7 +1091,7 @@
 
 | Название файла | Обозначение | Иерархия | Привязка | PNG/SVG-пара | Картинка |
 |---|---|---|---|---|---|
-| coin.svg | 🪙 Мастер › UI · `coin` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/coin.png` | ![coin.svg](../shared/assets/master/ui/coin.svg) |
+| coin.svg | 🪙 Мастер › UI · `coin` | Мастер › UI › ui | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/coin.png` | ![coin.svg](../shared/assets/master/ui/coin.svg) |
 | lightning.svg | 🪙 Мастер › UI · `lightning` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/state.js, games/dungeon28/ui.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/lightning.png` | ![lightning.svg](../shared/assets/master/ui/lightning.svg) |
 | shield.svg | 🪙 Мастер › UI · `shield` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/shield.png` | ![shield.svg](../shared/assets/master/ui/shield.svg) |
 | star.svg | 🪙 Мастер › UI · `star` | Мастер › UI › ui | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/star.png` | ![star.svg](../shared/assets/master/ui/star.svg) |
@@ -1307,7 +1319,7 @@
 | Название файла | Обозначение | Иерархия | Привязка | PNG/SVG-пара | Картинка |
 |---|---|---|---|---|---|
 | chest.png | 🎒 Предметы · `chest` | Предметы › items | + Авантюрист<br>games/mm6/index.html | — | ![chest.png](../assets/kenney/items/chest.png) |
-| coin.png | 🎒 Предметы · `coin` | Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js | — | ![coin.png](../assets/kenney/items/coin.png) |
+| coin.png | 🎒 Предметы · `coin` | Предметы › items | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html | — | ![coin.png](../assets/kenney/items/coin.png) |
 | potion_blue.png | 🎒 Предметы · `potion` | Предметы › items | + Авантюрист<br>games/mm6/index.html | — | ![potion_blue.png](../assets/kenney/items/potion_blue.png) |
 | potion_green.png | 🎒 Предметы · `potion` | Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![potion_green.png](../assets/kenney/items/potion_green.png) |
 | potion_purple.png | 🎒 Предметы · `potion` | Предметы › items | −, упоминания: handoff/payload/assets/manifest.json | — | ![potion_purple.png](../assets/kenney/items/potion_purple.png) |
@@ -1444,7 +1456,7 @@
 | bow1_1.png | 🎒 Мастер › Предметы · `bow1` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/bow1_1.svg` | ![bow1_1.png](../shared/assets/master/items/bow1_1.png) |
 | bow1_2.png | 🎒 Мастер › Предметы · `bow1` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/bow1_2.svg` | ![bow1_2.png](../shared/assets/master/items/bow1_2.png) |
 | bow1_3.png | 🎒 Мастер › Предметы · `bow1` | Мастер › Предметы › items | −, упоминания: handoff/payload/assets/manifest.json, handoff/payload/shared/assets/master/registry.json<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/bow1_3.svg` | ![bow1_3.png](../shared/assets/master/items/bow1_3.png) |
-| coin.png | 🎒 Мастер › Предметы · `coin` | Мастер › Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/coin.svg` | ![coin.png](../shared/assets/master/items/coin.png) |
+| coin.png | 🎒 Мастер › Предметы · `coin` | Мастер › Предметы › items | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/coin.svg` | ![coin.png](../shared/assets/master/items/coin.png) |
 | lightning.png | 🎒 Мастер › Предметы · `lightning` | Мастер › Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/state.js, games/dungeon28/ui.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/lightning.svg` | ![lightning.png](../shared/assets/master/items/lightning.png) |
 | shield.png | 🎒 Мастер › Предметы · `shield` | Мастер › Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/shield.svg` | ![shield.png](../shared/assets/master/items/shield.png) |
 | staff.png | 🎒 Мастер › Предметы · `staff` | Мастер › Предметы › items | −, упоминания: games/dungeon28/config.js, games/dungeon28/main.js, games/mm6/data.js, games/mm6/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/items/staff.svg` | ![staff.png](../shared/assets/master/items/staff.png) |
@@ -1482,7 +1494,7 @@
 
 | Название файла | Обозначение | Иерархия | Привязка | PNG/SVG-пара | Картинка |
 |---|---|---|---|---|---|
-| coin.png | 🪙 Мастер › UI · `coin` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/coin.svg` | ![coin.png](../shared/assets/master/ui/coin.png) |
+| coin.png | 🪙 Мастер › UI · `coin` | Мастер › UI › ui | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/coin.svg` | ![coin.png](../shared/assets/master/ui/coin.png) |
 | lightning.png | 🪙 Мастер › UI · `lightning` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/state.js, games/dungeon28/ui.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/lightning.svg` | ![lightning.png](../shared/assets/master/ui/lightning.png) |
 | shield.png | 🪙 Мастер › UI · `shield` | Мастер › UI › ui | −, упоминания: games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html, games/dungeon28/main.js<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/shield.svg` | ![shield.png](../shared/assets/master/ui/shield.png) |
 | star.png | 🪙 Мастер › UI · `star` | Мастер › UI › ui | −, упоминания: games/dungeon28/audio.js, games/dungeon28/config.js, games/dungeon28/game.js, games/dungeon28/index.html<br>requires_manual_vectorization · Автовекторизация даёт плохое качество: PNG сохранён, SVG — обёртка над PNG | `shared/assets/master/ui/star.svg` | ![star.png](../shared/assets/master/ui/star.png) |

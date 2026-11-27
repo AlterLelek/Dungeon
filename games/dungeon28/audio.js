@@ -385,45 +385,100 @@ function playDrum(type) {
   } catch(e) {}
 }
 
+/* Синтезированные эффекты: 14 игровых событий, шесть школ и запас многоголосия.
+   Все звуки создаются WebAudio на лету — новых аудиофайлов и PNG нет. */
+export const SFX_VOICE_LIMIT = 64;
+export const SFX_EVENTS = [
+  'hit', 'miss', 'crit', 'death',
+  'flame', 'water', 'earth', 'wind', 'dark', 'light',
+  'level_up', 'chest', 'door', 'ui', 'coins'
+];
+const SFX_ALIASES = { step: 'ui', collect: 'coins', menu: 'ui', skip: 'ui', magic: 'light', kill: 'death' };
+const SFX_LAYERS = {
+  hit: [{ wave: 'sine', from: 160, to: 45, dur: 0.1, vol: 0.2 }, { noise: true, dur: 0.05, vol: 0.16 }],
+  miss: [{ wave: 'sine', from: 430, to: 270, dur: 0.12, vol: 0.1 }],
+  crit: [{ wave: 'square', from: 620, to: 180, dur: 0.16, vol: 0.14 }, { noise: true, dur: 0.07, vol: 0.18 }],
+  death: [{ wave: 'sawtooth', from: 220, to: 60, dur: 0.28, vol: 0.12 }],
+  flame: [{ wave: 'sawtooth', from: 180, to: 70, dur: 0.14, vol: 0.11 }, { noise: true, dur: 0.06, vol: 0.1 }],
+  water: [{ wave: 'sine', from: 520, to: 210, dur: 0.16, vol: 0.12 }],
+  earth: [{ wave: 'triangle', from: 110, to: 70, dur: 0.2, vol: 0.15 }],
+  wind: [{ wave: 'sine', from: 880, to: 420, dur: 0.14, vol: 0.09 }, { noise: true, dur: 0.08, vol: 0.06 }],
+  dark: [{ wave: 'sawtooth', from: 300, to: 90, dur: 0.22, vol: 0.1 }],
+  light: [{ wave: 'sine', from: 660, to: 1320, dur: 0.18, vol: 0.1 }],
+  level_up: [{ wave: 'triangle', from: 440, to: 880, dur: 0.22, vol: 0.12 }, { wave: 'sine', from: 660, to: 1320, dur: 0.22, vol: 0.08, delay: 0.07 }],
+  chest: [{ wave: 'sine', from: 520, to: 780, dur: 0.14, vol: 0.11 }, { wave: 'sine', from: 780, to: 1040, dur: 0.16, vol: 0.09, delay: 0.08 }],
+  door: [{ wave: 'triangle', from: 140, to: 90, dur: 0.12, vol: 0.14 }, { noise: true, dur: 0.05, vol: 0.08, delay: 0.04 }],
+  ui: [{ wave: 'sine', from: 720, to: 900, dur: 0.07, vol: 0.08 }],
+  coins: [{ wave: 'sine', from: 1180, to: 1580, dur: 0.09, vol: 0.09 }, { wave: 'sine', from: 920, to: 1320, dur: 0.1, vol: 0.07, delay: 0.05 }]
+};
+let voiceSeq = 0;
+const activeVoices = new Set();
+const voiceStats = { peak: 0, dropped: 0, played: 0 };
+function reserveVoice(duration) {
+  if (activeVoices.size >= SFX_VOICE_LIMIT) { voiceStats.dropped++; return null; }
+  const id = ++voiceSeq;
+  activeVoices.add(id);
+  voiceStats.peak = Math.max(voiceStats.peak, activeVoices.size);
+  voiceStats.played++;
+  const release = () => activeVoices.delete(id);
+  setTimeout(release, Math.max(60, Math.round(duration * 1000) + 120));
+  return release;
+}
+function toneVoice(layer, now) {
+  const start = now + (layer.delay || 0), len = layer.dur;
+  const release = reserveVoice((layer.delay || 0) + len);
+  if (!release) return;
+  const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+  osc.type = layer.wave || 'sine';
+  osc.frequency.setValueAtTime(layer.from, start);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(20, layer.to || layer.from), start + len);
+  gain.gain.setValueAtTime(layer.vol || 0.1, start);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + len);
+  osc.connect(gain); gain.connect(sfxGain);
+  osc.start(start); osc.stop(start + len);
+  osc.onended = release;
+}
+function noiseVoice(layer, now) {
+  const start = now + (layer.delay || 0), len = layer.dur;
+  const release = reserveVoice((layer.delay || 0) + len);
+  if (!release) return;
+  const size = Math.max(1, Math.round(audioCtx.sampleRate * len));
+  const buffer = audioCtx.createBuffer(1, size, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource(); src.buffer = buffer;
+  const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 1800;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(layer.vol || 0.1, start);
+  gain.gain.exponentialRampToValueAtTime(0.001, start + len);
+  src.connect(filter); filter.connect(gain); gain.connect(sfxGain);
+  src.start(start); src.stop(start + len);
+  src.onended = release;
+}
 export function playSound(type) {
-  if (!isInit || volumes.sfx <= 0.01) return;
+  if (!isInit || volumes.sfx <= 0.01) return false;
+  const event = SFX_ALIASES[type] || type;
+  const layers = SFX_LAYERS[event];
+  if (!layers) return false;
   try {
     const now = audioCtx.currentTime;
-    function createNoise(duration) {
-      const bufferSize = audioCtx.sampleRate * duration; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-      const noise = audioCtx.createBufferSource(); noise.buffer = buffer; return noise;
-    }
-    if (type === 'hit') {
-      const noise = createNoise(0.05); const noiseGain = audioCtx.createGain();
-      noise.connect(noiseGain); noiseGain.connect(sfxGain);
-      noiseGain.gain.setValueAtTime(0.2, now); noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-      const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
-      osc.connect(oscGain); oscGain.connect(sfxGain);
-      oscGain.gain.setValueAtTime(0.2, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-      noise.start(now); osc.start(now); noise.stop(now + 0.05); osc.stop(now + 0.1);
-    } else if (type === 'step') {
-      const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(60, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.03);
-      osc.connect(oscGain); oscGain.connect(sfxGain);
-      oscGain.gain.setValueAtTime(0.1, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
-      osc.start(now); osc.stop(now + 0.04);
-    } else if (type === 'collect' || type === 'menu' || type === 'skip') {
-      [880, 1320].forEach((freq, i) => {
-        const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now + i*0.06);
-        osc.connect(oscGain); oscGain.connect(sfxGain);
-        oscGain.gain.setValueAtTime(0.1, now + i*0.06); oscGain.gain.exponentialRampToValueAtTime(0.01, now + i*0.06 + 0.1);
-        osc.start(now + i*0.06); osc.stop(now + i*0.06 + 0.1);
-      });
-    } else if (type === 'magic' || type === 'kill') {
-      const osc = audioCtx.createOscillator(); const oscGain = audioCtx.createGain();
-      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, now);
-      osc.frequency.linearRampToValueAtTime(600, now + 0.05); osc.frequency.linearRampToValueAtTime(300, now + 0.1); osc.frequency.linearRampToValueAtTime(800, now + 0.15);
-      osc.connect(oscGain); oscGain.connect(sfxGain);
-      oscGain.gain.setValueAtTime(0.1, now); oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-      osc.start(now); osc.stop(now + 0.2);
-    }
-  } catch (e) {}
+    layers.forEach(layer => layer.noise ? noiseVoice(layer, now) : toneVoice(layer, now));
+    return true;
+  } catch (e) { return false; }
+}
+export function resetAudioStats() {
+  activeVoices.clear();
+  voiceStats.peak = 0; voiceStats.dropped = 0; voiceStats.played = 0;
+}
+export function audioEngineReport() {
+  return {
+    ready: isInit,
+    events: SFX_EVENTS.slice(),
+    voiceLimit: SFX_VOICE_LIMIT,
+    activeVoices: activeVoices.size,
+    peakVoices: voiceStats.peak,
+    droppedVoices: voiceStats.dropped,
+    playedVoices: voiceStats.played,
+    volumes: { master: audioSettings.master, sfx: audioSettings.sfx, ambient: audioSettings.ambient, music: audioSettings.music }
+  };
 }

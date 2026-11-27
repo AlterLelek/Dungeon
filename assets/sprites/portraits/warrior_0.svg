@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
+  <title>Портрет: Воин, вариант 0</title>
+  <g id="medallion">
+    <ellipse cx="256" cy="256" rx="224" ry="224" fill="#8f7a5f" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="256" cy="256" rx="202" ry="202" fill="#2a1c12" stroke="#241a14" stroke-width="3"/>
+    <circle cx="256" cy="256" r="188" fill="#6b4426" stroke="none"/>
+    <ellipse cx="178" cy="124" rx="52" ry="18" fill="#c9b391" stroke="none"/>
+    <path d="M104 404 H408 V430 H104Z" fill="#241a14" stroke="none"/>
+  </g>
+  <g id="face"><ellipse cx="174" cy="254" rx="20" ry="30" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
+<ellipse cx="338" cy="254" rx="20" ry="30" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
+<ellipse cx="256" cy="250" rx="88" ry="104" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
+<path d="M214 216 H236 V222 H214Z" fill="#241a14" stroke="none"/>
+<path d="M276 216 H298 V222 H276Z" fill="#241a14" stroke="none"/>
+<path d="M252 244 L246 288 H262" fill="#b39b78" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<path d="M228 316 Q256 332 284 316" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<ellipse cx="216" cy="274" rx="16" ry="10" fill="#c9b391" stroke="none"/></g>
+  <g id="hair"><path d="M168 214 Q176 118 256 118 Q336 118 344 214 L320 176 H192Z" fill="#241a14" stroke="none"/></g>
+  <g id="gear">
+      <path d="M170 190 Q180 102 256 100 Q332 102 342 190 L312 166 H200Z" fill="#8a8f98" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+      <path d="M188 172 H324 L318 190 H194Z" fill="#6b5742" stroke="none"/>
+      <path d="M250 108 H262 V200 H250Z" fill="#e8c14a" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+      <path d="M350 214 L374 236 L318 348 L300 328Z" fill="#8a8f98" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+      <path d="M296 330 L320 352 L312 368 L288 346Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+      <path d="M116 258 H176 V352 H116Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+      <path d="M124 266 H168 V292 H124Z" fill="#4f8a44" stroke="none"/>
+      <ellipse cx="192" cy="146" rx="20" ry="8" fill="#f3efe2" stroke="none"/>
+    </g>
+  <g id="status">
+    <path d="M256 402 L286 428 L256 454 L226 428Z" fill="#4f8a44" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="248" cy="422" rx="7" ry="4" fill="#f3efe2" stroke="none"/>
+  </g>
+</svg>
