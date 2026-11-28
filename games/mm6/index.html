@@ -438,7 +438,9 @@ body.enemy-plate .npcDialogue:not(.in-shop){display:none}
 }
 /* Часть 3: на карте отряд стоит правее окна состояния и ниже кнопки журнала;
    в бою карточки остаются внизу, а dpad уходит под очередь. */
-#party:not(.in-battle){left:auto;right:156px;top:40px;transform:none}
+/* Правая граница карточек считается в процентах от поля: миникарта занимает
+   последние ~19% ширины canvas, поэтому 21% оставляют зазор при любом масштабе. */
+#party:not(.in-battle){left:auto;right:21%;top:40px;transform:none}
 #controls .leftDock{top:80px;bottom:auto}
 body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
 @media (orientation:portrait){
@@ -6620,6 +6622,8 @@ function drawHeroCorpse(x,y,s,h){
 
 /* ============================ 11. КАРТА ============================ */
 const MINIMAP_VIEW=30, MINIMAP_PX=112;
+// Подпись миникарты описывает только карту. Локация живёт в левом верхнем окне состояния.
+let minimapCaption='🗺 M — весь мир';
 function minimapRect(){ return {x:W-MINIMAP_PX-12,y:12,w:MINIMAP_PX,h:MINIMAP_PX}; }
 function minimapOrigin(m){
   const p=game&&game.player;
@@ -6664,14 +6668,11 @@ function drawMiniMap(m){
   const hvx=p.px-origin.x, hvy=p.py-origin.y;
   ctx.save(); ctx.translate(x+hvx*s+s/2,y+hvy*s+s/2); ctx.rotate(p.dir*Math.PI/2);
   ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
-  ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
-  const place=m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name;
-  ctx.fillText(place+' · '+(game.world.current+1)+'/'+game.world.count+' · '+m.size+'×'+m.size,x,y+size+11);
-  ctx.fillStyle='#fde68a';
-  ctx.fillText('🗺 M — весь мир',x,y+size+24);
+  ctx.fillStyle='#fde68a'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(minimapCaption,x,y+size+11);
 }
 function minimapOpenRect(){
-  const r=minimapRect(); return {x:r.x,y:r.y+r.h+17,w:r.w,h:14};
+  const r=minimapRect(); return {x:r.x,y:r.y+r.h+4,w:r.w,h:14};
 }
 function minimapOpenAt(px,py){
   const r=minimapOpenRect();
@@ -7007,17 +7008,21 @@ function drawMap(now){
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
   drawMapEnemyPanels(shownEnemies,now); // панели выше фигуры героя и верхнего HUD, только по наведению/удержанию.
-  // Небольшое окно состояния игры вместо большого окна героя слева.
+  // Небольшое окно состояния игры: пять данных строго вертикальной колонкой слева сверху.
   const place=(m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name)+
     ' · '+(game.world.current+1)+'/'+game.world.count;
-  panel(10,10,214,56);
   const objective=activeObjectiveText();
-  mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,objective};
+  const seasonName=(SEASON_WEATHER[season]&&SEASON_WEATHER[season].name)||season;
+  const wLabel=weather.label();
+  const weatherLine=!wLabel?seasonName:(wLabel.includes(seasonName)?wLabel:wLabel+' · '+seasonName);
+  const rows=[place,'Ход '+game.world.turn,'🪙 '+game.gold,'Цель: '+objective,weatherLine];
+  const rowYs=[19,30,41,52,63];
+  panel(10,10,214,56);
+  mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,
+    objective,weather:wLabel,season:seasonName,rows,rowYs,bottomLine:null};
   mapUiRects.state={x:10,y:10,w:214,h:56};
-  fitText(place,196,11,'#ffe6a8',18,22);
-  ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle='#c8d2f0'; setFont(10,false);
-  ctx.fillText('Ход '+game.world.turn+'   🪙 '+game.gold,18,39);
-  fitText('Цель: '+objective,196,9,'#fde68a',18,55);
+  const rowColors=['#ffe6a8','#c8d2f0','#fde68a','#fde68a','#9fb0d8'];
+  rows.forEach((text,i)=>fitText(text,196,i===0?11:9,rowColors[i],18,rowYs[i]));
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
   mapUiRects.warning=near.length?{x:12,y:296,w:MAP_WARN_W,h:22}:null;
@@ -7030,9 +7035,7 @@ function drawMap(now){
   roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
   fitText(game.msg,372,11,'#f3e8cf',134,339);
-  const wLabel=weather.label();
-  ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
-  ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
+  // Дублирующей строки слева внизу больше нет: ход, золото и погода перенесены в колонку слева сверху.
   // Подсказка уходит, когда наведена плашка врага: два transient-сообщения не пересекаются.
   mapUiRects.enemies=visibleMapEnemies().filter(item=>enemyPlateVisible(item.e,now)).map(item=>mapEnemyPanelRect(item));
   document.body.classList.toggle('enemy-plate',mapUiRects.enemies.length>0);
@@ -8268,6 +8271,7 @@ window.__mm6Debug={
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
   mapStateWindowReport:()=>mapStateWindow,
+  minimapCaptionReport:()=>minimapCaption,
   overlapReport:()=>visibleWindowsReport(),
   showToast:(text)=>{ toast(text||'Проверка сообщений'); return true; },
   showMapHint:(title,desc)=>{ mapHint={title:title||'Подсказка',desc:desc||'Описание подсказки',t:performance.now()}; return true; },
