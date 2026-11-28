@@ -218,30 +218,53 @@ const ICONS = {
     <ellipse cx="26" cy="18" rx="4" ry="3" fill="${C.white}" stroke="none"/>`,
 };
 
-function signLines(name) {
-  if (name.length <= 18) return [name];
-  const words = name.split(/\s+/);
-  let best = [words[0], words.slice(1).join(' ')];
-  for (let i = 1; i < words.length; i++) {
-    const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
-    if (!b) break;
-    if (Math.max(a.length, b.length) < Math.max(best[0].length, best[1].length)) best = [a, b];
-  }
-  return best;
+// Вывеска: знак слева, тип лавки сверху, имя из кавычек снизу.
+// Геометрия считается от longest line: доска растёт, а шрифт ужимается,
+// если строка не влезает в максимально допустимую ширину viewBox.
+const SIGN = Object.freeze({
+  x: 64, h: 64, minW: 384, maxW: 424,
+  iconX: 74, iconY: 8, iconScale: 0.7,
+  dividerX: 142, textX: 152, rightPad: 16,
+  typeY: 27, shopY: 52, size: 22, minSize: 15, advance: 0.62,
+});
+function signParts(fullName) {
+  const full = String(fullName || '').trim();
+  const quoted = full.match(/^(.*?)\s*«\s*(.+?)\s*»\s*$/);
+  if (quoted) return { full, type: quoted[1].trim(), shop: quoted[2].trim() };
+  const words = full.split(/\s+/).filter(Boolean);
+  if (words.length < 2) return { full, type: full, shop: '' };
+  const cut = Math.ceil(words.length / 2);
+  return { full, type: words.slice(0, cut).join(' '), shop: words.slice(cut).join(' ') };
 }
-
-function signLayer(y, icon, name) {
-  const board = rect(64, y, 384, 64, C.wood, 3);
-  const plate = flat(70, y + 5, 372, 54, '#4a2e18');
-  const glyph = `<g transform="translate(82 ${y + 2})" data-sign="${icon}">${ICONS[icon] || ICONS.house}</g>`;
-  const lines = signLines(name);
-  const text = lines.map((line, i) => {
-    const baseline = lines.length === 1 ? y + 43 : (i === 0 ? y + 27 : y + 53);
-    const size = lines.length === 1 ? 24 : 22;
-    const width = Math.min(260, Math.max(60, line.length * 13));
-    return `<text x="180" y="${baseline}" font-family="'Courier New', monospace" font-size="${size}" font-weight="700" fill="${C.white}" stroke="${C.outline}" stroke-width="1.5" paint-order="stroke" textLength="${width}" lengthAdjust="spacingAndGlyphs">${esc(line)}</text>`;
+function signLayout(parts) {
+  const lines = parts.shop ? [parts.type, parts.shop] : [parts.type];
+  const longest = Math.max(1, ...lines.map(line => line.length));
+  const room = SIGN.maxW - (SIGN.textX - SIGN.x) - SIGN.rightPad;
+  let size = SIGN.size;
+  let boardW = Math.max(SIGN.minW,
+    Math.ceil((SIGN.textX - SIGN.x) + longest * size * SIGN.advance + SIGN.rightPad));
+  if (boardW > SIGN.maxW) {
+    boardW = SIGN.maxW;
+    size = Math.max(SIGN.minSize, Math.floor(room / (longest * SIGN.advance)));
+  }
+  return { lines, size, boardW, maxTextW: boardW - (SIGN.textX - SIGN.x) - SIGN.rightPad };
+}
+function signLayer(y, icon, fullName) {
+  const parts = signParts(fullName);
+  const layout = signLayout(parts);
+  const right = SIGN.x + layout.boardW;
+  const board = `<path id="signBoard" d="M${SIGN.x} ${y} H${right} V${y + SIGN.h} H${SIGN.x}Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>`;
+  const plate = flat(SIGN.x + 6, y + 5, layout.boardW - 12, SIGN.h - 10, '#4a2e18');
+  const divider = `<path d="M${SIGN.dividerX} ${y + 11} V${y + SIGN.h - 11}" fill="none" stroke="${C.outline}" stroke-width="2" stroke-linecap="square"/>`;
+  const glyph = `<g transform="translate(${SIGN.iconX} ${y + SIGN.iconY}) scale(${SIGN.iconScale})" data-sign="${icon}">${ICONS[icon] || ICONS.house}</g>`;
+  const text = layout.lines.map((line, i) => {
+    const baseline = y + (layout.lines.length === 1 ? 40 : (i === 0 ? SIGN.typeY : SIGN.shopY));
+    const label = layout.lines.length === 1 ? 'type' : (i === 0 ? 'type' : 'shop');
+    const width = Math.min(layout.maxTextW, line.length * layout.size * SIGN.advance);
+    const fill = label === 'type' ? C.gold : C.white;
+    return `<text data-line="${label}" x="${SIGN.textX}" y="${baseline}" font-family="'Courier New', monospace" font-size="${layout.size}" font-weight="700" fill="${fill}" stroke="${C.outline}" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="${width.toFixed(1)}" lengthAdjust="spacingAndGlyphs">${esc(line)}</text>`;
   }).join('');
-  return `  <g id="sign" data-sign-name="${esc(name)}">${board}${plate}${glyph}${text}</g>`;
+  return `  <g id="sign" data-sign-name="${esc(parts.full)}" data-sign-type="${esc(parts.type)}" data-sign-shop="${esc(parts.shop)}">${board}${plate}${divider}${glyph}${text}</g>`;
 }
 
 function foundation() {

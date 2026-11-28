@@ -33,7 +33,9 @@ runCdp('FINAL PART 10', async api => {
         floors:entry.floors, batchName:entry.sign_text, batchIcon:entry.sign_icon,
         glyph:glyph&&glyph.getAttribute('data-sign'),
         signName:sign&&sign.getAttribute('data-sign-name'),
-        signText:[...doc.querySelectorAll('#sign text')].map(t=>t.textContent).join(' '),
+        signType:sign&&sign.getAttribute('data-sign-type'),
+        signShop:sign&&sign.getAttribute('data-sign-shop'),
+        signLines:[...doc.querySelectorAll('#sign text')].map(t=>t.textContent),
         layers:['base','chimney','roof','sign','door','window']
           .filter(id=>!!doc.querySelector('#'+id)).length,
         bad:/linearGradient|radialGradient|<filter|<image|\\.png/i.test(text)
@@ -51,11 +53,13 @@ runCdp('FINAL PART 10', async api => {
     tavern_0: 'mug', barn_0: 'sheaf', well_0: 'bucket' };
   api.check('Часть 2 — вывески соответствуют типу лавки и названию в батче',
     buildings.every(r => r.glyph && r.signName === r.batchName &&
-      r.signText === r.batchName && !r.signText.includes('…')) &&
+      r.signLines.length === 2 && r.signLines[0] === r.signType &&
+      r.signLines[1] === r.signShop &&
+      r.signType + ' «' + r.signShop + '»' === r.batchName && !r.signShop.includes('…')) &&
     Object.entries(signKeys).every(([stem, icon]) =>
       buildings.some(r => r.stem === stem && r.glyph === icon)),
     JSON.stringify(buildings.filter(r => !r.glyph || r.signName !== r.batchName ||
-      r.signText !== r.batchName).map(r => r.stem)));
+      r.signType + ' «' + r.signShop + '»' !== r.batchName).map(r => r.stem)));
 
   // Фиксируем генерацию мира, как и в харнесе части 4: проверки не зависят от удачи.
   await api.ev(`(()=>{Math.random=()=>0.5;
