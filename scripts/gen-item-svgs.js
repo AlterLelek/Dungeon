@@ -30,6 +30,19 @@ function highlight(cx, cy, rx, ry, color, rotate = 0) {
 function streak(d, color, width = 1.6) {
   return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
 }
+function rustBlot(cx, cy, r, color) {
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" stroke="none"/>`;
+}
+function auraLayer(id, color, inner, motif) {
+  return svg(`
+    <g data-school="${id}" data-fx="school-aura">
+      <circle cx="32" cy="32" r="28" fill="${color}" stroke="none" opacity=".18"><animate attributeName="opacity" values=".10;.28;.10" dur="2.6s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="22" fill="${inner}" stroke="none" opacity=".24"><animate attributeName="opacity" values=".16;.38;.16" dur="2.1s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="16" fill="${color}" stroke="none" opacity=".20"><animate attributeName="opacity" values=".14;.34;.14" dur="1.7s" repeatCount="indefinite"/></circle>
+      <g opacity=".75">${motif}</g>
+    </g>
+  `, `data-element="${id}" data-role="backdrop" data-school="${id}"`);
+}
 
 const files = {
   // ── Weapons ─────────────────────────────────────────────────────────
@@ -218,64 +231,88 @@ const files = {
     ${highlight(12, 30, 3, 1.6, '#b98a52')}
   `),
 
-  // ── Element backdrops (six files; rendered BEHIND the base item) ─────
-  // Пятно того же цвета, что и знак школы. Без градиентов и размытия.
-  'elements/flame.svg': svg(`
-    <path d="M10 33 L17 16 L32 8 L47 16 L54 33 L46 50 L32 59 L18 50 Z" fill="#b93a2b" stroke-linejoin="miter"/>
-    <path d="M18 34 L26 20 L38 18 L48 32 L40 47 L24 47 Z" fill="#e0823c" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="flame" data-role="backdrop"'),
+  // ── Element auras (six files; rendered BEHIND the base item) ────────
+  // Аура школы вместо жёсткой таблички: мягкие вложенные пятна и знак школы.
+  'elements/flame.svg': auraLayer('flame', '#b93a2b', '#e0823c', `
+    <path d="M32 10 Q40 22 35 31 Q45 27 41 41 Q37 51 32 54 Q24 49 24 39 Q24 27 32 10 Z" fill="#e0823c" stroke="none"/>
+    <path d="M32 24 Q37 33 32 44 Q27 37 32 24 Z" fill="#fca5a5" stroke="none"/>
+  `),
 
-  'elements/water.svg': svg(`
-    <path d="M11 32 L20 15 L34 8 L48 17 L53 34 L43 51 L29 58 L15 47 Z" fill="#3b6ea5" stroke-linejoin="miter"/>
-    <path d="M19 34 L27 20 L40 17 L47 32 L39 46 L25 45 Z" fill="#93c5fd" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="water" data-role="backdrop"'),
+  'elements/water.svg': auraLayer('water', '#3b6ea5', '#93c5fd', `
+    <path d="M32 10 Q41 24 43 34 Q43 46 32 50 Q21 46 21 34 Q23 24 32 10 Z" fill="#93c5fd" stroke="none"/>
+    <path d="M22 39 Q32 33 42 39" fill="none" stroke="#dbeafe" stroke-width="2"/>
+  `),
 
-  'elements/earth.svg': svg(`
-    <path d="M9 35 L18 17 L33 10 L49 16 L55 35 L46 52 L29 58 L14 48 Z" fill="#4f8a44" stroke-linejoin="miter"/>
-    <path d="M18 35 L27 21 L41 18 L48 34 L40 47 L24 46 Z" fill="#6b4426" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="earth" data-role="backdrop"'),
+  'elements/earth.svg': auraLayer('earth', '#4f8a44', '#84a987', `
+    <path d="M13 46 L25 24 L32 36 L40 20 L51 46 Z" fill="#6b4426" stroke="none"/>
+    <path d="M22 46 Q24 33 32 26 Q40 33 42 46 Z" fill="#8ac25c" stroke="none"/>
+  `),
 
-  'elements/wind.svg': svg(`
-    <path d="M8 31 L19 15 L34 9 L49 17 L56 33 L44 50 L28 57 L13 47 Z" fill="#8a8f98" stroke-linejoin="miter"/>
-    <path d="M18 33 L27 20 L41 18 L48 32 L39 46 L24 45 Z" fill="#f3efe2" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="wind" data-role="backdrop"'),
+  'elements/wind.svg': auraLayer('wind', '#5f7183', '#cbd5e1', `
+    <path d="M15 22 Q34 12 49 22 M12 32 Q32 22 52 32 M17 43 Q34 35 48 43" fill="none" stroke="#f3efe2" stroke-width="2.4"/>
+    <path d="M45 18 Q52 20 50 26" fill="none" stroke="#f3efe2" stroke-width="2"/>
+  `),
 
-  'elements/dark.svg': svg(`
-    <path d="M10 32 L20 14 L34 8 L48 17 L54 34 L44 51 L28 58 L14 47 Z" fill="#6d3b8f" stroke-linejoin="miter"/>
-    <path d="M19 34 L27 20 L40 17 L47 33 L39 47 L24 46 Z" fill="#2a1c12" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="dark" data-role="backdrop"'),
+  'elements/dark.svg': auraLayer('dark', '#4c2a6b', '#6d3b8f', `
+    <path d="M40 12 Q20 15 20 34 Q20 49 39 52 Q28 44 28 34 Q28 21 40 12 Z" fill="#2a1c12" stroke="none"/>
+    <circle cx="42" cy="24" r="2.4" fill="#c4b5fd" stroke="none"/>
+  `),
 
-  'elements/light.svg': svg(`
-    <path d="M32 7 L48 16 L55 32 L46 49 L32 57 L18 49 L9 32 L16 16 Z" fill="#e8c14a" stroke-linejoin="miter"/>
-    <path d="M22 32 L32 18 L42 32 L32 46 Z" fill="#f3efe2" stroke="none" stroke-linejoin="miter"/>
-  `, 'data-element="light" data-role="backdrop"'),
+  'elements/light.svg': auraLayer('light', '#b88726', '#e8c14a', `
+    <path d="M32 10 V18 M32 46 V54 M10 32 H18 M46 32 H54 M17 17 L23 23 M41 41 L47 47 M47 17 L41 23 M23 41 L17 47" fill="none" stroke="#f3efe2" stroke-width="2.4"/>
+    <path d="M32 20 L38 32 L32 44 L26 32 Z" fill="#f3efe2" stroke="none"/>
+  `),
 
   // ── Quality layers (four files; masked to the base silhouette) ──────
+  // Ржавчина — круглые пятна и кляксы по всей игре предмета, включая узкие
+  // клинки кинжалов. Маска силуэта отсекает всё, что выходит за предмет.
   'quality/rusty.svg': svg(`
-    <path d="M11 21 L19 17 L23 24 L15 27 Z" fill="#7a4b2a" stroke="none"/>
-    <path d="M42 13 L50 17 L46 25 L40 21 Z" fill="#b93a2b" stroke="none"/>
-    <path d="M17 40 L25 37 L27 45 L19 48 Z" fill="#7a4b2a" stroke="none"/>
-    <path d="M38 42 L47 39 L49 47 L41 50 Z" fill="#b93a2b" stroke="none"/>
-    <path d="M47 22 L54 26 L48 30 Z" fill="#241a14" stroke="none" stroke-linejoin="miter"/>
-    <path d="M12 33 L18 30 L16 38 Z" fill="#241a14" stroke="none" stroke-linejoin="miter"/>
+    <g data-fx="rust-blots" data-blots="14">
+      ${rustBlot(31, 7, 3.2, '#7a4b2a')}
+      ${rustBlot(35, 13, 4.1, '#b93a2b')}
+      ${rustBlot(29, 18, 3.3, '#7a4b2a')}
+      ${rustBlot(34, 24, 4.6, '#b93a2b')}
+      ${rustBlot(30, 30, 3.8, '#7a4b2a')}
+      ${rustBlot(35, 36, 4.2, '#b93a2b')}
+      ${rustBlot(29, 42, 3.5, '#7a4b2a')}
+      ${rustBlot(33, 49, 4.0, '#b93a2b')}
+      ${rustBlot(12, 20, 5.2, '#7a4b2a')}
+      ${rustBlot(50, 18, 5.0, '#b93a2b')}
+      ${rustBlot(14, 40, 4.6, '#b93a2b')}
+      ${rustBlot(49, 42, 5.2, '#7a4b2a')}
+      ${rustBlot(20, 29, 3.4, '#241a14')}
+      ${rustBlot(43, 30, 3.6, '#241a14')}
+    </g>
   `, 'data-quality="rusty" data-role="quality"'),
 
+  // Острый металл — резкий бело-голубой блик, пересекающий клинок.
   'quality/sharp.svg': svg(`
-    <path d="M14 48 L50 12" fill="none" stroke="#f3efe2" stroke-width="2.6" stroke-linecap="square"/>
-    <path d="M24 52 L54 22" fill="none" stroke="#93c5fd" stroke-width="1.4" stroke-linecap="square"/>
-    ${highlight(40, 22, 3, 1.6, '#ffffff', -38)}
+    <g data-fx="sharp-glint">
+      <path d="M22 52 L44 10" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="square"/>
+      <path d="M29 55 L54 20" fill="none" stroke="#93c5fd" stroke-width="1.8" stroke-linecap="square"/>
+      <path d="M39 14 L50 9 L45 22 Z" fill="#ffffff" stroke="none"/>
+    </g>
   `, 'data-quality="sharp" data-role="quality"'),
 
+  // Золотой край предмета и небольшой мягкий блик на кромке.
   'quality/gold.svg': svg(`
-    <path d="M13 45 L22 19 L34 14 L43 20" fill="none" stroke="#e8c14a" stroke-width="3.2" stroke-linecap="square"/>
-    <path d="M20 52 L31 26 L45 18" fill="none" stroke="#e8c14a" stroke-width="2.2" stroke-linecap="square"/>
-    <path d="M38 36 L51 31" fill="none" stroke="#f3efe2" stroke-width="1.6" stroke-linecap="square"/>
+    <g data-fx="gold-edge-shine">
+      <path d="M12 43 Q20 16 34 12 Q45 13 51 23" fill="none" stroke="#e8c14a" stroke-width="4"/>
+      <path d="M14 47 Q32 9 51 31" fill="none" stroke="#e8c14a" stroke-width="2"/>
+      <path d="M20 52 L31 27 L45 18" fill="none" stroke="#f4df96" stroke-width="2.4"/>
+      <ellipse cx="39" cy="21" rx="3.4" ry="1.5" fill="#fff8dc" stroke="none" transform="rotate(-28 39 21)"/>
+    </g>
   `, 'data-quality="gold" data-role="quality"'),
 
+  // Магия — мерцающая аура вместо жёсткого значка; анимация идёт внутри SVG.
   'quality/magic.svg': svg(`
-    <path d="M32 10 L36 26 L52 32 L36 38 L32 54 L28 38 L12 32 L28 26 Z" fill="#93c5fd" stroke="none"/>
-    <path d="M32 21 L35 30 L44 33 L35 36 L32 45 L29 36 L20 33 L29 30 Z" fill="#b58be0" stroke="none"/>
-    <path d="M15 17 H21 M18 14 V20" fill="none" stroke="#f3efe2" stroke-width="1.6" stroke-linecap="square"/>
+    <g data-fx="magic-shimmer">
+      <circle cx="32" cy="32" r="26" fill="#93c5fd" stroke="none" opacity=".22"><animate attributeName="opacity" values=".12;.42;.12" dur="1.9s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="19" fill="#b58be0" stroke="none" opacity=".26"><animate attributeName="opacity" values=".18;.48;.18" dur="2.3s" repeatCount="indefinite"/></circle>
+      <path d="M32 10 L36 27 L54 32 L36 37 L32 54 L28 37 L10 32 L28 27 Z" fill="#c4b5fd" stroke="none" opacity=".6"><animate attributeName="opacity" values=".32;.78;.32" dur="1.6s" repeatCount="indefinite"/></path>
+      <circle cx="47" cy="15" r="1.8" fill="#ffffff" stroke="none"><animate attributeName="opacity" values=".2;1;.2" dur="1.2s" repeatCount="indefinite"/></circle>
+      <circle cx="16" cy="48" r="1.6" fill="#ffffff" stroke="none"><animate attributeName="opacity" values="1;.2;1" dur="1.5s" repeatCount="indefinite"/></circle>
+    </g>
   `, 'data-quality="magic" data-role="quality"')
 };
 

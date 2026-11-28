@@ -21,24 +21,33 @@ button,input,select{font-family:inherit}
 #stage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 #cv{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;background:#0a0d1c;box-shadow:0 0 60px rgba(0,0,0,.85)}
 
-/* ============================ МОБИЛЬНЫЕ КНОПКИ ============================ */
+/* ============================ КРУПНЫЕ КНОПКИ УПРАВЛЕНИЯ ============================ */
+/* Полупрозрачные сенсорные кнопки теперь есть и на ПК. Их можно скрыть клавишей H
+   или настройкой, но на тач-устройствах они остаются видимыми всегда. */
 #controls{position:absolute;inset:0;z-index:6;pointer-events:none}
 #controls button{pointer-events:auto;touch-action:manipulation}
-.leftDock{position:absolute;left:8px;bottom:8px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:2px}
-.dpad button{border:1px solid rgba(251,191,36,.42);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;font-size:17px;font-weight:800}
+.leftDock{position:absolute;left:8px;bottom:120px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:3px}
+.dpad button{border:1px solid rgba(251,191,36,.62);border-radius:10px;background:rgba(12,15,30,.38);
+  color:#ffe9b0;font-size:21px;font-weight:800;backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
 .dpad .up{grid-area:1/2}.dpad .dn{grid-area:3/2}.dpad .lf{grid-area:2/1}.dpad .rt{grid-area:2/3}
-.dpad .mid{grid-area:2/2;background:rgba(0,0,0,.22);border-color:transparent;pointer-events:none}
+.dpad .mid{grid-area:2/2;background:rgba(0,0,0,.18);border-color:transparent;pointer-events:none;box-shadow:none;backdrop-filter:none}
 .turnPair{display:flex;gap:6px;align-items:flex-end}
-.turnTri{position:relative;width:48px;height:60px;border:1px solid rgba(251,191,36,.38);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;cursor:pointer}
-.turnTri .tri{position:absolute;left:7px;top:5px;width:0;height:0;border-top:21px solid transparent;border-bottom:21px solid transparent;border-right:30px solid #fbbf24}
-.turnTri.right .tri{border-right:0;border-left:30px solid #fbbf24}
-.turnTri .lbl{position:absolute;left:0;right:0;bottom:3px;font-size:8px;text-align:center;color:#ffe9b0}
-.rightDock{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
-.rightDock button{width:48px;height:48px;border-radius:9px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.24)}
+.turnTri{position:relative;width:56px;height:64px;border:1px solid rgba(251,191,36,.58);border-radius:10px;
+  background:rgba(12,15,30,.38);color:#ffe9b0;cursor:pointer;backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.turnTri .tri{position:absolute;left:7px;top:4px;width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:32px solid #fbbf24}
+.turnTri.right .tri{border-right:0;border-left:32px solid #fbbf24}
+.turnTri .lbl{position:absolute;left:0;right:0;bottom:4px;font-size:9px;text-align:center;color:#ffe9b0}
+.rightDock{position:absolute;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(2,58px);grid-auto-rows:58px;gap:6px}
+.rightDock button{width:58px;height:58px;border-radius:10px;border:1px solid rgba(251,191,36,.62);background:rgba(12,15,30,.38);
+  color:#ffe9b0;font-size:23px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.28)}
 .rightDock button.hot{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.3)}
-#btnLog{position:absolute;right:180px;top:8px;width:auto;height:28px;padding:0 9px;border-radius:8px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto}
+#btnLog{position:absolute;right:260px;top:8px;width:auto;height:30px;padding:0 10px;border-radius:8px;border:1px solid rgba(251,191,36,.58);background:rgba(12,15,30,.4);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto;backdrop-filter:blur(3px)}
+body.controls-hidden #controls{display:none!important}
+/* В бою мини-карты нет: журнал уходит в правый верхний угол, подальше от бейджа хода. */
+body:has(#party.in-battle) #btnLog{right:8px}
 #party{position:absolute;z-index:4;left:50%;top:4px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .pcard{width:122px;padding:3px 5px;border-radius:8px;background:rgba(6,8,18,.86);border:1px solid rgba(251,191,36,.35);font-size:9px}
 .pcard.active{border-color:var(--hero-1);box-shadow:0 0 8px rgba(125,255,178,.35)}
@@ -85,25 +94,30 @@ button,input,select{font-family:inherit}
 .pcard .pstats,.pcard .plevel{display:none}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
 /* Боевые плашки компактные, около +10% к обычным, и остаются внизу экрана. */
-#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(720px,70vw);gap:4px}
+/* Карточки живут между dpad слева и кнопками справа: горизонтальные отступы
+   равны ширине доков плюс зазор, поэтому панель отряда не заходит на кнопки. */
+#party.in-battle{top:auto;bottom:4px;left:140px;right:196px;transform:none;width:auto;max-width:722px;gap:4px}
 #party.in-battle .pcard{flex:1 1 0;width:auto;max-width:238px;padding:2px 5px;font-size:11px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats" "level level" "status status";column-gap:6px}
-#party.in-battle .pcard .ptop{grid-area:top;min-width:0}
-#party.in-battle .pcard .pemoji{font-size:16px}
-#party.in-battle .pcard .pface{width:20px;height:20px;flex-basis:20px}
-#party.in-battle .pcard .pstatus{grid-area:status;font-size:9px;margin-top:1px}
-#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:6px}
-#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
+  display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"top" "nums" "hp" "mp" "stats" "level" "status";column-gap:6px}
+#party.in-battle .pcard .ptop{grid-area:top;min-width:0;gap:3px}
+#party.in-battle .pcard .pemoji{font-size:16px;flex:none}
+#party.in-battle .pcard .pface{width:20px;height:20px;flex:0 0 20px}
+/* Полное имя героя не обрезается многоточием: карточка должна показывать имя целиком. */
+#party.in-battle .pcard .pname{flex:0 1 auto;min-width:0;max-width:none;font-size:9px;
+  white-space:nowrap;overflow:visible;text-overflow:clip}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:8px;margin-top:0;line-height:1}
+#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:7px;justify-content:flex-start}
+#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:0}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-#party.in-battle .pcard .pstats{display:flex;grid-area:stats;gap:6px;margin-top:1px;color:#cbd5e1;font-size:9px;line-height:1.1}
-#party.in-battle .pcard .pstats i{font-style:normal;white-space:nowrap}
-#party.in-battle .pcard .plevel{display:block;grid-area:level;margin-top:1px;color:#fde68a;font-size:9px;line-height:1.1;
+#party.in-battle .pcard .pstats{display:flex;grid-area:stats;gap:4px;margin-top:0;min-width:0;overflow:hidden;
+  flex-wrap:nowrap;color:#cbd5e1;font-size:9px;line-height:1}
+#party.in-battle .pcard .pstats i{font-style:normal;white-space:nowrap;flex:none}
+#party.in-battle .pcard .plevel{display:block;grid-area:level;margin-top:0;color:#fde68a;font-size:9px;line-height:1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Статы в бою показаны компактными значками в отдельной строке; длинная старая строка скрыта. */
 #party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
-  #controls{display:none!important}
   #stage{height:100%}
 }
 @media (orientation:portrait){
@@ -112,12 +126,16 @@ button,input,select{font-family:inherit}
   .leftDock,.rightDock{position:relative;left:auto;right:auto;bottom:auto;top:auto}
   .leftDock,.rightDock{justify-content:center}
   .pcard{width:104px}
-  #party.in-battle{max-width:calc(100% - 12px)}
+  /* В вертикальном режиме доки уходят под экран, поэтому карточки снова
+     центрируются по игровому полю, а не по зазору между кнопками. */
+  #party.in-battle{left:50%;right:auto;transform:translateX(-50%);
+    width:min(760px,calc(100% - 12px));max-width:calc(100% - 12px)}
   #party.in-battle .pcard{max-width:none}
 }
 @media (max-height:430px) and (orientation:landscape){
   .dpad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px)}
-  .rightDock button{width:44px;height:44px}
+  .rightDock{grid-template-columns:repeat(2,44px);grid-auto-rows:44px}
+  .rightDock button{width:44px;height:44px;font-size:19px}
   .turnTri{width:44px;height:52px}
 }
 
@@ -354,25 +372,26 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 body:has(.overlay:not(.hidden)) #toast{display:none}
 /* Пока на карте открыта плашка врага, сообщение уступает ей место. */
 body.enemy-plate #toast{display:none}
-/* ===== Часть 4: живой диалог NPC ===== */
+/* ===== Часть 4–5: живой диалог NPC и sprites в сцене ===== */
 .npcDialogue{position:fixed;right:230px;bottom:calc(var(--dlg-bottom,120px) + env(safe-area-inset-bottom,0px));
-  width:min(320px,calc(100vw - 16px));min-height:78px;display:flex;align-items:stretch;gap:6px;z-index:40;
+  width:min(372px,calc(100vw - 16px));min-height:104px;display:flex;align-items:stretch;gap:6px;z-index:40;
   pointer-events:none;border:1px solid rgba(251,191,36,.55);border-radius:12px;
-  background:rgba(10,13,28,.96);box-shadow:0 10px 30px rgba(0,0,0,.45);color:#ffe9b0}
-.npcDialogue.in-shop{position:relative;right:auto;bottom:auto;width:100%;min-height:76px;margin:4px 0 8px;z-index:1}
-.dlgHero{position:absolute;left:5px;bottom:5px;width:44px;height:44px;flex:0 0 44px;border-radius:50%;
+  background:rgba(10,13,28,.96);box-shadow:0 10px 30px rgba(0,0,0,.45);color:#ffe9b0;
+  --npc-cloak:#3b6ea5;--npc-trim:#93c5fd;--npc-hat:#b93a2b}
+.npcDialogue.in-shop{position:relative;right:auto;bottom:auto;width:100%;min-height:104px;margin:4px 0 8px;z-index:1}
+.dlgHero{position:absolute;left:5px;bottom:5px;width:52px;height:52px;flex:0 0 52px;border-radius:50%;
   overflow:hidden;border:2px solid rgba(251,191,36,.75);background:#241a14}
 .dlgHero img{width:100%;height:100%;object-fit:cover;display:block}
-.dlgCopy{flex:1;min-width:0;padding:7px 56px 7px 8px}
-.dlgSpeaker{font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:.04em;margin-bottom:3px}
+.dlgCopy{flex:1;min-width:0;padding:8px 8px 8px 58px}
+.dlgSpeaker{font-size:12px;font-weight:800;color:#fbbf24;letter-spacing:.04em;margin-bottom:3px}
 .dlgText{font-size:12px;line-height:1.35;color:#f4e7c6;overflow-wrap:anywhere}
-.dlgNpc{position:relative;flex:0 0 70px;width:70px;min-height:76px}
-.dlgNpcPortrait{position:absolute;right:2px;top:2px;width:40px;height:40px;object-fit:cover;
-  border:2px solid rgba(251,191,36,.6);border-radius:50%;background:#241a14}
-.dlgNpcSprite{position:absolute;right:4px;bottom:2px;width:62px;height:62px;overflow:visible}
-#dlgNpcSprite g{transform-box:fill-box}
-#npcBody{transform-origin:50% 100%}#npcHead{transform-origin:50% 90%}
-#npcArmLeft{transform-origin:100% 4%}#npcArmRight{transform-origin:0% 4%}
+.dlgNpc{position:relative;flex:0 0 142px;width:142px;min-height:104px}
+.dlgNpcPortrait{position:absolute;right:2px;top:2px;width:84px;height:84px;object-fit:cover;
+  border:2px solid rgba(251,191,36,.6);border-radius:14px;background:#241a14}
+.dlgNpcSprite{position:absolute;left:0;bottom:2px;width:76px;height:76px;overflow:visible}
+#dlgNpcSprite g,#worldNpcSprite g{transform-box:fill-box}
+#npcBody,#worldNpcBody{transform-origin:50% 100%}#npcHead,#worldNpcHead{transform-origin:50% 90%}
+#npcArmLeft,#worldNpcArmLeft{transform-origin:100% 4%}#npcArmRight,#worldNpcArmRight{transform-origin:0% 4%}
 @keyframes npcIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
 @keyframes npcNod{0%,100%{transform:rotate(0)}35%{transform:rotate(9deg)}70%{transform:rotate(-4deg)}}
 @keyframes npcHammer{0%,100%{transform:rotate(0)}35%{transform:rotate(-72deg)}65%{transform:rotate(18deg)}}
@@ -383,24 +402,46 @@ body.enemy-plate #toast{display:none}
 @keyframes npcBless{0%,100%{transform:rotate(0)}50%{transform:rotate(-48deg)}}
 @keyframes npcPoint{0%,100%{transform:rotate(0)}50%{transform:rotate(-62deg) translateX(6px)}}
 @keyframes npcShrug{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
-.npcDialogue.gesture-idle #npcBody{animation:npcIdle 2.6s ease-in-out infinite}
-.npcDialogue.gesture-nod #npcHead,
-.npcDialogue.gesture-shake #npcHead{animation:npcNod .9s ease-in-out 2}
-.npcDialogue.gesture-hammer #npcArmRight,
-.npcDialogue.gesture-forge #npcArmRight{animation:npcHammer .8s ease-in-out 2}
-.npcDialogue.gesture-cast #npcArmRight{animation:npcCast 1.1s ease-in-out 2}
-.npcDialogue.gesture-present #npcArmRight{animation:npcPresent 1s ease-in-out 2}
-.npcDialogue.gesture-beckon #npcArmLeft{animation:npcBeckon 1s ease-in-out 2}
-.npcDialogue.gesture-toast #npcArmRight{animation:npcToast 1s ease-in-out 2}
-.npcDialogue.gesture-bless #npcArmRight{animation:npcBless 1.1s ease-in-out 2}
-.npcDialogue.gesture-bless #npcHead{animation:npcNod 1.1s ease-in-out 2}
-.npcDialogue.gesture-point #npcArmRight{animation:npcPoint 1s ease-in-out 2}
-.npcDialogue.gesture-shrug #npcArmLeft{animation:npcShrug .9s ease-in-out 2}
-body.no-npc-gestures .npcDialogue svg g{animation:none!important;transition:none!important}
+.npcDialogue.gesture-idle #npcBody,body.world-gesture-idle #worldNpcBody{animation:npcIdle 2.6s ease-in-out infinite}
+.npcDialogue.gesture-nod #npcHead,body.world-gesture-nod #worldNpcHead,
+.npcDialogue.gesture-shake #npcHead,body.world-gesture-shake #worldNpcHead{animation:npcNod .9s ease-in-out infinite}
+.npcDialogue.gesture-hammer #npcArmRight,body.world-gesture-hammer #worldNpcArmRight,
+.npcDialogue.gesture-forge #npcArmRight,body.world-gesture-forge #worldNpcArmRight{animation:npcHammer .8s ease-in-out infinite}
+.npcDialogue.gesture-cast #npcArmRight,body.world-gesture-cast #worldNpcArmRight{animation:npcCast 1.1s ease-in-out infinite}
+.npcDialogue.gesture-present #npcArmRight,body.world-gesture-present #worldNpcArmRight{animation:npcPresent 1s ease-in-out infinite}
+.npcDialogue.gesture-beckon #npcArmLeft,body.world-gesture-beckon #worldNpcArmLeft{animation:npcBeckon 1s ease-in-out infinite}
+.npcDialogue.gesture-toast #npcArmRight,body.world-gesture-toast #worldNpcArmRight{animation:npcToast 1s ease-in-out infinite}
+.npcDialogue.gesture-bless #npcArmRight,body.world-gesture-bless #worldNpcArmRight{animation:npcBless 1.1s ease-in-out infinite}
+.npcDialogue.gesture-bless #npcHead,body.world-gesture-bless #worldNpcHead{animation:npcNod 1.1s ease-in-out infinite}
+.npcDialogue.gesture-point #npcArmRight,body.world-gesture-point #worldNpcArmRight{animation:npcPoint 1s ease-in-out infinite}
+.npcDialogue.gesture-shrug #npcArmLeft,body.world-gesture-shrug #worldNpcArmLeft{animation:npcShrug .9s ease-in-out infinite}
+body.no-npc-gestures .npcDialogue svg g,body.no-npc-gestures #worldNpcSprite g{animation:none!important;transition:none!important}
+/* Спрайт говорящего NPC стоит в сцене под диалогом, но выше фигуры героя. */
+#worldNpcSprite{position:absolute;z-index:5;right:76px;bottom:calc(var(--dlg-bottom,120px) + env(safe-area-inset-bottom,0px));
+  width:120px;height:132px;pointer-events:none;opacity:0;transition:opacity .18s linear;overflow:visible;
+  --npc-cloak:#3b6ea5;--npc-trim:#93c5fd;--npc-hat:#b93a2b}
+#worldNpcSprite.visible{opacity:1}
+.npcDialogue[data-kind="forge"],#worldNpcSprite[data-kind="forge"],
+.npcDialogue[data-kind="weapons"],#worldNpcSprite[data-kind="weapons"],
+.npcDialogue[data-kind="armory"],#worldNpcSprite[data-kind="armory"],
+.npcDialogue[data-kind="armor"],#worldNpcSprite[data-kind="armor"]{--npc-cloak:#7c4a2d;--npc-trim:#fbbf24;--npc-hat:#6b3f25}
+.npcDialogue[data-kind="magic"],#worldNpcSprite[data-kind="magic"],
+.npcDialogue[data-kind="jeweler"],#worldNpcSprite[data-kind="jeweler"]{--npc-cloak:#5b3b8a;--npc-trim:#c4b5fd;--npc-hat:#43306e}
+.npcDialogue[data-kind="market"],#worldNpcSprite[data-kind="market"],
+.npcDialogue[data-kind="tavern"],#worldNpcSprite[data-kind="tavern"],
+.npcDialogue[data-kind="inn"],#worldNpcSprite[data-kind="inn"]{--npc-cloak:#4f7f56;--npc-trim:#fde68a;--npc-hat:#8a5a2b}
+.npcDialogue[data-kind="church"],#worldNpcSprite[data-kind="church"],
+.npcDialogue[data-kind="hall"],#worldNpcSprite[data-kind="hall"]{--npc-cloak:#b8b2a0;--npc-trim:#fef3c7;--npc-hat:#d4b46a}
+.npcDialogue[data-kind="barn"],#worldNpcSprite[data-kind="barn"],
+.npcDialogue[data-kind="shed"],#worldNpcSprite[data-kind="shed"],
+.npcDialogue[data-kind="stable"],#worldNpcSprite[data-kind="stable"],
+.npcDialogue[data-kind="well"],#worldNpcSprite[data-kind="well"]{--npc-cloak:#6b6f4a;--npc-trim:#d9d8a8;--npc-hat:#8a6b3d}
 /* Плашка врага важнее реплики: диалог уступает ей место, как и тост. */
 body.enemy-plate .npcDialogue:not(.in-shop){display:none}
+body.map-open #party .pface,body.map-open #worldNpcSprite{display:none}
 @media (max-width:520px) and (orientation:portrait){
   .npcDialogue:not(.in-shop){left:8px!important;right:8px!important;width:auto!important}
+  #worldNpcSprite{width:92px;height:102px}
 }
 @media (max-width:620px){.invBody,#shopBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(220px,72vw)}.invGrid{grid-template-columns:repeat(9,minmax(0,1fr))}#shopCategories{position:static;flex:none}.box{padding:13px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
@@ -418,7 +459,7 @@ body.enemy-plate .npcDialogue:not(.in-shop){display:none}
   #party{top:2px}
   .pcard{width:104px;padding:2px 4px}
   /* Кнопки уходят в компактную сетку, чтобы не наезжать на мини-карту и строку состояния. */
-  .rightDock{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:180px;bottom:56px}
+  .rightDock{bottom:8px}
 }
 @media (max-width:520px) and (orientation:portrait){
   .overlay{padding:8px}
@@ -429,11 +470,46 @@ body.enemy-plate .npcDialogue:not(.in-shop){display:none}
 }
 /* Часть 3: на карте отряд стоит правее окна состояния и ниже кнопки журнала;
    в бою карточки остаются внизу, а dpad уходит под очередь. */
-#party:not(.in-battle){left:auto;right:156px;top:40px;transform:none}
-#controls .leftDock{top:80px;bottom:auto}
-body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
+/* Правая граница карточек считается в процентах от поля: миникарта занимает
+   последние ~19% ширины canvas, поэтому 21% оставляют зазор при любом масштабе. */
+#party:not(.in-battle){left:auto;right:21%;top:40px;transform:none}
+/* На средних окнах зазор между окном состояния и мини-картой уже, чем три
+   обычные карточки: уплотняем их и сдвигаем так, чтобы ничего не наезжало. */
+@media (min-width:620px) and (max-width:1000px) and (min-height:521px) and (orientation:landscape){
+  #party:not(.in-battle){right:20%}
+  #party:not(.in-battle) .pcard{width:115px}
+}
+#controls .leftDock{top:auto;bottom:120px}
+body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:120px}
+/* На сенсорном экране кнопки недоступны для скрытия: клавиши может просто не быть. */
+@media (hover:none),(pointer:coarse){
+  body.controls-hidden #controls{display:block!important}
+}
 @media (orientation:portrait){
   #party:not(.in-battle){left:50%;right:auto;top:96px;transform:translateX(-50%)}
+  #controls .leftDock,#controls .rightDock{top:auto;bottom:auto;margin-top:40px}
+  /* В бою карточки занимают низ сцены: доки остаются под сценой, не поверх отряда. */
+  body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:auto;margin-top:40px}
+  body.controls-hidden #controls{display:flex!important}
+}
+/* На узком экране карточки уплотняются: сообщение и мини-карта остаются видимыми. */
+@media (max-width:520px) and (orientation:portrait){
+  #party:not(.in-battle){left:8px;right:auto;top:44px;transform:none;width:auto}
+  #party:not(.in-battle) .pcard{width:96px;padding:1px 3px}
+  #party:not(.in-battle) .pcard .mini,#party:not(.in-battle) .pcard .pstatus{display:none}
+}
+/* На низком ландшафте Dock уходит под очередь, а журнал — от бейджа хода. */
+@media (max-height:430px) and (orientation:landscape){
+  #controls .leftDock{bottom:0;flex-direction:row;align-items:flex-end}
+  #controls .turnPair{flex-direction:column;align-items:center;gap:4px}
+  body:has(#party.in-battle) #controls .leftDock{
+    bottom:8px;flex-direction:column;align-items:center}
+}
+/* Компактный ландшафт: окно состояния и мини-карта занимают почти весь верх,
+   поэтому карточки вписываются ровно в зазор между ними при любом масштабе canvas. */
+@media (max-height:430px) and (orientation:landscape) and (min-width:800px){
+  #party:not(.in-battle){right:calc(50% - 54.4vh + 4px)}
+  #party:not(.in-battle) .pcard{width:100px}
 }
 </style>
 </head>
@@ -555,6 +631,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
     <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L открывает и закрывает журнал, Esc закрывает.</div>
   </div></details>
   <details class="setAcc"><summary>🎮 Управление</summary><div class="setBody">
+    <div class="setCheck"><input type="checkbox" id="setShowControls" checked><span>🕹 Крупные полупрозрачные кнопки (H / Р — скрыть или показать)</span></div>
     <div class="setRow"><span class="setLabel">Клавиши</span><select id="setKeysMode"><option value="all">WASD + Стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
     <div class="setRow"><span class="setLabel">Раскладка</span><select id="setKeysLayout"><option value="both">Обе</option><option value="lat">Латиница</option><option value="cyr">Кириллица</option></select></div>
     <div class="keysHelp">
@@ -564,6 +641,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
       <div><span class="keyCap">Пробел</span> атака в бою · <span class="keyCap">F</span> магия · <span class="keyCap">R</span> бегство</div>
       <div><span class="keyCap">L/Д</span> журнал событий · <span class="keyCap">↑/↓</span> прокрутка журнала</div>
       <div><span class="keyCap">M/Ь</span> карта · <span class="keyCap">Esc</span> меню · <span class="keyCap">P</span> настройки</div>
+      <div><span class="keyCap">H/Р</span> скрыть или показать крупные кнопки управления</div>
     </div>
   </div></details>
   <div class="row"><button class="link" id="resetSettings">↺ Сбросить настройки</button></div>
@@ -605,24 +683,58 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
 
 <div id="toast" role="status" aria-live="polite"></div>
 
-<!-- Часть 4: живой диалог NPC. Элемент переезжает в окно лавки, когда оно открыто. -->
+<!-- Часть 5: говорящий NPC стоит в сцене; Кукла собрана из отдельных частей, как и портрет в диалоге. -->
+<svg id="worldNpcSprite" viewBox="0 0 120 132" aria-hidden="true">
+  <g id="worldNpcBody">
+    <path d="M24 130 L31 62 L89 62 L96 130 Z" fill="var(--npc-cloak)" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+    <path d="M31 62 L60 92 L89 62" fill="none" stroke="var(--npc-trim)" stroke-width="4" stroke-linejoin="miter"/>
+    <path d="M60 62 L60 130" fill="none" stroke="#241a14" stroke-width="3"/>
+    <path d="M28 104 H92 V112 H28 Z" fill="#241a14"/>
+    <path d="M55 104 H65 V112 H55 Z" fill="var(--npc-trim)"/>
+  </g>
+  <g id="worldNpcArmLeft">
+    <path d="M32 68 L9 94 L15 106" fill="none" stroke="var(--npc-cloak)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M32 68 L9 94 L15 106" fill="none" stroke="#241a14" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="15" cy="107" r="6" fill="#c9b391" stroke="#241a14" stroke-width="3"/>
+  </g>
+  <g id="worldNpcArmRight">
+    <path d="M88 68 L111 94 L105 106" fill="none" stroke="var(--npc-cloak)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M88 68 L111 94 L105 106" fill="none" stroke="#241a14" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="105" cy="107" r="6" fill="#c9b391" stroke="#241a14" stroke-width="3"/>
+  </g>
+  <g id="worldNpcHead">
+    <ellipse cx="60" cy="40" rx="23" ry="26" fill="#c9b391" stroke="#241a14" stroke-width="4"/>
+    <path d="M40 34 Q60 8 80 34 L74 24 Q60 12 46 24 Z" fill="#4a3a2e" stroke="#241a14" stroke-width="3"/>
+    <circle cx="52" cy="41" r="3" fill="#241a14"/><circle cx="68" cy="41" r="3" fill="#241a14"/>
+    <path d="M53 54 Q60 60 67 54" fill="none" stroke="#6b4426" stroke-width="3"/>
+    <path d="M60 44 L57 50 H63" fill="none" stroke="#8f7a5f" stroke-width="2"/>
+  </g>
+  <g id="worldNpcHat">
+    <path d="M33 25 L60 5 L87 25 L81 31 L60 17 L39 31 Z" fill="var(--npc-hat)" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+    <path d="M33 25 H87" fill="none" stroke="var(--npc-trim)" stroke-width="3"/>
+  </g>
+</svg>
+
+<!-- Часть 4–5: живой диалог NPC. Элемент переезжает в окно лавки, когда оно открыто. -->
 <div id="npcDialogue" class="npcDialogue hidden" role="status" aria-live="polite">
-  <div class="dlgHero"><img id="dlgHeroFace" alt="" onerror="this.style.display='none'"></div>
+  <div class="dlgHero" id="dlgHero"><img id="dlgHeroFace" alt="" onerror="this.style.display='none'"></div>
   <div class="dlgCopy"><div class="dlgSpeaker" id="dlgSpeaker"></div><div class="dlgText" id="dlgText"></div></div>
   <div class="dlgNpc">
     <img id="dlgNpcPortrait" class="dlgNpcPortrait" alt="" onerror="this.style.display='none'">
     <svg class="dlgNpcSprite" id="dlgNpcSprite" viewBox="0 0 96 96" aria-hidden="true">
       <g id="npcBody">
-        <path d="M26 92 L30 48 L66 48 L70 92 Z" fill="#3b6ea5" stroke="#241a14" stroke-width="3"/>
-        <path d="M30 48 L48 70 L66 48" fill="none" stroke="#93c5fd" stroke-width="2"/>
+        <path d="M26 92 L30 48 L66 48 L70 92 Z" fill="var(--npc-cloak)" stroke="#241a14" stroke-width="3"/>
+        <path d="M30 48 L48 70 L66 48" fill="none" stroke="var(--npc-trim)" stroke-width="2"/>
         <path d="M48 48 L48 92" fill="none" stroke="#241a14" stroke-width="2"/>
+        <path d="M27 80 H69 V86 H27 Z" fill="#241a14"/>
+        <path d="M45 80 H51 V86 H45 Z" fill="var(--npc-trim)"/>
       </g>
       <g id="npcArmLeft">
-        <path d="M30 53 L14 72 L18 80" fill="none" stroke="#3b6ea5" stroke-width="9" stroke-linecap="round"/>
+        <path d="M30 53 L14 72 L18 80" fill="none" stroke="var(--npc-cloak)" stroke-width="9" stroke-linecap="round"/>
         <path d="M30 53 L14 72 L18 80" fill="none" stroke="#241a14" stroke-width="3" stroke-linecap="round"/>
       </g>
       <g id="npcArmRight">
-        <path d="M66 53 L82 72 L78 80" fill="none" stroke="#3b6ea5" stroke-width="9" stroke-linecap="round"/>
+        <path d="M66 53 L82 72 L78 80" fill="none" stroke="var(--npc-cloak)" stroke-width="9" stroke-linecap="round"/>
         <path d="M66 53 L82 72 L78 80" fill="none" stroke="#241a14" stroke-width="3" stroke-linecap="round"/>
       </g>
       <g id="npcHead">
@@ -631,7 +743,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
         <circle cx="41" cy="33" r="2.5" fill="#241a14"/><circle cx="55" cy="33" r="2.5" fill="#241a14"/>
         <path d="M43 43 Q48 47 53 43" fill="none" stroke="#241a14" stroke-width="2"/>
       </g>
-      <g id="npcHat"><path d="M28 19 L48 7 L68 19 L64 23 L48 14 L32 23 Z" fill="#b93a2b" stroke="#241a14" stroke-width="3"/></g>
+      <g id="npcHat"><path d="M28 19 L48 7 L68 19 L64 23 L48 14 L32 23 Z" fill="var(--npc-hat)" stroke="#241a14" stroke-width="3"/></g>
     </svg>
   </div>
 </div>
@@ -656,7 +768,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgX:120,msgW:340,enemyPanelW:220,enemyPanelH:58,badgeW:100};
+  msgX:140,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -844,13 +956,27 @@ function npcSay(text,speaker,kind,opts){
   if(opts&&opts.speak) speakEvent(text);
   return text;
 }
-function playNpcGesture(gesture){
+function clearWorldNpc(){
+  const sprite=$('worldNpcSprite');
+  if(sprite){ sprite.classList.remove('visible'); delete sprite.dataset.kind; }
+  document.body.className=String(document.body.className).replace(/\bworld-gesture-[\w-]+\b/g,'').trim();
+}
+function playNpcGesture(gesture,kind,inShop){
   const el=$('npcDialogue'); if(!el) return null;
   const name=gesture||'idle';
   el.className=String(el.className).replace(/\bgesture-[\w-]+\b/g,'').trim();
   void el.getBoundingClientRect();
   el.classList.add('gesture-'+name);
   el.dataset.gesture=name;
+  if(kind) el.dataset.kind=String(kind);
+  // В сцене спрайт говорит непрерывно; внутри лавки и на большой карте его нет.
+  document.body.className=String(document.body.className).replace(/\bworld-gesture-[\w-]+\b/g,'').trim();
+  const sprite=$('worldNpcSprite');
+  if(sprite&&!inShop&&!game.mapOpen){
+    if(kind) sprite.dataset.kind=String(kind);
+    sprite.classList.add('visible');
+    document.body.classList.add('world-gesture-'+name);
+  } else clearWorldNpc();
   return name;
 }
 function syncDialoguePlacement(){
@@ -861,8 +987,11 @@ function syncDialoguePlacement(){
   const inBattle=!!(game&&game.battle);
   // На карте диалог стоит над подсказкой; в бою — левее панели врага и над логом.
   const border=canvasTop+(inBattle?BF.msgY:250)*scale;
+  const bottom=Math.ceil(window.innerHeight-border+8)+'px';
   el.style.right=inBattle?'150px':'230px';
-  el.style.setProperty('--dlg-bottom',Math.ceil(window.innerHeight-border+8)+'px');
+  el.style.setProperty('--dlg-bottom',bottom);
+  const sprite=$('worldNpcSprite');
+  if(sprite){ sprite.style.right=inBattle?'10px':'76px'; sprite.style.setProperty('--dlg-bottom',bottom); }
 }
 function showNpcDialogue(text,speaker,kind){
   const el=$('npcDialogue'); if(!el) return false;
@@ -884,30 +1013,42 @@ function showNpcDialogue(text,speaker,kind){
   const idx=game&&Number.isFinite(game.invHero)?game.invHero:0;
   const hero=game&&game.party&&game.party[idx];
   if(hero&&$('dlgHeroFace')){ $('dlgHeroFace').src=portraitSrc(hero,idx); $('dlgHeroFace').style.display=''; }
-  playNpcGesture(npcGestureFor(kind));
+  playNpcGesture(npcGestureFor(kind),kind,inShop);
   el.classList.remove('hidden'); syncDialoguePlacement();
   clearTimeout(npcDialogueTimer);
-  npcDialogueTimer=setTimeout(()=>el.classList.add('hidden'),3200);
+  npcDialogueTimer=setTimeout(()=>{ el.classList.add('hidden'); clearWorldNpc(); },3200);
   return true;
 }
 function npcStageReport(){
   const el=$('npcDialogue'); if(!el) return null;
   const sprite=$('dlgNpcSprite'), arm=$('npcArmRight');
+  const world=$('worldNpcSprite');
   const text=$('dlgText'), hero=$('dlgHeroFace');
   const r=e=>{ if(!e) return null; const q=e.getBoundingClientRect();
     return {x:+q.x.toFixed(1),y:+q.y.toFixed(1),w:+q.width.toFixed(1),h:+q.height.toFixed(1)}; };
+  const anim=root=>['Body','Head','ArmLeft','ArmRight'].map(part=>{
+    const node=root&&root.querySelector('#'+(root.id==='dlgNpcSprite'?'npc':'worldNpc')+part);
+    if(!node) return {name:'none',iterations:'0'};
+    const cs=getComputedStyle(node);
+    return {name:cs.animationName,iterations:cs.animationIterationCount};
+  });
+  const dlgAnim=anim(sprite), worldAnim=anim(world);
   return {
     visible:!el.classList.contains('hidden'),inShop:el.classList.contains('in-shop'),
     speaker:$('dlgSpeaker')?$('dlgSpeaker').textContent:'',text:text?text.textContent:'',
     heroFaceSrc:hero?hero.getAttribute('src'):null,npcPortraitSrc:$('dlgNpcPortrait')?$('dlgNpcPortrait').getAttribute('src'):null,
     groups:['npcBody','npcHead','npcArmLeft','npcArmRight','npcHat'].filter(id=>el.querySelector('#'+id)),
+    kind:el.dataset.kind||null,speakerKind:NPC_SPEECH_STATE.kind,
     gesture:el.dataset.gesture||null,gesturesEnabled:settings.npcGestures===true,
     animationName:arm?getComputedStyle(arm).animationName:'none',
-    animationNames:['npcBody','npcHead','npcArmLeft','npcArmRight'].map(id=>{
-      const part=el.querySelector('#'+id);
-      return part?getComputedStyle(part).animationName:'none';
-    }),
-    rect:r(el),heroRect:r(hero),textRect:r(text),spriteRect:r(sprite),
+    animationNames:dlgAnim.map(a=>a.name),animationIterations:dlgAnim.map(a=>a.iterations),
+    world:{visible:!!world&&world.classList.contains('visible'),kind:world?world.dataset.kind:null,
+      rect:r(world),groups:world?['worldNpcBody','worldNpcHead','worldNpcArmLeft','worldNpcArmRight','worldNpcHat']
+        .filter(id=>world.querySelector('#'+id)):[],
+      animationNames:worldAnim.map(a=>a.name),animationIterations:worldAnim.map(a=>a.iterations)},
+    mapFacesVisible:!!document.querySelector('#party .pface')&&
+      getComputedStyle(document.querySelector('#party .pface')).display!=='none',
+    rect:r(el),heroRect:r($('dlgHero')),textRect:r(text),spriteRect:r(sprite),portraitRect:r($('dlgNpcPortrait')),
     last:NPC_SPEECH_STATE.last,lastKind:NPC_SPEECH_STATE.kind,count:NPC_SPEECH_STATE.count
   };
 }
@@ -1316,7 +1457,7 @@ const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
-const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','npcGestures','speech'];
+const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','npcGestures','speech','showControls'];
 function normalizeSettings(raw){
   const s=Object.assign({},DEFAULT_SETTINGS,raw||{});
   Object.entries(SETTING_RANGES).forEach(([key,[min,max]])=>{
@@ -1339,6 +1480,19 @@ try {
   startAmbient(); startMusic(getTrack());
 } catch (e) {}
 function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); }catch(e){} }
+/* Видимость крупных кнопок: настройка и клавиша H/Р меняют одно и то же состояние.
+   На тач-устройствах CSS всё равно оставляет кнопки на экране. */
+function applyControlVisibility(){
+  document.body.classList.toggle('controls-hidden',settings.showControls===false);
+  const box=$('setShowControls'); if(box) box.checked=settings.showControls!==false;
+  const btn=$('btnControls'); if(btn) btn.setAttribute('aria-pressed',String(settings.showControls!==false));
+}
+function toggleControls(force){
+  settings.showControls=force===undefined?settings.showControls===false:!!force;
+  applyControlVisibility(); saveSettings();
+  toast(settings.showControls?'Крупные кнопки видны':'Крупные кнопки скрыты · H/Р');
+  return settings.showControls;
+}
 function openSettings(){ $('settings').classList.remove('hidden'); if(game) game.settingsOpen=true; syncSettings(); updateControls(); }
 function closeSettings(){ $('settings').classList.add('hidden'); if(game) game.settingsOpen=false; saveSettings(); if(game) updateControls(); }
 function syncSettings(){
@@ -1352,9 +1506,10 @@ function syncSettings(){
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setNpcGestures:'npcGestures',setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech',setShowControls:'showControls'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
   document.body.classList.toggle('no-npc-gestures',settings.npcGestures!==true);
+  applyControlVisibility();
 }
 function bindSettings(){
   const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
@@ -1387,10 +1542,11 @@ function bindSettings(){
   });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setNpcGestures:'npcGestures',setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech',setShowControls:'showControls'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{ settings[key]=el.checked;
       if(key==='npcGestures') document.body.classList.toggle('no-npc-gestures',!el.checked);
+      if(key==='showControls') applyControlVisibility();
       saveSettings();
     });
   });
@@ -1956,8 +2112,9 @@ function heroStatusName(h){
   const idx=party().indexOf(h);
   return idx>0?(h.def.name+' '+(idx+1)):heroName(h);
 }
+// В карточке имя и класс уже показаны отдельно: строка состояния содержит только состояние.
 function heroStatusLine(h){
-  return '«'+heroStatusName(h)+', '+((h&&h.def&&h.def.name)||'Герой')+': '+heroCondition(h)+'»';
+  return heroCondition(h);
 }
 function tickStatuses(h){
   if(!h.statuses||!h.statuses.length) return;
@@ -3267,6 +3424,22 @@ function battleQueueRows(b){
   return at>0?rows.slice(at).concat(rows.slice(0,at)):rows;
 }
 const TURN_QUEUE_LIMIT=5;
+// Очередь живёт в DOM, а панель врага рисуется на canvas 640×360. Позицию очереди
+// считаем из реального масштаба canvas: она всегда начинается ниже панели врага
+// на любом размере окна и не перекрывает её.
+function syncTurnQueuePosition(){
+  const el=$('turnQueue'); if(!el) return;
+  const r=cv.getBoundingClientRect();
+  const scale=Math.min(r.width/W,r.height/H);
+  const vx=(r.width-W*scale)/2, vy=(r.height-H*scale)/2;
+  // На низком ландшафте Dock сжимается в колонку: очередь уходит вправо от кнопок,
+  // чтобы не наезжать на dpad при любой высоте окна.
+  const compactLandscape=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
+  const battle=!!(game&&game.battle&&!game.battle.end);
+  const leftPx=compactLandscape&&battle?140:10;
+  el.style.left=Math.max(4,vx+leftPx*scale).toFixed(1)+'px';
+  el.style.top=Math.max(4,vy+(10+BF.enemyPanelH+6)*scale).toFixed(1)+'px';
+}
 function updateTurnQueue(){
   const el=$('turnQueue'), b=game&&game.battle;
   if(!el) return;
@@ -3280,6 +3453,7 @@ function updateTurnQueue(){
       '<span class="tq-rank">'+(u.dead?'†':(i+1))+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
   }).join('')+(rows.length>shown.length?'<div class="tq-more">… ещё '+(rows.length-shown.length)+'</div>':'');
   el.classList.remove('hidden');
+  syncTurnQueuePosition();
 }
 function setActionButton(id,disabled,title){
   const el=$(id); if(!el) return;
@@ -6128,7 +6302,7 @@ function drawTiledGround(x,y,w,h,ground,season,seed){
    и не попадают в манифест новых файлов. */
 const GROUND_FIELD_TOP=142;
 const groundFieldCache=new Map(), bigMapMosaicCache=new Map();
-const terrainRenderStats={field:{},frame:{},bigMap:{}};
+const terrainRenderStats={field:{},frame:{},bigMap:{},battle:{}};
 function terrainRgba(hex,alpha){
   const s=String(hex||'#888888').replace('#','');
   const v=parseInt(s.length===3?s.split('').map(c=>c+c).join(''):s,16)||0x888888;
@@ -6149,6 +6323,26 @@ function softTerrainBlob(g,x,y,r,color,alpha){
   g.fillStyle=grad;
   g.beginPath(); g.ellipse(x,y,Math.max(1,r),Math.max(1,r*.52),0,0,6.29); g.fill();
 }
+/* Органическая клякса: несколько мягких долей с разным наклоном. Детерминирована
+  _seed_ и рисуется только в кэше, поэтому не влияет на проходимость и FPS. */
+function organicTerrainBlob(g,x,y,r,color,alpha,seed){
+  for(let i=0;i<5;i++){
+    const h=cellHash(seed||1,i,211), angle=(h%360)*Math.PI/180;
+    const off=r*(.1+((h>>5)%22)/100);
+    softTerrainBlob(g,x+Math.cos(angle)*off,y+Math.sin(angle)*off*.55,
+      r*(.62+((h>>11)%34)/100),color,alpha*.72);
+  }
+}
+function windingTerrainTrail(g,seed,y0,y1,color,alpha,width){
+  const k=(seed||1)%97, drift=(k%7)-3;
+  g.save(); g.lineCap='round'; g.lineJoin='round';
+  g.strokeStyle=terrainRgba(color,alpha); g.lineWidth=width;
+  g.beginPath(); g.moveTo(-12,y0+drift*3);
+  g.bezierCurveTo(W*.22,y0-16,W*.38,y1+14,W*.56,y0+drift*2);
+  g.bezierCurveTo(W*.76,y1-12,W*.88,y0+18,W+12,y1+drift); g.stroke();
+  g.strokeStyle=terrainRgba(shade(color,22),alpha*.5); g.lineWidth=Math.max(1,width*.36);
+  g.stroke(); g.restore();
+}
 function buildGroundField(map,season,biome){
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const g=c.getContext('2d'), pal=terrainPalette(season);
@@ -6157,14 +6351,23 @@ function buildGroundField(map,season,biome){
   const grad=g.createLinearGradient(0,GROUND_FIELD_TOP-26,0,H);
   grad.addColorStop(0,shade(base,8)); grad.addColorStop(.5,base); grad.addColorStop(1,shade(base,-22));
   g.fillStyle=grad; g.fillRect(0,GROUND_FIELD_TOP-26,W,H-GROUND_FIELD_TOP+26);
-  const stats={patches:0,stones:0,bushes:0,soft:0,cells:0};
+  const stats={patches:0,stones:0,bushes:0,soft:0,organic:0,trails:0,transitions:0,cells:0};
   const tone=[pal.grass,pal.dirt,pal.sand,pal.stone,pal.flowers];
   for(let i=0;i<46;i++){
     const h=cellHash(i,7,(map.seed||1)+41), h2=cellHash(9,i,(map.seed||1)+83);
     const x=(h%W), y=GROUND_FIELD_TOP+(h2%(H-GROUND_FIELD_TOP));
-    const r=26+(h%38);
-    softTerrainBlob(g,x,y,r,tone[i%tone.length],season==='winter'?.18:.26);
+    const r=26+(h%38), color=tone[i%tone.length], alpha=season==='winter'?.18:.26;
+    if(i%2===0){ organicTerrainBlob(g,x,y,r,color,alpha,(map.seed||1)+i); stats.organic++; }
+    else softTerrainBlob(g,x,y,r,color,alpha);
     stats.patches++; stats.soft++;
+  }
+  // Тропа вьётся по полю, а не идёт прямой лентой; переход у горизонта мягкий.
+  windingTerrainTrail(g,(map.seed||1)+11,H-74,H-18,shade(pal.dirt,-12),season==='winter'?.2:.34,13);
+  stats.trails++;
+  for(let i=0;i<7;i++){
+    softTerrainBlob(g,(i*109+(map.seed||1)%97)%W,GROUND_FIELD_TOP+6,
+      34+(i%3)*12,i%2?shade(base,10):pal.grass,season==='winter'?.16:.22);
+    stats.transitions++; stats.soft++;
   }
   // Мелкие камни и кусты на фоне задаются той же картой, но остаются вне логики клеток.
   for(let i=0;i<24;i++){
@@ -6185,6 +6388,50 @@ function buildGroundField(map,season,biome){
   g.fillStyle=fade; g.fillRect(0,GROUND_FIELD_TOP-26,W,46);
   c.stats=stats;
   return c;
+}
+/* Поле боя использует те же процедурные пятна и тропы, но живёт в отдельном
+  кэше: в бою каждый кадр только копирует готовое полотно. */
+const battleFieldCache=new Map();
+function buildBattleField(biome,season,seed){
+  const key=biome+'|'+season+'|'+seed+'|'+W+'x'+H;
+  const cached=battleFieldCache.get(key);
+  if(cached) return {canvas:cached,cached:true,stats:cached.stats||{}};
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'), pal=terrainPalette(season), b=BIOMES[biome]||BIOMES.field;
+  const base=b.ground[1]||pal.grass;
+  const stats={patches:0,soft:0,organic:0,trails:0,stones:0,bushes:0,transitions:0};
+  const tone=[pal.grass,pal.dirt,pal.sand,pal.stone,pal.flowers];
+  for(let i=0;i<28;i++){
+    const h=cellHash(i,31,seed||1), h2=cellHash(37,i,(seed||1)+53);
+    const x=h%W, y=GROUND_FIELD_TOP+18+(h2%(H-GROUND_FIELD_TOP-34));
+    const r=30+(h%36), color=tone[i%tone.length], alpha=season==='winter'?.16:.24;
+    if(i%2===0){ organicTerrainBlob(g,x,y,r,color,alpha,(seed||1)+i+701); stats.organic++; }
+    else softTerrainBlob(g,x,y,r,color,alpha);
+    stats.patches++; stats.soft++;
+  }
+  windingTerrainTrail(g,(seed||1)+17,GROUND_FIELD_TOP+72,H-26,shade(pal.dirt,-14),season==='winter'?.2:.36,18);
+  stats.trails++;
+  for(let i=0;i<20;i++){
+    const h=cellHash(i,43,(seed||1)+91), h2=cellHash(53,i,(seed||1)+127);
+    const x=(i*59+(h%W))%W, y=GROUND_FIELD_TOP+34+(h2%(H-GROUND_FIELD_TOP-44));
+    if(i%3===0){
+      g.fillStyle=terrainRgba(shade(pal.stone,-18),.5);
+      g.beginPath(); g.ellipse(x,y,3+(h%5),2+(h2%3),0,0,6.29); g.fill(); stats.stones++;
+    }else if(season!=='winter'){
+      g.fillStyle=terrainRgba(shade(pal.grass,-28),.45);
+      [0,5,9].forEach((dx,j)=>{ g.beginPath(); g.arc(x+dx,y+(j%2)*3,4+(h%3),0,6.29); g.fill(); });
+      stats.bushes++;
+    }
+  }
+  const fade=g.createLinearGradient(0,GROUND_FIELD_TOP-18,0,GROUND_FIELD_TOP+24);
+  fade.addColorStop(0,terrainRgba(shade(base,10),0));
+  fade.addColorStop(1,terrainRgba(shade(base,10),.28));
+  g.fillStyle=fade; g.fillRect(0,GROUND_FIELD_TOP-18,W,42);
+  stats.transitions++; stats.soft++;
+  c.stats=stats;
+  battleFieldCache.set(key,c);
+  if(battleFieldCache.size>8) battleFieldCache.delete(battleFieldCache.keys().next().value);
+  return {canvas:c,cached:false,stats};
 }
 function drawGround(biome,map,season){
   if(!map){
@@ -6221,8 +6468,8 @@ function drawGroundDecor(sx,sy,sc,cell,mapX,mapY,seed,season,alpha){
     ctx.save(); ctx.globalAlpha=alpha*.38; ctx.strokeStyle=shade(base,-32);
     ctx.lineWidth=Math.max(.7,1.2*sc); ctx.setLineDash([5*sc,4*sc]);
     ctx.beginPath(); ctx.moveTo(sx-38*unit,sy+25*sc);
-    ctx.quadraticCurveTo(sx+((h%13)-6)*sc,sy+16*sc,sx+38*unit,sy+24*sc); ctx.stroke();
-    ctx.restore(); stats.trails=(stats.trails||0)+1;
+    ctx.bezierCurveTo(sx-14*unit,sy+(14+(h%5))*sc,sx+12*unit,sy+(30-(h2%6))*sc,sx+38*unit,sy+24*sc);
+    ctx.stroke(); ctx.restore(); stats.trails=(stats.trails||0)+1;
   }
   if(h%3===0||cell.ground==='stone'){
     const n=cell.ground==='stone'?3:2;
@@ -6598,6 +6845,8 @@ function drawHeroCorpse(x,y,s,h){
 
 /* ============================ 11. КАРТА ============================ */
 const MINIMAP_VIEW=30, MINIMAP_PX=112;
+// Подпись миникарты описывает только карту. Локация живёт в левом верхнем окне состояния.
+let minimapCaption='🗺 M — весь мир';
 function minimapRect(){ return {x:W-MINIMAP_PX-12,y:12,w:MINIMAP_PX,h:MINIMAP_PX}; }
 function minimapOrigin(m){
   const p=game&&game.player;
@@ -6642,14 +6891,11 @@ function drawMiniMap(m){
   const hvx=p.px-origin.x, hvy=p.py-origin.y;
   ctx.save(); ctx.translate(x+hvx*s+s/2,y+hvy*s+s/2); ctx.rotate(p.dir*Math.PI/2);
   ctx.fillStyle='#ffe9a8'; ctx.beginPath(); ctx.moveTo(0,-s*.55); ctx.lineTo(s*.4,s*.4); ctx.lineTo(-s*.4,s*.4); ctx.closePath(); ctx.fill(); ctx.restore();
-  ctx.fillStyle='#ffe6a8'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
-  const place=m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name;
-  ctx.fillText(place+' · '+(game.world.current+1)+'/'+game.world.count+' · '+m.size+'×'+m.size,x,y+size+11);
-  ctx.fillStyle='#fde68a';
-  ctx.fillText('🗺 M — весь мир',x,y+size+24);
+  ctx.fillStyle='#fde68a'; setFont(10); ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(minimapCaption,x,y+size+11);
 }
 function minimapOpenRect(){
-  const r=minimapRect(); return {x:r.x,y:r.y+r.h+17,w:r.w,h:14};
+  const r=minimapRect(); return {x:r.x,y:r.y+r.h+4,w:r.w,h:14};
 }
 function minimapOpenAt(px,py){
   const r=minimapOpenRect();
@@ -6708,7 +6954,7 @@ function buildBigMapMosaic(m,season){
   const res=Math.min(240,Math.max(64,m.size*4)), cellPx=res/m.size;
   const c=document.createElement('canvas'); c.width=c.height=res;
   const g=c.getContext('2d'), pal=terrainPalette(season);
-  const stats={cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
+  const stats={cells:0,patches:0,soft:0,organic:0,roads:0,trails:0,winding:0,stones:0,bushes:0,water:0,swamp:0};
   g.fillStyle=pal.grass; g.fillRect(0,0,res,res);
   for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
     const cell=m.cells[y][x], px=x*cellPx, py=y*cellPx, cx=px+cellPx/2, cy=py+cellPx/2;
@@ -6718,7 +6964,9 @@ function buildBigMapMosaic(m,season){
     g.fillStyle=shade(base,((h%17)-8));
     g.fillRect(Math.floor(px),Math.floor(py),Math.ceil(cellPx)+1,Math.ceil(cellPx)+1);
     if(h%7===0){
-      softTerrainBlob(g,cx,cy,cellPx*1.7,h%2?base:shade(base,16),season==='winter'?.16:.24);
+      const color=h%2?base:shade(base,16), alpha=season==='winter'?.16:.24;
+      if(h%3===0){ organicTerrainBlob(g,cx,cy,cellPx*1.7,color,alpha,m.seed||1); stats.organic++; }
+      else softTerrainBlob(g,cx,cy,cellPx*1.7,color,alpha);
       stats.patches++; stats.soft++;
     }
     if(surf==='water'||surf==='ice'){
@@ -6743,8 +6991,9 @@ function buildBigMapMosaic(m,season){
     }
     if(cell.ground==='dirt'&&h%5===0&&cell.t!=='road'){
       g.strokeStyle=terrainRgba(shade(base,-34),.55); g.lineWidth=Math.max(.5,cellPx*.14);
-      g.beginPath(); g.moveTo(px,cy+cellPx*.18); g.lineTo(px+cellPx,cy-cellPx*.18); g.stroke();
-      stats.trails++;
+      g.lineCap='round'; g.beginPath(); g.moveTo(px,cy+cellPx*.18);
+      g.quadraticCurveTo(px+cellPx*.5,cy+cellPx*(((h2%5)-2)*.3),px+cellPx,cy-cellPx*.18);
+      g.stroke(); stats.trails++; stats.winding++;
     }
     if(cell.t==='road'||cell.t==='bridge'||cell.t==='gate'){
       const rk=ROAD_KINDS.find(k=>k.id===(cell.roadKind||'dirt'))||ROAD_KINDS[0];
@@ -6768,7 +7017,7 @@ function drawBigMap(){
   const terrainStart=performance.now();
   const cvBig=bigMapCanvas(); if(!cvBig||!game||!game.world) return;
   const w=game.world, geo=bigMapGeometry(), g=cvBig.getContext('2d');
-  terrainRenderStats.bigMap={maps:0,cached:0,cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
+  terrainRenderStats.bigMap={maps:0,cached:0,cells:0,patches:0,soft:0,organic:0,roads:0,trails:0,winding:0,stones:0,bushes:0,water:0,swamp:0};
   g.fillStyle='#05070f'; g.fillRect(0,0,BIG_MAP_PX,BIG_MAP_PX);
   const bySlot={};
   w.maps.forEach(m=>{
@@ -6833,7 +7082,8 @@ function toggleBigMap(open){
   game.mapOpen=open===undefined?!game.mapOpen:!!open;
   const el=document.getElementById('bigMap');
   if(el) el.classList.toggle('hidden',!game.mapOpen);
-  if(game.mapOpen) drawBigMap();
+  document.body.classList.toggle('map-open',!!game.mapOpen);
+  if(game.mapOpen){ clearWorldNpc(); drawBigMap(); }
   updateControls(); sfx('ui');
   return game.mapOpen;
 }
@@ -6985,40 +7235,58 @@ function drawMap(now){
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
   drawMapEnemyPanels(shownEnemies,now); // панели выше фигуры героя и верхнего HUD, только по наведению/удержанию.
-  // Небольшое окно состояния игры вместо большого окна героя слева.
+  // Небольшое окно состояния игры: пять данных строго вертикальной колонкой слева сверху.
   const place=(m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name)+
     ' · '+(game.world.current+1)+'/'+game.world.count;
-  panel(10,10,214,56);
   const objective=activeObjectiveText();
-  mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,objective};
-  mapUiRects.state={x:10,y:10,w:214,h:56};
-  fitText(place,196,11,'#ffe6a8',18,22);
-  ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle='#c8d2f0'; setFont(10,false);
-  ctx.fillText('Ход '+game.world.turn+'   🪙 '+game.gold,18,39);
-  fitText('Цель: '+objective,196,9,'#fde68a',18,55);
-  drawMiniMap(m);
-  const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
-  mapUiRects.warning=near.length?{x:12,y:296,w:MAP_WARN_W,h:22}:null;
-  if(near.length){
-    roundRect(12,296,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
-    ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
-    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,307);
-  }
-  mapUiRects.message={x:126,y:326,w:388,h:26};
-  roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
-  ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
-  fitText(game.msg,372,11,'#f3e8cf',134,339);
+  const seasonName=(SEASON_WEATHER[season]&&SEASON_WEATHER[season].name)||season;
   const wLabel=weather.label();
-  ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
-  ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
+  const weatherLine=!wLabel?seasonName:(wLabel.includes(seasonName)?wLabel:wLabel+' · '+seasonName);
+  const rows=[place,'Ход '+game.world.turn,'🪙 '+game.gold,'Цель: '+objective,weatherLine];
+  const rowYs=[19,30,41,52,63];
+  panel(10,10,214,56);
+  mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,
+    objective,weather:wLabel,season:seasonName,rows,rowYs,bottomLine:null};
+  mapUiRects.state={x:10,y:10,w:214,h:56};
+  const rowColors=['#ffe6a8','#c8d2f0','#fde68a','#fde68a','#9fb0d8'];
+  rows.forEach((text,i)=>fitText(text,196,i===0?11:9,rowColors[i],18,rowYs[i]));
+  drawMiniMap(m);
+  // На коротком ландшафте Dock-панели занимают низ экрана: HUD сдвигается вверх,
+  // а строка сообщения вписывается в зазор между крупными кнопками.
+  const compactHint=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
+  const warnY=compactHint?210:296;
+  let msgX=126, msgW=388;
+  if(compactHint){
+    const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
+    const vx=(cr.width-W*scale)/2;
+    const toCanvas=x=>(x-cr.left-vx)/scale;
+    // Компактные доки: слева 8+176, справа 8+94 пикселя от края canvas.
+    const gapLeft=toCanvas(cr.left+184)+4, gapRight=toCanvas(cr.right-102)-4;
+    msgW=Math.max(240,Math.min(388,gapRight-gapLeft));
+    msgX=Math.max(gapLeft,Math.min(gapRight-msgW,gapLeft+40));
+  }
+  const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
+  mapUiRects.warning=near.length?{x:12,y:warnY,w:MAP_WARN_W,h:22}:null;
+  if(near.length){
+    roundRect(12,warnY,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
+    ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
+    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,warnY+11);
+  }
+  mapUiRects.message={x:msgX,y:326,w:msgW,h:26};
+  roundRect(msgX,326,msgW,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
+  ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
+  fitText(game.msg,msgW-16,11,'#f3e8cf',msgX+8,339);
+  // Дублирующей строки слева внизу больше нет: ход, золото и погода перенесены в колонку слева сверху.
   // Подсказка уходит, когда наведена плашка врага: два transient-сообщения не пересекаются.
   mapUiRects.enemies=visibleMapEnemies().filter(item=>enemyPlateVisible(item.e,now)).map(item=>mapEnemyPanelRect(item));
   document.body.classList.toggle('enemy-plate',mapUiRects.enemies.length>0);
   const showHint=!!mapHint&&now-mapHint.t<2600&&!enemyPlateFocus.e;
   mapUiRects.hint=null;
   if(showHint){
-    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,3);
-    const h=28+lines.length*12, ty=290-h; // Верх плашки предупреждения — 296, зазор 6.
+    // На низком ландшафте Dock-панели занимают низ экрана: подсказка встаёт
+    // между отрядом и кнопками и короткой, чтобы не заходить ни на те, ни на другие окна.
+    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,compactHint?2:3);
+    const h=28+lines.length*12, ty=compactHint?150:290-h; // Верх плашки предупреждения — 296, зазор 6.
     mapUiRects.hint={x:12,y:ty,w:MAP_HINT_W,h};
     panel(12,ty,MAP_HINT_W,h);
     fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
@@ -7093,18 +7361,15 @@ function drawActionChips(b){
   });
 }
 function drawBattleScenery(biome,now){
-  const b=BIOMES[biome]||BIOMES.field;
-  drawSky(biome,now); drawGround(biome); drawSceneBackdrop(biome,now);
-  // Декорации «кадра» боя: арки, колонны, факелы, обломки.
-  ctx.save();
-  for(let i=0;i<4;i++){ const x=40+i*190;
-    ctx.fillStyle='rgba(20,18,30,.78)'; ctx.fillRect(x,84,26,130);
-    ctx.fillStyle='rgba(90,80,110,.5)'; ctx.fillRect(x-6,78,38,12); ctx.fillRect(x-10,210,46,12);
-    ctx.fillStyle='rgba(253,224,71,'+(.2+.2*Math.abs(Math.sin(now/500+i)))+')';
-    ctx.beginPath(); ctx.arc(x+13,72,7+Math.sin(now/400+i)*2,0,6.29); ctx.fill(); }
-  for(let i=0;i<14;i++){ ctx.fillStyle='rgba(255,255,255,.05)';
-    ctx.fillRect((i*103+17)%W,230+((i*29)%70),18,4); }
-  ctx.restore();
+  const b=BIOMES[biome]||BIOMES.field, m=currentMap(), season=currentSeason();
+  drawSky(biome,now); drawGround(biome,m,season); drawSceneBackdrop(biome,now);
+  // Поле боя — кэшированное органическое полотно: тропы, пятна, камни и кусты.
+  const t0=performance.now();
+  const field=buildBattleField(biome,season,(m&&m.seed)||1);
+  ctx.drawImage(field.canvas,0,0);
+  const row=terrainRenderStats.battle||(terrainRenderStats.battle={});
+  Object.assign(row,{cached:field.cached,biome,season},field.stats);
+  noteTerrainTime('battle',performance.now()-t0);
 }
 function drawBattle(now,dt){
   const b=game.battle;
@@ -7147,7 +7412,7 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель компактная: 220×58 с запасом до бейджа хода и очереди.
+  // Верхняя панель компактная: 235×62 — на 10% больше окна состояния 214×56.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
   const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
   panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
@@ -7345,6 +7610,7 @@ document.addEventListener('keydown',e=>{
   }
   if(k==='p'||k==='з'){ e.preventDefault();
     if($('settings').classList.contains('hidden')) openSettings(); else closeSettings(); return; }
+  if(k==='h'||k==='р'){ e.preventDefault(); toggleControls(); return; }
   if(!$('settings').classList.contains('hidden')){
     if(e.key==='Escape'){ e.preventDefault(); closeSettings(); } return;
   }
@@ -8019,8 +8285,10 @@ function terrainRenderReport(){
     field:Object.assign({},terrainRenderStats.field||{}),
     frame:Object.assign({},terrainRenderStats.frame||{}),
     bigMap:Object.assign({},terrainRenderStats.bigMap||{}),
-    performance:{field:terrainTiming('field'),mapFrame:terrainTiming('mapFrame'),bigMap:terrainTiming('bigMap')},
-    cache:{ground:groundFieldCache.size,mosaic:bigMapMosaicCache.size},
+    battle:Object.assign({},terrainRenderStats.battle||{}),
+    performance:{field:terrainTiming('field'),mapFrame:terrainTiming('mapFrame'),
+      bigMap:terrainTiming('bigMap'),battle:terrainTiming('battle')},
+    cache:{ground:groundFieldCache.size,mosaic:bigMapMosaicCache.size,battle:battleFieldCache.size},
     world:game&&game.world?game.world.maps.map(m=>({index:m.index,size:m.size,seed:m.seed,biome:m.biome})):[],
     horizontalBands:false,
     mosaic:true,
@@ -8073,6 +8341,35 @@ function visibleWindowsReport(){
     if(ox>1&&oy>1) overlaps.push({a:a.name,b:b.name,w:+ox.toFixed(1),h:+oy.toFixed(1)});
   }
   return {rects,overlaps,modal:modal.length};
+}
+/* Отчёт о крупных кнопках: размеры, полупрозрачность, видимость и пересечения.
+   Используется харнесом части 7, но не меняет игровую логику. */
+function controlsReport(){
+  const box=$('controls'), s=box?getComputedStyle(box):null;
+  const rect=el=>{ if(!el||!el.getClientRects().length) return null;
+    const r=el.getBoundingClientRect();
+    return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)}; };
+  const info=el=>{
+    if(!el) return null;
+    const st=getComputedStyle(el), m=/rgba?\([^)]*,\s*([\d.]+)\s*\)/.exec(st.backgroundColor);
+    return {rect:rect(el),visible:!!el.getClientRects().length&&st.display!=='none',
+      background:st.backgroundColor,alpha:m?+m[1]:1,
+      border:st.borderTopColor,fontSize:parseFloat(st.fontSize)||0};
+  };
+  const ids=['turnLeft','turnRight','btnAttack','btnSpell','btnFlee','btnInv','btnShop',
+    'btnQuests','btnInteract','btnSettings','btnLog'];
+  const buttons=Object.fromEntries(ids.map(id=>[id,info($(id))]));
+  document.querySelectorAll('[data-move]').forEach(b=>{ buttons['move-'+b.dataset.move]=info(b); });
+  return {
+    visible:!!s&&s.display!=='none'&&!!box.getClientRects().length,
+    display:s?s.display:'none',setting:settings.showControls!==false,
+    hiddenClass:document.body.classList.contains('controls-hidden'),
+    touch:matchMedia('(hover:none),(pointer:coarse)').matches,
+    controls:rect(box),leftDock:rect(document.querySelector('.leftDock')),
+    rightDock:rect(document.querySelector('.rightDock')),
+    dpad:rect(document.querySelector('.dpad')),turnPair:rect(document.querySelector('.turnPair')),
+    buttons,overlaps:visibleWindowsReport().overlaps
+  };
 }
 window.__mm6State=()=>game;
 window.__mm6Debug={
@@ -8233,8 +8530,8 @@ window.__mm6Debug={
       fromX:view.x,fromY:view.y,moveT:0,dir:view.dir});
     markSeen(m,view.x,view.y);
     game.shopOpen=false; $('shop').classList.add('hidden');
-    game.mapOpen=false; $('bigMap').classList.add('hidden');
-    const dlg=$('npcDialogue'); if(dlg) dlg.classList.add('hidden');
+    game.mapOpen=false; $('bigMap').classList.add('hidden'); document.body.classList.remove('map-open');
+    const dlg=$('npcDialogue'); if(dlg) dlg.classList.add('hidden'); clearWorldNpc();
     const t=$('toast'); if(t) t.classList.remove('show');
     return {map:index,x:target.x,y:target.y,viewX:view.x,viewY:view.y,dir:view.dir,
       buildingId:String(id),kind:target.cell.kind||null,path:buildingPathFor(target.cell)};
@@ -8246,13 +8543,16 @@ window.__mm6Debug={
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
   mapStateWindowReport:()=>mapStateWindow,
+  minimapCaptionReport:()=>minimapCaption,
   overlapReport:()=>visibleWindowsReport(),
+  controlsReport:()=>controlsReport(),
+  toggleControls:(show)=>toggleControls(show),
   showToast:(text)=>{ toast(text||'Проверка сообщений'); return true; },
   showMapHint:(title,desc)=>{ mapHint={title:title||'Подсказка',desc:desc||'Описание подсказки',t:performance.now()}; return true; },
   npcSay:(text,speaker,kind)=>npcSay(text||'Проверка реплики',speaker,kind),
   npcStageReport:()=>npcStageReport(),
   npcGestureFor:(kind)=>npcGestureFor(kind),
-  closeNpcDialogue:()=>{ const el=$('npcDialogue'); if(el) el.classList.add('hidden'); return true; },
+  closeNpcDialogue:()=>{ const el=$('npcDialogue'); if(el) el.classList.add('hidden'); clearWorldNpc(); return true; },
   battleHudReport:()=>{
     const b=game&&game.battle; if(!b) return null;
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
@@ -8263,7 +8563,15 @@ window.__mm6Debug={
       nameHp:{name:b.nameLayout||null,hp:b.hpLayout||null,
         overlap:!!(b.nameLayout&&b.hpLayout&&b.nameLayout.x+b.nameLayout.width>b.hpLayout.x-b.hpLayout.width-2)},
       party:[...document.querySelectorAll('#party .pcard')].map(e=>{const r=e.getBoundingClientRect();
-        return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1)};})};
+        const name=e.querySelector('.pname'), stats=e.querySelector('.pstats'), status=e.querySelector('.pstatus');
+        return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1),
+          name:name&&name.textContent,status:status&&status.textContent,
+          nameW:name&&+name.getBoundingClientRect().width.toFixed(1),
+          nameScroll:name&&name.scrollWidth,
+          topW:e.querySelector('.ptop')&&+e.querySelector('.ptop').getBoundingClientRect().width.toFixed(1),
+          numsW:e.querySelector('.nums')&&+e.querySelector('.nums').getBoundingClientRect().width.toFixed(1),
+          nameClipped:!!name&&name.scrollWidth>name.clientWidth+1,
+          statsClipped:!!stats&&stats.scrollWidth>stats.clientWidth+1};})};
   },
   turnQueueReport:()=>{
     const b=game&&game.battle, el=$('turnQueue');
@@ -8604,7 +8912,7 @@ window.__mm6Debug={
   }
 };
 bindSettings(); syncSettings();
-window.addEventListener('resize',()=>{ syncToastPlacement(); syncDialoguePlacement(); });
+window.addEventListener('resize',()=>{ syncToastPlacement(); syncDialoguePlacement(); syncTurnQueuePosition(); });
 renderStart();
 
 initUnifiedLaunch({

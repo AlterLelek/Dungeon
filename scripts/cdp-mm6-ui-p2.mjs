@@ -110,8 +110,8 @@ try {
 
   // --- Размеры панелей ---
   const hud = await ev(`window.__mm6Debug.battleHudReport()`);
-  check('верхняя панель врага компактная', hud.panel.w >= 216 && hud.panel.w <= 224 &&
-    hud.panel.h >= 54 && hud.panel.h <= 62, JSON.stringify(hud.panel));
+  check('верхняя панель врага на 10% больше окна состояния', hud.panel.w >= 231 && hud.panel.w <= 239 &&
+    hud.panel.h >= 60 && hud.panel.h <= 64, JSON.stringify(hud.panel));
   check('бейдж хода не перекрывает панель врага',
     hud.panel.x + hud.panel.w <= hud.badge.x || hud.panel.x >= hud.badge.x + hud.badge.w,
     JSON.stringify({ panel: hud.panel, badge: hud.badge }));

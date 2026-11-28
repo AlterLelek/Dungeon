@@ -34,15 +34,19 @@ await runCdp('BUILDINGS PART 2', async api => {
         signType:sign&&sign.getAttribute('data-sign-type'), signShop:sign&&sign.getAttribute('data-sign-shop'),
         signLines:lines, batchName:e.sign_text,
         dataName:type&&type.signName,
-        well:stem==='well_0'?{
-          winch:!!drum, winchRadius:drum?+(drum.getAttribute('rx')||0):0,
-          bucket:!!doc.querySelector('[data-part="bucket"] path'),
-          entrance:!!doc.querySelector('[data-part="hidden-entrance"]'),
-          hiddenDoor:!!doc.querySelector('[data-part="hidden-door"]'),
-          steps:!!doc.querySelector('[data-part="steps"]'),
-          entranceFill:(doc.querySelector('[data-part="hidden-entrance"]')||{}).getAttribute&&
-            doc.querySelector('[data-part="hidden-entrance"]').getAttribute('fill')
-        }:null
+        well:stem==='well_0'?(()=>{
+          const hatch=doc.querySelector('[data-part="den-hatch"]');
+          return {
+            winch:!!drum, winchRadius:drum?+(drum.getAttribute('rx')||0):0,
+            bucket:!!doc.querySelector('[data-part="bucket"] path'),
+            hatch:!!hatch, lair:hatch&&hatch.getAttribute('data-lair'),
+            hatchOpening:!!(hatch&&hatch.querySelector('[data-hatch-opening]')),
+            hatchCanopy:!!(hatch&&hatch.querySelector('[data-hatch-canopy]')),
+            hatchSteps:!!(hatch&&hatch.querySelector('[data-hatch-steps]')),
+            hatchLid:!!(hatch&&hatch.querySelector('[data-hatch-lid]')),
+            hiddenEntrance:!!doc.querySelector('[data-part="hidden-entrance"]')
+          };
+        })():null
       });
     }
     return {rows,types:data.BUILDING_TYPES.map(b=>({id:b.id,signName:b.signName}))};
@@ -75,10 +79,11 @@ await runCdp('BUILDINGS PART 2', async api => {
       .every(stem => !!rows.find(r => r.stem === stem && r.dataName)),
     JSON.stringify(rows.filter(r => r.dataName && r.dataName !== r.batchName)
       .map(r => ({ stem: r.stem, data: r.dataName, sign: r.batchName }))));
-  api.check('колодец — воровской притон: ворот, ведро, тёмный скрытый вход',
+  api.check('колодец — воровской притон: ворот, ведро и отдельный люк под навесом',
     !!well && well.well && well.well.winch && well.well.winchRadius >= 36 && well.well.bucket &&
-    well.well.entrance && well.well.hiddenDoor && well.well.steps &&
-    ['#2a1c12', '#1a120e', '#241a14'].includes(well.well.entranceFill),
+    well.well.hatch && well.well.lair === 'bandit' && well.well.hatchOpening &&
+    well.well.hatchCanopy && well.well.hatchSteps && well.well.hatchLid &&
+    !well.well.hiddenEntrance,
     JSON.stringify(well && well.well));
 
   await api.startGame();

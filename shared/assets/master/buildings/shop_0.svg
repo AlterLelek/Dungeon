@@ -16,29 +16,29 @@
     <path d="M56 160 L256 56 L456 160Z" fill="none" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
     <path d="M48 152 H464 V160 H48Z" fill="#7a2f1e" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
-  <g id="sign" data-sign-name="Лавка «Мешок и Монета»" data-sign-type="Лавка" data-sign-shop="Мешок и Монета"><path id="signBoard" d="M64 168 H448 V232 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 173 H442 V227 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(74 176) scale(0.7)" data-sign="coin_sack"><path d="M26 18 Q40 4 54 18 L68 58 H12Z" fill="#b39b78" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Лавка «Мешок и Монета»" data-sign-type="Лавка" data-sign-shop="Мешок и Монета"><path id="signBoard" d="M24 150 H488 V262 H24Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M30 155 H482 V257 H30Z" fill="#4a2e18" stroke="none"/><g transform="translate(34 164) scale(0.95)" data-sign="coin_sack"><path d="M26 18 Q40 4 54 18 L68 58 H12Z" fill="#b39b78" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M24 16 H56 V24 H24Z" fill="#6b4426" stroke="#241a14" stroke-width="3"/>
     <ellipse cx="40" cy="42" rx="11" ry="11" fill="#e8c14a" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="28" cy="50" rx="4" ry="3" fill="#f3efe2" stroke="none"/></g><text data-line="type" x="152" y="195" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#e8c14a" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="68.2" lengthAdjust="spacingAndGlyphs">Лавка</text><text data-line="shop" x="152" y="220" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="191.0" lengthAdjust="spacingAndGlyphs">Мешок и Монета</text></g>
+    <ellipse cx="28" cy="50" rx="4" ry="3" fill="#f3efe2" stroke="none"/></g><text data-line="type" x="118" y="194" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#e8c14a" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="124.0" lengthAdjust="spacingAndGlyphs">Лавка</text><text data-line="shop" x="118" y="240" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="347.2" lengthAdjust="spacingAndGlyphs">Мешок и Монета</text></g>
   <g id="window">
-<path d="M104 258 H182 V326 H104Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M108 262 H178 V322 H108Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M113 267 H173 V317 H113Z" fill="#2f4a52" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M116 270 H139 V286 H116Z" fill="#4f7b84" stroke="none"/>
-<path d="M147 270 H170 V286 H147Z" fill="#4f7b84" stroke="none"/>
-<ellipse cx="131" cy="276" rx="9" ry="6" fill="#8fc0c4" stroke="none"/>
-<path d="M140 267 H146 V317 H140Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M113 289 H173 V295 H113Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M100 326 H186 V335 H100Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M330 258 H408 V326 H330Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M334 262 H404 V322 H334Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M339 267 H399 V317 H339Z" fill="#2f4a52" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M342 270 H365 V286 H342Z" fill="#4f7b84" stroke="none"/>
-<path d="M373 270 H396 V286 H373Z" fill="#4f7b84" stroke="none"/>
-<ellipse cx="357" cy="276" rx="9" ry="6" fill="#8fc0c4" stroke="none"/>
-<path d="M366 267 H372 V317 H366Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M339 289 H399 V295 H339Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
-<path d="M326 326 H412 V335 H326Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M104 266 H182 V334 H104Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M108 270 H178 V330 H108Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M113 275 H173 V325 H113Z" fill="#2f4a52" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M116 278 H139 V294 H116Z" fill="#4f7b84" stroke="none"/>
+<path d="M147 278 H170 V294 H147Z" fill="#4f7b84" stroke="none"/>
+<ellipse cx="131" cy="284" rx="9" ry="6" fill="#8fc0c4" stroke="none"/>
+<path d="M140 275 H146 V325 H140Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M113 297 H173 V303 H113Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M100 334 H186 V343 H100Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M330 266 H408 V334 H330Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M334 270 H404 V330 H334Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M339 275 H399 V325 H339Z" fill="#2f4a52" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M342 278 H365 V294 H342Z" fill="#4f7b84" stroke="none"/>
+<path d="M373 278 H396 V294 H373Z" fill="#4f7b84" stroke="none"/>
+<ellipse cx="357" cy="284" rx="9" ry="6" fill="#8fc0c4" stroke="none"/>
+<path d="M366 275 H372 V325 H366Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M339 297 H399 V303 H339Z" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+<path d="M326 334 H412 V343 H326Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
   </g>
   <g id="door"><path d="M198 286 H314 V418 H198Z" fill="#8f7a5f" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M206 292 H306 V418 H206Z" fill="#2a1c12" stroke="#241a14" stroke-width="3"/>

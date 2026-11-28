@@ -83,10 +83,10 @@ await runCdp('PORTRAITS PART 5', async api => {
     report.cards.length === 3 && report.cards.every(c =>
       c.visible && c.loaded && /^\.\.\/\.\.\/assets\/sprites\/portraits\/[a-z]+_[0-3]\.svg$/.test(c.src)),
     JSON.stringify(report.cards));
-  api.check('строка состояния имеет вид «Имя, Класс: Состояние»',
+  api.check('строка состояния содержит только состояние, без имени и класса',
     report.cards.every(c => c.status === c.expected &&
-      /^«.+?, .+: (Хорошее|Ранен|Тяжёло|Без сознания)»$/.test(c.status)) &&
-    report.cards[0].status === '«Тереза, Воин: Хорошее»',
+      /^(Хорошее|Ранен|Тяжёло|Без сознания)$/.test(c.status)) &&
+    report.cards[0].status === 'Хорошее',
     JSON.stringify(report.cards.map(c => c.status)));
   api.check('класс портрета совпадает с ключом класса героя',
     report.cards.every(c => c.cls === ['warrior', 'mage', 'paladin'][c.hero]),
@@ -94,5 +94,5 @@ await runCdp('PORTRAITS PART 5', async api => {
 
   await api.ev(`window.__mm6Debug.setHeroHp(0,20)`);
   const wounded = await api.ev(`window.__mm6Debug.portraitReport().cards[0].status`);
-  api.check('строка состояния реагирует на HP', wounded === '«Тереза, Воин: Тяжёло»', wounded);
+  api.check('строка состояния реагирует на HP', wounded === 'Тяжёло', wounded);
 });

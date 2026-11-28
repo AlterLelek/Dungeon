@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision" data-element="dark" data-role="backdrop"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M10 32 L20 14 L34 8 L48 17 L54 34 L44 51 L28 58 L14 47 Z" fill="#6d3b8f" stroke-linejoin="miter"/>
-    <path d="M19 34 L27 20 L40 17 L47 33 L39 47 L24 46 Z" fill="#2a1c12" stroke="none" stroke-linejoin="miter"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision" data-element="dark" data-role="backdrop" data-school="dark"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+    <g data-school="dark" data-fx="school-aura">
+      <circle cx="32" cy="32" r="28" fill="#4c2a6b" stroke="none" opacity=".18"><animate attributeName="opacity" values=".10;.28;.10" dur="2.6s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="22" fill="#6d3b8f" stroke="none" opacity=".24"><animate attributeName="opacity" values=".16;.38;.16" dur="2.1s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="16" fill="#4c2a6b" stroke="none" opacity=".20"><animate attributeName="opacity" values=".14;.34;.14" dur="1.7s" repeatCount="indefinite"/></circle>
+      <g opacity=".75">
+    <path d="M40 12 Q20 15 20 34 Q20 49 39 52 Q28 44 28 34 Q28 21 40 12 Z" fill="#2a1c12" stroke="none"/>
+    <circle cx="42" cy="24" r="2.4" fill="#c4b5fd" stroke="none"/>
+  </g>
+    </g>
   </g></svg>

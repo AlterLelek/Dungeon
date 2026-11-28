@@ -151,7 +151,7 @@ try {
     JSON.stringify({ hint: unseenHint, player: await player() }));
 
   const openPoint = await ev(`(()=>{const cv=document.getElementById('cv').getBoundingClientRect(),r=window.__mm6Debug.mapReport().rect;
-    return {x:cv.left+(r.x+r.w/2)*cv.width/640,y:cv.top+(r.y+r.h+24)*cv.height/360};})()`);
+    return {x:cv.left+(r.x+r.w/2)*cv.width/640,y:cv.top+(r.y+r.h+11)*cv.height/360};})()`);
   await click(openPoint.x, openPoint.y);
   const fromMinimap = await ev(`({open:!!window.__mm6State().mapOpen,
     title:document.getElementById('bigMapTitle').textContent})`);

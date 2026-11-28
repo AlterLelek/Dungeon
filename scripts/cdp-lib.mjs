@@ -88,6 +88,21 @@ export async function runCdp(label, fn) {
       }
       throw new Error('таймаут: ' + expr);
     },
+    // Размер окна меняется намеренно: HUD проверяется на нескольких реальных экранах.
+    async viewport(width, height) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+      await send('Emulation.setTouchEmulationEnabled', { enabled: false });
+    },
+    async touchViewport(width, height) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: true });
+      await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    },
+    async key(key) {
+      const code = key.length === 1 && /[a-z]/i.test(key) ? 'Key' + key.toUpperCase() : key;
+      const vk = key.length === 1 ? key.toUpperCase().charCodeAt(0) : 0;
+      await send('Input.dispatchKeyEvent', { type: 'keyDown', key, code, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk });
+      await send('Input.dispatchKeyEvent', { type: 'keyUp', key, code, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk });
+    },
     async click(x, y) {
       await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
