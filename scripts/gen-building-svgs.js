@@ -320,7 +320,7 @@ function houseSvg(entry, style, name) {
   }
   parts.push(`  </g>`);
   parts.push(`  <g id="door">${doorUnit(floors === 2 ? 304 : 292, 418 - (floors === 2 ? 304 : 292))}</g>`);
-  parts.push(`  <g id="decor">${rect(90, wallY + 8, 8, wallH - 16, C.warm, 2)}${line(88, 406, 424, 406, 2, C.stone)}</g>`);
+  parts.push(`  <g id="decor">${line(88, 406, 424, 406, 2, C.stone)}</g>`);
   parts.push('</svg>');
   return parts.join('\n') + '\n';
 }

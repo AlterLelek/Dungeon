@@ -32,6 +32,8 @@ await runCdp('SIGNS LAYOUT', async api => {
       const texts=nodes.map(t=>({...box(t),label:t.getAttribute('data-line'),
         text:t.textContent,stroke:t.getAttribute('stroke-width'),
         rendering:getComputedStyle(t).textRendering,fill:t.getAttribute('fill')}));
+      const decor=svg.querySelector('#decor');
+      const decorBoxes=decor?[...decor.children].map(box):[];
       rows.push({
         stem:entry.path.split('/').pop().replace(/\\.svg$/,''),
         batchName:entry.sign_text,
@@ -40,7 +42,7 @@ await runCdp('SIGNS LAYOUT', async api => {
         full:sign&&sign.getAttribute('data-sign-name'),
         icon:glyph&&glyph.getAttribute('data-sign'),
         paths:sign?[...sign.children].filter(el=>el.tagName.toLowerCase()==='path').length:0,
-        board:board?box(board):null, glyph:glyph?box(glyph):null, texts,
+        board:board?box(board):null, glyph:glyph?box(glyph):null, texts, decorBoxes,
         badStyle:/linearGradient|radialGradient|<filter|<image|blur|feGaussian/i.test(text)
       });
     }
@@ -88,6 +90,14 @@ await runCdp('SIGNS LAYOUT', async api => {
   const extraLines = rows.filter(r => r.paths !== 2);
   api.check('вертикальной разделительной линии слева нет', extraLines.length === 0,
     JSON.stringify(extraLines.map(r => ({ stem: r.stem, paths: r.paths }))));
+
+  const overlaps = (a, b) => !!a && !!b &&
+    a.x < b.right - 1 && a.right > b.x + 1 && a.y < b.bottom - 1 && a.bottom > b.y + 1;
+  const decorOverlap = rows.filter(r => !r.board ||
+    r.decorBoxes.some(d => overlaps(d, r.board) || overlaps(d, r.glyph)));
+  api.check('декор не пересекает вывеску и лого', decorOverlap.length === 0,
+    JSON.stringify(decorOverlap.map(r => ({ stem: r.stem, board: r.board,
+      glyph: r.glyph, decor: r.decorBoxes }))));
 
   const blurry = rows.filter(r => r.texts.length !== 2 || r.badStyle ||
     r.texts.some(t => t.stroke !== '2' ||
