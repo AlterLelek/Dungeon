@@ -224,7 +224,7 @@ const ICONS = {
 const SIGN = Object.freeze({
   x: 64, h: 64, minW: 384, maxW: 424,
   iconX: 74, iconY: 8, iconScale: 0.7,
-  dividerX: 142, textX: 152, rightPad: 16,
+  textX: 152, rightPad: 16,
   typeY: 27, shopY: 52, size: 22, minSize: 15, advance: 0.62,
 });
 function signParts(fullName) {
@@ -255,7 +255,6 @@ function signLayer(y, icon, fullName) {
   const right = SIGN.x + layout.boardW;
   const board = `<path id="signBoard" d="M${SIGN.x} ${y} H${right} V${y + SIGN.h} H${SIGN.x}Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>`;
   const plate = flat(SIGN.x + 6, y + 5, layout.boardW - 12, SIGN.h - 10, '#4a2e18');
-  const divider = `<path d="M${SIGN.dividerX} ${y + 11} V${y + SIGN.h - 11}" fill="none" stroke="${C.outline}" stroke-width="2" stroke-linecap="square"/>`;
   const glyph = `<g transform="translate(${SIGN.iconX} ${y + SIGN.iconY}) scale(${SIGN.iconScale})" data-sign="${icon}">${ICONS[icon] || ICONS.house}</g>`;
   const text = layout.lines.map((line, i) => {
     const baseline = y + (layout.lines.length === 1 ? 40 : (i === 0 ? SIGN.typeY : SIGN.shopY));
@@ -264,7 +263,7 @@ function signLayer(y, icon, fullName) {
     const fill = label === 'type' ? C.gold : C.white;
     return `<text data-line="${label}" x="${SIGN.textX}" y="${baseline}" font-family="'Courier New', monospace" font-size="${layout.size}" font-weight="700" fill="${fill}" stroke="${C.outline}" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="${width.toFixed(1)}" lengthAdjust="spacingAndGlyphs">${esc(line)}</text>`;
   }).join('');
-  return `  <g id="sign" data-sign-name="${esc(parts.full)}" data-sign-type="${esc(parts.type)}" data-sign-shop="${esc(parts.shop)}">${board}${plate}${divider}${glyph}${text}</g>`;
+  return `  <g id="sign" data-sign-name="${esc(parts.full)}" data-sign-type="${esc(parts.type)}" data-sign-shop="${esc(parts.shop)}">${board}${plate}${glyph}${text}</g>`;
 }
 
 function foundation() {
