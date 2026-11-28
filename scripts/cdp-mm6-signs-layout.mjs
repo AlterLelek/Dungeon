@@ -31,7 +31,9 @@ await runCdp('SIGNS LAYOUT', async api => {
         right:+(r.right-sr.left).toFixed(1), bottom:+(r.bottom-sr.top).toFixed(1)};};
       const texts=nodes.map(t=>({...box(t),label:t.getAttribute('data-line'),
         text:t.textContent,stroke:t.getAttribute('stroke-width'),
+        fontSize:t.getAttribute('font-size'),
         rendering:getComputedStyle(t).textRendering,fill:t.getAttribute('fill')}));
+      const hatch=svg.querySelector('#denHatch');
       const decor=svg.querySelector('#decor');
       const decorBoxes=decor?[...decor.children].map(box):[];
       rows.push({
@@ -43,6 +45,12 @@ await runCdp('SIGNS LAYOUT', async api => {
         icon:glyph&&glyph.getAttribute('data-sign'),
         paths:sign?[...sign.children].filter(el=>el.tagName.toLowerCase()==='path').length:0,
         board:board?box(board):null, glyph:glyph?box(glyph):null, texts, decorBoxes,
+        hatch:hatch?{part:hatch.getAttribute('data-part'),lair:hatch.getAttribute('data-lair'),
+          opening:!!hatch.querySelector('[data-hatch-opening]'),
+          canopy:!!hatch.querySelector('[data-hatch-canopy]'),
+          lid:!!hatch.querySelector('[data-hatch-lid]'),
+          inBase:!!svg.querySelector('#base #denHatch'),box:box(hatch)}:null,
+        hiddenEntrance:/data-part="hidden-entrance"/.test(text),
         badStyle:/linearGradient|radialGradient|<filter|<image|blur|feGaussian/i.test(text)
       });
     }
@@ -106,4 +114,24 @@ await runCdp('SIGNS LAYOUT', async api => {
   api.check('текст чёткий: обводка 2px и геометрический рендеринг', blurry.length === 0,
     JSON.stringify(blurry.map(r => ({ stem: r.stem, badStyle: r.badStyle,
       lines: r.texts.map(t => ({ stroke: t.stroke, rendering: t.rendering, fill: t.fill })) }))));
+
+  // Часть 4: в мире фасад выводится 108×96 px из viewBox 512. Шрифт 40 единиц
+  // даёт ~8.4 px по высоте: длинные строки сжимаются по ширине, но не по высоте.
+  const worldFont = rows.map(r => ({ stem: r.stem,
+    font: r.texts.map(t => +(Number(t.fontSize) * 108 / 512).toFixed(1)),
+    boardH: +(Number(r.board && r.board.h) * 96 / 512).toFixed(1) }));
+  api.check('вывеска читаема в масштабе мира: шрифт ≥ 8 px, доска ≥ 20 px',
+    worldFont.length === 16 && worldFont.every(r => r.font.length === 2 &&
+      r.font.every(px => px >= 8) && r.boardH >= 20),
+    JSON.stringify(worldFont));
+
+  const hatches = rows.filter(r => r.hatch);
+  const well = rows.find(r => r.stem === 'well_0');
+  api.check('бандитский притон показан отдельным люком под навесом рядом с колодцем',
+    hatches.length === 1 && hatches[0].stem === 'well_0' && !!well && !well.hiddenEntrance &&
+    well.hatch.part === 'den-hatch' && well.hatch.lair === 'bandit' &&
+    well.hatch.opening && well.hatch.canopy && well.hatch.lid && !well.hatch.inBase &&
+    well.hatch.box.x > 300 && well.hatch.box.right < 512,
+    JSON.stringify({ count: hatches.length, hiddenEntrance: well && well.hiddenEntrance,
+      hatch: well && well.hatch }));
 });

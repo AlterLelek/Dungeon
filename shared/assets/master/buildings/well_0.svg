@@ -5,13 +5,6 @@
 <path d="M112 306 H400 V430 H112Z" fill="#6b5742" stroke="#241a14" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square"/>
 <path d="M118 312 H394 V322 H118Z" fill="#4a3a2e" stroke="none"/>
 <path d="M104 426 H408 V444 H104Z" fill="#6b5742" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
-<path data-part="hidden-entrance" d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="#2a1c12" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
-<path d="M194 430 V360 Q194 326 256 326 Q318 326 318 360 V430Z" fill="#1a120e" stroke="none"/>
-<path d="M212 430 V364 Q212 342 256 342 Q300 342 300 364 V430Z" fill="#241a14" stroke="none"/>
-<g data-part="steps"><path d="M224 388 H288 V396 H224Z" fill="#2a1c12" stroke="none"/><path d="M230 404 H282 V412 H230Z" fill="#2a1c12" stroke="none"/><path d="M236 418 H276 V426 H236Z" fill="#2a1c12" stroke="none"/></g>
-<path data-part="hidden-door" d="M304 336 L334 344 L332 414 L304 410Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
-<path d="M309 344 H314 V406 H309Z" fill="#b39b78" stroke="none"/>
-<ellipse cx="322" cy="378" rx="4" ry="5" fill="#e8c14a" stroke="#241a14" stroke-width="2"/>
 <path d="M132 330 H166 V342 H132Z" fill="#8f7a5f" stroke="none"/><path d="M346 350 H384 V362 H346Z" fill="#8f7a5f" stroke="none"/>
 <path d="M118 348 H166 M346 368 H386" fill="none" stroke="#8f7a5f" stroke-width="3" stroke-linecap="square"/>
   </g>
@@ -21,6 +14,20 @@
     <path d="M118 118 L256 56 L394 118" fill="none" stroke="#8f7a5f" stroke-width="4" stroke-linecap="square"/>
     <path d="M88 116 H424 V128 H88Z" fill="#2a1c12" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
     <path d="M136 186 H376 V198 H136Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+  </g>
+  <g id="denHatch" data-part="den-hatch" data-lair="bandit">
+    <g data-hatch-canopy="1">
+      <path d="M320 304 L402 268 L486 304Z" fill="#9a4028" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+      <path d="M340 298 L402 276 L466 298" fill="none" stroke="#e0823c" stroke-width="3" stroke-linecap="square"/>
+      <path d="M326 300 H336 V362 H326Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M470 300 H480 V362 H470Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/>
+    </g>
+    <path data-hatch-opening="1" d="M352 358 H452 V438 H352Z" fill="#2a1c12" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+    <path d="M364 370 H440 V430 H364Z" fill="#241a14" stroke="none"/>
+    <g data-hatch-steps="1"><path d="M370 390 H434 V398 H370Z" fill="#2a1c12" stroke="none"/><path d="M376 406 H428 V414 H376Z" fill="#2a1c12" stroke="none"/><path d="M382 422 H422 V430 H382Z" fill="#2a1c12" stroke="none"/></g>
+    <path d="M378 374 V426 M428 374 V426 M378 388 H428 M378 406 H428" fill="none" stroke="#8a8f98" stroke-width="3" stroke-linecap="square"/>
+    <path data-hatch-lid="1" d="M452 358 L488 344 V420 L452 438Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+    <path d="M458 365 H463 V423 H458Z" fill="#b39b78" stroke="none"/>
+    <ellipse cx="474" cy="386" rx="4" ry="5" fill="#e8c14a" stroke="#241a14" stroke-width="2"/>
   </g>
   <g id="door" data-part="winch">
     <ellipse cx="256" cy="232" rx="42" ry="36" fill="#6b4426" stroke="#241a14" stroke-width="4"/>
@@ -38,11 +45,11 @@
     </g>
   </g>
   <g id="window"></g>
-  <g id="sign" data-sign-name="Колодец «Тихий Вход»" data-sign-type="Колодец" data-sign-shop="Тихий Вход"><path id="signBoard" d="M64 138 H448 V202 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 143 H442 V197 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(74 146) scale(0.7)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Колодец «Тихий Вход»" data-sign-type="Колодец" data-sign-shop="Тихий Вход"><path id="signBoard" d="M24 138 H488 V250 H24Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M30 143 H482 V245 H30Z" fill="#4a2e18" stroke="none"/><g transform="translate(34 152) scale(0.95)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M12 18 H68" fill="none" stroke="#241a14" stroke-width="5" stroke-linecap="square"/>
     <path d="M20 30 Q40 6 60 30" fill="none" stroke="#8a8f98" stroke-width="4"/>
     <path d="M16 38 H64 V44 H16Z" fill="#8a8f98" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="31" cy="50" rx="5" ry="4" fill="#b39b78" stroke="none"/></g><text data-line="type" x="152" y="165" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#e8c14a" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="95.5" lengthAdjust="spacingAndGlyphs">Колодец</text><text data-line="shop" x="152" y="190" font-family="'Courier New', monospace" font-size="22" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="136.4" lengthAdjust="spacingAndGlyphs">Тихий Вход</text></g>
+    <ellipse cx="31" cy="50" rx="5" ry="4" fill="#b39b78" stroke="none"/></g><text data-line="type" x="118" y="182" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#e8c14a" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="173.6" lengthAdjust="spacingAndGlyphs">Колодец</text><text data-line="shop" x="118" y="228" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f3efe2" stroke="#241a14" stroke-width="2" paint-order="stroke" text-rendering="geometricPrecision" textLength="248.0" lengthAdjust="spacingAndGlyphs">Тихий Вход</text></g>
   <g id="decor">
     <path d="M122 416 H146 V426 H122Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/><path d="M366 416 H390 V426 H366Z" fill="#8f7a5f" stroke="#241a14" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
     <path d="M156 448 H356" fill="none" stroke="#2a1c12" stroke-width="3" stroke-linecap="square"/>

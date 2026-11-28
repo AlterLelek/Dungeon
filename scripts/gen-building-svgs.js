@@ -224,10 +224,12 @@ const ICONS = {
 // Геометрия считается от longest line: доска растёт, а шрифт ужимается,
 // если строка не влезает в максимально допустимую ширину viewBox.
 const SIGN = Object.freeze({
-  x: 64, h: 64, minW: 384, maxW: 424,
-  iconX: 74, iconY: 8, iconScale: 0.7,
-  textX: 152, rightPad: 16,
-  typeY: 27, shopY: 52, size: 22, minSize: 15, advance: 0.62,
+  // Доска занимает почти всю ширину фасада: при выводе в мире (108 px из 512)
+  // шрифт 40 единиц даёт ~8 px по высоте вместо прежних ~4.6 px.
+  x: 24, h: 112, minW: 464, maxW: 464,
+  iconX: 34, iconY: 14, iconScale: 0.95,
+  textX: 118, rightPad: 12,
+  typeY: 44, shopY: 90, size: 40, minSize: 40, advance: 0.62,
 });
 function signParts(fullName) {
   const full = String(fullName || '').trim();
@@ -240,16 +242,11 @@ function signParts(fullName) {
 }
 function signLayout(parts) {
   const lines = parts.shop ? [parts.type, parts.shop] : [parts.type];
-  const longest = Math.max(1, ...lines.map(line => line.length));
-  const room = SIGN.maxW - (SIGN.textX - SIGN.x) - SIGN.rightPad;
-  let size = SIGN.size;
-  let boardW = Math.max(SIGN.minW,
-    Math.ceil((SIGN.textX - SIGN.x) + longest * size * SIGN.advance + SIGN.rightPad));
-  if (boardW > SIGN.maxW) {
-    boardW = SIGN.maxW;
-    size = Math.max(SIGN.minSize, Math.floor(room / (longest * SIGN.advance)));
-  }
-  return { lines, size, boardW, maxTextW: boardW - (SIGN.textX - SIGN.x) - SIGN.rightPad };
+  const boardW = SIGN.maxW;
+  const maxTextW = boardW - (SIGN.textX - SIGN.x) - SIGN.rightPad;
+  // Размер остаётся крупным; длинные строки сжимаются по ширине через textLength,
+  // а не уменьшаются по высоте — иначе вывеска снова нечитаема в мире.
+  return { lines, size: SIGN.size, boardW, maxTextW };
 }
 function signLayer(y, icon, fullName) {
   const parts = signParts(fullName);
@@ -259,7 +256,7 @@ function signLayer(y, icon, fullName) {
   const plate = flat(SIGN.x + 6, y + 5, layout.boardW - 12, SIGN.h - 10, '#4a2e18');
   const glyph = `<g transform="translate(${SIGN.iconX} ${y + SIGN.iconY}) scale(${SIGN.iconScale})" data-sign="${icon}">${ICONS[icon] || ICONS.house}</g>`;
   const text = layout.lines.map((line, i) => {
-    const baseline = y + (layout.lines.length === 1 ? 40 : (i === 0 ? SIGN.typeY : SIGN.shopY));
+    const baseline = y + (layout.lines.length === 1 ? (SIGN.typeY + SIGN.shopY) / 2 : (i === 0 ? SIGN.typeY : SIGN.shopY));
     const label = layout.lines.length === 1 ? 'type' : (i === 0 ? 'type' : 'shop');
     const width = Math.min(layout.maxTextW, line.length * layout.size * SIGN.advance);
     const fill = label === 'type' ? C.gold : C.white;
@@ -299,7 +296,7 @@ function houseSvg(entry, style, name) {
   const wallY = floors === 2 ? 128 : 160;
   const wallH = 418 - wallY;
   const apexY = floors === 2 ? 32 : 56;
-  const signY = floors === 2 ? 138 : 168;
+  const signY = floors === 2 ? 118 : 150;
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">`,
     `  <title>${esc(entry.sign_text || name)}</title>`,
@@ -311,14 +308,14 @@ function houseSvg(entry, style, name) {
     `  <g id="window">`,
   ];
   if (floors === 2) {
-    parts.push(windowUnit(96, 204, 124, 68));
-    parts.push(windowUnit(292, 204, 124, 68));
+    parts.push(windowUnit(96, 236, 124, 68));
+    parts.push(windowUnit(292, 236, 124, 68));
     parts.push(`<!-- second-floor windows span ~3/4 of the facade -->`);
-    parts.push(windowUnit(102, 286, 78, 64));
-    parts.push(windowUnit(332, 286, 78, 64));
+    parts.push(windowUnit(102, 306, 78, 64));
+    parts.push(windowUnit(332, 306, 78, 64));
   } else {
-    parts.push(windowUnit(104, 258, 78, 68));
-    parts.push(windowUnit(330, 258, 78, 68));
+    parts.push(windowUnit(104, 266, 78, 68));
+    parts.push(windowUnit(330, 266, 78, 68));
   }
   parts.push(`  </g>`);
   parts.push(`  <g id="door">${doorUnit(floors === 2 ? 304 : 292, 418 - (floors === 2 ? 304 : 292))}</g>`);
@@ -336,13 +333,6 @@ function wellSvg(entry, style, name) {
 ${rect(112, 306, 288, 124, m.wall, 4)}
 ${flat(118, 312, 276, 10, m.wallShade)}
 ${rect(104, 426, 304, 18, C.stone, 3)}
-<path data-part="hidden-entrance" d="M180 430 V356 Q180 312 256 312 Q332 312 332 356 V430Z" fill="${C.dark}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
-<path d="M194 430 V360 Q194 326 256 326 Q318 326 318 360 V430Z" fill="#1a120e" stroke="none"/>
-<path d="M212 430 V364 Q212 342 256 342 Q300 342 300 364 V430Z" fill="${C.outline}" stroke="none"/>
-<g data-part="steps">${flat(224, 388, 64, 8, C.dark)}${flat(230, 404, 52, 8, C.dark)}${flat(236, 418, 40, 8, C.dark)}</g>
-<path data-part="hidden-door" d="M304 336 L334 344 L332 414 L304 410Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter"/>
-${flat(309, 344, 5, 62, C.warm)}
-<ellipse cx="322" cy="378" rx="4" ry="5" fill="${C.gold}" stroke="${C.outline}" stroke-width="2"/>
 ${flat(132, 330, 34, 12, C.stoneLight)}${flat(346, 350, 38, 12, C.stoneLight)}
 <path d="M118 348 H166 M346 368 H386" fill="none" stroke="${C.stoneLight}" stroke-width="3" stroke-linecap="square"/>
   </g>
@@ -352,6 +342,20 @@ ${flat(132, 330, 34, 12, C.stoneLight)}${flat(346, 350, 38, 12, C.stoneLight)}
     <path d="M118 118 L256 56 L394 118" fill="none" stroke="${m.roofGlint}" stroke-width="4" stroke-linecap="square"/>
     ${rect(88, 116, 336, 12, m.roofDark, 3)}
     ${rect(136, 186, 240, 12, C.wood, 3)}
+  </g>
+  <g id="denHatch" data-part="den-hatch" data-lair="bandit">
+    <g data-hatch-canopy="1">
+      <path d="M320 304 L402 268 L486 304Z" fill="${C.tile}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter"/>
+      <path d="M340 298 L402 276 L466 298" fill="none" stroke="${C.tileGlint}" stroke-width="3" stroke-linecap="square"/>
+      ${rect(326, 300, 10, 62, C.wood, 3)}${rect(470, 300, 10, 62, C.wood, 3)}
+    </g>
+    <path data-hatch-opening="1" d="M352 358 H452 V438 H352Z" fill="${C.dark}" stroke="${C.outline}" stroke-width="4" stroke-linejoin="miter"/>
+    <path d="M364 370 H440 V430 H364Z" fill="${C.outline}" stroke="none"/>
+    <g data-hatch-steps="1">${flat(370, 390, 64, 8, C.dark)}${flat(376, 406, 52, 8, C.dark)}${flat(382, 422, 40, 8, C.dark)}</g>
+    <path d="M378 374 V426 M428 374 V426 M378 388 H428 M378 406 H428" fill="none" stroke="${C.metal}" stroke-width="3" stroke-linecap="square"/>
+    <path data-hatch-lid="1" d="M452 358 L488 344 V420 L452 438Z" fill="${C.wood}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="miter"/>
+    ${flat(458, 365, 5, 58, C.warm)}
+    <ellipse cx="474" cy="386" rx="4" ry="5" fill="${C.gold}" stroke="${C.outline}" stroke-width="2"/>
   </g>
   <g id="door" data-part="winch">
     <ellipse cx="256" cy="232" rx="42" ry="36" fill="${C.wood}" stroke="${C.outline}" stroke-width="4"/>
