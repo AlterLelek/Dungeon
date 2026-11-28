@@ -8778,7 +8778,8 @@ window.__mm6Debug={
   },
   catalogLayers:(id)=>itemLayerSpecs(itemInstance(id)),
   allItemLayers:()=>ITEM_DB.map(it=>({id:it.id,type:it.type,tier:it.tier,
-    layers:itemLayerSpecs(it).map(l=>({src:l.src,role:l.role,element:l.element||null,quality:l.quality||null}))})),
+    layers:itemLayerSpecs(it).map(l=>({src:l.src,role:l.role,element:l.element||null,
+      quality:l.quality||null,mask:l.mask||null}))})),
   itemIconGeometry:()=>{
     const cell=[...document.querySelectorAll('.invCell')].find(b=>b.querySelector('.itemStack'));
     const img=cell?cell.querySelector('.itemStack img'):null;
