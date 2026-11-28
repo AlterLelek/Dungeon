@@ -5,15 +5,16 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { runCdp } from './cdp-lib.mjs';
 
+// Все сквозные харнесы ПАРТИИ: новые проверки [ГОБОРЕНО] и их прежние аналоги.
 const PARTS = Object.freeze({
-  1: 'cdp-mm6-battle-hud-v2.mjs',
-  2: 'cdp-mm6-map-info.mjs',
-  3: 'cdp-mm6-items-icons.mjs',
-  4: 'cdp-mm6-signs-layout.mjs',
-  5: 'cdp-mm6-npc-dialogue.mjs',
-  6: 'cdp-mm6-terrain-render.mjs',
-  7: 'cdp-mm6-touch-controls.mjs',
-  8: 'cdp-mm6-party-final.mjs'
+  1: ['cdp-mm6-battle-hud-part1.mjs', 'cdp-mm6-battle-hud-v2.mjs', 'cdp-mm6-window-persistence.mjs'],
+  2: ['cdp-mm6-map-info-part2.mjs', 'cdp-mm6-map-info.mjs'],
+  3: ['cdp-mm6-items-icons-part3.mjs', 'cdp-mm6-items-icons.mjs'],
+  4: ['cdp-mm6-signs-layout-part4.mjs', 'cdp-mm6-signs-layout.mjs', 'cdp-mm6-buildings-render.mjs'],
+  5: ['cdp-mm6-npc-dialogue-part5.mjs', 'cdp-mm6-npc-dialogue.mjs'],
+  6: ['cdp-mm6-terrain-render-part6.mjs', 'cdp-mm6-terrain-render.mjs'],
+  7: ['cdp-mm6-touch-controls-part7.mjs', 'cdp-mm6-touch-controls.mjs'],
+  8: ['cdp-mm6-party-final.mjs']
 });
 const GLOBAL = Object.freeze(['cdp-mm6-no-overlap.mjs']);
 
@@ -242,7 +243,7 @@ runCdp('PARTY FINAL PART 8', async api => {
   await api.sleep(160);
 
   // Часть 8: харнесы всех частей, документы и свежая передача ассетов.
-  const missing = [...Object.values(PARTS), ...GLOBAL].map(f => 'scripts/' + f)
+  const missing = [...Object.values(PARTS).flat(), ...GLOBAL].map(f => 'scripts/' + f)
     .filter(f => !existsSync(f) || readFileSync(f, 'utf8').length < 80);
   const design = readFileSync('docs/DESIGN.md', 'utf8');
   const handoff = readFileSync('docs/ASSET_HANDOFF.md', 'utf8');
@@ -250,7 +251,9 @@ runCdp('PARTY FINAL PART 8', async api => {
     'НИ ОДНО окно, плашка, сообщение или подсказка не перекрывают другое окно',
     '214×56', '235×62', '10 классов × 4 портрета', 'серые заглушки',
     'рельеф рисуется по данным клеток', 'крупные полупрозрачные кнопки',
-    'тач-экране', 'cdp-mm6-party-final.mjs'
+    'тач-экране', 'cdp-mm6-party-final.mjs', '`[ГОБОРЕНО]`-харнес',
+    'cdp-mm6-signs-layout-part4.mjs', 'cdp-mm6-touch-controls-part7.mjs',
+    '`PARTS` перечисляет все харнесы'
   ];
   api.check('Часть 8 — все харнесы ПАРТИИ, замороженные решения и свежая передача ассетов',
     missing.length === 0 && frozen.every(s => design.includes(s)) &&

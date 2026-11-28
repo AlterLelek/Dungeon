@@ -7319,7 +7319,9 @@ function drawMap(now){
   // На коротком ландшафте Dock-панели занимают низ экрана: HUD сдвигается вверх,
   // а строка сообщения вписывается в зазор между крупными кнопками.
   const compactHint=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
-  const warnY=compactHint?210:296;
+  // Предупреждение поднимается над Dock-панелью: на любом размере окна
+  // оно остаётся отдельной плашкой и не наезжает на крупные кнопки.
+  const warnY=compactHint?210:270;
   let msgX=126, msgW=388;
   if(compactHint){
     const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
@@ -7351,7 +7353,7 @@ function drawMap(now){
     // На низком ландшафте Dock-панели занимают низ экрана: подсказка встаёт
     // между отрядом и кнопками и короткой, чтобы не заходить ни на те, ни на другие окна.
     const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,compactHint?2:3);
-    const h=28+lines.length*12, ty=compactHint?150:290-h; // Верх плашки предупреждения — 296, зазор 6.
+    const h=28+lines.length*12, ty=compactHint?150:warnY-6-h; // Зазор 6 до предупреждения.
     mapUiRects.hint={x:12,y:ty,w:MAP_HINT_W,h};
     panel(12,ty,MAP_HINT_W,h);
     fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
