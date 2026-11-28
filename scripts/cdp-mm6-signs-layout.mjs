@@ -39,6 +39,7 @@ await runCdp('SIGNS LAYOUT', async api => {
         shop:sign&&sign.getAttribute('data-sign-shop'),
         full:sign&&sign.getAttribute('data-sign-name'),
         icon:glyph&&glyph.getAttribute('data-sign'),
+        paths:sign?[...sign.children].filter(el=>el.tagName.toLowerCase()==='path').length:0,
         board:board?box(board):null, glyph:glyph?box(glyph):null, texts,
         badStyle:/linearGradient|radialGradient|<filter|<image|blur|feGaussian/i.test(text)
       });
@@ -83,6 +84,10 @@ await runCdp('SIGNS LAYOUT', async api => {
   api.check('знак слева от текста и внутри доски', wrongGlyph.length === 0,
     JSON.stringify(wrongGlyph.map(r => ({ stem: r.stem, board: r.board,
       glyph: r.glyph, textX: r.texts[0] && r.texts[0].x }))));
+
+  const extraLines = rows.filter(r => r.paths !== 2);
+  api.check('вертикальной разделительной линии слева нет', extraLines.length === 0,
+    JSON.stringify(extraLines.map(r => ({ stem: r.stem, paths: r.paths }))));
 
   const blurry = rows.filter(r => r.texts.length !== 2 || r.badStyle ||
     r.texts.some(t => t.stroke !== '2' ||

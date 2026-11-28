@@ -38,7 +38,7 @@
     </g>
   </g>
   <g id="window"></g>
-  <g id="sign" data-sign-name="Колодец «Тихий Вход»" data-sign-type="Колодец" data-sign-shop="Тихий Вход"><path id="signBoard" d="M64 138 H448 V202 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 143 H442 V197 H70Z" fill="#4a2e18" stroke="none"/><path d="M142 149 V191" fill="none" stroke="#241a14" stroke-width="2" stroke-linecap="square"/><g transform="translate(74 146) scale(0.7)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+  <g id="sign" data-sign-name="Колодец «Тихий Вход»" data-sign-type="Колодец" data-sign-shop="Тихий Вход"><path id="signBoard" d="M64 138 H448 V202 H64Z" fill="#6b4426" stroke="#241a14" stroke-width="3" stroke-linejoin="miter" stroke-linecap="square"/><path d="M70 143 H442 V197 H70Z" fill="#4a2e18" stroke="none"/><g transform="translate(74 146) scale(0.7)" data-sign="bucket"><path d="M14 20 L22 58 H58 L66 20Z" fill="#6b4426" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
     <path d="M12 18 H68" fill="none" stroke="#241a14" stroke-width="5" stroke-linecap="square"/>
     <path d="M20 30 Q40 6 60 30" fill="none" stroke="#8a8f98" stroke-width="4"/>
     <path d="M16 38 H64 V44 H16Z" fill="#8a8f98" stroke="#241a14" stroke-width="3"/>
