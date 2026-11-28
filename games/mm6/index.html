@@ -6021,11 +6021,6 @@ function drawSky(biome,now){
   for(let i=0;i<18;i++){ ctx.globalAlpha=.15+.35*Math.abs(Math.sin(now/800+i)); ctx.fillRect((i*91+29)%W,(i*53+17)%100,1.5,1.5); }
   ctx.globalAlpha=1;
 }
-function drawGround(biome){
-  const b=BIOMES[biome]||BIOMES.field;
-  const g=ctx.createLinearGradient(0,150,0,H); g.addColorStop(0,b.ground[0]); g.addColorStop(1,b.ground[1]);
-  ctx.fillStyle=g; ctx.fillRect(0,150,W,H-150);
-}
 // Текстурированные фоны: пещера / лес / храм / город / порт.
 function drawSceneBackdrop(biome,now){
   const b=BIOMES[biome]||BIOMES.field, scene=b.scene||'forest';
@@ -6128,6 +6123,126 @@ function drawTiledGround(x,y,w,h,ground,season,seed){
   for(let tx=x-off;tx<x+w;tx+=ts) for(let ty=y;ty<y+h;ty+=ts) ctx.drawImage(tile,tx,ty,ts,ts);
   ctx.restore();
 }
+/* Рельеф рисуется по данным клеток, а не горизонтальными лентами.
+   Все декорации процедурные и детерминированные: они не меняют проходимость
+   и не попадают в манифест новых файлов. */
+const GROUND_FIELD_TOP=142;
+const groundFieldCache=new Map(), bigMapMosaicCache=new Map();
+const terrainRenderStats={field:{},frame:{},bigMap:{}};
+function terrainRgba(hex,alpha){
+  const s=String(hex||'#888888').replace('#','');
+  const v=parseInt(s.length===3?s.split('').map(c=>c+c).join(''):s,16)||0x888888;
+  return 'rgba('+((v>>16)&255)+','+((v>>8)&255)+','+(v&255)+','+alpha+')';
+}
+function noteTerrainTime(key,ms){
+  const row=terrainRenderStats[key]||(terrainRenderStats[key]={});
+  const list=row.samples||(row.samples=[]);
+  list.push(+ms.toFixed(2)); if(list.length>60) list.shift();
+  row.last=+ms.toFixed(2);
+}
+function terrainPalette(season){ return SEASON_GROUND_COLORS[season]||SEASON_GROUND_COLORS.summer; }
+function softTerrainBlob(g,x,y,r,color,alpha){
+  const grad=g.createRadialGradient(x,y,0,x,y,Math.max(1,r));
+  grad.addColorStop(0,terrainRgba(color,alpha));
+  grad.addColorStop(.65,terrainRgba(color,alpha*.5));
+  grad.addColorStop(1,terrainRgba(color,0));
+  g.fillStyle=grad;
+  g.beginPath(); g.ellipse(x,y,Math.max(1,r),Math.max(1,r*.52),0,0,6.29); g.fill();
+}
+function buildGroundField(map,season,biome){
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'), pal=terrainPalette(season);
+  const b=BIOMES[biome]||BIOMES.field;
+  const base=b.ground[1]||pal.grass;
+  const grad=g.createLinearGradient(0,GROUND_FIELD_TOP-26,0,H);
+  grad.addColorStop(0,shade(base,8)); grad.addColorStop(.5,base); grad.addColorStop(1,shade(base,-22));
+  g.fillStyle=grad; g.fillRect(0,GROUND_FIELD_TOP-26,W,H-GROUND_FIELD_TOP+26);
+  const stats={patches:0,stones:0,bushes:0,soft:0,cells:0};
+  const tone=[pal.grass,pal.dirt,pal.sand,pal.stone,pal.flowers];
+  for(let i=0;i<46;i++){
+    const h=cellHash(i,7,(map.seed||1)+41), h2=cellHash(9,i,(map.seed||1)+83);
+    const x=(h%W), y=GROUND_FIELD_TOP+(h2%(H-GROUND_FIELD_TOP));
+    const r=26+(h%38);
+    softTerrainBlob(g,x,y,r,tone[i%tone.length],season==='winter'?.18:.26);
+    stats.patches++; stats.soft++;
+  }
+  // Мелкие камни и кусты на фоне задаются той же картой, но остаются вне логики клеток.
+  for(let i=0;i<24;i++){
+    const h=cellHash(i,17,(map.seed||1)+111), h2=cellHash(23,i,(map.seed||1)+157);
+    const x=h%W, y=GROUND_FIELD_TOP+12+(h2%(H-GROUND_FIELD_TOP-20));
+    if(i%3===0){
+      g.fillStyle=terrainRgba(shade(pal.stone,-18),.5);
+      g.beginPath(); g.ellipse(x,y,3+(h%4),2+(h2%2),0,0,6.29); g.fill(); stats.stones++;
+    }else if(season!=='winter'){
+      g.fillStyle=terrainRgba(shade(pal.grass,-26),.4);
+      [0,5,9].forEach((dx,j)=>{ g.beginPath(); g.arc(x+dx,y+((j%2)*3),4+(h%3),0,6.29); g.fill(); });
+      stats.bushes++;
+    }
+  }
+  const fade=g.createLinearGradient(0,GROUND_FIELD_TOP-26,0,GROUND_FIELD_TOP+20);
+  fade.addColorStop(0,terrainRgba(shade(base,10),0));
+  fade.addColorStop(1,terrainRgba(shade(base,10),.85));
+  g.fillStyle=fade; g.fillRect(0,GROUND_FIELD_TOP-26,W,46);
+  c.stats=stats;
+  return c;
+}
+function drawGround(biome,map,season){
+  if(!map){
+    const b=BIOMES[biome]||BIOMES.field;
+    const g=ctx.createLinearGradient(0,150,0,H); g.addColorStop(0,b.ground[0]); g.addColorStop(1,b.ground[1]);
+    ctx.fillStyle=g; ctx.fillRect(0,150,W,H-150);
+    return;
+  }
+  const t0=performance.now();
+  const key=map.index+'|'+map.seed+'|'+season+'|'+biome+'|'+W+'x'+H;
+  let field=groundFieldCache.get(key), cached=!!field;
+  if(!field){
+    field=buildGroundField(map,season,biome);
+    groundFieldCache.set(key,field);
+    if(groundFieldCache.size>6) groundFieldCache.delete(groundFieldCache.keys().next().value);
+  }
+  ctx.drawImage(field,0,0);
+  terrainRenderStats.field=Object.assign({cached,key},field.stats||{});
+  noteTerrainTime('field',performance.now()-t0);
+}
+function drawGroundDecor(sx,sy,sc,cell,mapX,mapY,seed,season,alpha){
+  if(!GROUND_IDS.includes(cell.ground)||['road','bridge','gate','boss','chest','treasure','shop','house','tree','mountain','rock'].includes(cell.t)||cell.water) return;
+  const stats=terrainRenderStats.frame||(terrainRenderStats.frame={});
+  const h=cellHash(mapX,mapY,seed||0), h2=cellHash(mapY,mapX,(seed||0)+29);
+  const pal=terrainPalette(season), base=pal[cell.ground]||pal.grass;
+  const unit=sc*(clamp(Number(settings.cellSize)||16,8,28)/16);
+  stats.cells=(stats.cells||0)+1;
+  for(let i=0;i<3;i++){
+    const px=sx+(((h>>(i*4))%84)-42)*unit, py=sy+(14+((h2>>(i*3))%14))*sc;
+    softTerrainBlob(ctx,px,py,(8+(h>>i)%11)*unit,i%2?base:shade(base,i%3?12:-16),alpha*.42);
+    stats.patches=(stats.patches||0)+1; stats.soft=(stats.soft||0)+1;
+  }
+  if(cell.ground==='dirt'&&cell.t!=='swamp'){
+    ctx.save(); ctx.globalAlpha=alpha*.38; ctx.strokeStyle=shade(base,-32);
+    ctx.lineWidth=Math.max(.7,1.2*sc); ctx.setLineDash([5*sc,4*sc]);
+    ctx.beginPath(); ctx.moveTo(sx-38*unit,sy+25*sc);
+    ctx.quadraticCurveTo(sx+((h%13)-6)*sc,sy+16*sc,sx+38*unit,sy+24*sc); ctx.stroke();
+    ctx.restore(); stats.trails=(stats.trails||0)+1;
+  }
+  if(h%3===0||cell.ground==='stone'){
+    const n=cell.ground==='stone'?3:2;
+    for(let i=0;i<n;i++){
+      const px=sx+(((h2>>(i*5))%78)-39)*unit, py=sy+(16+((h>>(i*3))%11))*sc;
+      ctx.save(); ctx.globalAlpha=alpha*.66; ctx.fillStyle=shade(pal.stone,-12);
+      ctx.beginPath(); ctx.ellipse(px,py,(1.8+(h>>i)%2)*unit,(1+(h2>>i)%2)*unit,0,0,6.29); ctx.fill();
+      ctx.fillStyle=terrainRgba('#ffffff',alpha*.18); ctx.fillRect(px-1*unit,py-1*unit,2*unit,.7*unit);
+      ctx.restore(); stats.stones=(stats.stones||0)+1;
+    }
+  }
+  if(!cell.flora&&season!=='winter'&&(h2%5===0||cell.t==='flowers')){
+    for(let i=0;i<2;i++){
+      const px=sx+(((h>>(i*6))%70)-35)*unit, py=sy+(18+((h2>>(i*4))%9))*sc;
+      ctx.save(); ctx.globalAlpha=alpha*.58; ctx.fillStyle=shade(pal.grass,-30);
+      ctx.beginPath(); ctx.arc(px,py,3.4*unit,0,6.29); ctx.arc(px+5*unit,py+1*unit,2.7*unit,0,6.29); ctx.fill();
+      ctx.restore(); stats.bushes=(stats.bushes||0)+1;
+    }
+  }
+}
 function drawRoadPattern(x,y,w,h,kind,seed){
   const rk=ROAD_KINDS.find(k=>k.id===kind)||ROAD_KINDS[0];
   ctx.save(); ctx.globalAlpha=.62; ctx.strokeStyle=rk.detail; ctx.fillStyle=rk.detail; ctx.lineWidth=1;
@@ -6216,6 +6331,7 @@ function drawCellPatch(sx,sy,sc,cell,m,mapX,mapY,season,alpha){
   trace(); ctx.save(); ctx.clip();
   const surface=surfaceFor(cell,season);
   drawTiledGround(farLeft,top,farRight-farLeft,bottom-top,surface,season,cell.decoSeed||0);
+  drawGroundDecor(sx,sy,sc,cell,mapX,mapY,m&&m.seed,season,alpha);
   const road=cell.t==='road'||cell.t==='gate'||cell.t==='boss'||cell.t==='bridge';
   if(road){
     // Лента тянется через всю клетку и стыкуется с соседними дорожными клетками.
@@ -6585,9 +6701,74 @@ function mapTerrainCounts(m){
   }));
   return counts;
 }
+function buildBigMapMosaic(m,season){
+  const key=m.index+'|'+m.size+'|'+m.seed+'|'+season;
+  const cached=bigMapMosaicCache.get(key);
+  if(cached) return {canvas:cached,cached:true,stats:cached.stats||{}};
+  const res=Math.min(240,Math.max(64,m.size*4)), cellPx=res/m.size;
+  const c=document.createElement('canvas'); c.width=c.height=res;
+  const g=c.getContext('2d'), pal=terrainPalette(season);
+  const stats={cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
+  g.fillStyle=pal.grass; g.fillRect(0,0,res,res);
+  for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
+    const cell=m.cells[y][x], px=x*cellPx, py=y*cellPx, cx=px+cellPx/2, cy=py+cellPx/2;
+    const surf=surfaceFor(cell,season), base=pal[surf]||pal.grass;
+    const h=cellHash(x,y,m.seed||1), h2=cellHash(y,x,(m.seed||1)+61);
+    stats.cells++;
+    g.fillStyle=shade(base,((h%17)-8));
+    g.fillRect(Math.floor(px),Math.floor(py),Math.ceil(cellPx)+1,Math.ceil(cellPx)+1);
+    if(h%7===0){
+      softTerrainBlob(g,cx,cy,cellPx*1.7,h%2?base:shade(base,16),season==='winter'?.16:.24);
+      stats.patches++; stats.soft++;
+    }
+    if(surf==='water'||surf==='ice'){
+      g.fillStyle=terrainRgba(shade(base,h%2?12:-16),.92);
+      g.beginPath(); g.ellipse(cx,cy,cellPx*.66,cellPx*.58,(h%7-3)*.14,0,6.29); g.fill();
+      stats.water++;
+    }else if(cell.t==='swamp'){
+      g.fillStyle=terrainRgba(shade(pal.swamp,-10),.78);
+      g.beginPath(); g.ellipse(cx,cy,cellPx*.7,cellPx*.5,0,0,6.29); g.fill();
+      stats.swamp++;
+    }
+    if((surf==='stone'||h%17===0)&&surf!=='water'&&surf!=='ice'){
+      g.fillStyle=terrainRgba(shade(pal.stone,-20),.78);
+      g.beginPath(); g.arc(cx+((h%5)-2)*cellPx*.22,cy+((h2%5)-2)*cellPx*.2,Math.max(.6,cellPx*.22),0,6.29); g.fill();
+      stats.stones++;
+    }
+    if((cell.ground==='grass'||cell.ground==='flowers')&&h2%17===0&&season!=='winter'&&!cell.flora){
+      g.fillStyle=terrainRgba(shade(pal.grass,-28),.7);
+      g.beginPath(); g.arc(cx-cellPx*.16,cy,Math.max(.6,cellPx*.24),0,6.29);
+      g.arc(cx+cellPx*.18,cy+cellPx*.1,Math.max(.5,cellPx*.18),0,6.29); g.fill();
+      stats.bushes++;
+    }
+    if(cell.ground==='dirt'&&h%5===0&&cell.t!=='road'){
+      g.strokeStyle=terrainRgba(shade(base,-34),.55); g.lineWidth=Math.max(.5,cellPx*.14);
+      g.beginPath(); g.moveTo(px,cy+cellPx*.18); g.lineTo(px+cellPx,cy-cellPx*.18); g.stroke();
+      stats.trails++;
+    }
+    if(cell.t==='road'||cell.t==='bridge'||cell.t==='gate'){
+      const rk=ROAD_KINDS.find(k=>k.id===(cell.roadKind||'dirt'))||ROAD_KINDS[0];
+      g.lineCap='round'; g.strokeStyle=rk.surface; g.lineWidth=Math.max(1,cellPx*.6);
+      DIRS.forEach(v=>{
+        const nx=x+v[0], ny=y+v[1];
+        if(nx<0||ny<0||nx>=m.size||ny>=m.size||!isRoadLink(m.cells[ny][nx])) return;
+        g.beginPath(); g.moveTo(cx,cy);
+        g.lineTo(cx+v[0]*cellPx*.55,cy+v[1]*cellPx*.55); g.stroke();
+      });
+      g.fillStyle=rk.surface; g.beginPath(); g.arc(cx,cy,Math.max(.8,cellPx*.3),0,6.29); g.fill();
+      stats.roads++;
+    }
+  }
+  c.stats=stats;
+  bigMapMosaicCache.set(key,c);
+  if(bigMapMosaicCache.size>8) bigMapMosaicCache.delete(bigMapMosaicCache.keys().next().value);
+  return {canvas:c,cached:false,stats};
+}
 function drawBigMap(){
+  const terrainStart=performance.now();
   const cvBig=bigMapCanvas(); if(!cvBig||!game||!game.world) return;
   const w=game.world, geo=bigMapGeometry(), g=cvBig.getContext('2d');
+  terrainRenderStats.bigMap={maps:0,cached:0,cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
   g.fillStyle='#05070f'; g.fillRect(0,0,BIG_MAP_PX,BIG_MAP_PX);
   const bySlot={};
   w.maps.forEach(m=>{
@@ -6610,20 +6791,16 @@ function drawBigMap(){
     const slot=m.slot||slotForIndex(m.index,w);
     const x=geo.ox+slot.gx*geo.cell, y=geo.oy+slot.gy*geo.cell, pad=Math.max(2,geo.cell*.06);
     const size=geo.cell-pad*2;
-    const counts=mapTerrainCounts(m), total=m.size*m.size||1;
     const biome=BIOMES[m.biome]||BIOMES.field;
-    g.fillStyle=biome.ground[0]; g.fillRect(x+pad,y+pad,size,size);
-    // Озёра и болота — доля клеток; дороги — тонкие полосы.
-    const parts=[
-      {n:counts.water,c:'#1d4ed8'},{n:counts.swamp,c:'#31532f'},
-      {n:counts.forest,c:'#2f8d4d'},{n:counts.mountain,c:'#a1a1aa'},
-      {n:counts.road,c:'#b09a6b'}
-    ];
-    let used=0;
-    parts.forEach(p=>{
-      const h=size*p.n/total; if(h<1) return;
-      g.fillStyle=p.c; g.fillRect(x+pad,y+pad+used,size,h); used+=h;
-    });
+    const mosaic=buildBigMapMosaic(m,currentSeason());
+    g.save(); g.beginPath(); g.rect(x+pad,y+pad,size,size); g.clip();
+    g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+    g.drawImage(mosaic.canvas,x+pad,y+pad,size,size);
+    g.restore();
+    const agg=terrainRenderStats.bigMap||(terrainRenderStats.bigMap={});
+    agg.maps=(agg.maps||0)+1; agg.cached=(agg.cached||0)+(mosaic.cached?1:0);
+    Object.keys(mosaic.stats||{}).forEach(k=>{ agg[k]=(agg[k]||0)+mosaic.stats[k]; });
+    agg.res=mosaic.canvas.width; agg.lastMap=m.index;
     g.strokeStyle=m.index===w.current?'#fbbf24':'rgba(255,255,255,.22)';
     g.lineWidth=m.index===w.current?3:1;
     g.strokeRect(x+pad,y+pad,size,size);
@@ -6644,6 +6821,7 @@ function drawBigMap(){
   if(t) t.textContent='🗺️ Весь мир · '+w.cols+'×'+w.rows+' локаций · '+w.count+' карт';
   const info=document.getElementById('bigMapInfo');
   if(info) info.textContent='Все поселения, дороги, озёра и болота видны сразу. Кликните по локации, чтобы узнать её название.';
+  noteTerrainTime('bigMap',performance.now()-terrainStart);
 }
 function slotForIndex(index,w){
   const slots=[];
@@ -6764,9 +6942,11 @@ function activeObjectiveText(){
 }
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
+  const terrainFrameStart=performance.now();
+  terrainRenderStats.frame={cells:0,patches:0,soft:0,stones:0,bushes:0,trails:0};
   mapHints.length=0; // подсказки относятся только к текущему кадру
   buildingDrawLog=[]; // отчёт о фасадах относится только к текущему кадру карты
-  drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
+  drawSky(m.biome,now); drawGround(m.biome,m,season); drawSceneBackdrop(m.biome,now);
   drawWildlife('bird',now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
   const px=p.px,py=p.py;
@@ -6845,6 +7025,7 @@ function drawMap(now){
     ctx.fillStyle='#c8d2f0'; setFont(9,false); ctx.textAlign='left'; ctx.textBaseline='middle';
     lines.forEach((line,i)=>ctx.fillText(line,20,ty+27+i*12));
   }
+  noteTerrainTime('mapFrame',performance.now()-terrainFrameStart);
 }
 
 /* ============================ 12. БОЙ И КАДРЫ ============================ */
@@ -7828,6 +8009,24 @@ function worldMapReport(){
     swamp:w.maps.filter(m=>m.cells.some(row=>row.some(c=>c.t==='swamp'))).length,
     roads:w.maps.filter(m=>m.cells.some(row=>row.some(c=>ROAD_KINDS.some(k=>k.id===c.t)))).length};
 }
+function terrainTiming(key){
+  const row=terrainRenderStats[key]||{}, list=row.samples||[];
+  const avg=list.length?list.reduce((a,b)=>a+b,0)/list.length:0;
+  return {last:row.last||0,avg:+avg.toFixed(2),max:list.length?Math.max(...list):0,frames:list.length};
+}
+function terrainRenderReport(){
+  return {
+    field:Object.assign({},terrainRenderStats.field||{}),
+    frame:Object.assign({},terrainRenderStats.frame||{}),
+    bigMap:Object.assign({},terrainRenderStats.bigMap||{}),
+    performance:{field:terrainTiming('field'),mapFrame:terrainTiming('mapFrame'),bigMap:terrainTiming('bigMap')},
+    cache:{ground:groundFieldCache.size,mosaic:bigMapMosaicCache.size},
+    world:game&&game.world?game.world.maps.map(m=>({index:m.index,size:m.size,seed:m.seed,biome:m.biome})):[],
+    horizontalBands:false,
+    mosaic:true,
+    passabilitySignature:game&&game.world?terrainSignature(game.world):null
+  };
+}
 /* Сквозная проверка правила «ни одно окно, плашка, сообщение или подсказка
    не перекрывают другое окно». Возвращает видимые прямоугольники и пересечения. */
 function visibleWindowsReport(){
@@ -8042,6 +8241,7 @@ window.__mm6Debug={
   },
   stockReport:()=>stockReport(),
   worldMapReport:()=>worldMapReport(),
+  terrainRenderReport:()=>terrainRenderReport(),
   advanceTime:(minutes)=>({period:advanceGameTime(minutes),stock:stockReport()}),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
