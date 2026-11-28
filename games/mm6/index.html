@@ -48,10 +48,10 @@ button,input,select{font-family:inherit}
 .pcard[data-hero="4"].active{border-color:var(--hero-5);box-shadow:0 0 8px rgba(196,181,253,.35)}
 .pcard.dead{opacity:.45;filter:grayscale(.8)}
 /* Вертикальная очередь ходов: верхняя строка — текущий герой, ниже — следующие. */
-#turnQueue{position:absolute;left:8px;top:88px;z-index:5;width:104px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
-.tq-row{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:5px;background:rgba(6,8,18,.86);
-  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:9px;line-height:1.1;opacity:.72}
-.tq-more{padding:1px 4px;color:#9fb0d8;font-size:8px;text-align:right;line-height:1.1}
+#turnQueue{position:absolute;left:8px;top:82px;z-index:5;width:96px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.tq-row{display:flex;align-items:center;gap:3px;padding:2px 3px;border-radius:5px;background:rgba(6,8,18,.86);
+  border:1px solid rgba(251,191,36,.28);color:#cbd5e1;font-size:9px;line-height:1.05;opacity:.72}
+.tq-more{padding:1px 3px;color:#9fb0d8;font-size:8px;text-align:right;line-height:1.05}
 .tq-row .tq-rank{width:8px;flex:none;font-size:8px;color:#9fb0d8;text-align:center}
 .tq-row .tq-name{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
 .tq-row.active{border-color:var(--tq-color,var(--hero-1));color:var(--tq-color,var(--hero-1));opacity:1;
@@ -82,19 +82,25 @@ button,input,select{font-family:inherit}
 .pcard .fx{display:flex;justify-content:flex-end;gap:5px;margin-top:2px;color:#fde68a;font-size:9px;letter-spacing:.3px}
 .pcard .pface{width:17px;height:17px;flex:0 0 17px;border:1px solid rgba(251,191,36,.55);background:#2a1c12}
 .pcard .pstatus{color:#fde68a;font-size:8px;line-height:1.15;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard .pstats,.pcard .plevel{display:none}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
 /* Боевые плашки компактные, около +10% к обычным, и остаются внизу экрана. */
 #party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(720px,70vw);gap:4px}
 #party.in-battle .pcard{flex:1 1 0;width:auto;max-width:238px;padding:2px 5px;font-size:11px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"top nums" "hp hp" "mp mp" "status status";column-gap:6px}
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats" "level level" "status status";column-gap:6px}
 #party.in-battle .pcard .ptop{grid-area:top;min-width:0}
 #party.in-battle .pcard .pemoji{font-size:16px}
 #party.in-battle .pcard .pface{width:20px;height:20px;flex-basis:20px}
-#party.in-battle .pcard .pstatus{grid-area:status;font-size:10px;margin-top:1px}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:9px;margin-top:1px}
 #party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:6px}
 #party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-/* Итог атаки/защиты есть в инвентаре — в бою цифры не дублируются. */
+#party.in-battle .pcard .pstats{display:flex;grid-area:stats;gap:6px;margin-top:1px;color:#cbd5e1;font-size:9px;line-height:1.1}
+#party.in-battle .pcard .pstats i{font-style:normal;white-space:nowrap}
+#party.in-battle .pcard .plevel{display:block;grid-area:level;margin-top:1px;color:#fde68a;font-size:9px;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Статы в бою показаны компактными значками в отдельной строке; длинная старая строка скрыта. */
 #party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
   #controls{display:none!important}
@@ -554,7 +560,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgW:500,enemyPanelW:236,enemyPanelH:64,badgeW:100};
+  msgW:500,enemyPanelW:220,enemyPanelH:58,badgeW:100};
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -2919,9 +2925,10 @@ function updateParty(){
   $('party').innerHTML=game.party.map((h,i)=>{
     const hp=clamp(h.hp/h.maxHp*100,0,100), mp=clamp(h.mp/Math.max(1,h.maxMp)*100,0,100);
     const statusLine=heroStatusLine(h);
-    return '<div class="pcard'+(h.hp<=0?' dead':'')+(i===active?' active':'')+'" data-hero="'+i+'"><div class="ptop">'+
+    return '<div class="pcard'+(h.hp<=0?' dead':'')+(i===active?' active':'')+'" data-hero="'+i+'"'+
+      ' data-class="'+esc(h.def&&h.def.key||'')+'"><div class="ptop">'+
       '<img class="pface" src="'+portraitSrc(h,i)+'" alt="" onerror="this.style.display=\'none\'">'+
-      '<span class="pemoji">'+h.def.emoji+'</span>'+
+      '<span class="pemoji" aria-label="Класс: '+esc(h.def.name)+'">'+h.def.emoji+'</span>'+
       '<span class="pname ellip" title="'+heroName(h)+'">'+heroName(h)+'</span></div>'+
       '<div class="pstatus" title="'+esc(statusLine)+'">'+esc(statusLine)+'</div>'+
       '<div class="nums"><b>'+Math.max(0,Math.round(h.hp))+'/'+h.maxHp+'</b><em>'+Math.max(0,Math.round(h.mp))+'/'+h.maxMp+'</em></div>'+
@@ -2931,6 +2938,10 @@ function updateParty(){
       '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
       '<div class="mini" title="Опыт общий на отряд; уровень повышает только тренер в гостинице">'+
       '<i>★ Уровень '+(h.level||1)+'</i><i>до следующего: '+xpToNext(h)+'</i></div>'+
+      '<div class="pstats" title="Итоговые статы героя"><i>⚔ '+heroAtk(h)+'</i><i>🛡 '+heroDef(h)+'</i>'+
+      '<i>✨ '+magicText(h)+'</i><i>⚡ '+heroSpeedValue(h)+'</i></div>'+
+      '<div class="plevel" title="Опыт общий на отряд; уровень повышает только тренер в гостинице">'+
+      'Ур '+(h.level||1)+' · до следующего: '+xpToNext(h)+'</div>'+
       (h.statuses&&h.statuses.length?'<div class="fx">'+statusIcons(h)+'</div>':'')+'</div>';
   }).join('');
   updateTurnQueue();
@@ -6467,6 +6478,18 @@ function drawMapEnemyPanels(items,now){
   });
   ctx.textAlign='left';
 }
+let mapStateWindow=null; // Последнее нарисованное окно состояния для CDP-проверки Part 2.
+/* Активная цель для компактного окна состояния: принятое задание, иначе босс карты. */
+function activeObjectiveText(){
+  const active=(game&&game.journal&&game.journal.active)||[];
+  for(let i=active.length-1;i>=0;i--){
+    const q=questDef(active[i].id);
+    if(q&&game.quests.accepted[q.id]&&!game.quests.done[q.id]) return q.goal||q.title;
+  }
+  const m=currentMap();
+  if(m&&m.boss&&!m.boss.dead&&m.boss.def) return 'Босс: '+(m.boss.def.name||'неизвестный');
+  return 'Свободное исследование';
+}
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
   mapHints.length=0; // подсказки относятся только к текущему кадру
@@ -6509,20 +6532,16 @@ function drawMap(now){
   drawHeroFigure(W/2,344-moveBob,.86,party()[0],now);
   weather.draw(ctx); // Осадки поверх поля, но под HUD.
   drawMapEnemyPanels(shownEnemies,now); // панели выше фигуры героя и верхнего HUD, только по наведению/удержанию.
-  // Компактный HUD: текущие/максимальные значения выровнены по правому краю, ниже — атака и защита.
-  panel(10,10,214,86);
-  fitText(heroNameText+' · '+party()[0].def.name,126,11,'#ffe6a8',18,22);
-  setFont(10); ctx.textAlign='right'; ctx.textBaseline='middle';
-  ctx.fillStyle='#fca5a5'; ctx.fillText(Math.max(0,Math.round(party()[0].hp))+'/'+party()[0].maxHp,218,22);
-  ctx.fillStyle='#93c5fd'; ctx.fillText(Math.max(0,Math.round(party()[0].mp))+'/'+party()[0].maxMp,218,36);
-  bar(18,30,126,'HP',party()[0].hp,party()[0].maxHp,'#f87171');
-  bar(18,46,126,'MP',party()[0].mp,party()[0].maxMp,'#60a5fa');
-  ctx.textAlign='left'; ctx.fillStyle='#fde68a'; setFont(10,false);
-  ctx.fillText('⚔ '+heroAtk(party()[0])+'  🛡 '+heroDef(party()[0])+'  ✨ '+magicText(party()[0])+
-    (party()[0].statuses&&party()[0].statuses.length?'  '+statusIcons(party()[0]):''),18,62);
-  drawIcon('coin',22,77,12); drawIcon('star',72,77,12);
-  ctx.fillStyle='#ffe6a8'; setFont(10,false); ctx.fillText(game.gold+'  ·  '+crystalCount(),30,77);
-  ctx.fillStyle='#fde68a'; ctx.fillText('боссы '+game.world.bossKills+'/'+game.world.count,104,77);
+  // Небольшое окно состояния игры вместо большого окна героя слева.
+  const place=(m.settlement?m.settlement.name:(BIOMES[m.biome]||BIOMES.field).name)+
+    ' · '+(game.world.current+1)+'/'+game.world.count;
+  panel(10,10,214,56);
+  const objective=activeObjectiveText();
+  mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,objective};
+  fitText(place,196,11,'#ffe6a8',18,22);
+  ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle='#c8d2f0'; setFont(10,false);
+  ctx.fillText('Ход '+game.world.turn+'   🪙 '+game.gold,18,39);
+  fitText('Цель: '+objective,196,9,'#fde68a',18,55);
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
   if(near.length){
@@ -6665,7 +6684,7 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель компактная, около +10%; подпись группы честно перечисляет врагов.
+  // Верхняя панель компактная: 220×58 с запасом до бейджа хода и очереди.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
   const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
   panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
@@ -6681,7 +6700,7 @@ function drawBattle(now,dt){
   ctx.fillStyle='rgba(255,255,255,.1)'; roundRect(epanel+12,41,BF.enemyPanelW-24,5,2); ctx.fill();
   if(hpRatio>0){ ctx.fillStyle='#ef4444'; roundRect(epanel+12,41,Math.max(3,(BF.enemyPanelW-24)*hpRatio),5,2); ctx.fill(); }
   setFont(10,false); ctx.fillStyle='#fca5a5';
-  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,57);
+  ctx.fillText(e?('⚔ '+e.atk+' · 🛡 '+e.defVal+(e.poison?' · ☠'+e.poison:'')):'',epanel+12,52);
   // Узкий бейдж хода не заходит на увеличенную панель врага.
   roundRect(W/2-BF.badgeW/2,12,BF.badgeW,26,7); ctx.fillStyle='rgba(6,8,18,.9)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.5)'; ctx.lineWidth=1.5; ctx.stroke();
@@ -7661,6 +7680,7 @@ window.__mm6Debug={
   advanceTime:(minutes)=>({period:advanceGameTime(minutes),stock:stockReport()}),
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
+  mapStateWindowReport:()=>mapStateWindow,
   battleHudReport:()=>{
     const b=game&&game.battle; if(!b) return null;
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;

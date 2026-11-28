@@ -110,8 +110,8 @@ try {
 
   // --- Размеры панелей ---
   const hud = await ev(`window.__mm6Debug.battleHudReport()`);
-  check('верхняя панель врага компактная, около +10%', hud.panel.w >= 236 && hud.panel.w <= 240 &&
-    hud.panel.h >= 64 && hud.panel.h <= 66, JSON.stringify(hud.panel));
+  check('верхняя панель врага компактная', hud.panel.w >= 216 && hud.panel.w <= 224 &&
+    hud.panel.h >= 54 && hud.panel.h <= 62, JSON.stringify(hud.panel));
   check('бейдж хода не перекрывает панель врага',
     hud.panel.x + hud.panel.w <= hud.badge.x || hud.panel.x >= hud.badge.x + hud.badge.w,
     JSON.stringify({ panel: hud.panel, badge: hud.badge }));
@@ -119,17 +119,20 @@ try {
   const cardStyle = await ev(`(()=>{const e=document.querySelector('#party.in-battle .pcard');if(!e)return null;
     const s=getComputedStyle(e),q=n=>getComputedStyle(e.querySelector(n));
     return {emoji:q('.pemoji').fontSize,nums:q('.nums').fontSize,miniDisplay:q('.mini').display,
-      bar:q('.pbar').height,mpBar:q('.pbar.mp').height};})()`);
+      bar:q('.pbar').height,mpBar:q('.pbar.mp').height,stats:q('.pstats').display,
+      level:q('.plevel').display,face:q('.pface').width,cardClass:e.dataset.class};})()`);
   check('плашки героев компактные, около +10%',
     cardStyle && parseFloat(cardStyle.emoji) >= 16 && parseFloat(cardStyle.emoji) <= 18 &&
     parseFloat(cardStyle.nums) >= 11 && parseFloat(cardStyle.nums) <= 12 &&
     parseFloat(cardStyle.bar) >= 3 && parseFloat(cardStyle.bar) <= 4 &&
     parseFloat(cardStyle.mpBar) >= 3 && parseFloat(cardStyle.mpBar) <= 4, JSON.stringify(cardStyle));
-  check('в бою итоговые статы не дублируются', cardStyle && cardStyle.miniDisplay === 'none',
+  check('в бою статы значками, уровень и медальон видны, старая строка скрыта',
+    cardStyle && cardStyle.miniDisplay === 'none' && cardStyle.stats === 'flex' &&
+    cardStyle.level === 'block' && parseFloat(cardStyle.face) >= 20 && !!cardStyle.cardClass,
     JSON.stringify(cardStyle));
   const stageBottom = await ev(`document.getElementById('stage').getBoundingClientRect().bottom`);
   check('плашки героев остаются внизу',
-    hud.party.length === 3 && hud.party.every(c => c.h >= 45 && c.h <= 52) &&
+    hud.party.length === 3 && hud.party.every(c => c.h >= 64 && c.h <= 76) &&
     hud.party.every(c => Math.abs(c.bottom - stageBottom) <= 10),
     JSON.stringify({ heights: hud.party.map(c => c.h), bottom: hud.party[0]?.bottom, stageBottom }));
   const queue = await ev(`window.__mm6Debug.turnQueueReport()`);
@@ -138,7 +141,7 @@ try {
       font:getComputedStyle(r).fontSize};})()`);
   check('очередь ходов компактная и ограничена пятью строками',
     queue.visible && queue.rows.length === queue.limit && queue.total > queue.limit && queue.more &&
-    parseFloat(queueStyle.width) <= 104 && parseFloat(queueStyle.padding) <= 2 &&
+    parseFloat(queueStyle.width) <= 96 && parseFloat(queueStyle.padding) <= 2 &&
     parseFloat(queueStyle.font) <= 9, JSON.stringify({ queue: { total: queue.total,
       limit: queue.limit, rows: queue.rows.length, more: queue.more }, style: queueStyle }));
 
