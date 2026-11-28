@@ -31,7 +31,8 @@ await runCdp('BUILDINGS PART 2', async api => {
       rows.push({
         stem, shop_kind:e.shop_kind, batchIcon:e.sign_icon, expected:expected(e),
         svgIcon:glyph&&glyph.getAttribute('data-sign'), svgName:sign&&sign.getAttribute('data-sign-name'),
-        signText:lines.join(' '), signLines:lines.length, batchName:e.sign_text,
+        signType:sign&&sign.getAttribute('data-sign-type'), signShop:sign&&sign.getAttribute('data-sign-shop'),
+        signLines:lines, batchName:e.sign_text,
         dataName:type&&type.signName,
         well:stem==='well_0'?{
           winch:!!drum, winchRadius:drum?+(drum.getAttribute('rx')||0):0,
@@ -60,10 +61,14 @@ await runCdp('BUILDINGS PART 2', async api => {
       .every((r, i) => r && r.svgIcon === ['anvil', 'sword', 'potion_star', 'mug', 'sheaf', 'bucket'][i]),
     JSON.stringify(['forge_0', 'armory_0', 'magic_0', 'tavern_0', 'barn_0', 'well_0']
       .map(stem => { const r = rows.find(x => x.stem === stem); return r && [r.stem, r.svgIcon]; })));
-  api.check('полное название вывески отрисовано во всех зданиях (без обрезки)',
-    rows.every(r => r.svgName === r.batchName && r.signText === r.batchName && !r.signText.includes('…')),
-    JSON.stringify(rows.filter(r => r.svgName !== r.batchName || r.signText !== r.batchName)
-      .map(r => ({ stem: r.stem, name: r.svgName, text: r.signText, expected: r.batchName, lines: r.signLines }))));
+  api.check('полное название вывески отрисовано во всех зданиях (тип + имя без обрезки)',
+    rows.every(r => r.svgName === r.batchName && r.signLines.length === 2 &&
+      r.signLines[0] === r.signType && r.signLines[1] === r.signShop &&
+      r.signType + ' «' + r.signShop + '»' === r.batchName && !r.signShop.includes('…')),
+    JSON.stringify(rows.filter(r => r.svgName !== r.batchName || r.signLines.length !== 2 ||
+      r.signType + ' «' + r.signShop + '»' !== r.batchName)
+      .map(r => ({ stem: r.stem, name: r.svgName, type: r.signType, shop: r.signShop,
+        expected: r.batchName, lines: r.signLines }))));
   api.check('названия мастерских и лавок есть в данных MM6 и совпадают с вывесками',
     rows.filter(r => r.dataName).every(r => r.dataName === r.batchName) &&
     ['forge_0', 'shop_0', 'tavern_0', 'armory_0', 'jewelry_0', 'magic_0', 'inn_0']
