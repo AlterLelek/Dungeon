@@ -809,6 +809,13 @@ const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weathe
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
   msgX:140,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
+// [ГОБОРЕНО] в вертикальном режиме окно лога уходит вправо от очереди ходов
+// и поднимается над карточками отряда: все плашки остаются отдельными.
+function battleMsgRect(){
+  const portrait=window.matchMedia&&window.matchMedia('(orientation:portrait)').matches;
+  return portrait?{x:174,y:150,w:BF.msgW,h:BF.msgH}:
+    {x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH};
+}
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -939,7 +946,7 @@ function syncToastPlacement(){
   const canvasTop=cr.top+(cr.height-H*scale)/2;
   if(inBattle){
     // Сообщение встаёт над окном лога, а не поверх его последней строки.
-    const logTop=canvasTop+BF.msgY*scale;
+    const logTop=canvasTop+battleMsgRect().y*scale;
     t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-logTop+8)+'px');
     // По горизонтали тост живёт между очередью ходов и правой панелью кнопок:
     // на узких экранах центрирование по окну наезжало бы на очередь.
@@ -951,8 +958,11 @@ function syncToastPlacement(){
     const natural=t.getBoundingClientRect().width||t.offsetWidth||0;
     const room=Math.max(80,dockLeft-leftRight-16);
     const width=Math.min(natural||room,room);
+    // На узком вертикальном экране бейдж хода занимает центр: сдвигаем тост
+    // правее, чтобы сообщение и бейдж не пересекались.
+    const gap=window.matchMedia&&window.matchMedia('(orientation:portrait)').matches?18:8;
     t.style.maxWidth=Math.round(width)+'px';
-    t.style.left=Math.round(leftRight+8+width/2)+'px';
+    t.style.left=Math.round(leftRight+gap+width/2)+'px';
   } else {
     // На карте сообщение встаёт над нижней строкой состояния, не поверх неё.
     const stripTop=canvasTop+326*scale;
@@ -1040,7 +1050,7 @@ function syncDialoguePlacement(){
   const canvasTop=cr.top+(cr.height-H*scale)/2;
   const inBattle=!!(game&&game.battle);
   // На карте диалог стоит над подсказкой; в бою — левее панели врага и над логом.
-  const border=canvasTop+(inBattle?BF.msgY:250)*scale;
+  const border=canvasTop+(inBattle?battleMsgRect().y:250)*scale;
   const bottom=Math.ceil(window.innerHeight-border+8)+'px';
   el.style.right=inBattle?'150px':'230px';
   el.style.setProperty('--dlg-bottom',bottom);
@@ -3595,7 +3605,8 @@ const BATTLE_CHIPS={mw:340,innerPad:10,gap:6,height:22,ids:['attack','spell','fl
 function battleChipRects(){
   const w=BATTLE_CHIPS.mw-BATTLE_CHIPS.innerPad*2, gap=BATTLE_CHIPS.gap;
   const cw=(w-gap*(BATTLE_CHIPS.ids.length-1))/BATTLE_CHIPS.ids.length;
-  const x=BF.msgX+BATTLE_CHIPS.innerPad, y=BF.msgY+8;
+  const msg=battleMsgRect();
+  const x=msg.x+BATTLE_CHIPS.innerPad, y=msg.y+8;
   return BATTLE_CHIPS.ids.map((id,i)=>({id,x:x+i*(cw+gap),y,w:cw,h:BATTLE_CHIPS.height}));
 }
 function battleChipAt(p){
@@ -7429,7 +7440,8 @@ function drawBattle(now,dt){
   const b=game.battle;
   const m=currentMap(); drawBattleScenery(m?m.biome:'field',now);
   weather.draw(ctx); // Погода видна и в бою на той же карте.
-  ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle='#000'; ctx.fillRect(0,92,W,BF.msgY-92); ctx.restore();
+  ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle='#000';
+  ctx.fillRect(0,92,W,battleMsgRect().y-92); ctx.restore();
   let hj=0,ej=0;
   if(b.anim){ b.anim.t=Math.max(0,b.anim.t-dt/520);
     const v=Math.sin(Math.PI*(1-b.anim.t));
@@ -7492,7 +7504,7 @@ function drawBattle(now,dt){
     (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
   // Очередность больше не рисуется одной строкой: её показывает вертикальный DOM-список #turnQueue.
   // Компактное текстовое окно: 3 строки с прокруткой вместо разрастания от длинных сообщений.
-  const mw=BF.msgW, mx=BF.msgX, my=BF.msgY, mh=BF.msgH;
+  const msg=battleMsgRect(), mw=msg.w, mx=msg.x, my=msg.y, mh=msg.h;
   roundRect(mx,my,mw,mh,8); ctx.fillStyle='rgba(5,7,15,.96)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
   drawActionChips(b);
@@ -8379,7 +8391,7 @@ function visibleWindowsReport(){
     if(game&&game.battle){
       put('enemyPanel',{x:settings.battleMirror?W-(BF.enemyPanelW+10):10,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH});
       put('turnBadge',{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26});
-      put('logWindow',{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH});
+      put('logWindow',battleMsgRect());
     } else {
       put('stateWindow',mapUiRects.state); put('enemyWarning',mapUiRects.warning);
       put('messageStrip',mapUiRects.message); put('hint',mapUiRects.hint);
@@ -8622,7 +8634,7 @@ window.__mm6Debug={
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
     return {panel:{x:px,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH},
       badge:{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26},
-      msg:{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH},
+      msg:battleMsgRect(),
       label:enemyGroupLabel(b),logRows:b.logRows||0,logScroll:b.logScroll||0,logScrollMax:b.logScrollMax||0,
       nameHp:{name:b.nameLayout||null,hp:b.hpLayout||null,
         overlap:!!(b.nameLayout&&b.hpLayout&&b.nameLayout.x+b.nameLayout.width>b.hpLayout.x-b.hpLayout.width-2)},
