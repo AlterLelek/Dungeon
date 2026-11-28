@@ -329,7 +329,26 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   display:flex;flex-wrap:nowrap;gap:3px;overflow-x:auto;scrollbar-width:thin}
 #shopTabs .tab{flex:0 0 auto;min-height:32px;padding:5px 7px;white-space:nowrap}
 #shopTabs .tab:disabled{opacity:.38;cursor:not-allowed}
-#shopArt{display:block;width:100%;height:auto;max-height:165px;border:1px solid rgba(251,191,36,.35);border-radius:9px;margin:4px 0 8px;background:#0a0d1c;image-rendering:pixelated}
+/* Сцена лавки — постоянный слой: canvas фона и один и тот же DOM-узел продавца. */
+.shopScene{position:relative;margin:4px 0 8px}
+#shopArt{display:block;width:100%;height:auto;max-height:165px;border:1px solid rgba(251,191,36,.35);border-radius:9px;background:#0a0d1c;image-rendering:pixelated}
+#shopSeller{position:absolute;right:7%;bottom:38%;width:88px;height:88px;overflow:visible;pointer-events:none;
+  --npc-cloak:#4a3524;--npc-trim:#fbbf24;--npc-hat:#6b3f25}
+#shopSeller g{transform-box:fill-box}
+#shopSeller #sellBody{transform-origin:50% 100%}
+#shopSeller #sellHead{transform-origin:50% 90%}
+#shopSeller #sellArmLeft{transform-origin:100% 4%}
+#shopSeller #sellArmRight{transform-origin:0% 4%}
+#shopSeller.gesture-idle #sellBody{animation:npcIdle 2.6s ease-in-out infinite}
+#shopSeller.gesture-nod #sellHead,#shopSeller.gesture-bless #sellHead{animation:npcNod 1s ease-in-out infinite}
+#shopSeller.gesture-hammer #sellArmRight,#shopSeller.gesture-forge #sellArmRight{animation:npcHammer .8s ease-in-out infinite}
+#shopSeller.gesture-cast #sellArmRight{animation:npcCast 1.1s ease-in-out infinite}
+#shopSeller.gesture-present #sellArmRight{animation:npcPresent 1s ease-in-out infinite}
+#shopSeller.gesture-beckon #sellArmLeft{animation:npcBeckon 1s ease-in-out infinite}
+#shopSeller.gesture-toast #sellArmRight{animation:npcToast 1s ease-in-out infinite}
+#shopSeller.gesture-point #sellArmRight{animation:npcPoint 1s ease-in-out infinite}
+#shopSeller.gesture-shrug #sellArmLeft{animation:npcShrug .9s ease-in-out infinite}
+body.no-npc-gestures #shopSeller g{animation:none!important;transition:none!important}
 /* Ассортимент слева, разбивка по разделам справа — как два столбца инвентаря. */
 #shopBody{display:flex;gap:12px;align-items:flex-start}
 #shopList{flex:1;min-width:0}
@@ -421,21 +440,21 @@ body.no-npc-gestures .npcDialogue svg g,body.no-npc-gestures #worldNpcSprite g{a
   width:120px;height:132px;pointer-events:none;opacity:0;transition:opacity .18s linear;overflow:visible;
   --npc-cloak:#3b6ea5;--npc-trim:#93c5fd;--npc-hat:#b93a2b}
 #worldNpcSprite.visible{opacity:1}
-.npcDialogue[data-kind="forge"],#worldNpcSprite[data-kind="forge"],
-.npcDialogue[data-kind="weapons"],#worldNpcSprite[data-kind="weapons"],
-.npcDialogue[data-kind="armory"],#worldNpcSprite[data-kind="armory"],
-.npcDialogue[data-kind="armor"],#worldNpcSprite[data-kind="armor"]{--npc-cloak:#7c4a2d;--npc-trim:#fbbf24;--npc-hat:#6b3f25}
-.npcDialogue[data-kind="magic"],#worldNpcSprite[data-kind="magic"],
-.npcDialogue[data-kind="jeweler"],#worldNpcSprite[data-kind="jeweler"]{--npc-cloak:#5b3b8a;--npc-trim:#c4b5fd;--npc-hat:#43306e}
-.npcDialogue[data-kind="market"],#worldNpcSprite[data-kind="market"],
-.npcDialogue[data-kind="tavern"],#worldNpcSprite[data-kind="tavern"],
-.npcDialogue[data-kind="inn"],#worldNpcSprite[data-kind="inn"]{--npc-cloak:#4f7f56;--npc-trim:#fde68a;--npc-hat:#8a5a2b}
-.npcDialogue[data-kind="church"],#worldNpcSprite[data-kind="church"],
-.npcDialogue[data-kind="hall"],#worldNpcSprite[data-kind="hall"]{--npc-cloak:#b8b2a0;--npc-trim:#fef3c7;--npc-hat:#d4b46a}
-.npcDialogue[data-kind="barn"],#worldNpcSprite[data-kind="barn"],
-.npcDialogue[data-kind="shed"],#worldNpcSprite[data-kind="shed"],
-.npcDialogue[data-kind="stable"],#worldNpcSprite[data-kind="stable"],
-.npcDialogue[data-kind="well"],#worldNpcSprite[data-kind="well"]{--npc-cloak:#6b6f4a;--npc-trim:#d9d8a8;--npc-hat:#8a6b3d}
+.npcDialogue[data-kind="forge"],#worldNpcSprite[data-kind="forge"],#shopSeller[data-kind="forge"],
+.npcDialogue[data-kind="weapons"],#worldNpcSprite[data-kind="weapons"],#shopSeller[data-kind="weapons"],
+.npcDialogue[data-kind="armory"],#worldNpcSprite[data-kind="armory"],#shopSeller[data-kind="armory"],
+.npcDialogue[data-kind="armor"],#worldNpcSprite[data-kind="armor"],#shopSeller[data-kind="armor"]{--npc-cloak:#7c4a2d;--npc-trim:#fbbf24;--npc-hat:#6b3f25}
+.npcDialogue[data-kind="magic"],#worldNpcSprite[data-kind="magic"],#shopSeller[data-kind="magic"],
+.npcDialogue[data-kind="jeweler"],#worldNpcSprite[data-kind="jeweler"],#shopSeller[data-kind="jeweler"]{--npc-cloak:#5b3b8a;--npc-trim:#c4b5fd;--npc-hat:#43306e}
+.npcDialogue[data-kind="market"],#worldNpcSprite[data-kind="market"],#shopSeller[data-kind="market"],
+.npcDialogue[data-kind="tavern"],#worldNpcSprite[data-kind="tavern"],#shopSeller[data-kind="tavern"],
+.npcDialogue[data-kind="inn"],#worldNpcSprite[data-kind="inn"],#shopSeller[data-kind="inn"]{--npc-cloak:#4f7f56;--npc-trim:#fde68a;--npc-hat:#8a5a2b}
+.npcDialogue[data-kind="church"],#worldNpcSprite[data-kind="church"],#shopSeller[data-kind="church"],
+.npcDialogue[data-kind="hall"],#worldNpcSprite[data-kind="hall"],#shopSeller[data-kind="hall"]{--npc-cloak:#b8b2a0;--npc-trim:#fef3c7;--npc-hat:#d4b46a}
+.npcDialogue[data-kind="barn"],#worldNpcSprite[data-kind="barn"],#shopSeller[data-kind="barn"],
+.npcDialogue[data-kind="shed"],#worldNpcSprite[data-kind="shed"],#shopSeller[data-kind="shed"],
+.npcDialogue[data-kind="stable"],#worldNpcSprite[data-kind="stable"],#shopSeller[data-kind="stable"],
+.npcDialogue[data-kind="well"],#worldNpcSprite[data-kind="well"],#shopSeller[data-kind="well"]{--npc-cloak:#6b6f4a;--npc-trim:#d9d8a8;--npc-hat:#8a6b3d}
 /* Плашка врага важнее реплики: диалог уступает ей место, как и тост. */
 body.enemy-plate .npcDialogue:not(.in-shop){display:none}
 body.map-open #party .pface,body.map-open #worldNpcSprite{display:none}
@@ -579,7 +598,28 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:120px}
     <div class="head"><h2 id="shopTitle">🛒 Лавка</h2><div id="shopRes"><span>🪙 <b id="shopGold">0</b></span><span>💎 <b id="shopCrystals">0</b></span><button class="link" id="shopClose">Закрыть [B]</button></div></div>
     <div class="tabs" id="shopTabs"></div>
   </div>
-  <canvas id="shopArt" width="640" height="150" aria-label="Внутренний вид лавки"></canvas>
+  <div class="shopScene">
+    <canvas id="shopArt" width="640" height="150" aria-label="Внутренний вид лавки"></canvas>
+    <svg id="shopSeller" viewBox="0 0 120 120" aria-hidden="true">
+      <g id="sellBody">
+        <path d="M26 118 L34 54 L86 54 L94 118 Z" fill="var(--npc-cloak)" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+        <path d="M34 54 L60 82 L86 54" fill="none" stroke="var(--npc-trim)" stroke-width="4" stroke-linejoin="miter"/>
+      </g>
+      <g id="sellArmLeft">
+        <path d="M34 60 L12 86" fill="none" stroke="var(--npc-cloak)" stroke-width="12" stroke-linejoin="miter"/>
+        <path d="M34 60 L12 86" fill="none" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+      </g>
+      <g id="sellArmRight">
+        <path d="M86 60 L108 86" fill="none" stroke="var(--npc-cloak)" stroke-width="12" stroke-linejoin="miter"/>
+        <path d="M86 60 L108 86" fill="none" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+      </g>
+      <g id="sellHead">
+        <path d="M42 20 L60 8 L78 20 L74 48 L60 56 L46 48 Z" fill="#d8a97f" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+        <path d="M34 20 L60 0 L86 20 L78 26 L60 13 L42 26 Z" fill="var(--npc-hat)" stroke="#241a14" stroke-width="4" stroke-linejoin="miter"/>
+        <path d="M48 34 H52 V38 H48 Z M68 34 H72 V38 H68 Z" fill="#241a14"/>
+      </g>
+    </svg>
+  </div>
   <div id="shopBody"><div id="shopList"></div><aside id="shopCategories" aria-label="Разбивка ассортимента"><h3>Разделы лавки</h3></aside></div>
 </div></div>
 
@@ -769,6 +809,13 @@ const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weathe
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
   msgX:140,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
+// [ГОБОРЕНО] в вертикальном режиме окно лога уходит вправо от очереди ходов
+// и поднимается над карточками отряда: все плашки остаются отдельными.
+function battleMsgRect(){
+  const portrait=window.matchMedia&&window.matchMedia('(orientation:portrait)').matches;
+  return portrait?{x:174,y:150,w:BF.msgW,h:BF.msgH}:
+    {x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH};
+}
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -899,12 +946,29 @@ function syncToastPlacement(){
   const canvasTop=cr.top+(cr.height-H*scale)/2;
   if(inBattle){
     // Сообщение встаёт над окном лога, а не поверх его последней строки.
-    const logTop=canvasTop+BF.msgY*scale;
+    const logTop=canvasTop+battleMsgRect().y*scale;
     t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-logTop+8)+'px');
+    // По горизонтали тост живёт между очередью ходов и правой панелью кнопок:
+    // на узких экранах центрирование по окну наезжало бы на очередь.
+    const q=$('turnQueue'), leftDock=document.querySelector('.leftDock'), dock=document.querySelector('.rightDock');
+    const qRight=q&&!q.classList.contains('hidden')?q.getBoundingClientRect().right:0;
+    const leftRight=Math.max(qRight,leftDock?leftDock.getBoundingClientRect().right:0);
+    const dockLeft=dock?dock.getBoundingClientRect().left:window.innerWidth;
+    t.style.maxWidth='';
+    const natural=t.getBoundingClientRect().width||t.offsetWidth||0;
+    const room=Math.max(80,dockLeft-leftRight-16);
+    const width=Math.min(natural||room,room);
+    // На узком вертикальном экране бейдж хода занимает центр: сдвигаем тост
+    // правее, чтобы сообщение и бейдж не пересекались.
+    const gap=window.matchMedia&&window.matchMedia('(orientation:portrait)').matches?18:8;
+    t.style.maxWidth=Math.round(width)+'px';
+    t.style.left=Math.round(leftRight+gap+width/2)+'px';
   } else {
     // На карте сообщение встаёт над нижней строкой состояния, не поверх неё.
     const stripTop=canvasTop+326*scale;
-    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-stripTop+8)+'px');
+    // Отступ с запасом: при смене размера окна тост не должен задевать строку состояния.
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-stripTop+36)+'px');
+    t.style.left=''; t.style.maxWidth='';
   }
 }
 function toast(text,type,speaker){
@@ -922,7 +986,7 @@ function toast(text,type,speaker){
     logMessage(text,'npc',speaker,'toast');
     return;
   }
-  const t=$('toast'); if(t){ t.textContent=text; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
+  const t=$('toast'); if(t){ t.textContent=text; t.style.maxWidth=''; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
   logMessage(text,type,speaker,'toast');
 }
 
@@ -986,7 +1050,7 @@ function syncDialoguePlacement(){
   const canvasTop=cr.top+(cr.height-H*scale)/2;
   const inBattle=!!(game&&game.battle);
   // На карте диалог стоит над подсказкой; в бою — левее панели врага и над логом.
-  const border=canvasTop+(inBattle?BF.msgY:250)*scale;
+  const border=canvasTop+(inBattle?battleMsgRect().y:250)*scale;
   const bottom=Math.ceil(window.innerHeight-border+8)+'px';
   el.style.right=inBattle?'150px':'230px';
   el.style.setProperty('--dlg-bottom',bottom);
@@ -1032,6 +1096,12 @@ function npcStageReport(){
     const cs=getComputedStyle(node);
     return {name:cs.animationName,iterations:cs.animationIterationCount};
   });
+  // [ГОБОРЕНО] жест непрерывен: время анимации реально тикает, а не только задано в CSS.
+  const animTime=root=>{
+    const node=root&&root.querySelector('#'+(root.id==='dlgNpcSprite'?'npcArmRight':'worldNpcArmRight'));
+    const a=node&&node.getAnimations?node.getAnimations()[0]:null;
+    return a?Math.round(Number(a.currentTime)||0):null;
+  };
   const dlgAnim=anim(sprite), worldAnim=anim(world);
   return {
     visible:!el.classList.contains('hidden'),inShop:el.classList.contains('in-shop'),
@@ -1042,10 +1112,12 @@ function npcStageReport(){
     gesture:el.dataset.gesture||null,gesturesEnabled:settings.npcGestures===true,
     animationName:arm?getComputedStyle(arm).animationName:'none',
     animationNames:dlgAnim.map(a=>a.name),animationIterations:dlgAnim.map(a=>a.iterations),
+    animationTime:animTime(sprite),
     world:{visible:!!world&&world.classList.contains('visible'),kind:world?world.dataset.kind:null,
       rect:r(world),groups:world?['worldNpcBody','worldNpcHead','worldNpcArmLeft','worldNpcArmRight','worldNpcHat']
         .filter(id=>world.querySelector('#'+id)):[],
-      animationNames:worldAnim.map(a=>a.name),animationIterations:worldAnim.map(a=>a.iterations)},
+      animationNames:worldAnim.map(a=>a.name),animationIterations:worldAnim.map(a=>a.iterations),
+      animationTime:animTime(world)},
     mapFacesVisible:!!document.querySelector('#party .pface')&&
       getComputedStyle(document.querySelector('#party .pface')).display!=='none',
     rect:r(el),heroRect:r($('dlgHero')),textRect:r(text),spriteRect:r(sprite),portraitRect:r($('dlgNpcPortrait')),
@@ -3533,7 +3605,8 @@ const BATTLE_CHIPS={mw:340,innerPad:10,gap:6,height:22,ids:['attack','spell','fl
 function battleChipRects(){
   const w=BATTLE_CHIPS.mw-BATTLE_CHIPS.innerPad*2, gap=BATTLE_CHIPS.gap;
   const cw=(w-gap*(BATTLE_CHIPS.ids.length-1))/BATTLE_CHIPS.ids.length;
-  const x=BF.msgX+BATTLE_CHIPS.innerPad, y=BF.msgY+8;
+  const msg=battleMsgRect();
+  const x=msg.x+BATTLE_CHIPS.innerPad, y=msg.y+8;
   return BATTLE_CHIPS.ids.map((id,i)=>({id,x:x+i*(cw+gap),y,w:cw,h:BATTLE_CHIPS.height}));
 }
 function battleChipAt(p){
@@ -4105,7 +4178,7 @@ function resurrectAtChurch(){
     });
     toast('Церковь воскресила: '+dead.map(heroName).join(', ')+' за 🪙 '+cost+'.');
   });
-  updateParty(); renderShop();
+  updateParty();
   return true;
 }
 function trainLevel(idx){
@@ -5161,19 +5234,10 @@ function drawShopInterior(kind,now,name){
   const floor=g.createLinearGradient(0,100,0,Hc); floor.addColorStop(0,'#241c18'); floor.addColorStop(1,'#0c0a12');
   g.fillStyle=floor; g.fillRect(0,100,Wc,Hc-100);
   const t=now/560;
-  // продавец за прилавком
-  const sx=470, sy=96;
-  g.save();
-  g.fillStyle='#3b2a20'; g.fillRect(sx-18,sy-30,36,32);
-  g.fillStyle='#d8a97f'; g.beginPath(); g.arc(sx,sy-40+Math.sin(t)*2,12,0,6.29); g.fill();
-  g.fillStyle=(kind==='magic'||kind==='inn')?'#5b3fa8':(kind==='forge'?'#7c2d12':'#4a3524');
-  g.beginPath(); g.moveTo(sx-14,sy-46+Math.sin(t)*2); g.lineTo(sx+14,sy-46+Math.sin(t)*2);
-  g.lineTo(sx+10,sy-58+Math.sin(t)*2); g.lineTo(sx-10,sy-58+Math.sin(t)*2); g.closePath(); g.fill();
-  g.fillStyle='#111'; g.fillRect(sx-5,sy-43+Math.sin(t)*2,2,2); g.fillRect(sx+4,sy-43+Math.sin(t)*2,2,2);
-  g.strokeStyle='#d8a97f'; g.lineWidth=5; g.lineCap='round';
-  g.beginPath(); g.moveTo(sx-16,sy-22); g.lineTo(sx-24,sy-10+Math.sin(t*1.7)*5); g.stroke();
-  g.beginPath(); g.moveTo(sx+16,sy-22); g.lineTo(sx+24,sy-10-Math.sin(t*1.7)*5); g.stroke();
-  g.restore();
+  // Продавец — постоянный DOM-слой поверх canvas; перерисовываем только его типаж и жест.
+  const seller=$('shopSeller');
+  if(seller){ seller.dataset.kind=kind;
+    seller.setAttribute('class','gesture-'+npcGestureFor(kind)); }
   // прилавок
   g.fillStyle='#6b4a26'; g.fillRect(330,96,290,16);
   g.fillStyle='#8a6337'; g.fillRect(330,92,290,6);
@@ -7244,9 +7308,10 @@ function drawMap(now){
   const weatherLine=!wLabel?seasonName:(wLabel.includes(seasonName)?wLabel:wLabel+' · '+seasonName);
   const rows=[place,'Ход '+game.world.turn,'🪙 '+game.gold,'Цель: '+objective,weatherLine];
   const rowYs=[19,30,41,52,63];
+  const rowXs=rows.map(()=>18); // [ГОБОРЕНО] одна вертикальная колонка, без побочных подписей слева внизу.
   panel(10,10,214,56);
   mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,
-    objective,weather:wLabel,season:seasonName,rows,rowYs,bottomLine:null};
+    objective,weather:wLabel,season:seasonName,rows,rowYs,rowXs,bottomLine:null};
   mapUiRects.state={x:10,y:10,w:214,h:56};
   const rowColors=['#ffe6a8','#c8d2f0','#fde68a','#fde68a','#9fb0d8'];
   rows.forEach((text,i)=>fitText(text,196,i===0?11:9,rowColors[i],18,rowYs[i]));
@@ -7254,7 +7319,9 @@ function drawMap(now){
   // На коротком ландшафте Dock-панели занимают низ экрана: HUD сдвигается вверх,
   // а строка сообщения вписывается в зазор между крупными кнопками.
   const compactHint=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
-  const warnY=compactHint?210:296;
+  // Предупреждение поднимается над Dock-панелью: на любом размере окна
+  // оно остаётся отдельной плашкой и не наезжает на крупные кнопки.
+  const warnY=compactHint?210:270;
   let msgX=126, msgW=388;
   if(compactHint){
     const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
@@ -7286,7 +7353,7 @@ function drawMap(now){
     // На низком ландшафте Dock-панели занимают низ экрана: подсказка встаёт
     // между отрядом и кнопками и короткой, чтобы не заходить ни на те, ни на другие окна.
     const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,compactHint?2:3);
-    const h=28+lines.length*12, ty=compactHint?150:290-h; // Верх плашки предупреждения — 296, зазор 6.
+    const h=28+lines.length*12, ty=compactHint?150:warnY-6-h; // Зазор 6 до предупреждения.
     mapUiRects.hint={x:12,y:ty,w:MAP_HINT_W,h};
     panel(12,ty,MAP_HINT_W,h);
     fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
@@ -7375,7 +7442,8 @@ function drawBattle(now,dt){
   const b=game.battle;
   const m=currentMap(); drawBattleScenery(m?m.biome:'field',now);
   weather.draw(ctx); // Погода видна и в бою на той же карте.
-  ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle='#000'; ctx.fillRect(0,92,W,BF.msgY-92); ctx.restore();
+  ctx.save(); ctx.globalAlpha=.18; ctx.fillStyle='#000';
+  ctx.fillRect(0,92,W,battleMsgRect().y-92); ctx.restore();
   let hj=0,ej=0;
   if(b.anim){ b.anim.t=Math.max(0,b.anim.t-dt/520);
     const v=Math.sin(Math.PI*(1-b.anim.t));
@@ -7438,7 +7506,7 @@ function drawBattle(now,dt){
     (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
   // Очередность больше не рисуется одной строкой: её показывает вертикальный DOM-список #turnQueue.
   // Компактное текстовое окно: 3 строки с прокруткой вместо разрастания от длинных сообщений.
-  const mw=BF.msgW, mx=BF.msgX, my=BF.msgY, mh=BF.msgH;
+  const msg=battleMsgRect(), mw=msg.w, mx=msg.x, my=msg.y, mh=msg.h;
   roundRect(mx,my,mw,mh,8); ctx.fillStyle='rgba(5,7,15,.96)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
   drawActionChips(b);
@@ -8325,7 +8393,7 @@ function visibleWindowsReport(){
     if(game&&game.battle){
       put('enemyPanel',{x:settings.battleMirror?W-(BF.enemyPanelW+10):10,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH});
       put('turnBadge',{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26});
-      put('logWindow',{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH});
+      put('logWindow',battleMsgRect());
     } else {
       put('stateWindow',mapUiRects.state); put('enemyWarning',mapUiRects.warning);
       put('messageStrip',mapUiRects.message); put('hint',mapUiRects.hint);
@@ -8498,6 +8566,16 @@ window.__mm6Debug={
     return {before,pending,after:party().map(h=>Math.floor(h.exp||0)),state:window.__mm6Debug.progressionState()};
   },
   shopReport:()=>shopReport(),
+  windowPersistenceReport:()=>{
+    const box=$('shop'), list=$('shopList'), seller=$('shopSeller'), art=$('shopArt');
+    const rect=e=>{ if(!e) return null; const r=e.getBoundingClientRect();
+      return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)}; };
+    return {open:!!box&&!box.classList.contains('hidden'),
+      shopMark:box&&box.dataset.persistMark||null,listMark:list&&list.dataset.persistMark||null,
+      sellerMark:seller&&seller.dataset.persistMark||null,artMark:art&&art.dataset.persistMark||null,
+      sellerRect:rect(seller),sellerKind:seller&&seller.dataset.kind||null,
+      sellerGesture:seller&&seller.getAttribute('class'),gold:$('shopGold')&&$('shopGold').textContent};
+  },
   difficultyReport:()=>difficultyReport(),
   settlementReport:()=>settlementReport(),
   buildingReport:()=>({
@@ -8558,7 +8636,7 @@ window.__mm6Debug={
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
     return {panel:{x:px,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH},
       badge:{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26},
-      msg:{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH},
+      msg:battleMsgRect(),
       label:enemyGroupLabel(b),logRows:b.logRows||0,logScroll:b.logScroll||0,logScrollMax:b.logScrollMax||0,
       nameHp:{name:b.nameLayout||null,hp:b.hpLayout||null,
         overlap:!!(b.nameLayout&&b.hpLayout&&b.nameLayout.x+b.nameLayout.width>b.hpLayout.x-b.hpLayout.width-2)},
@@ -8723,7 +8801,8 @@ window.__mm6Debug={
   },
   catalogLayers:(id)=>itemLayerSpecs(itemInstance(id)),
   allItemLayers:()=>ITEM_DB.map(it=>({id:it.id,type:it.type,tier:it.tier,
-    layers:itemLayerSpecs(it).map(l=>({src:l.src,role:l.role,element:l.element||null,quality:l.quality||null}))})),
+    layers:itemLayerSpecs(it).map(l=>({src:l.src,role:l.role,element:l.element||null,
+      quality:l.quality||null,mask:l.mask||null}))})),
   itemIconGeometry:()=>{
     const cell=[...document.querySelectorAll('.invCell')].find(b=>b.querySelector('.itemStack'));
     const img=cell?cell.querySelector('.itemStack img'):null;

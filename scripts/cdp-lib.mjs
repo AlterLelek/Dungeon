@@ -108,6 +108,11 @@ export async function runCdp(label, fn) {
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });
       await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
     },
+    // Настоящий тач-тап: проверяем кнопки в мобильном эмуляторе, а не мышью.
+    async tap(x, y) {
+      await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+      await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    },
     // Скриншоты сохраняются только во временную папку: новых PNG в репозиторий не добавляем.
     async screenshot(file) {
       const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
