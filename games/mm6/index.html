@@ -1085,6 +1085,12 @@ function npcStageReport(){
     const cs=getComputedStyle(node);
     return {name:cs.animationName,iterations:cs.animationIterationCount};
   });
+  // [ГОБОРЕНО] жест непрерывен: время анимации реально тикает, а не только задано в CSS.
+  const animTime=root=>{
+    const node=root&&root.querySelector('#'+(root.id==='dlgNpcSprite'?'npcArmRight':'worldNpcArmRight'));
+    const a=node&&node.getAnimations?node.getAnimations()[0]:null;
+    return a?Math.round(Number(a.currentTime)||0):null;
+  };
   const dlgAnim=anim(sprite), worldAnim=anim(world);
   return {
     visible:!el.classList.contains('hidden'),inShop:el.classList.contains('in-shop'),
@@ -1095,10 +1101,12 @@ function npcStageReport(){
     gesture:el.dataset.gesture||null,gesturesEnabled:settings.npcGestures===true,
     animationName:arm?getComputedStyle(arm).animationName:'none',
     animationNames:dlgAnim.map(a=>a.name),animationIterations:dlgAnim.map(a=>a.iterations),
+    animationTime:animTime(sprite),
     world:{visible:!!world&&world.classList.contains('visible'),kind:world?world.dataset.kind:null,
       rect:r(world),groups:world?['worldNpcBody','worldNpcHead','worldNpcArmLeft','worldNpcArmRight','worldNpcHat']
         .filter(id=>world.querySelector('#'+id)):[],
-      animationNames:worldAnim.map(a=>a.name),animationIterations:worldAnim.map(a=>a.iterations)},
+      animationNames:worldAnim.map(a=>a.name),animationIterations:worldAnim.map(a=>a.iterations),
+      animationTime:animTime(world)},
     mapFacesVisible:!!document.querySelector('#party .pface')&&
       getComputedStyle(document.querySelector('#party .pface')).display!=='none',
     rect:r(el),heroRect:r($('dlgHero')),textRect:r(text),spriteRect:r(sprite),portraitRect:r($('dlgNpcPortrait')),
