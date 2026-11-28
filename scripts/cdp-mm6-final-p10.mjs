@@ -44,8 +44,8 @@ runCdp('FINAL PART 10', async api => {
     return rows;
   })()`);
   const twoFloor = buildings.filter(r => r.floors === 2).map(r => r.stem).sort().join(',');
-  api.check('Часть 1 — 14 фасадов из базы и слоёв, без градиентов и PNG',
-    buildings.length === 14 && buildings.every(r => r.layers === 6 && !r.bad) &&
+  api.check('Часть 1 — 16 фасадов из базы и слоёв, без градиентов и PNG',
+    buildings.length === 16 && buildings.every(r => r.layers === 6 && !r.bad) &&
     twoFloor === 'inn_0,tavern_0',
     JSON.stringify({ count: buildings.length, bad: buildings.filter(r => r.bad).map(r => r.stem), twoFloor }));
 
@@ -73,8 +73,8 @@ runCdp('FINAL PART 10', async api => {
     const manifest=await fetch('${api.base}/assets/manifest.json').then(r=>r.json());
     return {entries:manifest.filter(e=>e.type==='portrait').length,
       cards:window.__mm6Debug.portraitReport().cards};})()`);
-  api.check('Часть 3 — 12 портретов в манифесте и медальоны в отряде',
-    portraits.entries === 12 && portraits.cards.length === 3 &&
+  api.check('Часть 3 — 40 портретов в манифесте и медальоны в отряде',
+    portraits.entries === 40 && portraits.cards.length === 3 &&
     portraits.cards.every(c => c.loaded && /\/assets\/sprites\/portraits\//.test(c.src)),
     JSON.stringify({ entries: portraits.entries, cards: portraits.cards.map(c => c.src) }));
 
@@ -96,8 +96,8 @@ runCdp('FINAL PART 10', async api => {
   const hud = await api.ev(`window.__mm6Debug.battleHudReport()`);
   const queue = await api.ev(`window.__mm6Debug.turnQueueReport()`);
   api.check('Часть 5 — компактный HUD и очередь не более пяти строк',
-    !!hud && hud.panel.w >= 236 && hud.panel.w <= 240 &&
-    hud.party.length === 3 && hud.party.every(c => c.h >= 45 && c.h <= 52) &&
+    !!hud && hud.panel.w >= 216 && hud.panel.w <= 224 &&
+    hud.party.length === 3 && hud.party.every(c => c.h >= 64 && c.h <= 76) &&
     queue.visible && queue.limit === 5 && queue.rows.length === 5 &&
     queue.total > queue.limit && queue.more,
     JSON.stringify({ panel: hud && hud.panel, cards: hud && hud.party.map(c => c.h),
@@ -175,8 +175,8 @@ runCdp('FINAL PART 10', async api => {
   const handoff = readFileSync('docs/ASSET_HANDOFF.md', 'utf8');
   api.check('Часть 10 — CDP-покрытие всех десяти частей и свежая передача ассетов',
     missing.length === 0 && /cdp-mm6-final-p10\.mjs/.test(design) &&
-    /Всего: \*\*1032 SVG\*\* и \*\*275 PNG\*\*/.test(handoff) &&
-    !/\*\*1020 SVG\*\*/.test(handoff),
+    /Всего: \*\*1066 SVG\*\* и \*\*275 PNG\*\*/.test(handoff) &&
+    !/\*\*1032 SVG\*\*/.test(handoff),
     JSON.stringify({ missing, design: /cdp-mm6-final-p10\.mjs/.test(design),
       handoff: (handoff.match(/Всего:.*/) || [''])[0] }));
 });

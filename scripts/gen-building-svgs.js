@@ -48,6 +48,8 @@ const BUILDING_STYLE = {
   jewelry_0: { wall: 'plaster', roof: 'brick', icon: 'gem', floors: 1 },
   magic_0: { wall: 'stone', roof: 'violet', icon: 'potion_star', floors: 1 },
   inn_0: { wall: 'plaster', roof: 'tile', icon: 'bed', floors: 2 },
+  church_0: { wall: 'plaster', roof: 'violet', icon: 'gem', floors: 1 },
+  hall_0: { wall: 'stone', roof: 'tile', icon: 'house', floors: 1 },
 };
 // separate roof palette for the magic shop (the wall palette stays neutral)
 MATERIALS.violet = { wall: C.stone, wallShade: C.stoneLight, roof: C.violet, roofDark: '#4a235e', roofGlint: '#a879c7', roofStyle: 'tile' };

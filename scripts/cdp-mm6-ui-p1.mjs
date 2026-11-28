@@ -150,13 +150,13 @@ try {
 
   // База + два слоя школы: проверяем и данные, и реальный DOM.
   const overlayUid = await ev(`window.__mm6Debug.addCatalogItem('sword_dark_ice')`);
-  const overlay = await ev(`(()=>{const paths=window.__mm6Debug.renderedItemLayers('${overlayUid}');
+  const overlay = await ev(`(()=>{const paths=window.__mm6Debug.renderedItemLayers('${overlayUid}').map(l=>l.src);
     const cell=[...document.querySelectorAll('.invCell')].find(b=>b.title.startsWith('Тёмный ледяной меч'));
     return {paths,title:cell?cell.title:null,
       imgs:cell?[...cell.querySelectorAll('img')].map(i=>i.getAttribute('src')):[]};})()`);
-  check('оверлеи школ собираются поверх базового SVG', overlayUid && overlay.paths.length === 3 &&
-    overlay.paths[0].includes('/weapons/sword.svg') && overlay.paths[1].includes('/elements/dark.svg') &&
-    overlay.paths[2].includes('/elements/water.svg') &&
+  check('подложки школ идут перед базовым SVG, качество — после', overlayUid && overlay.paths.length === 4 &&
+    overlay.paths[0].includes('/elements/dark.svg') && overlay.paths[1].includes('/elements/water.svg') &&
+    overlay.paths[2].includes('/weapons/sword.svg') && overlay.paths[3].includes('/quality/') &&
     JSON.stringify(overlay.imgs) === JSON.stringify(overlay.paths),
     JSON.stringify(overlay));
   check('русское имя из каталога видно в инвентаре', !!overlay.title &&

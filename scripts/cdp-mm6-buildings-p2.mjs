@@ -50,7 +50,7 @@ await runCdp('BUILDINGS PART 2', async api => {
 
   const rows = report.rows;
   const well = rows.find(r => r.stem === 'well_0');
-  api.check('все 14 зданий проверены', rows.length === 14, String(rows.length));
+  api.check('все 16 зданий проверены', rows.length === 16, String(rows.length));
   api.check('знак вывески строго соответствует shop_kind/id во всех зданиях',
     rows.every(r => r.expected && r.batchIcon === r.expected && r.svgIcon === r.expected),
     JSON.stringify(rows.filter(r => r.batchIcon !== r.expected || r.svgIcon !== r.expected)
@@ -87,6 +87,6 @@ await runCdp('BUILDINGS PART 2', async api => {
   api.check('имена лавок в игре взяты с вывесок',
     ['Кузница «Гром и Наковальня»', 'Лавка «Мешок и Монета»', 'Таверна «Пенная Кружка»',
       'Оружейная «Острый Клинок»', 'Магазин магии «Звёздная Склянка»']
-      .every(name => gameNames.shops.includes(name)) && gameNames.buildings.includes('Ратуша у площади'),
+      .every(name => gameNames.shops.includes(name)) && gameNames.buildings.includes('Ратуша «у площади»'),
     JSON.stringify(gameNames));
 });

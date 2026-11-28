@@ -58,7 +58,7 @@ await runCdp('SIGNS LAYOUT', async api => {
     !!b && t.x >= b.x + padX && t.right <= b.right - padX &&
     t.y >= b.y + padY && t.bottom <= b.bottom - padY;
 
-  api.check('проверены все 14 зданий с вывесками', rows.length === 14,
+  api.check('проверены все 16 зданий с вывесками', rows.length === 16,
     String(rows.length));
 
   const wrongContent = rows.filter(r => {

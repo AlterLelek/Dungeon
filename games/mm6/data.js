@@ -3,13 +3,15 @@
 
 import { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
   schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
-  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
+  itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
   weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
   CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport } from './items.js';
 
 export { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
   schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
-  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
+  itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
   weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
   CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport };
 
@@ -337,9 +339,9 @@ export const BUILDING_TYPES = [
   { id: 'jewelry_0', title: 'Ювелирная лавка', signName: 'Ювелирная «Изумрудный Глаз»', kind: 'jeweler', shop_kind: ['jeweler'] },
   { id: 'magic_0', title: 'Магазин магии', signName: 'Магазин магии «Звёздная Склянка»', kind: 'magic', shop_kind: ['magic'] },
   { id: 'inn_0', title: 'Гостиница', signName: 'Гостиница «Спокойная Подушка»', kind: 'inn', shop_kind: ['inn'] },
-  { id: 'church_0', title: 'Церковь', signName: 'Церковь Света', kind: 'church', shop_kind: ['church'],
+  { id: 'church_0', title: 'Церковь', signName: 'Церковь «Свет»', kind: 'church', shop_kind: ['church'],
     deco: 'В храме пахнет ладаном. Служитель принимает десятину за воскрешение.' },
-  { id: 'hall_0', title: 'Ратуша', signName: 'Ратуша у площади', kind: 'hall', shop_kind: ['hall'],
+  { id: 'hall_0', title: 'Ратуша', signName: 'Ратуша «у площади»', kind: 'hall', shop_kind: ['hall'],
     deco: 'В ратуше принимают заказы лавок и ведут журнал заданий.' }
 ];
 
@@ -420,24 +422,24 @@ export const SEASON_GROUND_COLORS = {
    большой карте и заданиях. Город держит все официальные здания одним
    двором; деревня — урезанный набор (трактир и 1–2 лавки). */
 export const SETTLEMENTS = [
-  { id: 'kamenny_brod', name: 'Каменный Брод', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'kamenny_brod', name: 'Каменный Брод', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'berezorechye', name: 'Березоречье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
   { id: 'sedaya_gat', name: 'Седая Гать', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
-  { id: 'ovinets', name: 'Овинец', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'ovinets', name: 'Овинец', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'krinichny_dol', name: 'Криничный Дол', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
-  { id: 'gromograd', name: 'Громоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'gromograd', name: 'Громоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'mokhovka', name: 'Моховка', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
   { id: 'zhitnaya_luka', name: 'Житная Лука', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
-  { id: 'yasny_grad', name: 'Ясный Град', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'yasny_grad', name: 'Ясный Град', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'voroniy_yar', name: 'Вороний Яр', type: 'village', shops: ['hall', 'house', 'tavern', 'armor'] },
   { id: 'rzhanopolye', name: 'Ржанополье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
-  { id: 'sedograd', name: 'Седоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'sedograd', name: 'Седоград', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'sosnovy_bor', name: 'Сосновый Бор', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
   { id: 'yagodnaya_luka', name: 'Ягодная Лука', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
-  { id: 'vetrogorck', name: 'Ветрогорск', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'vetrogorck', name: 'Ветрогорск', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'lnyanaya_gryada', name: 'Льняная Гряда', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] },
   { id: 'gniloy_ruchey', name: 'Гнилой Ручей', type: 'village', shops: ['hall', 'house', 'tavern', 'forge'] },
-  { id: 'zlatoverkh', name: 'Златоверх', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
+  { id: 'zlatoverkh', name: 'Златоверх', type: 'city', shops: ['hall', 'house', 'house', 'magic', 'jeweler', 'forge', 'weapons', 'armor', 'tavern', 'inn', 'market', 'church'] },
   { id: 'pelnaya_sopka', name: 'Пепельная Сопка', type: 'village', shops: ['hall', 'house', 'tavern', 'armor'] },
   { id: 'zarechye', name: 'Заречье', type: 'village', shops: ['hall', 'house', 'tavern', 'market'] }
 ];
@@ -509,7 +511,7 @@ export const DEFAULT_SETTINGS = {
   keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false, speech: false,
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
-  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,
+  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true, npcGestures: true,
   // Погода/животные/лес. Шаговый цикл погоды отключён по DESIGN.md: погода следует за сезоном.
   weatherCycleSteps: 100, maxAnimals: 2, animalSpawnEvery: 10, treeDensity: 0.2
 };
