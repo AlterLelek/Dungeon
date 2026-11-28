@@ -47,8 +47,8 @@ runCdp('PARTY FINAL PART 8', async api => {
   await api.sleep(180);
   const hud = await api.ev('window.__mm6Debug.battleHudReport()');
   const queue = await api.ev('window.__mm6Debug.turnQueueReport()');
-  api.check('Часть 2 — панель врага 220×58, карточки 64–76 px, очередь не шире 96 px',
-    hud.panel.w >= 216 && hud.panel.w <= 224 && hud.panel.h <= 62 &&
+  api.check('Часть 2 — панель врага 235×62, карточки 64–76 px, очередь не шире 96 px',
+    hud.panel.w >= 231 && hud.panel.w <= 239 && hud.panel.h >= 60 && hud.panel.h <= 64 &&
     hud.party.length === 3 && hud.party.every(c => c.h >= 64 && c.h <= 76) &&
     queue.visible && queue.rows.length <= 5 && queue.limit === 5 &&
     await api.ev(`document.getElementById('turnQueue').getBoundingClientRect().width`) <= 96,
@@ -157,7 +157,7 @@ runCdp('PARTY FINAL PART 8', async api => {
   const handoff = readFileSync('docs/ASSET_HANDOFF.md', 'utf8');
   const frozen = [
     'НИ ОДНО окно, плашка, сообщение или подсказка не перекрывают другое окно',
-    '214×56', '220×58', '10 классов × 4 портрета', 'серые заглушки', 'рельеф рисуется по данным клеток'
+    '214×56', '235×62', '10 классов × 4 портрета', 'серые заглушки', 'рельеф рисуется по данным клеток'
   ];
   api.check('Часть 8 — все харнесы ПАРТИИ, замороженные решения и свежая передача ассетов',
     missing.length === 0 && frozen.every(s => design.includes(s)) &&

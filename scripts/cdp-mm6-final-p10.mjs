@@ -96,7 +96,7 @@ runCdp('FINAL PART 10', async api => {
   const hud = await api.ev(`window.__mm6Debug.battleHudReport()`);
   const queue = await api.ev(`window.__mm6Debug.turnQueueReport()`);
   api.check('Часть 5 — компактный HUD и очередь не более пяти строк',
-    !!hud && hud.panel.w >= 216 && hud.panel.w <= 224 &&
+    !!hud && hud.panel.w >= 231 && hud.panel.w <= 239 && hud.panel.h >= 60 && hud.panel.h <= 64 &&
     hud.party.length === 3 && hud.party.every(c => c.h >= 64 && c.h <= 76) &&
     queue.visible && queue.limit === 5 && queue.rows.length === 5 &&
     queue.total > queue.limit && queue.more,

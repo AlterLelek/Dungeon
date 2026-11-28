@@ -28,8 +28,9 @@ runCdp('BATTLE HUD PART 2', async api => {
   const hud = await api.ev('window.__mm6Debug.battleHudReport()');
   const queue = await api.ev('window.__mm6Debug.turnQueueReport()');
   const queueWidth = await api.ev(`document.getElementById('turnQueue').getBoundingClientRect().width`);
-  api.check('панель врага компактная и не заходит на бейдж хода',
-    hud.panel.w <= 224 && hud.panel.h <= 62 && hud.badge.x >= hud.panel.x + hud.panel.w - 2,
+  api.check('панель врага на 10% больше окна состояния и не заходит на бейдж хода',
+    hud.panel.w >= 231 && hud.panel.w <= 239 && hud.panel.h >= 60 && hud.panel.h <= 64 &&
+    hud.badge.x >= hud.panel.x + hud.panel.w - 2,
     JSON.stringify({ panel: hud.panel, badge: hud.badge }));
   api.check('очередь компактная, не более пяти строк и ниже панели врага',
     queue.visible && queue.rows.length <= 5 && !!queue.more &&
@@ -58,4 +59,34 @@ runCdp('BATTLE HUD PART 2', async api => {
   api.check('карточки остаются компактными и прижаты к низу',
     cards.every(c => c.h >= 64 && c.h <= 76 && Math.abs(c.bottom - hud.party[0].bottom) <= 1),
     JSON.stringify(cards.map(c => ({ h: c.h, bottom: c.bottom }))));
+
+  const statuses = await api.ev(`window.__mm6Debug.portraitReport().cards.map(c=>c.status)`);
+  api.check('строка состояния содержит только состояние, без имени и класса',
+    statuses.length === 3 && statuses.every(s => /^(Хорошее|Ранен|Тяжёло|Без сознания)$/.test(s || '')),
+    JSON.stringify(statuses));
+  api.check('полные имена и значки статов не обрезаются в карточках',
+    hud.party.length === 3 && hud.party.every(c => !!c.name && c.name.length >= 3 &&
+      !c.name.includes('…') && !c.nameClipped && !c.statsClipped),
+    JSON.stringify(hud.party.map(c => ({ name: c.name, nameClipped: c.nameClipped, statsClipped: c.statsClipped,
+      cardW: c.w, nameW: c.nameW, nameScroll: c.nameScroll, topW: c.topW, numsW: c.numsW }))));
+
+  // Панель врага рисуется на canvas, очередь — DOM. Проверяем ихgeometry
+  // на нескольких окон, где масштаб canvas различается.
+  const geometry = () => api.ev(`(()=>{
+    const p=window.__mm6Debug.battleHudReport().panel, r=document.getElementById('cv').getBoundingClientRect();
+    const scale=Math.min(r.width/640,r.height/360);
+    const panel={x:r.left+(r.width-640*scale)/2+p.x*scale,y:r.top+(r.height-360*scale)/2+p.y*scale,
+      w:p.w*scale,h:p.h*scale};
+    const q=document.getElementById('turnQueue').getBoundingClientRect();
+    const queue={x:q.left,y:q.top,w:q.width,h:q.height};
+    const ox=Math.min(panel.x+panel.w,queue.x+queue.w)-Math.max(panel.x,queue.x);
+    const oy=Math.min(panel.y+panel.h,queue.y+queue.h)-Math.max(panel.y,queue.y);
+    return {panel,queue,overlap:(ox>1&&oy>1)?{w:ox,h:oy}:null};})()`);
+  for (const [vw, vh] of [[800, 600], [1280, 720], [1024, 768]]) {
+    await api.viewport(vw, vh); await api.sleep(120);
+    const g = await geometry();
+    api.check('очередь не перекрывает панель врага при '+vw+'×'+vh,
+      !g.overlap && g.queue.y >= g.panel.y + g.panel.h - 1,
+      JSON.stringify(g));
+  }
 });

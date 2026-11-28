@@ -88,6 +88,10 @@ export async function runCdp(label, fn) {
       }
       throw new Error('таймаут: ' + expr);
     },
+    // Размер окна меняется намеренно: HUD проверяется на нескольких реальных экранах.
+    async viewport(width, height) {
+      await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+    },
     async click(x, y) {
       await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 });

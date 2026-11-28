@@ -85,20 +85,26 @@ button,input,select{font-family:inherit}
 .pcard .pstats,.pcard .plevel{display:none}
 /* В бою карточки героев опускаются под спрайты: верх экрана остаётся за ходом и врагом. */
 /* Боевые плашки компактные, около +10% к обычным, и остаются внизу экрана. */
-#party.in-battle{top:auto;bottom:4px;width:auto;max-width:min(720px,70vw);gap:4px}
+/* Карточки живут между dpad слева и кнопками справа: горизонтальные отступы
+   равны ширине доков плюс зазор, поэтому панель отряда не заходит на кнопки. */
+#party.in-battle{top:auto;bottom:4px;left:140px;right:196px;transform:none;width:auto;max-width:722px;gap:4px}
 #party.in-battle .pcard{flex:1 1 0;width:auto;max-width:238px;padding:2px 5px;font-size:11px;background:rgba(6,8,18,.94);
-  display:grid;grid-template-columns:minmax(0,1fr) auto;
-  grid-template-areas:"top nums" "hp hp" "mp mp" "stats stats" "level level" "status status";column-gap:6px}
-#party.in-battle .pcard .ptop{grid-area:top;min-width:0}
-#party.in-battle .pcard .pemoji{font-size:16px}
-#party.in-battle .pcard .pface{width:20px;height:20px;flex-basis:20px}
-#party.in-battle .pcard .pstatus{grid-area:status;font-size:9px;margin-top:1px}
-#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:6px}
-#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:1px}
+  display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"top" "nums" "hp" "mp" "stats" "level" "status";column-gap:6px}
+#party.in-battle .pcard .ptop{grid-area:top;min-width:0;gap:3px}
+#party.in-battle .pcard .pemoji{font-size:16px;flex:none}
+#party.in-battle .pcard .pface{width:20px;height:20px;flex:0 0 20px}
+/* Полное имя героя не обрезается многоточием: карточка должна показывать имя целиком. */
+#party.in-battle .pcard .pname{flex:0 1 auto;min-width:0;max-width:none;font-size:9px;
+  white-space:nowrap;overflow:visible;text-overflow:clip}
+#party.in-battle .pcard .pstatus{grid-area:status;font-size:8px;margin-top:0;line-height:1}
+#party.in-battle .pcard .nums{grid-area:nums;margin-top:0;font-size:11px;gap:7px;justify-content:flex-start}
+#party.in-battle .pcard .pbar{grid-area:hp;height:3px;margin-top:0}
 #party.in-battle .pcard .pbar.mp{grid-area:mp}
-#party.in-battle .pcard .pstats{display:flex;grid-area:stats;gap:6px;margin-top:1px;color:#cbd5e1;font-size:9px;line-height:1.1}
-#party.in-battle .pcard .pstats i{font-style:normal;white-space:nowrap}
-#party.in-battle .pcard .plevel{display:block;grid-area:level;margin-top:1px;color:#fde68a;font-size:9px;line-height:1.1;
+#party.in-battle .pcard .pstats{display:flex;grid-area:stats;gap:4px;margin-top:0;min-width:0;overflow:hidden;
+  flex-wrap:nowrap;color:#cbd5e1;font-size:9px;line-height:1}
+#party.in-battle .pcard .pstats i{font-style:normal;white-space:nowrap;flex:none}
+#party.in-battle .pcard .plevel{display:block;grid-area:level;margin-top:0;color:#fde68a;font-size:9px;line-height:1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Статы в бою показаны компактными значками в отдельной строке; длинная старая строка скрыта. */
 #party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
@@ -112,7 +118,10 @@ button,input,select{font-family:inherit}
   .leftDock,.rightDock{position:relative;left:auto;right:auto;bottom:auto;top:auto}
   .leftDock,.rightDock{justify-content:center}
   .pcard{width:104px}
-  #party.in-battle{max-width:calc(100% - 12px)}
+  /* В вертикальном режиме доки уходят под экран, поэтому карточки снова
+     центрируются по игровому полю, а не по зазору между кнопками. */
+  #party.in-battle{left:50%;right:auto;transform:translateX(-50%);
+    width:min(760px,calc(100% - 12px));max-width:calc(100% - 12px)}
   #party.in-battle .pcard{max-width:none}
 }
 @media (max-height:430px) and (orientation:landscape){
@@ -656,7 +665,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgX:120,msgW:340,enemyPanelW:220,enemyPanelH:58,badgeW:100};
+  msgX:120,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -1956,8 +1965,9 @@ function heroStatusName(h){
   const idx=party().indexOf(h);
   return idx>0?(h.def.name+' '+(idx+1)):heroName(h);
 }
+// В карточке имя и класс уже показаны отдельно: строка состояния содержит только состояние.
 function heroStatusLine(h){
-  return '«'+heroStatusName(h)+', '+((h&&h.def&&h.def.name)||'Герой')+': '+heroCondition(h)+'»';
+  return heroCondition(h);
 }
 function tickStatuses(h){
   if(!h.statuses||!h.statuses.length) return;
@@ -3267,6 +3277,17 @@ function battleQueueRows(b){
   return at>0?rows.slice(at).concat(rows.slice(0,at)):rows;
 }
 const TURN_QUEUE_LIMIT=5;
+// Очередь живёт в DOM, а панель врага рисуется на canvas 640×360. Позицию очереди
+// считаем из реального масштаба canvas: она всегда начинается ниже панели врага
+// на любом размере окна и не перекрывает её.
+function syncTurnQueuePosition(){
+  const el=$('turnQueue'); if(!el) return;
+  const r=cv.getBoundingClientRect();
+  const scale=Math.min(r.width/W,r.height/H);
+  const vx=(r.width-W*scale)/2, vy=(r.height-H*scale)/2;
+  el.style.left=Math.max(4,vx+10*scale).toFixed(1)+'px';
+  el.style.top=Math.max(4,vy+(10+BF.enemyPanelH+6)*scale).toFixed(1)+'px';
+}
 function updateTurnQueue(){
   const el=$('turnQueue'), b=game&&game.battle;
   if(!el) return;
@@ -3280,6 +3301,7 @@ function updateTurnQueue(){
       '<span class="tq-rank">'+(u.dead?'†':(i+1))+'</span><span class="tq-name">'+esc(u.name.toUpperCase())+'</span></div>';
   }).join('')+(rows.length>shown.length?'<div class="tq-more">… ещё '+(rows.length-shown.length)+'</div>':'');
   el.classList.remove('hidden');
+  syncTurnQueuePosition();
 }
 function setActionButton(id,disabled,title){
   const el=$(id); if(!el) return;
@@ -7147,7 +7169,7 @@ function drawBattle(now,dt){
       f.y-=dt*.035; f.t-=dt/900;
     });
   }
-  // Верхняя панель компактная: 220×58 с запасом до бейджа хода и очереди.
+  // Верхняя панель компактная: 235×62 — на 10% больше окна состояния 214×56.
   const e=target||b.enemies.find(x=>x.alive)||b.enemies[0];
   const epanel=settings.battleMirror?W-(BF.enemyPanelW+10):10;
   panel(epanel,10,BF.enemyPanelW,BF.enemyPanelH);
@@ -8263,7 +8285,15 @@ window.__mm6Debug={
       nameHp:{name:b.nameLayout||null,hp:b.hpLayout||null,
         overlap:!!(b.nameLayout&&b.hpLayout&&b.nameLayout.x+b.nameLayout.width>b.hpLayout.x-b.hpLayout.width-2)},
       party:[...document.querySelectorAll('#party .pcard')].map(e=>{const r=e.getBoundingClientRect();
-        return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1)};})};
+        const name=e.querySelector('.pname'), stats=e.querySelector('.pstats'), status=e.querySelector('.pstatus');
+        return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1),bottom:+r.bottom.toFixed(1),
+          name:name&&name.textContent,status:status&&status.textContent,
+          nameW:name&&+name.getBoundingClientRect().width.toFixed(1),
+          nameScroll:name&&name.scrollWidth,
+          topW:e.querySelector('.ptop')&&+e.querySelector('.ptop').getBoundingClientRect().width.toFixed(1),
+          numsW:e.querySelector('.nums')&&+e.querySelector('.nums').getBoundingClientRect().width.toFixed(1),
+          nameClipped:!!name&&name.scrollWidth>name.clientWidth+1,
+          statsClipped:!!stats&&stats.scrollWidth>stats.clientWidth+1};})};
   },
   turnQueueReport:()=>{
     const b=game&&game.battle, el=$('turnQueue');
@@ -8604,7 +8634,7 @@ window.__mm6Debug={
   }
 };
 bindSettings(); syncSettings();
-window.addEventListener('resize',()=>{ syncToastPlacement(); syncDialoguePlacement(); });
+window.addEventListener('resize',()=>{ syncToastPlacement(); syncDialoguePlacement(); syncTurnQueuePosition(); });
 renderStart();
 
 initUnifiedLaunch({
