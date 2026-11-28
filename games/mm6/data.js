@@ -511,7 +511,7 @@ export const DEFAULT_SETTINGS = {
   keysMode: 'all', keysLayout: 'both', showHints: true, battleMirror: false, speech: false,
   // Новые настраиваемые параметры Авантюриста.
   partySize: 3, heroSpeed: 1, monsterSpeed: 1, monsterPower: 1,
-  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true,
+  bonusEvery: 6, logLimit: 1000, floatDamage: true, breathAnim: true, npcGestures: true,
   // Погода/животные/лес. Шаговый цикл погоды отключён по DESIGN.md: погода следует за сезоном.
   weatherCycleSteps: 100, maxAnimals: 2, animalSpawnEvery: 10, treeDensity: 0.2
 };

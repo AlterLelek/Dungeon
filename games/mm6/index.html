@@ -354,6 +354,54 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 body:has(.overlay:not(.hidden)) #toast{display:none}
 /* Пока на карте открыта плашка врага, сообщение уступает ей место. */
 body.enemy-plate #toast{display:none}
+/* ===== Часть 4: живой диалог NPC ===== */
+.npcDialogue{position:fixed;right:230px;bottom:calc(var(--dlg-bottom,120px) + env(safe-area-inset-bottom,0px));
+  width:min(320px,calc(100vw - 16px));min-height:78px;display:flex;align-items:stretch;gap:6px;z-index:40;
+  pointer-events:none;border:1px solid rgba(251,191,36,.55);border-radius:12px;
+  background:rgba(10,13,28,.96);box-shadow:0 10px 30px rgba(0,0,0,.45);color:#ffe9b0}
+.npcDialogue.in-shop{position:relative;right:auto;bottom:auto;width:100%;min-height:76px;margin:4px 0 8px;z-index:1}
+.dlgHero{position:absolute;left:5px;bottom:5px;width:44px;height:44px;flex:0 0 44px;border-radius:50%;
+  overflow:hidden;border:2px solid rgba(251,191,36,.75);background:#241a14}
+.dlgHero img{width:100%;height:100%;object-fit:cover;display:block}
+.dlgCopy{flex:1;min-width:0;padding:7px 56px 7px 8px}
+.dlgSpeaker{font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:.04em;margin-bottom:3px}
+.dlgText{font-size:12px;line-height:1.35;color:#f4e7c6;overflow-wrap:anywhere}
+.dlgNpc{position:relative;flex:0 0 70px;width:70px;min-height:76px}
+.dlgNpcPortrait{position:absolute;right:2px;top:2px;width:40px;height:40px;object-fit:cover;
+  border:2px solid rgba(251,191,36,.6);border-radius:50%;background:#241a14}
+.dlgNpcSprite{position:absolute;right:4px;bottom:2px;width:62px;height:62px;overflow:visible}
+#dlgNpcSprite g{transform-box:fill-box}
+#npcBody{transform-origin:50% 100%}#npcHead{transform-origin:50% 90%}
+#npcArmLeft{transform-origin:100% 4%}#npcArmRight{transform-origin:0% 4%}
+@keyframes npcIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes npcNod{0%,100%{transform:rotate(0)}35%{transform:rotate(9deg)}70%{transform:rotate(-4deg)}}
+@keyframes npcHammer{0%,100%{transform:rotate(0)}35%{transform:rotate(-72deg)}65%{transform:rotate(18deg)}}
+@keyframes npcCast{0%,100%{transform:rotate(0)}50%{transform:rotate(-55deg) translateY(-5px)}}
+@keyframes npcPresent{0%,100%{transform:rotate(0)}45%{transform:rotate(-38deg) translateX(5px)}}
+@keyframes npcBeckon{0%,100%{transform:rotate(0)}50%{transform:rotate(28deg)}}
+@keyframes npcToast{0%,100%{transform:rotate(0)}40%{transform:rotate(-58deg)}70%{transform:rotate(-30deg)}}
+@keyframes npcBless{0%,100%{transform:rotate(0)}50%{transform:rotate(-48deg)}}
+@keyframes npcPoint{0%,100%{transform:rotate(0)}50%{transform:rotate(-62deg) translateX(6px)}}
+@keyframes npcShrug{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
+.npcDialogue.gesture-idle #npcBody{animation:npcIdle 2.6s ease-in-out infinite}
+.npcDialogue.gesture-nod #npcHead,
+.npcDialogue.gesture-shake #npcHead{animation:npcNod .9s ease-in-out 2}
+.npcDialogue.gesture-hammer #npcArmRight,
+.npcDialogue.gesture-forge #npcArmRight{animation:npcHammer .8s ease-in-out 2}
+.npcDialogue.gesture-cast #npcArmRight{animation:npcCast 1.1s ease-in-out 2}
+.npcDialogue.gesture-present #npcArmRight{animation:npcPresent 1s ease-in-out 2}
+.npcDialogue.gesture-beckon #npcArmLeft{animation:npcBeckon 1s ease-in-out 2}
+.npcDialogue.gesture-toast #npcArmRight{animation:npcToast 1s ease-in-out 2}
+.npcDialogue.gesture-bless #npcArmRight{animation:npcBless 1.1s ease-in-out 2}
+.npcDialogue.gesture-bless #npcHead{animation:npcNod 1.1s ease-in-out 2}
+.npcDialogue.gesture-point #npcArmRight{animation:npcPoint 1s ease-in-out 2}
+.npcDialogue.gesture-shrug #npcArmLeft{animation:npcShrug .9s ease-in-out 2}
+body.no-npc-gestures .npcDialogue svg g{animation:none!important;transition:none!important}
+/* Плашка врага важнее реплики: диалог уступает ей место, как и тост. */
+body.enemy-plate .npcDialogue:not(.in-shop){display:none}
+@media (max-width:520px) and (orientation:portrait){
+  .npcDialogue:not(.in-shop){left:8px!important;right:8px!important;width:auto!important}
+}
 @media (max-width:620px){.invBody,#shopBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(220px,72vw)}.invGrid{grid-template-columns:repeat(9,minmax(0,1fr))}#shopCategories{position:static;flex:none}.box{padding:13px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
@@ -503,6 +551,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
     <div class="setRow"><span class="setLabel">🐾 Появление животных (ходов)</span><input type="number" id="setAnimalSpawnEvery" min="1" max="200" step="1" value="10"></div>
     <div class="setCheck"><input type="checkbox" id="setFloatDamage" checked><span>Числа урона над целями</span></div>
     <div class="setCheck"><input type="checkbox" id="setBreathAnim" checked><span>Лёгкое «дыхание» спрайтов</span></div>
+    <div class="setCheck"><input type="checkbox" id="setNpcGestures" checked><span>Жесты и мимика NPC в диалогах</span></div>
     <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L открывает и закрывает журнал, Esc закрывает.</div>
   </div></details>
   <details class="setAcc"><summary>🎮 Управление</summary><div class="setBody">
@@ -555,6 +604,37 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
 </div></div>
 
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Часть 4: живой диалог NPC. Элемент переезжает в окно лавки, когда оно открыто. -->
+<div id="npcDialogue" class="npcDialogue hidden" role="status" aria-live="polite">
+  <div class="dlgHero"><img id="dlgHeroFace" alt="" onerror="this.style.display='none'"></div>
+  <div class="dlgCopy"><div class="dlgSpeaker" id="dlgSpeaker"></div><div class="dlgText" id="dlgText"></div></div>
+  <div class="dlgNpc">
+    <img id="dlgNpcPortrait" class="dlgNpcPortrait" alt="" onerror="this.style.display='none'">
+    <svg class="dlgNpcSprite" id="dlgNpcSprite" viewBox="0 0 96 96" aria-hidden="true">
+      <g id="npcBody">
+        <path d="M26 92 L30 48 L66 48 L70 92 Z" fill="#3b6ea5" stroke="#241a14" stroke-width="3"/>
+        <path d="M30 48 L48 70 L66 48" fill="none" stroke="#93c5fd" stroke-width="2"/>
+        <path d="M48 48 L48 92" fill="none" stroke="#241a14" stroke-width="2"/>
+      </g>
+      <g id="npcArmLeft">
+        <path d="M30 53 L14 72 L18 80" fill="none" stroke="#3b6ea5" stroke-width="9" stroke-linecap="round"/>
+        <path d="M30 53 L14 72 L18 80" fill="none" stroke="#241a14" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g id="npcArmRight">
+        <path d="M66 53 L82 72 L78 80" fill="none" stroke="#3b6ea5" stroke-width="9" stroke-linecap="round"/>
+        <path d="M66 53 L82 72 L78 80" fill="none" stroke="#241a14" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <g id="npcHead">
+        <ellipse cx="48" cy="32" rx="18" ry="21" fill="#c9b391" stroke="#241a14" stroke-width="3"/>
+        <path d="M30 27 Q48 6 66 27 L62 20 Q48 10 34 20 Z" fill="#4a3a2e" stroke="#241a14" stroke-width="3"/>
+        <circle cx="41" cy="33" r="2.5" fill="#241a14"/><circle cx="55" cy="33" r="2.5" fill="#241a14"/>
+        <path d="M43 43 Q48 47 53 43" fill="none" stroke="#241a14" stroke-width="2"/>
+      </g>
+      <g id="npcHat"><path d="M28 19 L48 7 L68 19 L64 23 L48 14 L32 23 Z" fill="#b93a2b" stroke="#241a14" stroke-width="3"/></g>
+    </svg>
+  </div>
+</div>
 
 <script type="module">
 import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES, INVENTORY_GRID, MAGIC_GRADES, SCHOOLS, SCHOOL_MECHANICS, elementLayerPaths, elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
@@ -716,8 +796,120 @@ function syncToastPlacement(){
   }
 }
 function toast(text,type,speaker){
+  if(!type&&!speaker&&game&&game.shopOpen){
+    // Любая реплика в лавке — речь NPC: диалог, портрет и жест по типу заведения.
+    const kind=game.shopType||'market', who=npcSpeakerFor(kind);
+    showNpcDialogue(text,who,kind);
+    logMessage(text,'npc',who,'toast');
+    return;
+  }
+  if(type==='npc'||speaker){
+    // Реплика NPC заменяет плоский тост живым диалогом с портретами и жестом.
+    const kind=NPC_SPEECH_STATE.lastKind||(game&&game.shopOpen?game.shopType:'house');
+    showNpcDialogue(text,speaker||npcSpeakerFor(kind),kind);
+    logMessage(text,'npc',speaker,'toast');
+    return;
+  }
   const t=$('toast'); if(t){ t.textContent=text; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
   logMessage(text,type,speaker,'toast');
+}
+
+/* ===== Часть 4: живые диалоги NPC ===== */
+const NPC_GESTURE_BY_KIND={
+  weapons:'hammer',armory:'present',forge:'hammer',armor:'present',magic:'cast',
+  jeweler:'present',market:'beckon',tavern:'toast',inn:'beckon',church:'bless',hall:'point',
+  house:'shrug',barn:'shrug',shed:'shrug',well:'nod',stable:'nod'
+};
+const NPC_PORTRAIT_BY_KIND={
+  weapons:'warrior_0',armory:'warrior_1',forge:'warrior_2',armor:'warrior_3',magic:'mage_0',
+  jeweler:'paladin_2',market:'warrior_2',tavern:'warrior_3',inn:'paladin_1',
+  church:'paladin_0',hall:'paladin_3',house:'warrior_0',barn:'warrior_1',
+  shed:'warrior_2',well:'mage_2',stable:'warrior_3'
+};
+const NPC_NAME_BY_KIND={
+  weapons:'Оружейник',armory:'Оружейник',forge:'Кузнец',armor:'Бронник',magic:'Маг',
+  jeweler:'Ювелир',market:'Торговец',tavern:'Хозяин таверны',inn:'Хозяин гостиницы',
+  church:'Священник',hall:'Герольд',house:'Хозяин дома',barn:'Хозяин амбара',
+  shed:'Хозяин сарая',well:'Страж колодца',stable:'Конюх'
+};
+const NPC_SPEECH_STATE={last:null,kind:null,count:0};
+let npcDialogueTimer=0;
+function npcGestureFor(kind){ return NPC_GESTURE_BY_KIND[kind]||'nod'; }
+function npcPortraitFor(kind){ return PORTRAIT_BASE+(NPC_PORTRAIT_BY_KIND[kind]||'warrior_0')+'.svg'; }
+function npcSpeakerFor(kind,name){ return name||NPC_NAME_BY_KIND[kind]||'Собеседник'; }
+function npcSay(text,speaker,kind,opts){
+  const k=kind||(game&&game.shopOpen?game.shopType:'house');
+  NPC_SPEECH_STATE.last=k; NPC_SPEECH_STATE.kind=k; NPC_SPEECH_STATE.lastKind=k; NPC_SPEECH_STATE.count++;
+  toast(text,'npc',speaker||npcSpeakerFor(k));
+  if(opts&&opts.speak) speakEvent(text);
+  return text;
+}
+function playNpcGesture(gesture){
+  const el=$('npcDialogue'); if(!el) return null;
+  const name=gesture||'idle';
+  el.className=String(el.className).replace(/\bgesture-[\w-]+\b/g,'').trim();
+  void el.getBoundingClientRect();
+  el.classList.add('gesture-'+name);
+  el.dataset.gesture=name;
+  return name;
+}
+function syncDialoguePlacement(){
+  const el=$('npcDialogue');
+  if(!el||el.classList.contains('hidden')||el.classList.contains('in-shop')) return;
+  const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
+  const canvasTop=cr.top+(cr.height-H*scale)/2;
+  const inBattle=!!(game&&game.battle);
+  // На карте диалог стоит над подсказкой; в бою — левее панели врага и над логом.
+  const border=canvasTop+(inBattle?BF.msgY:250)*scale;
+  el.style.right=inBattle?'150px':'230px';
+  el.style.setProperty('--dlg-bottom',Math.ceil(window.innerHeight-border+8)+'px');
+}
+function showNpcDialogue(text,speaker,kind){
+  const el=$('npcDialogue'); if(!el) return false;
+  const t=$('toast'); if(t){ t.classList.remove('show'); clearTimeout(toastTimer); }
+  const shop=$('shop'), inShop=!!shop&&!shop.classList.contains('hidden');
+  const host=inShop?shop.querySelector('.box'):$('app');
+  if(el.parentNode!==host){
+    if(inShop&&$('shopBody')) host.insertBefore(el,$('shopBody'));
+    else host.appendChild(el);
+  }
+  el.classList.toggle('in-shop',inShop);
+  const who=String(speaker||npcSpeakerFor(kind));
+  const raw=String(text==null?'':text);
+  const shown=raw.startsWith(who+': ')?raw.slice(who.length+2):raw;
+  $('dlgSpeaker').textContent=who;
+  $('dlgText').textContent=shown;
+  $('dlgNpcPortrait').src=npcPortraitFor(kind);
+  $('dlgNpcPortrait').style.display='';
+  const idx=game&&Number.isFinite(game.invHero)?game.invHero:0;
+  const hero=game&&game.party&&game.party[idx];
+  if(hero&&$('dlgHeroFace')){ $('dlgHeroFace').src=portraitSrc(hero,idx); $('dlgHeroFace').style.display=''; }
+  playNpcGesture(npcGestureFor(kind));
+  el.classList.remove('hidden'); syncDialoguePlacement();
+  clearTimeout(npcDialogueTimer);
+  npcDialogueTimer=setTimeout(()=>el.classList.add('hidden'),3200);
+  return true;
+}
+function npcStageReport(){
+  const el=$('npcDialogue'); if(!el) return null;
+  const sprite=$('dlgNpcSprite'), arm=$('npcArmRight');
+  const text=$('dlgText'), hero=$('dlgHeroFace');
+  const r=e=>{ if(!e) return null; const q=e.getBoundingClientRect();
+    return {x:+q.x.toFixed(1),y:+q.y.toFixed(1),w:+q.width.toFixed(1),h:+q.height.toFixed(1)}; };
+  return {
+    visible:!el.classList.contains('hidden'),inShop:el.classList.contains('in-shop'),
+    speaker:$('dlgSpeaker')?$('dlgSpeaker').textContent:'',text:text?text.textContent:'',
+    heroFaceSrc:hero?hero.getAttribute('src'):null,npcPortraitSrc:$('dlgNpcPortrait')?$('dlgNpcPortrait').getAttribute('src'):null,
+    groups:['npcBody','npcHead','npcArmLeft','npcArmRight','npcHat'].filter(id=>el.querySelector('#'+id)),
+    gesture:el.dataset.gesture||null,gesturesEnabled:settings.npcGestures===true,
+    animationName:arm?getComputedStyle(arm).animationName:'none',
+    animationNames:['npcBody','npcHead','npcArmLeft','npcArmRight'].map(id=>{
+      const part=el.querySelector('#'+id);
+      return part?getComputedStyle(part).animationName:'none';
+    }),
+    rect:r(el),heroRect:r(hero),textRect:r(text),spriteRect:r(sprite),
+    last:NPC_SPEECH_STATE.last,lastKind:NPC_SPEECH_STATE.kind,count:NPC_SPEECH_STATE.count
+  };
 }
 function pushHistory(text,side,speaker){ logMessage(text,side,speaker,'history'); }
 // Любая строка status bar тоже становится событием журнала — без правок всех точек присваивания.
@@ -1090,7 +1282,7 @@ const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
-const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','speech'];
+const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','npcGestures','speech'];
 function normalizeSettings(raw){
   const s=Object.assign({},DEFAULT_SETTINGS,raw||{});
   Object.entries(SETTING_RANGES).forEach(([key,[min,max]])=>{
@@ -1126,8 +1318,9 @@ function syncSettings(){
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
+  document.body.classList.toggle('no-npc-gestures',settings.npcGestures!==true);
 }
 function bindSettings(){
   const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
@@ -1160,9 +1353,12 @@ function bindSettings(){
   });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
-    el.addEventListener('change',()=>{ settings[key]=el.checked; saveSettings(); });
+    el.addEventListener('change',()=>{ settings[key]=el.checked;
+      if(key==='npcGestures') document.body.classList.toggle('no-npc-gestures',!el.checked);
+      saveSettings();
+    });
   });
   $('resetSettings').onclick=()=>{ settings=normalizeSettings(); selDiff=settings.difficulty;
     if(window.UnifiedLaunch) window.UnifiedLaunch.setHeroCount(settings.partySize);
@@ -2700,7 +2896,7 @@ function buildingReply(cell){
 }
 function interactBuilding(cell){
   const speaker=buildingTitleOf(cell), text=buildingReply(cell);
-  toast(text,'npc',speaker);
+  npcSay(text,speaker,(cell&&cell.kind)||(cell&&cell.shop_kind&&cell.shop_kind[0])||'house',{speak:true});
   game.msg=text; sfx('ui');
   return false;
 }
@@ -2970,7 +3166,7 @@ function updateParty(){
   updateTurnQueue();
   $('shopGold').textContent=game.gold;
   $('shopCrystals').textContent=game.bag.filter(i=>i.type==='crystal').reduce((s,i)=>s+(i.count||1),0);
-  syncToastPlacement();
+  syncToastPlacement(); syncDialoguePlacement();
 }
 // Полная очередь ходов: текущий ход всегда сверху, следующие — под ним.
 // Имена классов пишутся полностью; одинаковые классы и монстры получают номер.
@@ -4577,7 +4773,7 @@ function renderShop(){
   if(def.id==='tavern'){
     shopSec('Слухи');
     shopRow('🗣','Слушать разговоры','Посетители делятся новостями и сплетнями',[shopButton('Слушать',()=>{
-      const rumor=pick(TAVERN_RUMORS); toast('Слух: '+rumor,'npc','Хозяин таверны'); sfx('ui');
+      const rumor=pick(TAVERN_RUMORS); npcSay('Слух: '+rumor,'Хозяин таверны','tavern',{speak:true}); sfx('ui');
     })],'СЛУХИ');
     renderSkillTrainers('tavern');
   }
@@ -7765,6 +7961,10 @@ window.__mm6Debug={
   overlapReport:()=>visibleWindowsReport(),
   showToast:(text)=>{ toast(text||'Проверка сообщений'); return true; },
   showMapHint:(title,desc)=>{ mapHint={title:title||'Подсказка',desc:desc||'Описание подсказки',t:performance.now()}; return true; },
+  npcSay:(text,speaker,kind)=>npcSay(text||'Проверка реплики',speaker,kind),
+  npcStageReport:()=>npcStageReport(),
+  npcGestureFor:(kind)=>npcGestureFor(kind),
+  closeNpcDialogue:()=>{ const el=$('npcDialogue'); if(el) el.classList.add('hidden'); return true; },
   battleHudReport:()=>{
     const b=game&&game.battle; if(!b) return null;
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
@@ -8116,6 +8316,7 @@ window.__mm6Debug={
   }
 };
 bindSettings(); syncSettings();
+window.addEventListener('resize',()=>{ syncToastPlacement(); syncDialoguePlacement(); });
 renderStart();
 
 initUnifiedLaunch({
