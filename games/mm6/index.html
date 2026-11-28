@@ -152,8 +152,10 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .play{border:0;border-radius:9px;padding:10px 18px;min-height:44px;cursor:pointer;font-weight:800;color:#241704;background:linear-gradient(180deg,#ffe9a8,#f5b92c);box-shadow:0 4px 0 #8a5b0c}
 .hint{margin-top:10px;text-align:center;color:#8b94b2;font-size:10px;line-height:1.6}
 .rowItem{display:flex;align-items:center;gap:8px;padding:7px;margin:4px 0;border:1px solid rgba(255,255,255,.1);border-radius:9px;background:rgba(255,255,255,.035)}
-.rowItem .ic{font-size:22px;width:28px;text-align:center;flex:0 0 28px}
-.rowItem img.ic{display:block;height:28px;object-fit:contain;image-rendering:pixelated}
+.rowItem .ic{font-size:28px;width:34px;height:34px;text-align:center;flex:0 0 34px}
+.rowItem img.ic{display:block;width:34px;height:34px;object-fit:contain;image-rendering:pixelated}
+.rowItem .itemStack{width:34px;height:34px;flex:0 0 34px}
+.rowItem .itemStack img{width:34px;height:34px;max-width:34px;max-height:34px}
 .rowItem .info{flex:1;min-width:0;font-size:12px}
 .rowItem small{display:block;color:#9aa4c2;font-size:10px;line-height:1.35}
 .act{border:0;border-radius:7px;padding:7px 9px;min-height:34px;cursor:pointer;background:#fbbf24;color:#241704;font-weight:800;font-size:10px;white-space:nowrap}
@@ -209,9 +211,9 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .invSlotChip{position:relative;flex:1 1 82px;min-width:78px;max-width:130px;padding:5px 6px;border:1px solid rgba(255,255,255,.12);border-radius:8px;
   background:rgba(255,255,255,.035);color:#9fb0d8;cursor:pointer;font-size:9px;line-height:1.2;text-align:left}
 .invSlotChip.withIcon{padding-right:24px}
-.invSlotChip img{position:absolute;right:4px;top:5px;width:16px;height:16px;max-width:16px;max-height:16px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
-.invSlotChip .itemStack{position:absolute;right:4px;top:5px;width:16px;height:16px;flex:none}
-.invSlotChip .itemStack img{position:absolute;inset:0;width:16px;height:16px;max-width:16px;max-height:16px}
+.invSlotChip img{position:absolute;right:4px;top:4px;width:20px;height:20px;max-width:20px;max-height:20px;object-fit:contain;image-rendering:pixelated;pointer-events:none;opacity:.9}
+.invSlotChip .itemStack{position:absolute;right:4px;top:4px;width:20px;height:20px;flex:none}
+.invSlotChip .itemStack img{position:absolute;inset:0;width:20px;height:20px;max-width:20px;max-height:20px}
 .invSlotChip.filled{border-color:rgba(251,191,36,.38);background:rgba(251,191,36,.07);color:#ffe9b0}
 .invSlotChip.busy{border-color:rgba(74,222,128,.5);background:rgba(74,222,128,.08);color:#bbf7d0}
 .invSlotChip:hover,.invSlotChip:focus-visible{border-color:#fbbf24;outline:none}
@@ -234,7 +236,7 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   background:rgba(255,255,255,.035);color:#c8d2f0;font-size:11px;line-height:1.4;min-height:30px}
 .bigMapInfo b{color:#ffe9b0}
 /* Фиксированная сетка 9×16 (жёсткий максимум 144 клеток, без скролла). */
-.invGrid{display:grid;grid-template-columns:repeat(9,minmax(0,40px));grid-template-rows:repeat(16,34px);gap:2px;justify-content:start;align-content:start;
+.invGrid{display:grid;grid-template-columns:repeat(9,minmax(0,42px));grid-template-rows:repeat(16,38px);gap:2px;justify-content:start;align-content:start;
   overflow:hidden;padding:5px;border:1px solid rgba(255,255,255,.1);border-radius:10px;
   background:rgba(0,0,0,.2);min-height:0}
 .invCell{position:relative;width:100%;height:100%;padding:2px;margin:0;border:1px solid rgba(255,255,255,.13);border-radius:6px;
@@ -242,13 +244,13 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   cursor:pointer;color:#c8d2f0}
 .invCell.empty{cursor:default;opacity:.35;background:rgba(0,0,0,.18)}
 .invCell.emptyNote{opacity:.7;color:#9fb0d8;font-size:8px;line-height:1.1;text-align:center;padding:2px;overflow:hidden}
-.itemStack{position:relative;display:block;width:28px;height:28px;flex:0 0 28px}
+.itemStack{position:relative;display:block;width:32px;height:32px;flex:0 0 32px}
 .itemStack img{position:absolute;inset:0;width:100%;height:100%;margin:0}
 .invCell:hover,.invCell:focus-visible{border-color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,.3);outline:none}
 .invCell.craftable{border-color:rgba(125,255,178,.45)}
 .invCell.blocked{border-color:rgba(248,113,113,.35)}
-.invCell img{display:block;flex:0 1 auto;width:28px;height:28px;max-width:28px;max-height:28px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
-.itemStack img{width:28px;height:28px;max-width:28px;max-height:28px}
+.invCell img{display:block;flex:0 1 auto;width:32px;height:32px;max-width:32px;max-height:32px;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.itemStack img{width:32px;height:32px;max-width:32px;max-height:32px}
 .invCell .ph{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:5px;
   background:rgba(12,18,30,.55);border:1px solid rgba(200,220,255,.25);color:#c8d2f0;font-size:15px;font-weight:800}
 .invCell .cnt{position:absolute;right:2px;bottom:0;font-size:9px;font-weight:800;color:#fff3c4;text-shadow:0 0 3px #000,0 0 3px #000}
@@ -533,8 +535,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script type="module">
-import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES, INVENTORY_GRID, MAGIC_GRADES, SCHOOLS, SCHOOL_MECHANICS, elementLayerPaths, elementLayers,
-  itemById, ITEM_ID_SET, itemInstance, catalogItems, rollCatalogItem, itemReport, itemDisplayName, CONTAINER_CLASSES } from './data.js';
+import { QUALITY, EXTRA_HEROES, MONSTER_COLORS, EXTRA_MONSTERS, SPELLS, SPELL_TIERS, HERBS, FOODS, MATERIALS, RECIPES, LIQUIDS, SCROLLS, ARMORS, ARMOR_SLOTS, EQUIPMENT_GROUPS, TIERED_EQUIPMENT, LOAD_RULES, weaponWeight, capacityFor, heroStrength, ARMOR_CATEGORIES, ARMOR_CATEGORY_NAMES, FIST_ATTACK, SHOP_TYPES, SHOP_STOCK, BUILDING_TYPES, BIOMES, SEASON_WEATHER, WEATHER_CYCLE_STEPS, SEASON_KEYS, GROUND_TYPES, TERRAIN_TYPES, ROAD_KINDS, SWAMP_COST, SEASON_GROUND_COLORS, DIFFICULTY, LAYOUTS, TREASURES, BOSS_BONUSES, GAME_RECORDS, DEFAULT_SETTINGS, SETTLEMENTS, settlementOf, SETTLEMENT_TYPE_NAME, DISTANCE_BANDS, distanceBand, STOCK_RULES, INVENTORY_GRID, MAGIC_GRADES, SCHOOLS, SCHOOL_MECHANICS, elementLayerPaths, elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
+  itemById, ITEM_ID_SET, ITEM_DB, itemInstance, catalogItems, rollCatalogItem, itemReport, itemDisplayName, CONTAINER_CLASSES } from './data.js';
 import { SAVE_VERSION, BASE_XP, ACTIVE_ENEMY_LIMIT, SKILL_CAP_PER_LEVEL, SKILL_COOLDOWN_TURNS, SKILL_POINTS_PER_RANK, xpLevelCost, xpTotalToLevel, xpKill, threatOf, battleBudget, trainerCost, skillCost, SKILL_DEFS, GUILD_RANKS, skillDef, guildAtLeast, guildRankNumber, carryingRank, heroCarryingIds, CARRY_ORDER, GUILD_POINT_THRESHOLDS, GUILD_DISCOUNT_STEP, guildPointsNeeded, guildRankCost, SPELL_TIER_RANK, spellTierRank, CONTAINER_TIERS, CONTAINER_TIER_IDS, containerTier, SHOP_QUESTS, questDef, skillForWeapon, MONSTER_PROFILES, resolveProfile, MONSTER_VARIANTS, FIRST_CIRCLE_SPELLS, ARCHER_VARIANT, ARCHER_MISS_RANGE, MOUSE_VARIANT_IDS, LOOT_TABLES, lootTableFor, rollLoot, GRENADES, GRENADE_FF_RATIO, churchCost, LAIR_TEMPLATES, ASSET_STRUCTURE_PROPOSAL, migrateSave, defaultHeroProgression, defaultLootCounters, defaultQuestState, defaultJournal, RULES_SUMMARY } from './rules.js';
 import { createWeather } from './weather.js';
 import { TREES_SPECIES, TREES_STATE, TREE_SEASONS, loadTreeRegistry, treeFileFor, preloadTreeSprites, treeRegistryReport } from './trees.js';
@@ -1303,27 +1305,45 @@ function iconKind(icon){
   return null;
 }
 function iconHtml(icon){
-  if(typeof icon==='string'&&icon.indexOf('<img')===0) return icon;
+  /* Готовую HTML-иконку не оборачиваем второй раз (иначе получается .ic > .ic.itemStack). */
+  if(typeof icon==='string'&&(/^<img\b/.test(icon)||/^<span class="ic\b/.test(icon))) return icon;
   const kind=iconKind(icon);
   if(kind&&ITEM_SPRITES[kind]) return '<img class="ic" src="'+ITEM_SPRITES[kind]+'" alt="">';
   return '<span class="ic">'+icon+'</span>';
 }
-/* Предмет — базовый SVG, школы — отдельные слои из assets/items/elements/.
-   Старые предметы без sprite продолжают использовать emoji. */
-function itemSpritePaths(it){
+/* Слои предмета собираются из данных items.js: пятно школы → весь предмет → качество.
+   Качество маскируется силуэтом базы, поэтому оно видно на предмете, а не вместо него. */
+function itemLayerSpecs(it){
   if(!it) return [];
   const def=itemById(it.id)||null;
   const base=it.sprite||(def&&def.sprite)||itemSpritePath(it);
   if(!base) return [];
-  return [base].concat(elementLayers(def||it).map(l=>l.src));
+  const layers=elementLayers(def||it).map(l=>({src:l.src,role:'backdrop',element:l.id}));
+  layers.push({src:base,role:'base'});
+  const q=qualityLayer(it)||qualityLayer(def);
+  if(q) layers.push({src:q.src,role:'quality',quality:q.id,mask:base});
+  return layers;
 }
-function spriteStackHtml(paths){
-  return paths.length===1?'<img class="ic" src="'+paths[0]+'" alt="">'
-    :'<span class="ic itemStack">'+paths.map(src=>'<img src="'+src+'" alt="">').join('')+'</span>';
+function itemSpritePaths(it){ return itemLayerSpecs(it).map(l=>l.src); }
+function layerAttrs(l){
+  let attrs='src="'+esc(l.src)+'" alt="" data-role="'+l.role+'"';
+  if(l.element) attrs+=' data-element="'+l.element+'"';
+  if(l.quality) attrs+=' data-quality="'+l.quality+'"';
+  if(l.mask){
+    const mask="url('"+l.mask+"')";
+    attrs+=' style="-webkit-mask-image:'+mask+';mask-image:'+mask+
+      ';-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat'+
+      ';-webkit-mask-position:center;mask-position:center"';
+  }
+  return attrs;
+}
+function spriteStackHtml(layers){
+  return layers.length===1?'<img class="ic" '+layerAttrs(layers[0])+'>'
+    :'<span class="ic itemStack">'+layers.map(l=>'<img '+layerAttrs(l)+'>').join('')+'</span>';
 }
 function itemIconHtml(it){
-  const paths=itemSpritePaths(it);
-  return paths.length?spriteStackHtml(paths):iconHtml(it&&it.icon);
+  const layers=itemLayerSpecs(it);
+  return layers.length?spriteStackHtml(layers):iconHtml(it&&it.icon);
 }
 function slotIconHtml(slot){
   return slot&&slot.sprite?'<img class="ic" src="'+slot.sprite+'" alt="">':iconHtml(slot&&slot.icon);
@@ -5206,7 +5226,8 @@ function itemCell(it,h){
   }else if(it.type==='herb'||it.type==='potion'||it.type==='liquid'||it.type==='scroll'||it.type==='food'||it.type==='chest'){
     action=()=>{ useItem(it.uid); renderInventory(); };
   }
-  return {name:it.name,desc:itemStatsText(it,h),sprite:itemSpritePath(it),spritePaths:itemSpritePaths(it),
+  return {name:it.name,uid:it.uid,desc:itemStatsText(it,h),sprite:itemSpritePath(it),spritePaths:itemSpritePaths(it),
+    spriteLayers:itemLayerSpecs(it),
     count:it.count||1,action,
     context:(it.type==='herb'||it.type==='scroll')?it.uid:null,contextKind:it.type,
     blocked:!!block&&(it.type==='weapon'||it.type==='armor'),
@@ -5246,16 +5267,27 @@ function makeInvCell(cell){
   const b=document.createElement('button');
   b.type='button';
   b.className='invCell'+(cell.craftable?' craftable':'')+(cell.blocked?' blocked':'');
+  if(cell.uid) b.dataset.uid=cell.uid;
   b.title=cell.name+(cell.desc?' — '+cell.desc:'');
-  const paths=cell.spritePaths||(cell.sprite?[cell.sprite]:[]);
-  if(paths.length){
+  const layers=cell.spriteLayers||(cell.spritePaths||(cell.sprite?[cell.sprite]:[])).map(src=>({src,role:'base'}));
+  if(layers.length){
     const wrap=document.createElement('span');
     wrap.className='itemStack';
-    paths.forEach(src=>{
+    layers.forEach(l=>{
       const img=document.createElement('img');
       img.alt=''; img.loading='lazy';
       img.addEventListener('error',()=>{ wrap.remove(); b.insertBefore(placeholderEl(cell.name),b.firstChild); });
-      img.src=src; wrap.appendChild(img);
+      if(l.role) img.dataset.role=l.role;
+      if(l.element) img.dataset.element=l.element;
+      if(l.quality){
+        img.dataset.quality=l.quality;
+        const mask="url('"+l.mask+"')";
+        img.style.webkitMaskImage=mask; img.style.maskImage=mask;
+        img.style.webkitMaskSize='contain'; img.style.maskSize='contain';
+        img.style.webkitMaskRepeat='no-repeat'; img.style.maskRepeat='no-repeat';
+        img.style.webkitMaskPosition='center'; img.style.maskPosition='center';
+      }
+      img.src=l.src; wrap.appendChild(img);
     });
     b.appendChild(wrap);
   }else if(cell.symbol){
@@ -5334,12 +5366,12 @@ function mannequinStage(){
   const worn=MANNEQUIN_SLOTS.map(slot=>{
     const it=heroSlotItem(hero,slot.id);
     if(!it||isOffhandMarker(hero,slot.id)) return '';
-    const paths=itemSpritePaths(it);
-    if(!paths.length) return '';
+    const layers=itemLayerSpecs(it);
+    if(!layers.length) return '';
     const spread=slot.id==='weapon'||slot.id==='shield'?22:slot.id==='body'||slot.id==='cloak'?16:6;
     const left=clamp(slot.x-spread/2,0,100-spread), top=clamp(slot.y-spread/2,0,100-spread);
     return '<div class="mq-worn" data-worn-slot="'+slot.id+'" style="left:'+left+'%;top:'+top+'%;width:'+spread+'%;height:'+spread+'%">'+
-      paths.map(src=>'<img src="'+src+'" alt="" onerror="this.style.display=\'none\'">').join('')+'</div>';
+      layers.map(l=>'<img '+layerAttrs(l)+' onerror="this.style.display=\'none\'">').join('')+'</div>';
   }).join('');
   return '<div class="mq-stage">'+silhouette+'<div class="mq-worn-layer">'+worn+'</div>'+MANNEQUIN_SLOTS.map(slot=>{
     const it=heroSlotItem(hero,slot.id);
@@ -5438,16 +5470,25 @@ function renderInventory(){
     chip.className='invSlotChip'+(busy?' busy':(it?' filled':''))+(invSlot===s.id?' sel':'');
     chip.dataset.slot=s.id;
     chip.title=s.label+': '+(busy?'занято древком '+it.name:(it?it.name+' — '+esc(itemStatsText(it,h)):s.hint));
-    const paths=s.id==='weapon'&&it?itemSpritePaths(it):[];
-    if(paths.length){
+    const layers=s.id==='weapon'&&it?itemLayerSpecs(it):[];
+    if(layers.length){
       chip.classList.add('withIcon');
-      if(paths.length===1){
-        const img=document.createElement('img'); img.src=paths[0]; img.alt=''; chip.appendChild(img);
-      }else{
-        const stack=document.createElement('span'); stack.className='itemStack';
-        paths.forEach(src=>{ const img=document.createElement('img'); img.src=src; img.alt=''; stack.appendChild(img); });
-        chip.appendChild(stack);
-      }
+      const stack=document.createElement('span'); stack.className='itemStack';
+      layers.forEach(l=>{
+        const img=document.createElement('img'); img.alt='';
+        if(l.role) img.dataset.role=l.role;
+        if(l.element) img.dataset.element=l.element;
+        if(l.quality){
+          img.dataset.quality=l.quality;
+          const mask="url('"+l.mask+"')";
+          img.style.webkitMaskImage=mask; img.style.maskImage=mask;
+          img.style.webkitMaskSize='contain'; img.style.maskSize='contain';
+          img.style.webkitMaskRepeat='no-repeat'; img.style.maskRepeat='no-repeat';
+          img.style.webkitMaskPosition='center'; img.style.maskPosition='center';
+        }
+        img.src=l.src; stack.appendChild(img);
+      });
+      chip.appendChild(stack);
     }
     const name=document.createElement('b');
     name.textContent=s.label+(it?' · '+it.name:'');
@@ -7778,7 +7819,20 @@ window.__mm6Debug={
   },
   renderedItemLayers:(uid)=>{
     const it=game&&game.bag.find(i=>i.uid===uid);
-    return it?itemSpritePaths(it):[];
+    return it?itemLayerSpecs(it):[];
+  },
+  catalogLayers:(id)=>itemLayerSpecs(itemInstance(id)),
+  allItemLayers:()=>ITEM_DB.map(it=>({id:it.id,type:it.type,tier:it.tier,
+    layers:itemLayerSpecs(it).map(l=>({src:l.src,role:l.role,element:l.element||null,quality:l.quality||null}))})),
+  itemIconGeometry:()=>{
+    const cell=[...document.querySelectorAll('.invCell')].find(b=>b.querySelector('.itemStack'));
+    const img=cell?cell.querySelector('.itemStack img'):null;
+    const row=document.querySelector('#shopList .rowItem');
+    const rowIcon=row?row.querySelector('.ic'):null;
+    const rect=e=>e?{w:+e.getBoundingClientRect().width.toFixed(1),h:+e.getBoundingClientRect().height.toFixed(1)}:null;
+    return {inventory:rect(img),shop:rect(rowIcon),
+      doubleWrapped:!!document.querySelector('.ic > .itemStack'),
+      rows:[...document.querySelectorAll('#shopList .rowItem')].map(r=>+r.getBoundingClientRect().height.toFixed(1))};
   },
   setGuildRank:(i,rank)=>{ const h=party()[i]; return h?setGuildRank(h,rank):false; },
   setGuildPoints:(i,n)=>{ const h=party()[i]; if(!h) return false;

@@ -300,6 +300,20 @@ export function elementLayers(item){
     return s ? { id, name: s.name, src: ITEM_ASSET_BASE + 'elements/' + s.layer + '.svg' } : null;
   }).filter(Boolean);
 }
+
+/* Качество — отдельный SVG-слой; рендер маскирует его силуэтом базового предмета. */
+export const QUALITY_IDS = QUALITY_BY_TIER.map(q => q.id);
+export function qualityLayerPath(id){
+  return QUALITY_IDS.includes(id) ? ITEM_ASSET_BASE + 'quality/' + id + '.svg' : null;
+}
+export function qualityLayer(item){
+  if (!item) return null;
+  const id = item.qualityId;
+  if (QUALITY_IDS.includes(id)) return { id, src: qualityLayerPath(id) };
+  const n = Number(item.quality);
+  return Number.isInteger(n) && n >= 0 && n < QUALITY_IDS.length
+    ? { id: QUALITY_IDS[n], src: qualityLayerPath(QUALITY_IDS[n]) } : null;
+}
 export function itemDisplayName(item){
   if (!item) return '';
   return item.name || item.baseName || String(item.id || 'Предмет');
@@ -415,6 +429,12 @@ export function itemReport(){
     (i.schools.length || i.grade)).map(i => i.id);
   const layers = elementLayerPaths({ schools: SCHOOL_IDS });
   if (layers.length !== 6) errors.push('Ожидается шесть слоёв');
+  const qualityPaths = QUALITY_IDS.map(qualityLayerPath);
+  if (qualityPaths.length !== 4 || qualityPaths.some(p => !p || !p.includes('/quality/'))) errors.push('Ожидается четыре слоя качества');
+  const noQuality = ITEM_DB.filter(it => !qualityLayer(it)).map(it => it.id);
+  if (noQuality.length) errors.push('Нет слоя качества: ' + noQuality.join(', '));
+  const noSprite = ITEM_DB.filter(it => !it.sprite).map(it => it.id);
+  if (noSprite.length) errors.push('Нет базового SVG: ' + noSprite.join(', '));
   const novice = effectPower({ tier: 3, schools: ['flame'], damage: 100 }, 'flame', 100);
   const master = effectPower({ tier: 6, schools: ['flame'], damage: 100 }, 'flame', 100);
   const expert = effectPower({ tier: 8, schools: ['flame', 'water'], damage: 100 }, 'flame', 100);
@@ -433,7 +453,7 @@ export function itemReport(){
     types: { weapon: ITEM_DB.filter(i => i.type === 'weapon').length,
       armor: ITEM_DB.filter(i => i.type === 'armor').length,
       container: ITEM_DB.filter(i => i.type === 'container').length },
-    elements: SCHOOL_IDS.slice(), layers, grades: MAGIC_GRADES,
+    elements: SCHOOL_IDS.slice(), layers, qualityPaths, grades: MAGIC_GRADES,
     mechanics: SCHOOL_MECHANICS, grid: INVENTORY_GRID,
     quality: QUALITY_BY_TIER, containers: CONTAINER_PURPOSES,
     containerClasses: CONTAINER_CLASSES,

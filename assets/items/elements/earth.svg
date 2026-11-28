@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M14 45 L24 18 L40 14 L52 40 L45 56 H20 Z" fill="#6b7a3c"/>
-    <path d="M24 18 L33 34 L20 45 Z" fill="#8a6a3c"/>
-    <path d="M40 14 L33 34 L52 40 Z" fill="#4f6131"/>
-    <ellipse cx="37" cy="30" rx="3" ry="2" fill="#a9bd6b" stroke="none" transform="rotate(-25 37 30)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision" data-element="earth" data-role="backdrop"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9 35 L18 17 L33 10 L49 16 L55 35 L46 52 L29 58 L14 48 Z" fill="#4f8a44" stroke-linejoin="miter"/>
+    <path d="M18 35 L27 21 L41 18 L48 34 L40 47 L24 46 Z" fill="#6b4426" stroke="none" stroke-linejoin="miter"/>
   </g></svg>

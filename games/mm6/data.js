@@ -3,13 +3,15 @@
 
 import { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
   schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
-  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
+  itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
   weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
   CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport } from './items.js';
 
 export { ITEM_ASSET_BASE, INVENTORY_GRID, QUALITY_BY_TIER, MAGIC_GRADES, SCHOOLS, SCHOOL_IDS,
   schoolById, tierQuality, gradeForTier, schoolsValid, effectPower, elementLayerPaths,
-  elementLayers, itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
+  elementLayers, QUALITY_IDS, qualityLayerPath, qualityLayer,
+  itemDisplayName, ITEM_DB, ITEM_IDS, ITEM_BY_ID, ITEM_ID_SET, itemById,
   weaponDefsForSet, armorDefs, tieredEquipmentDefs, STARTING_RAGS, CONTAINER_PURPOSES,
   CONTAINER_CLASSES, SCHOOL_MECHANICS, itemInstance, catalogItems, rollCatalogItem, itemReport };
 

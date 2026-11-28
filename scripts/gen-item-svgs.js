@@ -4,9 +4,10 @@
 /**
  * Flat two-tone SVG icons for the rebuilt MM6 item database.
  *
- * Style follows assets/trees/: transparent background, chunky dark outline,
- * flat fill plus a lighter highlight of the same hue. No gradients, no PNG.
- * Element overlays live in their own folder and are composited at render time.
+ * Style follows docs/ASSET_STYLE.md: transparent background, chunky dark
+ * outline, flat fill plus a lighter accent. No gradients, no filters, no PNG.
+ * Element files are coloured backdrops behind the whole item; quality files
+ * are masked to the item silhouette by the renderer, so the item stays visible.
  */
 
 const fs = require('fs');
@@ -17,8 +18,8 @@ const OUT = path.join(ROOT, 'assets', 'items');
 
 const OUTLINE = '#241a14';
 
-function svg(body) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"><g stroke="${OUTLINE}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">${body}</g></svg>\n`;
+function svg(body, attrs = '') {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision"${attrs ? ' ' + attrs : ''}><g stroke="${OUTLINE}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">${body}</g></svg>\n`;
 }
 
 function highlight(cx, cy, rx, ry, color, rotate = 0) {
@@ -217,45 +218,65 @@ const files = {
     ${highlight(12, 30, 3, 1.6, '#b98a52')}
   `),
 
-  // ── Element overlays (six files, composited over bases) ──────────────
+  // ── Element backdrops (six files; rendered BEHIND the base item) ─────
+  // Пятно того же цвета, что и знак школы. Без градиентов и размытия.
   'elements/flame.svg': svg(`
-    <path d="M32 4 Q44 20 40 34 Q47 31 48 42 Q48 57 32 59 Q16 57 16 42 Q17 31 24 34 Q20 20 32 4 Z" fill="#d94a20"/>
-    <path d="M32 24 Q39 36 36 45 Q39 43 39 49 Q39 55 32 55 Q25 55 25 49 Q25 43 28 45 Q25 36 32 24 Z" fill="#f6a02c"/>
-    ${highlight(30, 48, 2.4, 3, '#ffd36b')}
-  `),
+    <path d="M10 33 L17 16 L32 8 L47 16 L54 33 L46 50 L32 59 L18 50 Z" fill="#b93a2b" stroke-linejoin="miter"/>
+    <path d="M18 34 L26 20 L38 18 L48 32 L40 47 L24 47 Z" fill="#e0823c" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="flame" data-role="backdrop"'),
 
   'elements/water.svg': svg(`
-    <path d="M32 5 Q48 27 48 41 Q48 56 32 59 Q16 56 16 41 Q16 27 32 5 Z" fill="#2f78b5"/>
-    <path d="M22 43 Q26 34 32 34 Q38 34 42 43 Q32 49 22 43 Z" fill="#62b9de"/>
-    ${highlight(26, 30, 2.6, 4, '#a5e1f2', -20)}
-  `),
+    <path d="M11 32 L20 15 L34 8 L48 17 L53 34 L43 51 L29 58 L15 47 Z" fill="#3b6ea5" stroke-linejoin="miter"/>
+    <path d="M19 34 L27 20 L40 17 L47 32 L39 46 L25 45 Z" fill="#93c5fd" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="water" data-role="backdrop"'),
 
   'elements/earth.svg': svg(`
-    <path d="M14 45 L24 18 L40 14 L52 40 L45 56 H20 Z" fill="#6b7a3c"/>
-    <path d="M24 18 L33 34 L20 45 Z" fill="#8a6a3c"/>
-    <path d="M40 14 L33 34 L52 40 Z" fill="#4f6131"/>
-    ${highlight(37, 30, 3, 2, '#a9bd6b', -25)}
-  `),
+    <path d="M9 35 L18 17 L33 10 L49 16 L55 35 L46 52 L29 58 L14 48 Z" fill="#4f8a44" stroke-linejoin="miter"/>
+    <path d="M18 35 L27 21 L41 18 L48 34 L40 47 L24 46 Z" fill="#6b4426" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="earth" data-role="backdrop"'),
 
   'elements/wind.svg': svg(`
-    <path d="M7 22 Q24 10 40 20 Q50 26 56 18" fill="none" stroke="#e8eef2" stroke-width="4.4"/>
-    <path d="M9 35 Q26 24 43 34 Q51 38 57 31" fill="none" stroke="#f7fafb" stroke-width="4.4"/>
-    <path d="M13 48 Q30 38 45 47" fill="none" stroke="#d5e0e6" stroke-width="4.4"/>
-    ${highlight(28, 27, 4, 1.8, '#ffffff', -10)}
-  `),
+    <path d="M8 31 L19 15 L34 9 L49 17 L56 33 L44 50 L28 57 L13 47 Z" fill="#8a8f98" stroke-linejoin="miter"/>
+    <path d="M18 33 L27 20 L41 18 L48 32 L39 46 L24 45 Z" fill="#f3efe2" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="wind" data-role="backdrop"'),
 
   'elements/dark.svg': svg(`
-    <path d="M32 4 Q49 18 50 38 Q51 56 32 60 Q13 56 14 38 Q15 18 32 4 Z" fill="#42206e"/>
-    <path d="M24 25 Q32 18 40 25 L43 40 Q32 52 21 40 Z" fill="#2c124d"/>
-    <path d="M27 32 L31 38 L27 43 M37 32 L33 38 L37 43" fill="none" stroke="#b58be0" stroke-width="2"/>
-    ${highlight(27, 24, 2.4, 3, '#a77bd4')}
-  `),
+    <path d="M10 32 L20 14 L34 8 L48 17 L54 34 L44 51 L28 58 L14 47 Z" fill="#6d3b8f" stroke-linejoin="miter"/>
+    <path d="M19 34 L27 20 L40 17 L47 33 L39 47 L24 46 Z" fill="#2a1c12" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="dark" data-role="backdrop"'),
 
   'elements/light.svg': svg(`
-    <path d="M32 3 L38 26 L61 32 L38 38 L32 61 L26 38 L3 32 L26 26 Z" fill="#f2c94c"/>
-    <circle cx="32" cy="32" r="10" fill="#fff4cf"/>
-    ${highlight(29, 29, 3, 2, '#ffffff')}
-  `)
+    <path d="M32 7 L48 16 L55 32 L46 49 L32 57 L18 49 L9 32 L16 16 Z" fill="#e8c14a" stroke-linejoin="miter"/>
+    <path d="M22 32 L32 18 L42 32 L32 46 Z" fill="#f3efe2" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-element="light" data-role="backdrop"'),
+
+  // ── Quality layers (four files; masked to the base silhouette) ──────
+  'quality/rusty.svg': svg(`
+    <path d="M11 21 L19 17 L23 24 L15 27 Z" fill="#7a4b2a" stroke="none"/>
+    <path d="M42 13 L50 17 L46 25 L40 21 Z" fill="#b93a2b" stroke="none"/>
+    <path d="M17 40 L25 37 L27 45 L19 48 Z" fill="#7a4b2a" stroke="none"/>
+    <path d="M38 42 L47 39 L49 47 L41 50 Z" fill="#b93a2b" stroke="none"/>
+    <path d="M47 22 L54 26 L48 30 Z" fill="#241a14" stroke="none" stroke-linejoin="miter"/>
+    <path d="M12 33 L18 30 L16 38 Z" fill="#241a14" stroke="none" stroke-linejoin="miter"/>
+  `, 'data-quality="rusty" data-role="quality"'),
+
+  'quality/sharp.svg': svg(`
+    <path d="M14 48 L50 12" fill="none" stroke="#f3efe2" stroke-width="2.6" stroke-linecap="square"/>
+    <path d="M24 52 L54 22" fill="none" stroke="#93c5fd" stroke-width="1.4" stroke-linecap="square"/>
+    ${highlight(40, 22, 3, 1.6, '#ffffff', -38)}
+  `, 'data-quality="sharp" data-role="quality"'),
+
+  'quality/gold.svg': svg(`
+    <path d="M13 45 L22 19 L34 14 L43 20" fill="none" stroke="#e8c14a" stroke-width="3.2" stroke-linecap="square"/>
+    <path d="M20 52 L31 26 L45 18" fill="none" stroke="#e8c14a" stroke-width="2.2" stroke-linecap="square"/>
+    <path d="M38 36 L51 31" fill="none" stroke="#f3efe2" stroke-width="1.6" stroke-linecap="square"/>
+  `, 'data-quality="gold" data-role="quality"'),
+
+  'quality/magic.svg': svg(`
+    <path d="M32 10 L36 26 L52 32 L36 38 L32 54 L28 38 L12 32 L28 26 Z" fill="#93c5fd" stroke="none"/>
+    <path d="M32 21 L35 30 L44 33 L35 36 L32 45 L29 36 L20 33 L29 30 Z" fill="#b58be0" stroke="none"/>
+    <path d="M15 17 H21 M18 14 V20" fill="none" stroke="#f3efe2" stroke-width="1.6" stroke-linecap="square"/>
+  `, 'data-quality="magic" data-role="quality"')
 };
 
 fs.mkdirSync(OUT, { recursive: true });
