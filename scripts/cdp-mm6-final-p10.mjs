@@ -73,8 +73,8 @@ runCdp('FINAL PART 10', async api => {
     const manifest=await fetch('${api.base}/assets/manifest.json').then(r=>r.json());
     return {entries:manifest.filter(e=>e.type==='portrait').length,
       cards:window.__mm6Debug.portraitReport().cards};})()`);
-  api.check('Часть 3 — 12 портретов в манифесте и медальоны в отряде',
-    portraits.entries === 12 && portraits.cards.length === 3 &&
+  api.check('Часть 3 — 40 портретов в манифесте и медальоны в отряде',
+    portraits.entries === 40 && portraits.cards.length === 3 &&
     portraits.cards.every(c => c.loaded && /\/assets\/sprites\/portraits\//.test(c.src)),
     JSON.stringify({ entries: portraits.entries, cards: portraits.cards.map(c => c.src) }));
 

@@ -1,33 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
   <title>Портрет: Паладин, вариант 3</title>
   <g id="medallion">
-    <ellipse cx="256" cy="256" rx="224" ry="224" fill="#8f7a5f" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="256" cy="256" rx="202" ry="202" fill="#2a1c12" stroke="#241a14" stroke-width="3"/>
-    <circle cx="256" cy="256" r="188" fill="#8f7a5f" stroke="none"/>
-    <ellipse cx="178" cy="124" rx="52" ry="18" fill="#c9b391" stroke="none"/>
-    <path d="M104 404 H408 V430 H104Z" fill="#241a14" stroke="none"/>
+    <ellipse cx="256" cy="256" rx="226" ry="226" fill="#8f7a5f" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="256" cy="256" rx="204" ry="204" fill="#2a1c12" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="256" cy="256" rx="190" ry="190" fill="#c9b391" stroke="none" stroke-width="0"/>
+    <ellipse cx="176" cy="120" rx="48" ry="16" fill="#c9b391" stroke="none"/>
+    <path d="M104 404 H408 V432 H104Z" fill="#241a14" stroke="none"/>
   </g>
-  <g id="face"><ellipse cx="174" cy="254" rx="20" ry="30" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
-<ellipse cx="338" cy="254" rx="20" ry="30" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
-<ellipse cx="256" cy="250" rx="88" ry="104" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
-<path d="M214 216 H236 V222 H214Z" fill="#241a14" stroke="none"/>
-<path d="M276 216 H298 V222 H276Z" fill="#241a14" stroke="none"/>
-<path d="M252 244 L246 288 H262" fill="#b39b78" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
-<path d="M228 316 Q256 332 284 316" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
-<ellipse cx="216" cy="274" rx="16" ry="10" fill="#c9b391" stroke="none"/></g>
-  <g id="hair"><path d="M158 244 Q166 112 256 108 Q346 112 354 244 L320 170 H192Z" fill="#e8c14a" stroke="none"/>
-    <path d="M172 184 Q256 132 340 184 L328 206 Q256 166 184 206Z" fill="#c9b391" stroke="none"/></g>
-  <g id="gear">
-      <path d="M126 344 Q156 286 256 286 Q356 286 386 344 L386 402 H126Z" fill="#f3efe2" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
-      <path d="M142 348 H370 V366 H142Z" fill="#e8c14a" stroke="none"/>
-      <path d="M188 178 H324 V198 H188Z" fill="#e8c14a" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
-      <path d="M256 180 L268 196 L256 214 L244 196Z" fill="#6d3b8f" stroke="#241a14" stroke-width="2"/>
-      <path d="M248 300 H264 V356 H248Z" fill="#e8c14a" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
-      <path d="M226 318 H286 V332 H226Z" fill="#e8c14a" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
-      <ellipse cx="178" cy="356" rx="22" ry="8" fill="#c9b391" stroke="none"/>
-    </g>
+  <g id="face"><ellipse cx="160" cy="254" rx="18" ry="28" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
+<ellipse cx="352" cy="254" rx="18" ry="28" fill="#b39b78" stroke="#241a14" stroke-width="3"/>
+<ellipse id="faceOval" cx="256" cy="248" rx="96" ry="112" fill="#b39b78" stroke="#241a14" stroke-width="4"/>
+<path d="M212 214 H236 V220 H212Z" fill="#241a14" stroke="none"/>
+<path d="M276 214 H300 V220 H276Z" fill="#241a14" stroke="none"/>
+<path d="M252 238 L246 284 H262" fill="#b39b78" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<path d="M226 314 Q256 330 286 314" fill="#6b4426" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/>
+<ellipse cx="208" cy="272" rx="15" ry="9" fill="#c9b391" stroke="none"/>
+<path d="M286 292 L302 292 L294 310Z" fill="#6d3b8f" stroke="none"/></g>
+  <g id="hair"><path d="M152 176 Q160 86 256 82 Q352 86 360 176 L336 162 Q256 116 176 162Z" fill="#e8c14a" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/><ellipse cx="256" cy="92" rx="74" ry="20" fill="#e8c14a" stroke="#241a14" stroke-width="3"/><path d="M186 92 H326 V98 H186Z" fill="#241a14" stroke="none"/><path d="M132 186 Q148 156 176 152 L176 300 L148 290Z" fill="#e8c14a" stroke="none"/>
+    <path d="M380 186 Q364 156 336 152 L336 300 L364 290Z" fill="#e8c14a" stroke="none"/><path d="M240 170 H272 V178 H240Z" fill="#6d3b8f" stroke="none"/></g>
+  <g id="gear"><path d="M112 430 Q148 350 256 346 Q364 350 400 430 L400 470 H112Z" fill="#c9b391" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/>
+    <path d="M126 428 H386 V444 H126Z" fill="#6d3b8f" stroke="none"/>
+    <path d="M236 352 H276 V438 H236Z" fill="#c9b391" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/><path d="M340 372 L352 364 L386 436 L374 444Z" fill="#e8c14a" stroke="#241a14" stroke-width="3" stroke-linejoin="miter"/><path d="M362 400 H378 V416 H362Z" fill="#f3efe2" stroke="#241a14" stroke-width="2" stroke-linejoin="miter"/></g>
   <g id="status">
-    <path d="M256 402 L286 428 L256 454 L226 428Z" fill="#6d3b8f" stroke="#241a14" stroke-width="3"/>
-    <ellipse cx="248" cy="422" rx="7" ry="4" fill="#f3efe2" stroke="none"/>
+    <path d="M256 442 L284 468 L256 494 L228 468Z" fill="#6d3b8f" stroke="#241a14" stroke-width="3"/>
+    <ellipse cx="248" cy="460" rx="7" ry="4" fill="#f3efe2" stroke="none"/>
   </g>
 </svg>

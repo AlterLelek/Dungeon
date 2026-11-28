@@ -821,10 +821,10 @@ const NPC_GESTURE_BY_KIND={
   house:'shrug',barn:'shrug',shed:'shrug',well:'nod',stable:'nod'
 };
 const NPC_PORTRAIT_BY_KIND={
-  weapons:'warrior_0',armory:'warrior_1',forge:'warrior_2',armor:'warrior_3',magic:'mage_0',
-  jeweler:'paladin_2',market:'warrior_2',tavern:'warrior_3',inn:'paladin_1',
-  church:'paladin_0',hall:'paladin_3',house:'warrior_0',barn:'warrior_1',
-  shed:'warrior_2',well:'mage_2',stable:'warrior_3'
+  weapons:'warrior_0',armory:'warrior_1',forge:'dwarf_2',armor:'warrior_3',magic:'mage_0',
+  jeweler:'dwarfmage_2',market:'rogue_2',tavern:'archer_3',inn:'amazon_1',
+  church:'paladin_0',hall:'angel_3',house:'warrior_0',barn:'dwarf_1',
+  shed:'rogue_2',well:'druid_2',stable:'archer_3'
 };
 const NPC_NAME_BY_KIND={
   weapons:'Оружейник',armory:'Оружейник',forge:'Кузнец',armor:'Бронник',magic:'Маг',
@@ -1885,16 +1885,23 @@ function addStatus(h,id,turns,data){
 function statusSum(h,stat){ return (h.statuses||[]).reduce((s,x)=>s+(x[stat]||0),0); }
 function statusIcons(h){ return (h.statuses||[]).map(s=>(s.icon||'✦')+s.turns).join(' '); }
 
-/* Портреты в медальоне: три класса по четыре варианта, SVG из assets/sprites/portraits. */
+/* Портреты в медальоне: 10 классов по четыре варианта, SVG из assets/sprites/portraits. */
 const PORTRAIT_BASE='../../assets/sprites/portraits/';
+const PORTRAIT_CLASSES=['warrior','mage','paladin','angel','archer','druid','rogue','amazon','dwarf','dwarfmage'];
 function portraitClass(h){
+  const key=String((h&&h.def&&h.def.key)||'');
+  if(PORTRAIT_CLASSES.includes(key)) return key;
   const set=String((h&&h.def&&h.def.set)||'');
   const name=String((h&&h.def&&h.def.name)||'');
-  if(set==='mage'||set==='paladin'||set==='angel') {
-    return set==='mage'||/Маг|Друид|колдун/i.test(name)?'mage':'paladin';
-  }
-  if(/Паладин|Ангел/i.test(name)) return 'paladin';
-  if(/Маг|Друид|колдун/i.test(name)) return 'mage';
+  if(/Гном-колдун/i.test(name)) return 'dwarfmage';
+  if(/Гном/i.test(name)) return 'dwarf';
+  if(/Амазон/i.test(name)) return 'amazon';
+  if(/Разбойник/i.test(name)) return 'rogue';
+  if(/Друид/i.test(name)) return 'druid';
+  if(/Лучник|Арчер/i.test(name)) return 'archer';
+  if(/Ангел/i.test(name)) return 'angel';
+  if(/Паладин/i.test(name)) return 'paladin';
+  if(/Маг|колдун/i.test(name)) return set==='archer'?'rogue':'mage';
   return 'warrior';
 }
 function portraitVariant(h,i){

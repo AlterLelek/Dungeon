@@ -426,6 +426,82 @@
     }
   },
   {
+    "file": "gold.svg",
+    "path": "assets/items/quality/gold.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "magic.svg",
+    "path": "assets/items/quality/magic.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "rusty.svg",
+    "path": "assets/items/quality/rusty.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
+    "file": "sharp.svg",
+    "path": "assets/items/quality/sharp.svg",
+    "type": "item",
+    "used_in": [
+      "adventurer"
+    ],
+    "refs": [
+      "games/mm6/index.html",
+      "games/mm6/items.js"
+    ],
+    "dynamic": true,
+    "dynamic_in": {
+      "adventurer": [
+        "games/mm6/index.html",
+        "games/mm6/items.js"
+      ]
+    }
+  },
+  {
     "file": "axe.svg",
     "path": "assets/items/weapons/axe.svg",
     "type": "weapon",
@@ -6629,6 +6705,222 @@
     }
   },
   {
+    "file": "amazon_0.svg",
+    "path": "assets/sprites/portraits/amazon_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "amazon_1.svg",
+    "path": "assets/sprites/portraits/amazon_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "amazon_2.svg",
+    "path": "assets/sprites/portraits/amazon_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "amazon_3.svg",
+    "path": "assets/sprites/portraits/amazon_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_0.svg",
+    "path": "assets/sprites/portraits/angel_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_1.svg",
+    "path": "assets/sprites/portraits/angel_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_2.svg",
+    "path": "assets/sprites/portraits/angel_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "angel_3.svg",
+    "path": "assets/sprites/portraits/angel_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "archer_0.svg",
+    "path": "assets/sprites/portraits/archer_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "archer_1.svg",
+    "path": "assets/sprites/portraits/archer_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "archer_2.svg",
+    "path": "assets/sprites/portraits/archer_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "archer_3.svg",
+    "path": "assets/sprites/portraits/archer_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "druid_0.svg",
+    "path": "assets/sprites/portraits/druid_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "druid_1.svg",
+    "path": "assets/sprites/portraits/druid_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "druid_2.svg",
+    "path": "assets/sprites/portraits/druid_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "druid_3.svg",
+    "path": "assets/sprites/portraits/druid_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarf_0.svg",
+    "path": "assets/sprites/portraits/dwarf_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarf_1.svg",
+    "path": "assets/sprites/portraits/dwarf_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarf_2.svg",
+    "path": "assets/sprites/portraits/dwarf_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarf_3.svg",
+    "path": "assets/sprites/portraits/dwarf_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarfmage_0.svg",
+    "path": "assets/sprites/portraits/dwarfmage_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarfmage_1.svg",
+    "path": "assets/sprites/portraits/dwarfmage_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarfmage_2.svg",
+    "path": "assets/sprites/portraits/dwarfmage_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "dwarfmage_3.svg",
+    "path": "assets/sprites/portraits/dwarfmage_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
     "file": "mage_0.svg",
     "path": "assets/sprites/portraits/mage_0.svg",
     "type": "portrait",
@@ -6694,6 +6986,42 @@
   {
     "file": "paladin_3.svg",
     "path": "assets/sprites/portraits/paladin_3.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "rogue_0.svg",
+    "path": "assets/sprites/portraits/rogue_0.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "rogue_1.svg",
+    "path": "assets/sprites/portraits/rogue_1.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "rogue_2.svg",
+    "path": "assets/sprites/portraits/rogue_2.svg",
+    "type": "portrait",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "file": "rogue_3.svg",
+    "path": "assets/sprites/portraits/rogue_3.svg",
     "type": "portrait",
     "used_in": [],
     "refs": [],
