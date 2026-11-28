@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision" data-element="water" data-role="backdrop"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M11 32 L20 15 L34 8 L48 17 L53 34 L43 51 L29 58 L15 47 Z" fill="#3b6ea5" stroke-linejoin="miter"/>
-    <path d="M19 34 L27 20 L40 17 L47 32 L39 46 L25 45 Z" fill="#93c5fd" stroke="none" stroke-linejoin="miter"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" shape-rendering="geometricPrecision" data-element="water" data-role="backdrop" data-school="water"><g stroke="#241a14" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+    <g data-school="water" data-fx="school-aura">
+      <circle cx="32" cy="32" r="28" fill="#3b6ea5" stroke="none" opacity=".18"><animate attributeName="opacity" values=".10;.28;.10" dur="2.6s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="22" fill="#93c5fd" stroke="none" opacity=".24"><animate attributeName="opacity" values=".16;.38;.16" dur="2.1s" repeatCount="indefinite"/></circle>
+      <circle cx="32" cy="32" r="16" fill="#3b6ea5" stroke="none" opacity=".20"><animate attributeName="opacity" values=".14;.34;.14" dur="1.7s" repeatCount="indefinite"/></circle>
+      <g opacity=".75">
+    <path d="M32 10 Q41 24 43 34 Q43 46 32 50 Q21 46 21 34 Q23 24 32 10 Z" fill="#93c5fd" stroke="none"/>
+    <path d="M22 39 Q32 33 42 39" fill="none" stroke="#dbeafe" stroke-width="2"/>
+  </g>
+    </g>
   </g></svg>
