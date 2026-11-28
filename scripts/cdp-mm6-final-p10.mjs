@@ -175,8 +175,8 @@ runCdp('FINAL PART 10', async api => {
   const handoff = readFileSync('docs/ASSET_HANDOFF.md', 'utf8');
   api.check('Часть 10 — CDP-покрытие всех десяти частей и свежая передача ассетов',
     missing.length === 0 && /cdp-mm6-final-p10\.mjs/.test(design) &&
-    /Всего: \*\*1032 SVG\*\* и \*\*275 PNG\*\*/.test(handoff) &&
-    !/\*\*1020 SVG\*\*/.test(handoff),
+    /Всего: \*\*1066 SVG\*\* и \*\*275 PNG\*\*/.test(handoff) &&
+    !/\*\*1032 SVG\*\*/.test(handoff),
     JSON.stringify({ missing, design: /cdp-mm6-final-p10\.mjs/.test(design),
       handoff: (handoff.match(/Всего:.*/) || [''])[0] }));
 });
