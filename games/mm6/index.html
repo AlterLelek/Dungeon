@@ -38,7 +38,7 @@ button,input,select{font-family:inherit}
 .rightDock button{width:48px;height:48px;border-radius:9px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.24)}
 .rightDock button.hot{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.3)}
-#btnLog{position:absolute;right:8px;top:8px;width:auto;height:28px;padding:0 9px;border-radius:8px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto}
+#btnLog{position:absolute;right:180px;top:8px;width:auto;height:28px;padding:0 9px;border-radius:8px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto}
 #party{position:absolute;z-index:4;left:50%;top:4px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .pcard{width:122px;padding:3px 5px;border-radius:8px;background:rgba(6,8,18,.86);border:1px solid rgba(251,191,36,.35);font-size:9px}
 .pcard.active{border-color:var(--hero-1);box-shadow:0 0 8px rgba(125,255,178,.35)}
@@ -344,10 +344,16 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
 .logSpeaker{color:#fbbf24}
 .logDup{display:inline-block;margin-left:5px;padding:0 5px;border-radius:8px;background:rgba(251,191,36,.18);color:#ffe9b0;font-size:9px;font-weight:700}
 .logTurn{display:inline-block;min-width:30px;color:#7f8db0;font-size:9px}
-#toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
+#toast{position:fixed;left:50%;bottom:calc(var(--toast-bottom,14px) + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);z-index:80;pointer-events:none;padding:10px 16px;border-radius:20px;background:rgba(12,14,28,.96);border:1px solid rgba(251,191,36,.6);color:#ffe9b0;font-size:12px;font-weight:700;opacity:0;transition:opacity .25s,transform .25s;max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* В бою тост поднимается над плашками героев, чтобы не закрывать данные отряда. */
+/* Тост поднимается над окном лога; на карте он стоит справа, над строкой состояния. */
 #toast.in-battle{bottom:calc(var(--toast-bottom,110px) + env(safe-area-inset-bottom,0px))}
+#toast:not(.in-battle){left:auto;right:190px;max-width:180px;transform:translateY(20px)}
+#toast:not(.in-battle).show{transform:translateY(0)}
+/* Пока открыто окно, сообщение не должно наезжать на него. */
+body:has(.overlay:not(.hidden)) #toast{display:none}
+/* Пока на карте открыта плашка врага, сообщение уступает ей место. */
+body.enemy-plate #toast{display:none}
 @media (max-width:620px){.invBody,#shopBody{flex-direction:column;align-items:stretch}.mannequin{width:100%;flex:none}.mq-stage{max-width:min(220px,72vw)}.invGrid{grid-template-columns:repeat(9,minmax(0,1fr))}#shopCategories{position:static;flex:none}.box{padding:13px}}
 /* ===== РАЗМЕР ЭКРАНА: ПК / ГОРИЗОНТАЛЬ / ВЕРТИКАЛЬ ТЕЛЕФОНА ===== */
 @media (min-width:1100px) and (min-height:700px){
@@ -363,6 +369,8 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   .progress{margin:6px 0;padding:6px}
   #party{top:2px}
   .pcard{width:104px;padding:2px 4px}
+  /* Кнопки уходят в компактную сетку, чтобы не наезжать на мини-карту и строку состояния. */
+  .rightDock{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:180px;bottom:56px}
 }
 @media (max-width:520px) and (orientation:portrait){
   .overlay{padding:8px}
@@ -370,6 +378,14 @@ h3{margin:12px 0 6px;color:#9fb0d8;font-size:10px;letter-spacing:2px;text-transf
   #start .box{width:96vw}
   .head{gap:6px}
   #stage{max-height:56dvh}
+}
+/* Часть 3: на карте отряд стоит правее окна состояния и ниже кнопки журнала;
+   в бою карточки остаются внизу, а dpad уходит под очередь. */
+#party:not(.in-battle){left:auto;right:156px;top:40px;transform:none}
+#controls .leftDock{top:80px;bottom:auto}
+body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
+@media (orientation:portrait){
+  #party:not(.in-battle){left:50%;right:auto;top:96px;transform:translateX(-50%)}
 }
 </style>
 </head>
@@ -560,7 +576,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgW:500,enemyPanelW:220,enemyPanelH:58,badgeW:100};
+  msgX:120,msgW:340,enemyPanelW:220,enemyPanelH:58,badgeW:100};
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -687,10 +703,17 @@ function syncToastPlacement(){
   const t=$('toast'); if(!t) return;
   const inBattle=!!(game&&game.battle);
   t.classList.toggle('in-battle',inBattle);
+  const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
+  const canvasTop=cr.top+(cr.height-H*scale)/2;
   if(inBattle){
-    const p=$('party'), r=p&&p.getBoundingClientRect();
-    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-(r?r.top:window.innerHeight)+10)+'px');
-  } else t.style.removeProperty('--toast-bottom');
+    // Сообщение встаёт над окном лога, а не поверх его последней строки.
+    const logTop=canvasTop+BF.msgY*scale;
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-logTop+8)+'px');
+  } else {
+    // На карте сообщение встаёт над нижней строкой состояния, не поверх неё.
+    const stripTop=canvasTop+326*scale;
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-stripTop+8)+'px');
+  }
 }
 function toast(text,type,speaker){
   const t=$('toast'); if(t){ t.textContent=text; syncToastPlacement(); t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2300); }
@@ -3072,11 +3095,11 @@ function battleHeroPoint(b,i){
   return {x:W/2-gap*(n-1)/2+i*gap,y:BF.heroY};
 }
 // Геометрия кликабельных «фишек» боя — одна и та же для отрисовки и hit-test'а.
-const BATTLE_CHIPS={mw:500,innerPad:10,gap:6,height:22,ids:['attack','spell','flee','inv']};
+const BATTLE_CHIPS={mw:340,innerPad:10,gap:6,height:22,ids:['attack','spell','flee','inv']};
 function battleChipRects(){
   const w=BATTLE_CHIPS.mw-BATTLE_CHIPS.innerPad*2, gap=BATTLE_CHIPS.gap;
   const cw=(w-gap*(BATTLE_CHIPS.ids.length-1))/BATTLE_CHIPS.ids.length;
-  const x=(W-BATTLE_CHIPS.mw)/2+BATTLE_CHIPS.innerPad, y=BF.msgY+8;
+  const x=BF.msgX+BATTLE_CHIPS.innerPad, y=BF.msgY+8;
   return BATTLE_CHIPS.ids.map((id,i)=>({id,x:x+i*(cw+gap),y,w:cw,h:BATTLE_CHIPS.height}));
 }
 function battleChipAt(p){
@@ -5890,6 +5913,8 @@ function roadLinks(m,x,y){
 }
 /* Подсказки по наведению/тапу для типов, у которых нет спрайта в манифесте. */
 const mapHints=[]; let mapHint=null;
+// Прямоугольники transient-плашек карты для сквозной CDP-проверки непересечения.
+let mapUiRects={state:null,warning:null,message:null,hint:null,enemies:[]};
 const TERRAIN_SPRITE_TYPES={tree:'tree',mountain:'mountain',rock:'mountain',shop:'building',house:'building'};
 let spriteLessTerrain=null;
 function spriteLessTerrainSet(){
@@ -6423,7 +6448,7 @@ function mapEnemyPanelRect(item){
   const w=MAP_ENEMY_PANEL_W, h=MAP_ENEMY_PANEL_H;
   const cx=W/2+item.side*(item.forward===2?60:96);
   // Ряды по глубине и шахматный сдвиг дальнего ряда не дают панелям перекрываться.
-  const y=item.forward===0?230:item.forward===1?180:(108+(Math.abs(item.side)%2)*32);
+  const y=item.forward===0?236:item.forward===1?188:(100+(Math.abs(item.side)%2)*40);
   return {x:clamp(cx-w/2,8,W-w-8),y,w,h};
 }
 function mapEnemyHpText(e){
@@ -6538,26 +6563,35 @@ function drawMap(now){
   panel(10,10,214,56);
   const objective=activeObjectiveText();
   mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,objective};
+  mapUiRects.state={x:10,y:10,w:214,h:56};
   fitText(place,196,11,'#ffe6a8',18,22);
   ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillStyle='#c8d2f0'; setFont(10,false);
   ctx.fillText('Ход '+game.world.turn+'   🪙 '+game.gold,18,39);
   fitText('Цель: '+objective,196,9,'#fde68a',18,55);
   drawMiniMap(m);
   const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
+  mapUiRects.warning=near.length?{x:12,y:296,w:MAP_WARN_W,h:22}:null;
   if(near.length){
     roundRect(12,296,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
     ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
     fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,307);
   }
+  mapUiRects.message={x:126,y:326,w:388,h:26};
   roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
   fitText(game.msg,372,11,'#f3e8cf',134,339);
   const wLabel=weather.label();
   ctx.fillStyle='#9fb0d8'; setFont(9,false); ctx.textAlign='left';
   ctx.fillText('Ход '+game.world.turn+' · зрение 2 · Q/E поворот'+(wLabel?' · '+wLabel:''),12,H-8);
-  if(mapHint&&now-mapHint.t<2600){
+  // Подсказка уходит, когда наведена плашка врага: два transient-сообщения не пересекаются.
+  mapUiRects.enemies=visibleMapEnemies().filter(item=>enemyPlateVisible(item.e,now)).map(item=>mapEnemyPanelRect(item));
+  document.body.classList.toggle('enemy-plate',mapUiRects.enemies.length>0);
+  const showHint=!!mapHint&&now-mapHint.t<2600&&!enemyPlateFocus.e;
+  mapUiRects.hint=null;
+  if(showHint){
     const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,3);
-    const h=28+lines.length*12, ty=H-34-h;
+    const h=28+lines.length*12, ty=290-h; // Верх плашки предупреждения — 296, зазор 6.
+    mapUiRects.hint={x:12,y:ty,w:MAP_HINT_W,h};
     panel(12,ty,MAP_HINT_W,h);
     fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
     ctx.fillStyle='#c8d2f0'; setFont(9,false); ctx.textAlign='left'; ctx.textBaseline='middle';
@@ -6710,7 +6744,7 @@ function drawBattle(now,dt){
     (b.turn==='hero'?'ХОД ОТРЯДА':'ХОД ВРАГА'),W/2,25);
   // Очередность больше не рисуется одной строкой: её показывает вертикальный DOM-список #turnQueue.
   // Компактное текстовое окно: 3 строки с прокруткой вместо разрастания от длинных сообщений.
-  const mw=BF.msgW, mx=(W-mw)/2, my=BF.msgY, mh=BF.msgH;
+  const mw=BF.msgW, mx=BF.msgX, my=BF.msgY, mh=BF.msgH;
   roundRect(mx,my,mw,mh,8); ctx.fillStyle='rgba(5,7,15,.96)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.55)'; ctx.lineWidth=1.5; ctx.stroke();
   drawActionChips(b);
@@ -7546,6 +7580,53 @@ function worldMapReport(){
     swamp:w.maps.filter(m=>m.cells.some(row=>row.some(c=>c.t==='swamp'))).length,
     roads:w.maps.filter(m=>m.cells.some(row=>row.some(c=>ROAD_KINDS.some(k=>k.id===c.t)))).length};
 }
+/* Сквозная проверка правила «ни одно окно, плашка, сообщение или подсказка
+   не перекрывают другое окно». Возвращает видимые прямоугольники и пересечения. */
+function visibleWindowsReport(){
+  const rects=[];
+  const add=(name,el,source='dom')=>{
+    if(!el) return;
+    const s=getComputedStyle(el);
+    if(s.display==='none'||s.visibility==='hidden'||Number(s.opacity)===0||!el.getClientRects().length) return;
+    const r=el.getBoundingClientRect();
+    if(r.width<=0||r.height<=0) return;
+    rects.push({name,source,x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)});
+  };
+  const modal=[...document.querySelectorAll('.overlay:not(.hidden)>.box')];
+  add('toast',$('toast'));
+  if(modal.length){
+    modal.forEach((el,i)=>add('modal'+(i?'-'+i:''),el));
+  } else {
+    add('party',$('party')); add('turnQueue',$('turnQueue'));
+    add('leftDock',document.querySelector('.leftDock'));
+    add('rightDock',document.querySelector('.rightDock'));
+    add('logButton',$('btnLog'));
+    const r=cv.getBoundingClientRect();
+    const scale=Math.min(r.width/W,r.height/H);
+    const vx=r.left+(r.width-W*scale)/2, vy=r.top+(r.height-H*scale)/2;
+    const put=(name,q)=>{ if(!q) return; rects.push({name,source:'canvas',
+      x:+(vx+q.x*scale).toFixed(1),y:+(vy+q.y*scale).toFixed(1),
+      w:+(q.w*scale).toFixed(1),h:+(q.h*scale).toFixed(1)}); };
+    if(game&&game.battle){
+      put('enemyPanel',{x:settings.battleMirror?W-(BF.enemyPanelW+10):10,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH});
+      put('turnBadge',{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26});
+      put('logWindow',{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH});
+    } else {
+      put('stateWindow',mapUiRects.state); put('enemyWarning',mapUiRects.warning);
+      put('messageStrip',mapUiRects.message); put('hint',mapUiRects.hint);
+      put('minimap',minimapRect()); put('minimapOpen',minimapOpenRect());
+      (mapUiRects.enemies||[]).forEach((q,i)=>put('enemyPlate'+i,q));
+    }
+  }
+  const overlaps=[];
+  for(let i=0;i<rects.length;i++) for(let j=i+1;j<rects.length;j++){
+    const a=rects[i], b=rects[j];
+    const ox=Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x);
+    const oy=Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y);
+    if(ox>1&&oy>1) overlaps.push({a:a.name,b:b.name,w:+ox.toFixed(1),h:+oy.toFixed(1)});
+  }
+  return {rects,overlaps,modal:modal.length};
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
@@ -7681,12 +7762,15 @@ window.__mm6Debug={
   combatReport:()=>combatReport(),
   battleInputReport:()=>({armed:armedAction?Object.assign({},armedAction):null,chips:battleChipRects()}),
   mapStateWindowReport:()=>mapStateWindow,
+  overlapReport:()=>visibleWindowsReport(),
+  showToast:(text)=>{ toast(text||'Проверка сообщений'); return true; },
+  showMapHint:(title,desc)=>{ mapHint={title:title||'Подсказка',desc:desc||'Описание подсказки',t:performance.now()}; return true; },
   battleHudReport:()=>{
     const b=game&&game.battle; if(!b) return null;
     const px=settings.battleMirror?W-(BF.enemyPanelW+10):10;
     return {panel:{x:px,y:10,w:BF.enemyPanelW,h:BF.enemyPanelH},
       badge:{x:W/2-BF.badgeW/2,y:12,w:BF.badgeW,h:26},
-      msg:{x:(W-BF.msgW)/2,y:BF.msgY,w:BF.msgW,h:BF.msgH},
+      msg:{x:BF.msgX,y:BF.msgY,w:BF.msgW,h:BF.msgH},
       label:enemyGroupLabel(b),logRows:b.logRows||0,logScroll:b.logScroll||0,logScrollMax:b.logScrollMax||0,
       nameHp:{name:b.nameLayout||null,hp:b.hpLayout||null,
         overlap:!!(b.nameLayout&&b.hpLayout&&b.nameLayout.x+b.nameLayout.width>b.hpLayout.x-b.hpLayout.width-2)},
@@ -7764,7 +7848,7 @@ window.__mm6Debug={
     shown:enemyPlateVisible(item.e,performance.now())})),
     focus:{has:!!enemyPlateFocus.e,held:enemyPlateFocus.held,hoverMs:MAP_PLATE_HOVER_MS,
       name:enemyPlateFocus.e?(enemyPlateFocus.e.name||'Враг'):null},
-    hero:{x:W/2,y:344},hud:{x:10,y:10,w:214,h:86}}),
+    hero:{x:W/2,y:344},hud:{x:10,y:10,w:214,h:56}}),
   statsReport:()=>party().map(h=>({hero:h.def.name,attack:heroAtk(h),defense:heroDef(h)})),
   handsReport:()=>{
     const hero=party()[0], w=hero&&equippedWeapon(hero), two=!!w&&isTwoHanded(w);
