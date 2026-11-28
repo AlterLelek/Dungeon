@@ -1,6 +1,6 @@
 {
   "name": "dungeon-hub",
-  "version": "5.182",
+  "version": "5.309",
   "private": true,
   "scripts": {
     "build:manifest": "node scripts/build-manifest.js"
