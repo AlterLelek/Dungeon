@@ -14166,5 +14166,57 @@
     "refs": [],
     "dynamic": false,
     "dynamic_in": {}
+  },
+  {
+    "id": 814,
+    "path": "shared/assets/master/buildings/church_0.svg",
+    "type": "building",
+    "group": "Здания",
+    "sign_text": "Церковь «Свет»",
+    "sign_icon": "gem",
+    "shop_kind": [
+      "church"
+    ],
+    "floors": 1,
+    "categories": [
+      "Храм",
+      "Церковь"
+    ],
+    "tags": [
+      "building",
+      "church",
+      "temple"
+    ],
+    "file": "church_0.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
+  },
+  {
+    "id": 815,
+    "path": "shared/assets/master/buildings/hall_0.svg",
+    "type": "building",
+    "group": "Здания",
+    "sign_text": "Ратуша «у площади»",
+    "sign_icon": "house",
+    "shop_kind": [
+      "hall"
+    ],
+    "floors": 1,
+    "categories": [
+      "Ратуша",
+      "Учреждение"
+    ],
+    "tags": [
+      "building",
+      "hall",
+      "town-hall"
+    ],
+    "file": "hall_0.svg",
+    "used_in": [],
+    "refs": [],
+    "dynamic": false,
+    "dynamic_in": {}
   }
 ]

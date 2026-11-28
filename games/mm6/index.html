@@ -1101,7 +1101,7 @@ await manifestPromise;
 function manifestAssetPath(entry){
   const p=String((entry&&entry.path)||(entry&&entry.file)||'');
   if(!p) return null;
-  if(p.startsWith('assets/')) return '../../'+p;
+  if(p.startsWith('assets/')||p.startsWith('shared/')) return '../../'+p;
   if(p.startsWith('../')) return p;
   return p;
 }
@@ -1112,6 +1112,40 @@ function manifestSprite(type,index){
   const list=manifestPaths(type);
   return list.length?list[Math.abs(Math.trunc(Number(index)||0))%list.length]:null;
 }
+/* Фасад выбирается из данных: сначала buildingId ячейки, затем её shop_kind
+   и только в конце общий kind. Никаких ручных списков по типам лавок. */
+function buildingEntryFor(cell){
+  if(!cell) return null;
+  const buildings=assetManifest.filter(e=>e.type==='building');
+  const id=String(cell.buildingId||'');
+  if(id){
+    const byId=buildings.find(e=>{
+      const file=String(e.file||String(e.path||'').split('/').pop());
+      return file===id+'.svg';
+    });
+    if(byId) return byId;
+  }
+  const kinds=Array.isArray(cell.shop_kind)?cell.shop_kind:[];
+  for(const kind of kinds){
+    const byKind=buildings.find(e=>Array.isArray(e.shop_kind)&&e.shop_kind.includes(kind));
+    if(byKind) return byKind;
+  }
+  const kind=String(cell.kind||'');
+  if(kind) return buildings.find(e=>Array.isArray(e.shop_kind)&&e.shop_kind.includes(kind))||null;
+  return null;
+}
+function buildingPathFor(cell){
+  const e=buildingEntryFor(cell);
+  return e?manifestAssetPath(e):null;
+}
+function buildingTitleFor(cell){
+  if(!cell) return 'Здание';
+  const id=String(cell.buildingId||'');
+  const def=BUILDING_TYPES.find(b=>b.id===id);
+  return cell.shopName||cell.houseName||(def&&def.signName)||(def&&def.title)||
+    ((SHOP_TYPES.find(t=>t.id===cell.kind)||{}).title)||'Здание';
+}
+let buildingDrawLog=[];
 
 /* --- Фауна карты: SVG-спрайты и простое блуждание без участия в бою --- */
 // Позиции животных задаются в мировых координатах карты (в клетках), а не в пикселях экрана.
@@ -1403,6 +1437,8 @@ function spriteImg(path){
   }
   return imgCache[path];
 }
+// Фасады грузятся заранее: в первом кадре карты уже стоят настоящие SVG, а не серые заглушки.
+manifestPaths('building').forEach(spriteImg);
 // Заглушка отсутствующего спрайта: полупрозрачная плашка в тон карты, без эмодзи и «пёстрых» плакатов.
 // Название и описание типа показываются по наведению/тапу (registerMapHint).
 function fallbackSpriteInfo(path){
@@ -2417,13 +2453,25 @@ function placeSettlement(cells,size,rng,keep,cx,cy,def){
   const hallDef=BUILDING_TYPES.find(b=>b.id==='hall_0')||BUILDING_TYPES[0];
   const hall=put(center,hallDef,'hall');
   const offsets=[];
+  const entryDx=cx-center.x, entryDy=cy-center.y;
   for(let r=1;r<=4;r++) for(let dy=-r;dy<=r;dy++) for(let dx=-r;dx<=r;dx++){
     if(Math.max(Math.abs(dx),Math.abs(dy))!==r) continue;
     // Чётная манхэттенская чётность: здания не стоят бок о бок, у каждого есть проход.
     if((Math.abs(dx)+Math.abs(dy))%2) continue;
+    // Полный город занимает все восемь клеток второго кольца, кроме входа;
+    // оставляем сторону входа свободной, чтобы ратуша не оказалась в тупике.
+    if(def.shops.length>=12&&r===2&&Math.abs(dx)+Math.abs(dy)===2){
+      const towardEntry=Math.abs(entryDx)>=Math.abs(entryDy)
+        ?(entryDx<0?dx===-2:entryDx>0?dx===2:false)
+        :(entryDy<0?dy===-2:entryDy>0?dy===2:false);
+      if(towardEntry) continue;
+    }
     offsets.push({dx,dy,r,angle:Math.atan2(dy,dx)});
   }
-  offsets.sort((a,b)=>a.r-b.r||a.angle-b.angle);
+  // Сначала диагонали, потом стороны: в кольце остаётся хотя бы один
+  // проход от ратуши к улице, даже когда город получает все лавки сразу.
+  const ringWeight=o=>(Math.abs(o.dx)===Math.abs(o.dy)?0:1);
+  offsets.sort((a,b)=>a.r-b.r||ringWeight(a)-ringWeight(b)||a.angle-b.angle);
   def.shops.forEach(kind=>{
     if(kind==='hall') return;
     const house=kind==='house';
@@ -2677,6 +2725,15 @@ function generateMap(i,total,slot,d,pos,cols,rows,worldSeed){
   // Дороги двора прокладываются последними, чтобы лес и трава не перекрыли подходы к лавкам.
   courtyard.forEach(b=>carveRoad(cells,size,rng,{x:town.x,y:town.y},{x:b.x,y:b.y},'brick'));
   courtyard.forEach(b=>{ cells[b.y][b.x]=b.cell; });
+  // Ратуша стоит в центре плотного двора: явно выводим дорогу от входа к её
+  // проходимым соседям, иначе кольцо лавок отрезает ратушу от карты.
+  DIRS.forEach(v=>{
+    const nx=town.hall.x+v[0], ny=town.hall.y+v[1];
+    if(nx<1||ny<1||nx>=size-1||ny>=size-1) return;
+    const c=cells[ny][nx];
+    if(['gate','boss','chest','treasure','shop','house'].includes(c.t)) return;
+    carveRoad(cells,size,rng,{x:cx,y:cy},{x:nx,y:ny},'brick');
+  });
   connectObjects(cells,size,rng,cx,cy);
 
   /* Дикая сложность зависит от манхэттенского расстояния до входа на карту.
@@ -6295,36 +6352,23 @@ function drawWater(x,y,s,b,season){
   }
   ctx.restore();
 }
-function drawHouse(x,y,s,kind,label){
-  const def=SHOP_TYPES.find(t=>t.id===kind)||{};
-  const titles={weapons:'Оружейная',armory:'Оружейная палата',forge:'Кузница',armor:'Бронница',magic:'Магазин Магии',
-    jeweler:'Ювелир',market:'Рынок',tavern:'Таверна',inn:'Гостиница',house:'Жилой дом',
-    barn:'Амбар',shed:'Сарай',well:'Колодец',stable:'Конюшня'};
-  const accents={weapons:'#f87171',armory:'#fb923c',forge:'#f97316',armor:'#60a5fa',magic:'#c084fc',
-    jeweler:'#34d399',market:'#fbbf24',tavern:'#fcd34d',inn:'#a78bfa',house:'#c9b89a',
-    barn:'#b08968',shed:'#8a7a66',well:'#7dd3fc',stable:'#d6b37a'};
-  const title=label||titles[kind]||'Дом';
-  const accent=accents[kind]||(def.accent)||accents.market;
-  ctx.save();
-  const sprite=(kind==='forge'||kind==='magic'||kind==='jeweler'||kind==='armory')
-    ?KENNEY_TILES+'tile_building_stone.png'
-    :(kind==='tavern'||kind==='inn'||kind==='house'
-      ?KENNEY_TILES+'tile_building_straw.png'
-      :KENNEY_TILES+'tile_building_blue.png');
-  if(!drawSprite(sprite,x-48*s,y-84*s,96*s,84*s)){
-    ctx.fillStyle=kind==='tavern'?'#8a5a37':(kind==='inn'?'#7a6b8c':'#c9b89a');
-    ctx.fillRect(x-42*s,y-58*s,84*s,58*s);
-    ctx.strokeStyle=accent; ctx.lineWidth=1.2*s; ctx.strokeRect(x-42*s,y-58*s,84*s,58*s);
-    ctx.fillStyle=kind==='forge'?'#6b2717':'#7e3f2e';
-    ctx.beginPath(); ctx.moveTo(x-50*s,y-58*s); ctx.lineTo(x,y-86*s); ctx.lineTo(x+50*s,y-58*s); ctx.closePath(); ctx.fill();
-    ctx.fillStyle=kind==='forge'?'#fb923c':'#ffe6a0'; ctx.fillRect(x-26*s,y-46*s,16*s,15*s); ctx.fillRect(x+10*s,y-46*s,16*s,15*s);
-    ctx.fillStyle='#241704'; ctx.fillRect(x-11*s,y-26*s,22*s,26*s);
+function drawHouse(x,y,s,cell){
+  const path=buildingPathFor(cell);
+  const title=buildingTitleFor(cell);
+  const w=108*s,h=96*s,left=x-w/2,top=y-88*s;
+  if(path){
+    const im=spriteImg(path);
+    const drawn=drawSprite(path,left,top,w,h);
+    buildingDrawLog.push({buildingId:String(cell&&cell.buildingId||''),kind:String(cell&&cell.kind||''),
+      path,loaded:!!im&&im.dataset.ready==='1',naturalWidth:im&&im.naturalWidth||0,drawn,
+      x:+left.toFixed(1),y:+top.toFixed(1),w:+w.toFixed(1),h:+h.toFixed(1)});
+  }else{
+    buildingDrawLog.push({buildingId:String(cell&&cell.buildingId||''),kind:String(cell&&cell.kind||''),
+      path:null,loaded:false,naturalWidth:0,drawn:false,
+      x:+left.toFixed(1),y:+top.toFixed(1),w:+w.toFixed(1),h:+h.toFixed(1)});
   }
-  ctx.fillStyle='#6b4a26'; roundRect(x-46*s,y-78*s,92*s,15*s,3*s); ctx.fill();
-  ctx.strokeStyle=accent; ctx.lineWidth=1*s; ctx.stroke();
-  ctx.fillStyle=accent; setFont(Math.max(7,9*s)); ctx.textAlign='center'; ctx.textBaseline='middle';
-  fitText(title,88*s,Math.max(7,9*s),'#ffe9b0',x-42*s,y-70*s);
-  ctx.restore();
+  // Настоящая вывеска нарисована внутри SVG; поверх неё ничего не дублируем.
+  registerMapHint(x,y-36*s,title,'Фасад из SVG-каталога зданий');
 }
 function drawChestArt(x,y,s,gold,opened){
   ctx.save(); const w=42*s,h=26*s;
@@ -6721,6 +6765,7 @@ function activeObjectiveText(){
 function drawMap(now){
   const m=currentMap(), p=game.player, b=BIOMES[m.biome], season=currentSeason();
   mapHints.length=0; // подсказки относятся только к текущему кадру
+  buildingDrawLog=[]; // отчёт о фасадах относится только к текущему кадру карты
   drawSky(m.biome,now); drawGround(m.biome); drawSceneBackdrop(m.biome,now);
   drawWildlife('bird',now);
   const f=DIRS[p.dir], r=DIRS[(p.dir+1)%4];
@@ -6740,8 +6785,8 @@ function drawMap(now){
       else if(cell.water&&cell.t!=='bridge') drawWater(sx,sy,sc,b,season);
       else if(cell.t==='bridge') drawBridge(sx,sy,sc,season,bridgeAxis(m,x,y));
       else if(cell.flora) drawFlora(sx,sy,sc,cell);
-      else if(cell.t==='house') drawHouse(sx,sy,sc,'house',cell.houseName);
-      else if(cell.t==='shop') drawHouse(sx,sy,sc,cell.kind,cell.shopName);
+      else if(cell.t==='house') drawHouse(sx,sy,sc,cell);
+      else if(cell.t==='shop') drawHouse(sx,sy,sc,cell);
       else if(cell.t==='gate') drawGateSign(sx,sy,sc,cell.dir,p.dir,cell.bname);
       else if(cell.t==='chest') drawChestArt(sx,sy,sc,!!cell.boss,!!cell.opened);
       else if(cell.t==='treasure') drawTreasureArt(sx,sy,sc,cell.item);
@@ -7959,6 +8004,42 @@ window.__mm6Debug={
   shopReport:()=>shopReport(),
   difficultyReport:()=>difficultyReport(),
   settlementReport:()=>settlementReport(),
+  buildingReport:()=>({
+    manifest:assetManifest.filter(e=>e.type==='building').map(e=>({
+      id:String(e.file||String(e.path||'').split('/').pop()).replace(/\.svg$/,''),
+      path:manifestAssetPath(e),shop_kind:(e.shop_kind||[]).slice(),sign_text:e.sign_text||''
+    })),
+    drawn:buildingDrawLog.slice(),
+    cells:game&&game.world?game.world.maps.map(m=>({
+      map:m.index,settlement:m.settlement&&m.settlement.name,
+      buildings:m.settlement&&m.settlement.buildings?m.settlement.buildings.map(b=>({...b})):[],
+      placed:[...new Set(m.cells.flat().filter(c=>c&&c.buildingId).map(c=>String(c.buildingId)))].sort()
+    })):[]
+  }),
+  focusBuilding:(index,id)=>{
+    if(!game||!game.world||!game.world.maps[index]) return null;
+    const m=game.world.maps[index]; let target=null;
+    for(let y=0;y<m.size&&!target;y++) for(let x=0;x<m.size;x++){
+      const c=m.cells[y][x];
+      if(c&&String(c.buildingId||'')===String(id)){ target={x,y,cell:c}; break; }
+    }
+    if(!target) return null;
+    // Ставим героя на проходимую клетку перед зданием: фасад рисуется в первом ряду.
+    const variants=[{x:target.x,y:target.y+1,dir:0},{x:target.x,y:target.y-1,dir:2},
+      {x:target.x-1,y:target.y,dir:1},{x:target.x+1,y:target.y,dir:3}]
+      .filter(v=>v.x>=0&&v.y>=0&&v.x<m.size&&v.y<m.size);
+    const view=variants.find(v=>!isBlocking(m.cells[v.y][v.x]))||variants[0]||{x:target.x,y:target.y,dir:0};
+    setMap(index,null);
+    Object.assign(game.player,{x:view.x,y:view.y,px:view.x,py:view.y,
+      fromX:view.x,fromY:view.y,moveT:0,dir:view.dir});
+    markSeen(m,view.x,view.y);
+    game.shopOpen=false; $('shop').classList.add('hidden');
+    game.mapOpen=false; $('bigMap').classList.add('hidden');
+    const dlg=$('npcDialogue'); if(dlg) dlg.classList.add('hidden');
+    const t=$('toast'); if(t) t.classList.remove('show');
+    return {map:index,x:target.x,y:target.y,viewX:view.x,viewY:view.y,dir:view.dir,
+      buildingId:String(id),kind:target.cell.kind||null,path:buildingPathFor(target.cell)};
+  },
   stockReport:()=>stockReport(),
   worldMapReport:()=>worldMapReport(),
   advanceTime:(minutes)=>({period:advanceGameTime(minutes),stock:stockReport()}),

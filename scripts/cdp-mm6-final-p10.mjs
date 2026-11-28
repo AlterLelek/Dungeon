@@ -44,8 +44,8 @@ runCdp('FINAL PART 10', async api => {
     return rows;
   })()`);
   const twoFloor = buildings.filter(r => r.floors === 2).map(r => r.stem).sort().join(',');
-  api.check('Часть 1 — 14 фасадов из базы и слоёв, без градиентов и PNG',
-    buildings.length === 14 && buildings.every(r => r.layers === 6 && !r.bad) &&
+  api.check('Часть 1 — 16 фасадов из базы и слоёв, без градиентов и PNG',
+    buildings.length === 16 && buildings.every(r => r.layers === 6 && !r.bad) &&
     twoFloor === 'inn_0,tavern_0',
     JSON.stringify({ count: buildings.length, bad: buildings.filter(r => r.bad).map(r => r.stem), twoFloor }));
 

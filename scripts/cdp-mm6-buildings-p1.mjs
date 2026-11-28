@@ -41,8 +41,8 @@ await runCdp('BUILDINGS PART 1', async api => {
   })()`);
 
   const houses = report.filter(r => r.stem !== 'well_0');
-  api.check('все 14 фасадов загружаются как валидные SVG',
-    report.length === 14 && report.every(r => !r.parseError && r.img.w > 0 &&
+  api.check('все 16 фасадов загружаются как валидные SVG',
+    report.length === 16 && report.every(r => !r.parseError && r.img.w > 0 &&
       r.img.viewBox === '0 0 512 512'),
     JSON.stringify(report.slice(0, 3).map(r => ({ stem: r.stem, img: r.img, parseError: r.parseError }))));
   api.check('одноэтажные здания имеют 2 окна, двухэтажные — 4',
