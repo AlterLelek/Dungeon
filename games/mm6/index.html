@@ -6238,7 +6238,7 @@ function drawTiledGround(x,y,w,h,ground,season,seed){
    и не попадают в манифест новых файлов. */
 const GROUND_FIELD_TOP=142;
 const groundFieldCache=new Map(), bigMapMosaicCache=new Map();
-const terrainRenderStats={field:{},frame:{},bigMap:{}};
+const terrainRenderStats={field:{},frame:{},bigMap:{},battle:{}};
 function terrainRgba(hex,alpha){
   const s=String(hex||'#888888').replace('#','');
   const v=parseInt(s.length===3?s.split('').map(c=>c+c).join(''):s,16)||0x888888;
@@ -6259,6 +6259,26 @@ function softTerrainBlob(g,x,y,r,color,alpha){
   g.fillStyle=grad;
   g.beginPath(); g.ellipse(x,y,Math.max(1,r),Math.max(1,r*.52),0,0,6.29); g.fill();
 }
+/* Органическая клякса: несколько мягких долей с разным наклоном. Детерминирована
+  _seed_ и рисуется только в кэше, поэтому не влияет на проходимость и FPS. */
+function organicTerrainBlob(g,x,y,r,color,alpha,seed){
+  for(let i=0;i<5;i++){
+    const h=cellHash(seed||1,i,211), angle=(h%360)*Math.PI/180;
+    const off=r*(.1+((h>>5)%22)/100);
+    softTerrainBlob(g,x+Math.cos(angle)*off,y+Math.sin(angle)*off*.55,
+      r*(.62+((h>>11)%34)/100),color,alpha*.72);
+  }
+}
+function windingTerrainTrail(g,seed,y0,y1,color,alpha,width){
+  const k=(seed||1)%97, drift=(k%7)-3;
+  g.save(); g.lineCap='round'; g.lineJoin='round';
+  g.strokeStyle=terrainRgba(color,alpha); g.lineWidth=width;
+  g.beginPath(); g.moveTo(-12,y0+drift*3);
+  g.bezierCurveTo(W*.22,y0-16,W*.38,y1+14,W*.56,y0+drift*2);
+  g.bezierCurveTo(W*.76,y1-12,W*.88,y0+18,W+12,y1+drift); g.stroke();
+  g.strokeStyle=terrainRgba(shade(color,22),alpha*.5); g.lineWidth=Math.max(1,width*.36);
+  g.stroke(); g.restore();
+}
 function buildGroundField(map,season,biome){
   const c=document.createElement('canvas'); c.width=W; c.height=H;
   const g=c.getContext('2d'), pal=terrainPalette(season);
@@ -6267,14 +6287,23 @@ function buildGroundField(map,season,biome){
   const grad=g.createLinearGradient(0,GROUND_FIELD_TOP-26,0,H);
   grad.addColorStop(0,shade(base,8)); grad.addColorStop(.5,base); grad.addColorStop(1,shade(base,-22));
   g.fillStyle=grad; g.fillRect(0,GROUND_FIELD_TOP-26,W,H-GROUND_FIELD_TOP+26);
-  const stats={patches:0,stones:0,bushes:0,soft:0,cells:0};
+  const stats={patches:0,stones:0,bushes:0,soft:0,organic:0,trails:0,transitions:0,cells:0};
   const tone=[pal.grass,pal.dirt,pal.sand,pal.stone,pal.flowers];
   for(let i=0;i<46;i++){
     const h=cellHash(i,7,(map.seed||1)+41), h2=cellHash(9,i,(map.seed||1)+83);
     const x=(h%W), y=GROUND_FIELD_TOP+(h2%(H-GROUND_FIELD_TOP));
-    const r=26+(h%38);
-    softTerrainBlob(g,x,y,r,tone[i%tone.length],season==='winter'?.18:.26);
+    const r=26+(h%38), color=tone[i%tone.length], alpha=season==='winter'?.18:.26;
+    if(i%2===0){ organicTerrainBlob(g,x,y,r,color,alpha,(map.seed||1)+i); stats.organic++; }
+    else softTerrainBlob(g,x,y,r,color,alpha);
     stats.patches++; stats.soft++;
+  }
+  // Тропа вьётся по полю, а не идёт прямой лентой; переход у горизонта мягкий.
+  windingTerrainTrail(g,(map.seed||1)+11,H-74,H-18,shade(pal.dirt,-12),season==='winter'?.2:.34,13);
+  stats.trails++;
+  for(let i=0;i<7;i++){
+    softTerrainBlob(g,(i*109+(map.seed||1)%97)%W,GROUND_FIELD_TOP+6,
+      34+(i%3)*12,i%2?shade(base,10):pal.grass,season==='winter'?.16:.22);
+    stats.transitions++; stats.soft++;
   }
   // Мелкие камни и кусты на фоне задаются той же картой, но остаются вне логики клеток.
   for(let i=0;i<24;i++){
@@ -6295,6 +6324,50 @@ function buildGroundField(map,season,biome){
   g.fillStyle=fade; g.fillRect(0,GROUND_FIELD_TOP-26,W,46);
   c.stats=stats;
   return c;
+}
+/* Поле боя использует те же процедурные пятна и тропы, но живёт в отдельном
+  кэше: в бою каждый кадр только копирует готовое полотно. */
+const battleFieldCache=new Map();
+function buildBattleField(biome,season,seed){
+  const key=biome+'|'+season+'|'+seed+'|'+W+'x'+H;
+  const cached=battleFieldCache.get(key);
+  if(cached) return {canvas:cached,cached:true,stats:cached.stats||{}};
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'), pal=terrainPalette(season), b=BIOMES[biome]||BIOMES.field;
+  const base=b.ground[1]||pal.grass;
+  const stats={patches:0,soft:0,organic:0,trails:0,stones:0,bushes:0,transitions:0};
+  const tone=[pal.grass,pal.dirt,pal.sand,pal.stone,pal.flowers];
+  for(let i=0;i<28;i++){
+    const h=cellHash(i,31,seed||1), h2=cellHash(37,i,(seed||1)+53);
+    const x=h%W, y=GROUND_FIELD_TOP+18+(h2%(H-GROUND_FIELD_TOP-34));
+    const r=30+(h%36), color=tone[i%tone.length], alpha=season==='winter'?.16:.24;
+    if(i%2===0){ organicTerrainBlob(g,x,y,r,color,alpha,(seed||1)+i+701); stats.organic++; }
+    else softTerrainBlob(g,x,y,r,color,alpha);
+    stats.patches++; stats.soft++;
+  }
+  windingTerrainTrail(g,(seed||1)+17,GROUND_FIELD_TOP+72,H-26,shade(pal.dirt,-14),season==='winter'?.2:.36,18);
+  stats.trails++;
+  for(let i=0;i<20;i++){
+    const h=cellHash(i,43,(seed||1)+91), h2=cellHash(53,i,(seed||1)+127);
+    const x=(i*59+(h%W))%W, y=GROUND_FIELD_TOP+34+(h2%(H-GROUND_FIELD_TOP-44));
+    if(i%3===0){
+      g.fillStyle=terrainRgba(shade(pal.stone,-18),.5);
+      g.beginPath(); g.ellipse(x,y,3+(h%5),2+(h2%3),0,0,6.29); g.fill(); stats.stones++;
+    }else if(season!=='winter'){
+      g.fillStyle=terrainRgba(shade(pal.grass,-28),.45);
+      [0,5,9].forEach((dx,j)=>{ g.beginPath(); g.arc(x+dx,y+(j%2)*3,4+(h%3),0,6.29); g.fill(); });
+      stats.bushes++;
+    }
+  }
+  const fade=g.createLinearGradient(0,GROUND_FIELD_TOP-18,0,GROUND_FIELD_TOP+24);
+  fade.addColorStop(0,terrainRgba(shade(base,10),0));
+  fade.addColorStop(1,terrainRgba(shade(base,10),.28));
+  g.fillStyle=fade; g.fillRect(0,GROUND_FIELD_TOP-18,W,42);
+  stats.transitions++; stats.soft++;
+  c.stats=stats;
+  battleFieldCache.set(key,c);
+  if(battleFieldCache.size>8) battleFieldCache.delete(battleFieldCache.keys().next().value);
+  return {canvas:c,cached:false,stats};
 }
 function drawGround(biome,map,season){
   if(!map){
@@ -6331,8 +6404,8 @@ function drawGroundDecor(sx,sy,sc,cell,mapX,mapY,seed,season,alpha){
     ctx.save(); ctx.globalAlpha=alpha*.38; ctx.strokeStyle=shade(base,-32);
     ctx.lineWidth=Math.max(.7,1.2*sc); ctx.setLineDash([5*sc,4*sc]);
     ctx.beginPath(); ctx.moveTo(sx-38*unit,sy+25*sc);
-    ctx.quadraticCurveTo(sx+((h%13)-6)*sc,sy+16*sc,sx+38*unit,sy+24*sc); ctx.stroke();
-    ctx.restore(); stats.trails=(stats.trails||0)+1;
+    ctx.bezierCurveTo(sx-14*unit,sy+(14+(h%5))*sc,sx+12*unit,sy+(30-(h2%6))*sc,sx+38*unit,sy+24*sc);
+    ctx.stroke(); ctx.restore(); stats.trails=(stats.trails||0)+1;
   }
   if(h%3===0||cell.ground==='stone'){
     const n=cell.ground==='stone'?3:2;
@@ -6817,7 +6890,7 @@ function buildBigMapMosaic(m,season){
   const res=Math.min(240,Math.max(64,m.size*4)), cellPx=res/m.size;
   const c=document.createElement('canvas'); c.width=c.height=res;
   const g=c.getContext('2d'), pal=terrainPalette(season);
-  const stats={cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
+  const stats={cells:0,patches:0,soft:0,organic:0,roads:0,trails:0,winding:0,stones:0,bushes:0,water:0,swamp:0};
   g.fillStyle=pal.grass; g.fillRect(0,0,res,res);
   for(let y=0;y<m.size;y++) for(let x=0;x<m.size;x++){
     const cell=m.cells[y][x], px=x*cellPx, py=y*cellPx, cx=px+cellPx/2, cy=py+cellPx/2;
@@ -6827,7 +6900,9 @@ function buildBigMapMosaic(m,season){
     g.fillStyle=shade(base,((h%17)-8));
     g.fillRect(Math.floor(px),Math.floor(py),Math.ceil(cellPx)+1,Math.ceil(cellPx)+1);
     if(h%7===0){
-      softTerrainBlob(g,cx,cy,cellPx*1.7,h%2?base:shade(base,16),season==='winter'?.16:.24);
+      const color=h%2?base:shade(base,16), alpha=season==='winter'?.16:.24;
+      if(h%3===0){ organicTerrainBlob(g,cx,cy,cellPx*1.7,color,alpha,m.seed||1); stats.organic++; }
+      else softTerrainBlob(g,cx,cy,cellPx*1.7,color,alpha);
       stats.patches++; stats.soft++;
     }
     if(surf==='water'||surf==='ice'){
@@ -6852,8 +6927,9 @@ function buildBigMapMosaic(m,season){
     }
     if(cell.ground==='dirt'&&h%5===0&&cell.t!=='road'){
       g.strokeStyle=terrainRgba(shade(base,-34),.55); g.lineWidth=Math.max(.5,cellPx*.14);
-      g.beginPath(); g.moveTo(px,cy+cellPx*.18); g.lineTo(px+cellPx,cy-cellPx*.18); g.stroke();
-      stats.trails++;
+      g.lineCap='round'; g.beginPath(); g.moveTo(px,cy+cellPx*.18);
+      g.quadraticCurveTo(px+cellPx*.5,cy+cellPx*(((h2%5)-2)*.3),px+cellPx,cy-cellPx*.18);
+      g.stroke(); stats.trails++; stats.winding++;
     }
     if(cell.t==='road'||cell.t==='bridge'||cell.t==='gate'){
       const rk=ROAD_KINDS.find(k=>k.id===(cell.roadKind||'dirt'))||ROAD_KINDS[0];
@@ -6877,7 +6953,7 @@ function drawBigMap(){
   const terrainStart=performance.now();
   const cvBig=bigMapCanvas(); if(!cvBig||!game||!game.world) return;
   const w=game.world, geo=bigMapGeometry(), g=cvBig.getContext('2d');
-  terrainRenderStats.bigMap={maps:0,cached:0,cells:0,patches:0,soft:0,roads:0,trails:0,stones:0,bushes:0,water:0,swamp:0};
+  terrainRenderStats.bigMap={maps:0,cached:0,cells:0,patches:0,soft:0,organic:0,roads:0,trails:0,winding:0,stones:0,bushes:0,water:0,swamp:0};
   g.fillStyle='#05070f'; g.fillRect(0,0,BIG_MAP_PX,BIG_MAP_PX);
   const bySlot={};
   w.maps.forEach(m=>{
@@ -7205,18 +7281,15 @@ function drawActionChips(b){
   });
 }
 function drawBattleScenery(biome,now){
-  const b=BIOMES[biome]||BIOMES.field;
-  drawSky(biome,now); drawGround(biome); drawSceneBackdrop(biome,now);
-  // Декорации «кадра» боя: арки, колонны, факелы, обломки.
-  ctx.save();
-  for(let i=0;i<4;i++){ const x=40+i*190;
-    ctx.fillStyle='rgba(20,18,30,.78)'; ctx.fillRect(x,84,26,130);
-    ctx.fillStyle='rgba(90,80,110,.5)'; ctx.fillRect(x-6,78,38,12); ctx.fillRect(x-10,210,46,12);
-    ctx.fillStyle='rgba(253,224,71,'+(.2+.2*Math.abs(Math.sin(now/500+i)))+')';
-    ctx.beginPath(); ctx.arc(x+13,72,7+Math.sin(now/400+i)*2,0,6.29); ctx.fill(); }
-  for(let i=0;i<14;i++){ ctx.fillStyle='rgba(255,255,255,.05)';
-    ctx.fillRect((i*103+17)%W,230+((i*29)%70),18,4); }
-  ctx.restore();
+  const b=BIOMES[biome]||BIOMES.field, m=currentMap(), season=currentSeason();
+  drawSky(biome,now); drawGround(biome,m,season); drawSceneBackdrop(biome,now);
+  // Поле боя — кэшированное органическое полотно: тропы, пятна, камни и кусты.
+  const t0=performance.now();
+  const field=buildBattleField(biome,season,(m&&m.seed)||1);
+  ctx.drawImage(field.canvas,0,0);
+  const row=terrainRenderStats.battle||(terrainRenderStats.battle={});
+  Object.assign(row,{cached:field.cached,biome,season},field.stats);
+  noteTerrainTime('battle',performance.now()-t0);
 }
 function drawBattle(now,dt){
   const b=game.battle;
@@ -8131,8 +8204,10 @@ function terrainRenderReport(){
     field:Object.assign({},terrainRenderStats.field||{}),
     frame:Object.assign({},terrainRenderStats.frame||{}),
     bigMap:Object.assign({},terrainRenderStats.bigMap||{}),
-    performance:{field:terrainTiming('field'),mapFrame:terrainTiming('mapFrame'),bigMap:terrainTiming('bigMap')},
-    cache:{ground:groundFieldCache.size,mosaic:bigMapMosaicCache.size},
+    battle:Object.assign({},terrainRenderStats.battle||{}),
+    performance:{field:terrainTiming('field'),mapFrame:terrainTiming('mapFrame'),
+      bigMap:terrainTiming('bigMap'),battle:terrainTiming('battle')},
+    cache:{ground:groundFieldCache.size,mosaic:bigMapMosaicCache.size,battle:battleFieldCache.size},
     world:game&&game.world?game.world.maps.map(m=>({index:m.index,size:m.size,seed:m.seed,biome:m.biome})):[],
     horizontalBands:false,
     mosaic:true,

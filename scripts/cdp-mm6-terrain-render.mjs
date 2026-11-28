@@ -1,13 +1,13 @@
-// Часть 7: рельеф по клеткам вместо горизонтальных полос, процедурные пятна,
-// тропы, камни и кусты. Декорации не меняют проходимость и кэшируются.
-// Скриншоты уходят только во временную папку.
+// Часть 6: рельеф по клеткам вместо горизонтальных полос, органические пятна,
+// вьющиеся тропы, мягкие переходы и отдельное кэшированное поле боя. Декорации
+// не меняют проходимость и не роняют FPS. Скриншоты — только во временную папку.
 // Запуск: node scripts/cdp-mm6-terrain-render.mjs
 import { statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runCdp } from './cdp-lib.mjs';
 
-runCdp('TERRAIN RENDER PART 7', async api => {
+runCdp('TERRAIN RENDER PART 6', async api => {
   await api.startGame();
   await api.ev(`Math.random=()=>0.5; window.__mm6Debug.startGame('normal',[0])`);
   await api.waitFor('!!window.__mm6State() && window.__mm6State().world.count>0', 8000);
@@ -20,6 +20,11 @@ runCdp('TERRAIN RENDER PART 7', async api => {
     first.field.stones > 0 && first.field.bushes > 0 &&
     first.performance.mapFrame.avg < 16 && first.performance.mapFrame.frames > 20,
     JSON.stringify({field:first.field,perf:first.performance.mapFrame}));
+  api.check('пятна органические, тропы вьются, у горизонта мягкий переход',
+    first.field.organic > 0 && first.field.trails > 0 && first.field.transitions > 0 &&
+    first.performance.battle.frames >= 0,
+    JSON.stringify({organic:first.field.organic,trails:first.field.trails,
+      transitions:first.field.transitions}));
   api.check('ближние клетки получают пятна травы и мягкие переходы',
     first.frame.cells >= 2 && first.frame.patches >= 4 && first.frame.soft >= 4 &&
     first.horizontalBands === false && first.mosaic === true,
@@ -47,6 +52,11 @@ runCdp('TERRAIN RENDER PART 7', async api => {
     opened.bigMap.patches > 0 && opened.bigMap.soft > 0,
     JSON.stringify({maps:opened.bigMap.maps,expected:world.count,cells:opened.bigMap.cells,
       expectedCells,details:opened.bigMap}));
+  api.check('тропы большой карты изогнуты, пятна не однотипны',
+    opened.bigMap.winding > 0 && opened.bigMap.organic > 0 &&
+    opened.bigMap.trails > 0 && opened.bigMap.soft > 0,
+    JSON.stringify({winding:opened.bigMap.winding,organic:opened.bigMap.organic,
+      trails:opened.bigMap.trails,soft:opened.bigMap.soft}));
 
   const pixels = await api.ev(`(()=>{
     const cv=document.getElementById('bigMapCanvas'), g=cv.getContext('2d');
@@ -96,4 +106,30 @@ runCdp('TERRAIN RENDER PART 7', async api => {
   api.check('после возврата лета проходимость и мозаика совпадают с исходными',
     restored.passabilitySignature === signature && restored.cache.mosaic >= world.count,
     JSON.stringify({same:restored.passabilitySignature===signature,cache:restored.cache}));
+
+  await api.ev(`(()=>{const d=window.__mm6Debug; d.toggleBigMap(false);
+    d.startBattle(['Черт','Скелет','Зелёный Паук'].map(name=>({name,alive:true,hp:1000,maxHp:1000,
+      atk:1,defVal:1,speed:1,def:{},gold:[0,0]}))); return true;})()`);
+  await api.waitFor(`(()=>{const b=window.__mm6State()&&window.__mm6State().battle;
+    return !!b&&b.turn==='hero'&&!b.busy;})()`, 8000);
+  await api.sleep(260);
+  const battle = await api.ev('window.__mm6Debug.terrainRenderReport()');
+  api.check('поле боя — кэшированные органические пятна, вьющаяся тропа и мягкий горизонт',
+    battle.battle.cached === true && battle.battle.patches >= 20 && battle.battle.organic > 0 &&
+    battle.battle.trails > 0 && battle.battle.transitions > 0 &&
+    (battle.battle.stones > 0 || battle.battle.bushes > 0) &&
+    battle.cache.battle > 0 && battle.performance.battle.last < 16 &&
+    battle.performance.mapFrame.avg < 16,
+    JSON.stringify({battle:battle.battle,cache:battle.cache,
+      perf:battle.performance.battle,mapFrame:battle.performance.mapFrame.avg}));
+  const battleShot = join(tmpdir(), 'mm6-part6-battle.png');
+  await api.screenshot(battleShot);
+  api.check('скриншот поля боя сохранён во временную папку',
+    statSync(battleShot).size > 2000, String(statSync(battleShot).size));
+  await api.ev(`window.__mm6Debug.closeBattle()`);
+  await api.sleep(80);
+  const afterBattle = await api.ev('window.__mm6Debug.terrainRenderReport()');
+  api.check('поле боя не изменило проходимость мира',
+    afterBattle.passabilitySignature === signature,
+    JSON.stringify({same:afterBattle.passabilitySignature===signature}));
 });
