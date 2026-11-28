@@ -7288,9 +7288,10 @@ function drawMap(now){
   const weatherLine=!wLabel?seasonName:(wLabel.includes(seasonName)?wLabel:wLabel+' · '+seasonName);
   const rows=[place,'Ход '+game.world.turn,'🪙 '+game.gold,'Цель: '+objective,weatherLine];
   const rowYs=[19,30,41,52,63];
+  const rowXs=rows.map(()=>18); // [ГОБОРЕНО] одна вертикальная колонка, без побочных подписей слева внизу.
   panel(10,10,214,56);
   mapStateWindow={panel:{x:10,y:10,w:214,h:56},place,turn:game.world.turn,gold:game.gold,
-    objective,weather:wLabel,season:seasonName,rows,rowYs,bottomLine:null};
+    objective,weather:wLabel,season:seasonName,rows,rowYs,rowXs,bottomLine:null};
   mapUiRects.state={x:10,y:10,w:214,h:56};
   const rowColors=['#ffe6a8','#c8d2f0','#fde68a','#fde68a','#9fb0d8'];
   rows.forEach((text,i)=>fitText(text,196,i===0?11:9,rowColors[i],18,rowYs[i]));
