@@ -956,7 +956,8 @@ function syncToastPlacement(){
   } else {
     // На карте сообщение встаёт над нижней строкой состояния, не поверх неё.
     const stripTop=canvasTop+326*scale;
-    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-stripTop+8)+'px');
+    // Отступ с запасом: при смене размера окна тост не должен задевать строку состояния.
+    t.style.setProperty('--toast-bottom',Math.ceil(window.innerHeight-stripTop+36)+'px');
     t.style.left=''; t.style.maxWidth='';
   }
 }
