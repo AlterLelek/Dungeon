@@ -21,24 +21,33 @@ button,input,select{font-family:inherit}
 #stage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 #cv{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;background:#0a0d1c;box-shadow:0 0 60px rgba(0,0,0,.85)}
 
-/* ============================ МОБИЛЬНЫЕ КНОПКИ ============================ */
+/* ============================ КРУПНЫЕ КНОПКИ УПРАВЛЕНИЯ ============================ */
+/* Полупрозрачные сенсорные кнопки теперь есть и на ПК. Их можно скрыть клавишей H
+   или настройкой, но на тач-устройствах они остаются видимыми всегда. */
 #controls{position:absolute;inset:0;z-index:6;pointer-events:none}
 #controls button{pointer-events:auto;touch-action:manipulation}
-.leftDock{position:absolute;left:8px;bottom:8px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.dpad{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(3,44px);gap:2px}
-.dpad button{border:1px solid rgba(251,191,36,.42);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;font-size:17px;font-weight:800}
+.leftDock{position:absolute;left:8px;bottom:120px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:3px}
+.dpad button{border:1px solid rgba(251,191,36,.62);border-radius:10px;background:rgba(12,15,30,.38);
+  color:#ffe9b0;font-size:21px;font-weight:800;backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
 .dpad .up{grid-area:1/2}.dpad .dn{grid-area:3/2}.dpad .lf{grid-area:2/1}.dpad .rt{grid-area:2/3}
-.dpad .mid{grid-area:2/2;background:rgba(0,0,0,.22);border-color:transparent;pointer-events:none}
+.dpad .mid{grid-area:2/2;background:rgba(0,0,0,.18);border-color:transparent;pointer-events:none;box-shadow:none;backdrop-filter:none}
 .turnPair{display:flex;gap:6px;align-items:flex-end}
-.turnTri{position:relative;width:48px;height:60px;border:1px solid rgba(251,191,36,.38);border-radius:8px;background:rgba(12,15,30,.84);color:#ffe9b0;cursor:pointer}
-.turnTri .tri{position:absolute;left:7px;top:5px;width:0;height:0;border-top:21px solid transparent;border-bottom:21px solid transparent;border-right:30px solid #fbbf24}
-.turnTri.right .tri{border-right:0;border-left:30px solid #fbbf24}
-.turnTri .lbl{position:absolute;left:0;right:0;bottom:3px;font-size:8px;text-align:center;color:#ffe9b0}
-.rightDock{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
-.rightDock button{width:48px;height:48px;border-radius:9px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.24)}
+.turnTri{position:relative;width:56px;height:64px;border:1px solid rgba(251,191,36,.58);border-radius:10px;
+  background:rgba(12,15,30,.38);color:#ffe9b0;cursor:pointer;backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.turnTri .tri{position:absolute;left:7px;top:4px;width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:32px solid #fbbf24}
+.turnTri.right .tri{border-right:0;border-left:32px solid #fbbf24}
+.turnTri .lbl{position:absolute;left:0;right:0;bottom:4px;font-size:9px;text-align:center;color:#ffe9b0}
+.rightDock{position:absolute;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(2,58px);grid-auto-rows:58px;gap:6px}
+.rightDock button{width:58px;height:58px;border-radius:10px;border:1px solid rgba(251,191,36,.62);background:rgba(12,15,30,.38);
+  color:#ffe9b0;font-size:23px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  backdrop-filter:blur(3px);box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.rightDock button:active,.dpad button:active,.turnTri:active{transform:translateY(2px);background:rgba(251,191,36,.28)}
 .rightDock button.hot{border-color:#7dffb2;box-shadow:0 0 8px rgba(125,255,178,.3)}
-#btnLog{position:absolute;right:180px;top:8px;width:auto;height:28px;padding:0 9px;border-radius:8px;border:1px solid rgba(251,191,36,.45);background:rgba(12,15,30,.88);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto}
+#btnLog{position:absolute;right:260px;top:8px;width:auto;height:30px;padding:0 10px;border-radius:8px;border:1px solid rgba(251,191,36,.58);background:rgba(12,15,30,.4);color:#ffe9b0;font-size:11px;font-weight:700;pointer-events:auto;backdrop-filter:blur(3px)}
+body.controls-hidden #controls{display:none!important}
+/* В бою мини-карты нет: журнал уходит в правый верхний угол, подальше от бейджа хода. */
+body:has(#party.in-battle) #btnLog{right:8px}
 #party{position:absolute;z-index:4;left:50%;top:4px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:none}
 .pcard{width:122px;padding:3px 5px;border-radius:8px;background:rgba(6,8,18,.86);border:1px solid rgba(251,191,36,.35);font-size:9px}
 .pcard.active{border-color:var(--hero-1);box-shadow:0 0 8px rgba(125,255,178,.35)}
@@ -109,7 +118,6 @@ button,input,select{font-family:inherit}
 /* Статы в бою показаны компактными значками в отдельной строке; длинная старая строка скрыта. */
 #party.in-battle .pcard .mini,#party.in-battle .pcard .fx{display:none}
 @media (hover:hover) and (pointer:fine) and (min-width:820px){
-  #controls{display:none!important}
   #stage{height:100%}
 }
 @media (orientation:portrait){
@@ -126,7 +134,8 @@ button,input,select{font-family:inherit}
 }
 @media (max-height:430px) and (orientation:landscape){
   .dpad{grid-template-columns:repeat(3,40px);grid-template-rows:repeat(3,40px)}
-  .rightDock button{width:44px;height:44px}
+  .rightDock{grid-template-columns:repeat(2,44px);grid-auto-rows:44px}
+  .rightDock button{width:44px;height:44px;font-size:19px}
   .turnTri{width:44px;height:52px}
 }
 
@@ -450,7 +459,7 @@ body.map-open #party .pface,body.map-open #worldNpcSprite{display:none}
   #party{top:2px}
   .pcard{width:104px;padding:2px 4px}
   /* Кнопки уходят в компактную сетку, чтобы не наезжать на мини-карту и строку состояния. */
-  .rightDock{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:180px;bottom:56px}
+  .rightDock{bottom:8px}
 }
 @media (max-width:520px) and (orientation:portrait){
   .overlay{padding:8px}
@@ -464,10 +473,34 @@ body.map-open #party .pface,body.map-open #worldNpcSprite{display:none}
 /* Правая граница карточек считается в процентах от поля: миникарта занимает
    последние ~19% ширины canvas, поэтому 21% оставляют зазор при любом масштабе. */
 #party:not(.in-battle){left:auto;right:21%;top:40px;transform:none}
-#controls .leftDock{top:80px;bottom:auto}
-body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
+#controls .leftDock{top:auto;bottom:120px}
+body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:120px}
+/* На сенсорном экране кнопки недоступны для скрытия: клавиши может просто не быть. */
+@media (hover:none),(pointer:coarse){
+  body.controls-hidden #controls{display:block!important}
+}
 @media (orientation:portrait){
   #party:not(.in-battle){left:50%;right:auto;top:96px;transform:translateX(-50%)}
+  #controls .leftDock,#controls .rightDock{top:auto;bottom:auto;margin-top:40px}
+  /* В бою карточки занимают низ сцены: доки остаются под сценой, не поверх отряда. */
+  body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:auto;margin-top:40px}
+  body.controls-hidden #controls{display:flex!important}
+}
+/* На узком экране карточки уплотняются: сообщение и мини-карта остаются видимыми. */
+@media (max-width:520px) and (orientation:portrait){
+  #party:not(.in-battle){left:8px;right:auto;top:44px;transform:none;width:auto}
+  #party:not(.in-battle) .pcard{width:96px;padding:1px 3px}
+  #party:not(.in-battle) .pcard .mini,#party:not(.in-battle) .pcard .pstatus{display:none}
+}
+/* На низком ландшафте Dock уходит под очередь, а журнал — от бейджа хода. */
+@media (max-height:430px) and (orientation:landscape){
+  #controls .leftDock{bottom:0;flex-direction:row;align-items:flex-end}
+  #controls .turnPair{flex-direction:column;align-items:center;gap:4px}
+  body:has(#party.in-battle) #controls .leftDock{
+    bottom:8px;flex-direction:column;align-items:center}
+}
+@media (max-height:430px) and (orientation:landscape) and (min-width:800px){
+  #party:not(.in-battle){right:27%}
 }
 </style>
 </head>
@@ -589,6 +622,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
     <div class="legendItem">Цель в бою выбирается нажатием по монстру. Стрелки ←/→ переключают цель, L открывает и закрывает журнал, Esc закрывает.</div>
   </div></details>
   <details class="setAcc"><summary>🎮 Управление</summary><div class="setBody">
+    <div class="setCheck"><input type="checkbox" id="setShowControls" checked><span>🕹 Крупные полупрозрачные кнопки (H / Р — скрыть или показать)</span></div>
     <div class="setRow"><span class="setLabel">Клавиши</span><select id="setKeysMode"><option value="all">WASD + Стрелки</option><option value="arrows">Только стрелки</option><option value="wasd">Только WASD</option></select></div>
     <div class="setRow"><span class="setLabel">Раскладка</span><select id="setKeysLayout"><option value="both">Обе</option><option value="lat">Латиница</option><option value="cyr">Кириллица</option></select></div>
     <div class="keysHelp">
@@ -598,6 +632,7 @@ body:has(#party.in-battle) #controls .leftDock{top:auto;bottom:8px}
       <div><span class="keyCap">Пробел</span> атака в бою · <span class="keyCap">F</span> магия · <span class="keyCap">R</span> бегство</div>
       <div><span class="keyCap">L/Д</span> журнал событий · <span class="keyCap">↑/↓</span> прокрутка журнала</div>
       <div><span class="keyCap">M/Ь</span> карта · <span class="keyCap">Esc</span> меню · <span class="keyCap">P</span> настройки</div>
+      <div><span class="keyCap">H/Р</span> скрыть или показать крупные кнопки управления</div>
     </div>
   </div></details>
   <div class="row"><button class="link" id="resetSettings">↺ Сбросить настройки</button></div>
@@ -724,7 +759,7 @@ const W = 640, H = 360;
 const weather = createWeather(W, H, { cycleSteps: Number(DEFAULT_SETTINGS.weatherCycleSteps) || WEATHER_CYCLE_STEPS });
 const UI_FONT='"Segoe UI",Tahoma,sans-serif';
 const BF={enemyY:168,enemyScale:.95,heroY:290,heroScale:.5,msgY:178,msgH:70,
-  msgX:120,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
+  msgX:140,msgW:340,enemyPanelW:235,enemyPanelH:62,badgeW:100};
 // Тела павших героев рисуются в бою до его завершения; враги удаляются как раньше.
 const corpseDrawState={drawn:[],at:0};
 // Цвета героев совпадают с активными бордюрами нижних плашек (#party .pcard).
@@ -1413,7 +1448,7 @@ const SETTING_RANGES={floors:[1,20],cellSize:[8,28],mapSize:[30,100],monstersAdd
   weatherCycleSteps:[10,500],maxAnimals:[0,8],animalSpawnEvery:[1,200],treeDensity:[0,0.45]};
 const SETTING_ENUMS={difficulty:['easy','normal','hard'],keysMode:['all','arrows','wasd'],
   keysLayout:['both','lat','cyr'],melody:['town','cave','elven','dwarven','dice']};
-const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','npcGestures','speech'];
+const SETTING_FLAGS=['simple','extreme','criticalAI','vibro','showHints','battleMirror','floatDamage','breathAnim','npcGestures','speech','showControls'];
 function normalizeSettings(raw){
   const s=Object.assign({},DEFAULT_SETTINGS,raw||{});
   Object.entries(SETTING_RANGES).forEach(([key,[min,max]])=>{
@@ -1436,6 +1471,19 @@ try {
   startAmbient(); startMusic(getTrack());
 } catch (e) {}
 function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); }catch(e){} }
+/* Видимость крупных кнопок: настройка и клавиша H/Р меняют одно и то же состояние.
+   На тач-устройствах CSS всё равно оставляет кнопки на экране. */
+function applyControlVisibility(){
+  document.body.classList.toggle('controls-hidden',settings.showControls===false);
+  const box=$('setShowControls'); if(box) box.checked=settings.showControls!==false;
+  const btn=$('btnControls'); if(btn) btn.setAttribute('aria-pressed',String(settings.showControls!==false));
+}
+function toggleControls(force){
+  settings.showControls=force===undefined?settings.showControls===false:!!force;
+  applyControlVisibility(); saveSettings();
+  toast(settings.showControls?'Крупные кнопки видны':'Крупные кнопки скрыты · H/Р');
+  return settings.showControls;
+}
 function openSettings(){ $('settings').classList.remove('hidden'); if(game) game.settingsOpen=true; syncSettings(); updateControls(); }
 function closeSettings(){ $('settings').classList.add('hidden'); if(game) game.settingsOpen=false; saveSettings(); if(game) updateControls(); }
 function syncSettings(){
@@ -1449,9 +1497,10 @@ function syncSettings(){
   Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el) el.value=settings[key]; });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setNpcGestures:'npcGestures',setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech',setShowControls:'showControls'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(el) el.checked=!!settings[key]; });
   document.body.classList.toggle('no-npc-gestures',settings.npcGestures!==true);
+  applyControlVisibility();
 }
 function bindSettings(){
   const map={setDiff:'difficulty',setFloors:'floors',setMapSize:'mapSize',setCellSize:'cellSize',
@@ -1484,10 +1533,11 @@ function bindSettings(){
   });
   const checks={setSimple:'simple',setExtreme:'extreme',setCriticalAI:'criticalAI',setVibro:'vibro',
     setHints:'showHints',setBattleMirror:'battleMirror',setFloatDamage:'floatDamage',setBreathAnim:'breathAnim',
-    setNpcGestures:'npcGestures',setSpeech:'speech'};
+    setNpcGestures:'npcGestures',setSpeech:'speech',setShowControls:'showControls'};
   Object.entries(checks).forEach(([id,key])=>{ const el=$(id); if(!el) return;
     el.addEventListener('change',()=>{ settings[key]=el.checked;
       if(key==='npcGestures') document.body.classList.toggle('no-npc-gestures',!el.checked);
+      if(key==='showControls') applyControlVisibility();
       saveSettings();
     });
   });
@@ -3373,7 +3423,12 @@ function syncTurnQueuePosition(){
   const r=cv.getBoundingClientRect();
   const scale=Math.min(r.width/W,r.height/H);
   const vx=(r.width-W*scale)/2, vy=(r.height-H*scale)/2;
-  el.style.left=Math.max(4,vx+10*scale).toFixed(1)+'px';
+  // На низком ландшафте Dock сжимается в колонку: очередь уходит вправо от кнопок,
+  // чтобы не наезжать на dpad при любой высоте окна.
+  const compactLandscape=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
+  const battle=!!(game&&game.battle&&!game.battle.end);
+  const leftPx=compactLandscape&&battle?140:10;
+  el.style.left=Math.max(4,vx+leftPx*scale).toFixed(1)+'px';
   el.style.top=Math.max(4,vy+(10+BF.enemyPanelH+6)*scale).toFixed(1)+'px';
 }
 function updateTurnQueue(){
@@ -7187,17 +7242,31 @@ function drawMap(now){
   const rowColors=['#ffe6a8','#c8d2f0','#fde68a','#fde68a','#9fb0d8'];
   rows.forEach((text,i)=>fitText(text,196,i===0?11:9,rowColors[i],18,rowYs[i]));
   drawMiniMap(m);
-  const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
-  mapUiRects.warning=near.length?{x:12,y:296,w:MAP_WARN_W,h:22}:null;
-  if(near.length){
-    roundRect(12,296,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
-    ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
-    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,307);
+  // На коротком ландшафте Dock-панели занимают низ экрана: HUD сдвигается вверх,
+  // а строка сообщения вписывается в зазор между крупными кнопками.
+  const compactHint=window.innerHeight<=430&&window.innerWidth>window.innerHeight;
+  const warnY=compactHint?210:296;
+  let msgX=126, msgW=388;
+  if(compactHint){
+    const cr=cv.getBoundingClientRect(), scale=Math.min(cr.width/W,cr.height/H);
+    const vx=(cr.width-W*scale)/2;
+    const toCanvas=x=>(x-cr.left-vx)/scale;
+    // Компактные доки: слева 8+176, справа 8+94 пикселя от края canvas.
+    const gapLeft=toCanvas(cr.left+184)+4, gapRight=toCanvas(cr.right-102)-4;
+    msgW=Math.max(240,Math.min(388,gapRight-gapLeft));
+    msgX=Math.max(gapLeft,Math.min(gapRight-msgW,gapLeft+40));
   }
-  mapUiRects.message={x:126,y:326,w:388,h:26};
-  roundRect(126,326,388,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
+  const near=m.monsters.filter(e=>e.alive&&Math.abs(e.x-p.x)+Math.abs(e.y-p.y)<=2);
+  mapUiRects.warning=near.length?{x:12,y:warnY,w:MAP_WARN_W,h:22}:null;
+  if(near.length){
+    roundRect(12,warnY,MAP_WARN_W,22,6); ctx.fillStyle='rgba(58,12,20,.88)'; ctx.fill();
+    ctx.strokeStyle='rgba(248,113,113,.6)'; ctx.stroke();
+    fitText('⚠ Враги рядом: '+near.length+' — входите в клетку для боя',MAP_WARN_W-16,10,C_ENEMY,20,warnY+11);
+  }
+  mapUiRects.message={x:msgX,y:326,w:msgW,h:26};
+  roundRect(msgX,326,msgW,26,7); ctx.fillStyle='rgba(6,8,18,.84)'; ctx.fill();
   ctx.strokeStyle='rgba(251,191,36,.35)'; ctx.stroke();
-  fitText(game.msg,372,11,'#f3e8cf',134,339);
+  fitText(game.msg,msgW-16,11,'#f3e8cf',msgX+8,339);
   // Дублирующей строки слева внизу больше нет: ход, золото и погода перенесены в колонку слева сверху.
   // Подсказка уходит, когда наведена плашка врага: два transient-сообщения не пересекаются.
   mapUiRects.enemies=visibleMapEnemies().filter(item=>enemyPlateVisible(item.e,now)).map(item=>mapEnemyPanelRect(item));
@@ -7205,8 +7274,10 @@ function drawMap(now){
   const showHint=!!mapHint&&now-mapHint.t<2600&&!enemyPlateFocus.e;
   mapUiRects.hint=null;
   if(showHint){
-    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,3);
-    const h=28+lines.length*12, ty=290-h; // Верх плашки предупреждения — 296, зазор 6.
+    // На низком ландшафте Dock-панели занимают низ экрана: подсказка встаёт
+    // между отрядом и кнопками и короткой, чтобы не заходить ни на те, ни на другие окна.
+    const lines=wrapCanvasText(mapHint.desc,MAP_HINT_W-16,9).slice(0,compactHint?2:3);
+    const h=28+lines.length*12, ty=compactHint?150:290-h; // Верх плашки предупреждения — 296, зазор 6.
     mapUiRects.hint={x:12,y:ty,w:MAP_HINT_W,h};
     panel(12,ty,MAP_HINT_W,h);
     fitText(mapHint.title,MAP_HINT_W-16,11,'#ffe9b0',20,ty+13);
@@ -7530,6 +7601,7 @@ document.addEventListener('keydown',e=>{
   }
   if(k==='p'||k==='з'){ e.preventDefault();
     if($('settings').classList.contains('hidden')) openSettings(); else closeSettings(); return; }
+  if(k==='h'||k==='р'){ e.preventDefault(); toggleControls(); return; }
   if(!$('settings').classList.contains('hidden')){
     if(e.key==='Escape'){ e.preventDefault(); closeSettings(); } return;
   }
@@ -8261,6 +8333,35 @@ function visibleWindowsReport(){
   }
   return {rects,overlaps,modal:modal.length};
 }
+/* Отчёт о крупных кнопках: размеры, полупрозрачность, видимость и пересечения.
+   Используется харнесом части 7, но не меняет игровую логику. */
+function controlsReport(){
+  const box=$('controls'), s=box?getComputedStyle(box):null;
+  const rect=el=>{ if(!el||!el.getClientRects().length) return null;
+    const r=el.getBoundingClientRect();
+    return {x:+r.x.toFixed(1),y:+r.y.toFixed(1),w:+r.width.toFixed(1),h:+r.height.toFixed(1)}; };
+  const info=el=>{
+    if(!el) return null;
+    const st=getComputedStyle(el), m=/rgba?\([^)]*,\s*([\d.]+)\s*\)/.exec(st.backgroundColor);
+    return {rect:rect(el),visible:!!el.getClientRects().length&&st.display!=='none',
+      background:st.backgroundColor,alpha:m?+m[1]:1,
+      border:st.borderTopColor,fontSize:parseFloat(st.fontSize)||0};
+  };
+  const ids=['turnLeft','turnRight','btnAttack','btnSpell','btnFlee','btnInv','btnShop',
+    'btnQuests','btnInteract','btnSettings','btnLog'];
+  const buttons=Object.fromEntries(ids.map(id=>[id,info($(id))]));
+  document.querySelectorAll('[data-move]').forEach(b=>{ buttons['move-'+b.dataset.move]=info(b); });
+  return {
+    visible:!!s&&s.display!=='none'&&!!box.getClientRects().length,
+    display:s?s.display:'none',setting:settings.showControls!==false,
+    hiddenClass:document.body.classList.contains('controls-hidden'),
+    touch:matchMedia('(hover:none),(pointer:coarse)').matches,
+    controls:rect(box),leftDock:rect(document.querySelector('.leftDock')),
+    rightDock:rect(document.querySelector('.rightDock')),
+    dpad:rect(document.querySelector('.dpad')),turnPair:rect(document.querySelector('.turnPair')),
+    buttons,overlaps:visibleWindowsReport().overlaps
+  };
+}
 window.__mm6State=()=>game;
 window.__mm6Debug={
   startGame:(diff,a,b)=>startGame(diff,a,b),
@@ -8435,6 +8536,8 @@ window.__mm6Debug={
   mapStateWindowReport:()=>mapStateWindow,
   minimapCaptionReport:()=>minimapCaption,
   overlapReport:()=>visibleWindowsReport(),
+  controlsReport:()=>controlsReport(),
+  toggleControls:(show)=>toggleControls(show),
   showToast:(text)=>{ toast(text||'Проверка сообщений'); return true; },
   showMapHint:(title,desc)=>{ mapHint={title:title||'Подсказка',desc:desc||'Описание подсказки',t:performance.now()}; return true; },
   npcSay:(text,speaker,kind)=>npcSay(text||'Проверка реплики',speaker,kind),
